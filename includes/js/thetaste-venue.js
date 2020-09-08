@@ -80,37 +80,42 @@ const tasteRedeemVoucher = (orderList) => {
 
 const tasteGetProductInfo = () => {
 	let productInfo = {};
-	productInfo.product_id = $("taste-product-id").val();
-	productInfo.gr_value = $("#taste-gr-value").val();
-	productInfo.commission_value = $("#taste-commission-value").val();
-	productInfo.vat_value = $("#taste-vat-value").val();
-	productInfo.redeem = $("#taste-redeem").val();
-	productInfo.total = $("#taste-total").val();
-	productInfo.total_paid = $("#taste-total-paid").val();
+	productInfo.product_id = jQuery("taste-product-id").val();
+	productInfo.gr_value = jQuery("#taste-gr-value").val();
+	productInfo.commission_value = jQuery("#taste-commission-value").val();
+	productInfo.vat_value = jQuery("#taste-vat-value").val();
+	productInfo.redeem = jQuery("#taste-redeem").val();
+	productInfo.total = jQuery("#taste-total").val();
+	productInfo.total_paid = jQuery("#taste-total-paid").val();
 	return productInfo;
 };
 
 const tasteLoadRedeemButtons = () => {
 	// this sets up click event for the ajax returned html
-	$(".order-redeem-btn").click(function (e) {
+	jQuery(".order-redeem-btn").click(function (e) {
 		e.preventDefault();
-		let $rowData = $(this).parent().parent();
+		let $rowData = jQuery(this).parent().parent();
 		let orderId = $rowData.data("order-id");
 		let orderItemId = $rowData.data("order-item-id");
 		let orderQty = $rowData.data("order-qty");
 		tasteRedeemVoucher([{ orderId, orderItemId, orderQty }]);
 	});
 
-	$("#checkbox-all").click(function (e) {
-		let checkVal = $(this).prop("checked");
-		$(".order-redeem-check").prop("checked", checkVal);
+	jQuery("#checkbox-all").click(function (e) {
+		let checkVal = jQuery(this).prop("checked");
+		jQuery(".order-redeem-check").prop("checked", checkVal);
+		checkRedeemAllDisable();
 	});
 
-	$("#order-redeem-checked-btn").click(function (e) {
+	jQuery(".order-redeem-check").click(function (e) {
+		checkRedeemAllDisable();
+	});
+
+	jQuery("#order-redeem-checked-btn").click(function (e) {
 		e.preventDefault();
 		let orderInfoList = [];
-		$(".order-redeem-check:checked").each((ndx, chckbox) => {
-			let $rowData = $(chckbox).parent().parent();
+		jQuery(".order-redeem-check:checked").each((ndx, chckbox) => {
+			let $rowData = jQuery(chckbox).parent().parent();
 			let orderId = $rowData.data("order-id");
 			let orderItemId = $rowData.data("order-item-id");
 			let orderQty = $rowData.data("order-qty");
@@ -121,18 +126,18 @@ const tasteLoadRedeemButtons = () => {
 };
 
 const tasteLoadButtons = () => {
-	$(".product-select-btn").click(function (e) {
+	jQuery(".product-select-btn").click(function (e) {
 		e.preventDefault();
-		let prodId = $(this).data("prod-id");
+		let prodId = jQuery(this).data("prod-id");
 		tasteLoadVouchers(prodId);
 	});
 };
 
 const tasteLoadVenueFormEvents = () => {
-	let $venueSelect = $("#venue-select");
+	let $venueSelect = jQuery("#venue-select");
 	$venueSelect.length &&
 		$venueSelect.change(function () {
-			let $selectVenueBtn = $("#select-venue-btn");
+			let $selectVenueBtn = jQuery("#select-venue-btn");
 			let selectVal = parseInt(this.value);
 			console.log(selectVal);
 			console.log($selectVenueBtn.prop("disabled"));
@@ -142,6 +147,16 @@ const tasteLoadVenueFormEvents = () => {
 				$selectVenueBtn.prop("disabled", true);
 			}
 		});
+};
+
+const checkRedeemAllDisable = () => {
+	if (jQuery(".order-redeem-check:checked").length) {
+		console.log("turn off disable");
+		jQuery("#order-redeem-checked-btn").prop("disabled", false);
+	} else {
+		console.log("turn disable on");
+		jQuery("#order-redeem-checked-btn").prop("disabled", true);
+	}
 };
 
 /***********************************************************
@@ -159,20 +174,20 @@ function tasteDispMsg(msg, closeBtn) {
 	// false is for ajax temp disp
 
 	if (closeBtn) {
-		$("#taste-msg-close").show();
+		jQuery("#taste-msg-close").show();
 	} else {
-		$("#taste-msg-close").hide();
+		jQuery("#taste-msg-close").hide();
 	}
 
-	$("#taste-msg-text").html(msg);
-	$("#taste-msg-box").show();
-	$("#taste-modal-layer").show();
+	jQuery("#taste-msg-text").html(msg);
+	jQuery("#taste-msg-box").show();
+	jQuery("#taste-modal-layer").show();
 }
 /**
  * Closes the Modal msg box
  * @returns {void}
  */
 function tasteCloseMsg() {
-	$("#taste-modal-layer").hide();
-	$("#taste-msg-box").hide();
+	jQuery("#taste-modal-layer").hide();
+	jQuery("#taste-msg-box").hide();
 }

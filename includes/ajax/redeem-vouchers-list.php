@@ -33,33 +33,6 @@ $myrows = $wpdb->get_results($wpdb->prepare("
 		AND o.post_type = 'shop_order'
 		AND wclook.product_id = %d group by o.id", $pid, $pid));
 
-$gr = $wpdb->get_results($wpdb->prepare("SELECT pm.meta_value
-FROM " . $wpdb->prefix . "postmeta pm
-WHERE pm.post_id = %d
-AND pm.meta_key = '_price'", $pid));
-
-
-$vat_val = $wpdb->get_results($wpdb->prepare("SELECT pm.meta_value
-FROM " . $wpdb->prefix . "postmeta pm
-WHERE pm.post_id = %d
-AND pm.meta_key = 'Vat'", $pid));
-
-$commission_val = $wpdb->get_results($wpdb->prepare("SELECT pm.meta_value
-FROM " . $wpdb->prefix . "postmeta pm
-WHERE pm.post_id = %d
-AND pm.meta_key = 'Commission'", $pid));
-
-
-$expired_val = $wpdb->get_results($wpdb->prepare("SELECT pm.meta_value
-FROM " . $wpdb->prefix . "postmeta pm
-WHERE pm.post_id = %d
-AND pm.meta_key = 'Expired'", $pid));
-
-$tandc_val = $wpdb->get_results($wpdb->prepare("SELECT pm.meta_value
-FROM " . $wpdb->prefix . "postmeta pm
-WHERE pm.post_id = %d
-AND pm.meta_key = '_purchase_note'", $pid));
-
 $product_row = $wpdb->get_results($wpdb->prepare("
 	SELECT  pm.post_id, 
 					MAX(CASE WHEN pm.meta_key = '_price' then pm.meta_value ELSE NULL END) as price,
@@ -164,7 +137,7 @@ VAT No 3312776JH<br>
 <div class="panel panel-default">
 		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
 		<div class="panel-body">
-		<button	id="order-redeem-checked-btn">Redeem Checked</button>
+		<button	id="order-redeem-checked-btn" disabled >Redeem Checked</button>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<th>
