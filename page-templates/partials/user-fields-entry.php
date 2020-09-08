@@ -2,7 +2,7 @@
 
 function display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct) {
 			?>
-			<div id="new-user-venue-fields" style="display: <?php echo ('venue' === $role) ? 'block' : 'none' ?>">
+			<div id="user-venue-fields" style="display: <?php echo ('venue' === $role) ? 'block' : 'none' ?>">
 				<h3><?php esc_html_e('Venue Information'); ?>
 				</h3>
 
