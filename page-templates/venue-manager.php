@@ -196,25 +196,25 @@ function display_products_table($ordered_products) {
 				foreach($ordered_products as $product_row) {
 					$title = $product_row['post_title'];
 					$status = ("N" === $product_row['expired']) ? "Active" : "Expired";
-					$type = str_replace('-', '<span>&#8209;</span>', explode(' ', $product_row['post_date'])[0]);
+					$date = str_replace('-', '<span>&#8209;</span>', explode(' ', $product_row['post_date'])[0]);
 					$qty = "{$product_row['redeemed']} / ({$product_row['orderCnt']})";
 					$redeem = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>Select</button>";
 					if ( count($product_row['child_list'])) {
 						$qty = '';
 						$redeem = "Group";
 					}
-					display_product_row($product_row['product_id'], $title, $status, $type, $qty, $redeem);
+					display_product_row($product_row['product_id'], $title, $status, $date, $qty, $redeem);
 					// if children, display them now
-					if ( count($product_row['child_list']) ) {
-						foreach($product_row['child_list'] as $child_row) {
-							$title = $child_row['post_title'];
-							$status = ("N" === $child_row['expired']) ? "Active" : "Expired";
-							$type = "Pkg Item";
-							$qty = "{$child_row['redeemed']} / ({$child_row['orderCnt']})";
-							$redeem = "<button data-prod-id='" . $child_row['product_id'] . "' class='btn btn-primary product-select-btn'>Select</button>";
-							display_product_row($child_row['product_id'], "--- $title", $status, $type, $qty, $redeem);
-						}
-					}
+					// if ( count($product_row['child_list']) ) {
+					// 	foreach($product_row['child_list'] as $child_row) {
+					// 		$title = $child_row['post_title'];
+					// 		$status = ("N" === $child_row['expired']) ? "Active" : "Expired";
+					// 		$type = "Pkg Item";
+					// 		$qty = "{$child_row['redeemed']} / ({$child_row['orderCnt']})";
+					// 		$redeem = "<button data-prod-id='" . $child_row['product_id'] . "' class='btn btn-primary product-select-btn'>Select</button>";
+					// 		display_product_row($child_row['product_id'], "--- $title", $status, $type, $qty, $redeem);
+					// 	}
+					// }
 				}
 			?>
 		</tbody>
@@ -222,13 +222,13 @@ function display_products_table($ordered_products) {
 	<?php
 }
 
-function display_product_row($id, $title, $status, $type, $qty, $redeem) {
+function display_product_row($id, $title, $status, $date, $qty, $redeem) {
  ?>
 	<tr>
 		<td><?php echo $id ?></td>
 		<td><?php echo $title ?></td>
 		<td><?php echo $status ?></td>
-		<td><?php echo $type ?></td>
+		<td><?php echo $date ?></td>
 		<td><?php echo $qty ?></td>
 		<td><?php echo $redeem ?></td>
 	</tr>
@@ -274,11 +274,11 @@ function order_product_table($product_rows) {
 function display_venue_select() {
 	global $wpdb;
 	// build list of venues 
-	$venue_rows = $wpdb->get_results($wpdb->prepare("
+	$venue_rows = $wpdb->get_results("
 		SELECT venue_id, name, description, venue_type
 		FROM " . $wpdb->prefix . "taste_venue
 		ORDER BY venue_type, name
-	"), ARRAY_A);
+	", ARRAY_A);
 	?>
 	<div id="venue-form-container">
 	<form method="post" action="" id="venue-select-form">
