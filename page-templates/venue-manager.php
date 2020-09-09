@@ -141,28 +141,7 @@ global $wpdb;
 				?>
 			</div>
 		</div>
-		<!--
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<b>TASTE MANAGEMENT CONSOLE</b>
-				<br><br>
-				Enter ID and Restaurant Password
-			</div>
-			<div class="panel-body">
-				<form class="form-inline" method="post" action="">
-					<div class="form-group">
-									<input type="text" name="product_id" class="form-control" id="product_id" placeholder="ID" required="">
-					</div>
-					<div class="form-group">
-									<input type="password" name="product_pass" class="form-control" id="product_pass" placeholder="PASSWORD" required="">
-					</div>
-					<button type="submit" class="btn btn-default">Submit</button>
-				</form>
-			</div>
-		</div>
-		-->
 		<div id="voucher-list-div" class="container">
-
 
 		</div>
 	</section>
@@ -237,6 +216,7 @@ function display_product_row($id, $title, $status, $date, $qty, $redeem) {
 
 function order_product_table($product_rows) {
 	$ordered_products = array();
+	// DEPRECATED FOR NOW
 	// loop through the group rows (groups come first), 
 	// creating a child_list subarray on each group
 	// removing those children from the product_rows 
