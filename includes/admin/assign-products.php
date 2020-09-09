@@ -9,10 +9,26 @@
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 function taste_assign_products() {
+	// check for coming here as form submit with products to update
+	if (isset($_POST['assign_products_btn']) && isset($_POST['prod_ids'])) {
+		$prod_ids = $_POST['prod_ids'];
+		$cur_venue_id = $_POST['current_venue_id'];
+
+		if (update_venue_products($cur_venue_id, $prod_ids)) {
+			// success display
+			?>
+			<div id="setting-error-settings_updated"
+				class="updated settings-error notice is-dismissible">
+				Products have successfully been assigned
+			</div>
+			<?php
+		}
+	}
 	?>
 	<div class="wrap">
 		<h2>Assign Products to Venues</h2>
 		<?php
+
 		if (isset($_POST['venue-id'])) {
 			$venue_id = $_POST['venue-id'];
 			display_products($venue_id);
@@ -57,12 +73,13 @@ function get_venue_products($venue_id) {
 	global $wpdb;
 
 	$venue_product_rows = $wpdb->get_results($wpdb->prepare("
-		SELECT ven_prod.product_id, prod_look.sku, posts.post_title, posts.post_date
+		SELECT ven_prod.product_id, prod_look.sku, posts.post_title, posts.post_date, pmeta.meta_value AS 'expired'
 		FROM {$wpdb->prefix}taste_venue_products ven_prod
 		JOIN {$wpdb->prefix}wc_product_meta_lookup prod_look ON prod_look.product_id = ven_prod.product_id
 		JOIN {$wpdb->prefix}posts posts ON posts.ID = ven_prod.product_id
-		WHERE ven_prod.venue_id = 14693
-	"), ARRAY_A);
+		LEFT JOIN {$wpdb->prefix}postmeta pmeta ON pmeta.post_id = ven_prod.product_id AND meta_key = 'Expired'
+		WHERE ven_prod.venue_id = %d
+	", $venue_id), ARRAY_A);
 
 	return $venue_product_rows;
 }
@@ -71,9 +88,11 @@ function get_non_venue_products() {
 	global $wpdb;
 
 	$product_rows = $wpdb->get_results("
-		SELECT prod_look.product_id, prod_look.sku, posts.post_title, posts.post_date
+		SELECT prod_look.product_id AS 'prodId', prod_look.sku, posts.post_title AS 'prodTitle', 
+			posts.post_date AS 'prodDate' , pmeta.meta_key AS 'expired'
 		FROM {$wpdb->prefix}wc_product_meta_lookup prod_look 
 		JOIN {$wpdb->prefix}posts posts ON posts.ID = prod_look.product_id
+		LEFT JOIN {$wpdb->prefix}postmeta pmeta ON pmeta.post_id = prod_look.product_id AND meta_key = 'Expired'
 		WHERE prod_look.product_id NOT IN (SELECT product_id FROM {$wpdb->prefix}taste_venue_products)
 		LIMIT 100
 	", ARRAY_A);
@@ -92,7 +111,7 @@ function display_product_table($product_rows, $venue_id, $venue_name) {
 					<th class="manage-column">Sku</th>
 					<th class="manage-column">Title</th>
 					<th class="manage-column">Date</th>
-					<th class="manage-column">Remove</th>
+					<th class="manage-column">Expired</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -105,7 +124,7 @@ function display_product_table($product_rows, $venue_id, $venue_name) {
 							<td><?php echo $prod_row['sku'] ?></td>
 							<td><?php echo $prod_row['post_title'] ?></td>
 							<td><?php echo $date ?></td>
-							<td><button id="remove-prod-<?php echo $prod_row['product_id'] ?> class="remove-prod">X</button></td>
+							<td><?php echo $prod_row['expired'] ?></td>
 						</tr>
 						<?php
 					}
@@ -116,7 +135,42 @@ function display_product_table($product_rows, $venue_id, $venue_name) {
 	<?php
 }
 
-function display_product_select($product_rows) {
+function display_product_select($product_rows, $venue_id) {
+	?>
+	<table class="form-table">
+		<tr>
+			<th>
+			<label for="product-input">Search Product by Title</label>
+			</th>
+			<td>
+				<input type="text" id="product-input" name="product_input" class="large-text" />
+			</td>
+		</tr>
+	</table>
+	<h3>Selected Products</h3>
+	<form method="post" action="">
+		<input type="hidden" name="current_venue_id" value="<?php echo $venue_id ?>">
+		<table id="selected-products-table" class="fixed striped widefat">
+				<thead>
+					<tr>
+						<th class="manage-column">Product Id</th>
+						<th class="manage-column">Sku</th>
+						<th class="manage-column">Title</th>
+						<th class="manage-column">Date</th>
+						<th class="manage-column">Expired</th>
+						<th class="manage-column">Remove</th>
+					</tr>
+				</thead>
+				<tbody id="select-products-body">
+				</tbody>
+		</table>
+		<br/>
+		<br/>
+		<button type="submit" id="assign-products-btn" name="assign_products_btn" class="button button-primary" disabled>Assign Selected Products to Venue</button>
+		<button type="submit" id="cancel-btn" name="cancel_btn" class="button button-cancel">Cancel</button>
+	</form>
+	<?php
+	/* *** THIS USES SELECT OPTIONS, NOT AUTOCOMPLETE
 	?>
 	<div id="product-form-container">
 	<form method="post" action="" id="product-select-form">
@@ -135,6 +189,7 @@ function display_product_select($product_rows) {
 	</div>
 
 	<?php
+	*/
 }
 
 
@@ -155,33 +210,43 @@ function display_products($venue_id) {
 	// retrieve last 100 (more?) products NOT already assigned
 	$product_rows = get_non_venue_products();
 
-	// have to send product rows to javascript code for post_form_autocomplete_off(  )// add_action('wp_enqueue_scripts', 'jl_localize_script');
-// function jl_localize_script() {
-// 	global $query_flag, $q_string, $social_url_placeholder, $social_title_placeholder;
-	
-// 	wp_localize_script('jl-js', 'jobListing', array(
-// 			'security' => wp_create_nonce('jl_ajax_nonce'),
-// 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-// 			'queryFlag' => $query_flag,
-// 			'query' => $q_string,
-// 			'socialURLPlaceholder' => $social_url_placeholder,
-// 			'socialTitlePlaceholder' => $social_title_placeholder,
-// 			'indeedFlag'	=> false,
-// 		));
-// }
+	// need to create list with 'value' and 'label' keys for autocomplete 
+	$auto_rows = array_reduce($product_rows, function ($result, $row) {
+		$result[] = array_merge($row, array('label' => $row['prodTitle'], 'value' => $row['prodId']));
+		return $result;
+	}, array());
+
+	// have to send product rows to javascript code for autocomplete
+	?>
+	<script>
+		let products = <?php echo json_encode($auto_rows) ?>
+	</script>
+	<?php
 
 	// display in table w/ delete option
 	display_product_table($venue_product_rows, $venue_id, $venue_name);
 
-	// display select option until autocomplete is working
-	display_product_select($product_rows);
-
-	// use autocomplete to search through titles
-
-	// Add product button
-
-
-	// add to database and table display
+	// display autocomplete and selected products table
+	display_product_select($product_rows, $venue_id);
 }
 
+function update_venue_products($venue_id, $prod_ids) {
+	global $wpdb;
+
+	// update the database with multiple rows if necessary
+	$sql = "INSERT INTO {$wpdb->prefix}taste_venue_products (venue_id, product_id) VALUES ";
+	$insert_vals = array();
+	foreach($prod_ids as $id) {
+		$sql .= " ( %d, %d),";
+		$insert_vals[] = $venue_id;
+		$insert_vals[] = $id;
+	}
+
+	$sql = rtrim($sql, ',');
+
+	$rows_affected = $wpdb->query(
+		$wpdb->prepare($sql, $insert_vals));
+
+	return $rows_affected;
+}
 

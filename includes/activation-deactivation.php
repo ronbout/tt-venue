@@ -16,7 +16,7 @@ function taste_add_venue_table() {
 	$venue_table = $wpdb->prefix.'taste_venue';
 	$user_table = $wpdb->prefix.'users';
 
-	$sql = "CREATE TABLE $venue_table (
+	$sql = "CREATE TABLE IF NOT EXISTS $venue_table (
 			venue_id BIGINT(20) UNSIGNED NOT NULL,
 			name VARCHAR(80) NOT NULL,
 			description VARCHAR(255),
@@ -38,7 +38,7 @@ function taste_add_venue_product_table() {
 	$venue_table = $wpdb->prefix.'taste_venue';
 	$products_table = $wpdb->prefix.'wc_product_meta_lookup';
 
-	$sql = "CREATE TABLE $venue_products_table (
+	$sql = "CREATE TABLE IF NOT EXISTS $venue_products_table (
 			venue_id BIGINT(20) UNSIGNED NOT NULL,
 			product_id BIGINT(20) NOT NULL,
 			PRIMARY KEY  (venue_id, product_id),
