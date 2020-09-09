@@ -1,4 +1,5 @@
 <?php 
+defined('ABSPATH') or die('Direct script access disallowed.');
 
 function display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct) {
 			?>

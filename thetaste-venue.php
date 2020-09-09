@@ -27,7 +27,7 @@ if (is_admin()) {
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/venue-admin-menus.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/admin-enqueues.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/venue-user-fields.php';
-	
+	require_once TASTE_PLUGIN_INCLUDES.'/metabox/product-metabox.php';
 	VenueUserFields::get_instance();
 }
 
@@ -49,4 +49,5 @@ function taste_redirect_page_template ($template) {
 	return $template;
 }
 add_filter ('page_template', 'taste_redirect_page_template');
+
 

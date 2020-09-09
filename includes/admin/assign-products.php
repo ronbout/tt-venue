@@ -41,7 +41,7 @@ function taste_assign_products() {
 	<?php
 }
 
-function display_venue_select() {
+function display_venue_select($display_submit=true) {
 	global $wpdb;
 	// build list of venues 
 	$venue_rows = $wpdb->get_results("
@@ -62,7 +62,13 @@ function display_venue_select() {
 		?>
 		</select>
 		<br/>
-		<button type="submit" id="select-venue-btn" disabled class="button button-primary">Submit</button>
+		<?php
+			if ($display_submit) {
+				?>
+					<button type="submit" id="select-venue-btn" disabled class="button button-primary">Submit</button>
+				<?php
+			}
+		?>
 	</form>
 	</div>
 

@@ -2,6 +2,7 @@
 /*
 Template Name: Venue Manager
 */
+defined('ABSPATH') or die('Direct script access disallowed.');
 
 global $wpdb;
 

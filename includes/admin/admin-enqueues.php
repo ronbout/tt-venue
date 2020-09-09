@@ -1,5 +1,6 @@
 <?php 
 
+	defined('ABSPATH') or die('Direct script access disallowed.');
 	// Enqueue Jobs Page Stylesheets and Scripts
 
 	add_action('admin_enqueue_scripts', 'taste_venue_load_admin_resources');

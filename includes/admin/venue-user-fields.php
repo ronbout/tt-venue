@@ -1,4 +1,6 @@
 <?php
+
+defined('ABSPATH') or die('Direct script access disallowed.');
 /**
  * venue-user-fields.php 
  * add venue fields to various user screens 
