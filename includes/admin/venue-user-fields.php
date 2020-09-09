@@ -98,10 +98,10 @@ class VenueUserFields
 				// get values and write to taste_venue table if role is venue
 
 				if ('venue' === $_POST['role']) {
-					$name = $_POST['venue_name'];
-					$desc = !empty($_POST['venue_desc']) ? $_POST['venue_desc'] : 'NULL';
-					$city = !empty($_POST['venue_city']) ? $_POST['venue_city'] : 'NULL';
-					$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? 'NULL' : $_POST['venue_type'];
+					$name = stripslashes($_POST['venue_name']);
+					$desc = !empty($_POST['venue_desc']) ? stripslashes($_POST['venue_desc']) : 'NULL';
+					$city = !empty($_POST['venue_city']) ? stripslashes($_POST['venue_city']) : 'NULL';
+					$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? 'NULL' : stripslashes($_POST['venue_type']);
 					$pct = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : 'NULLO';
 
 					$sql = "
