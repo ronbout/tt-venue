@@ -29,8 +29,8 @@ function taste_assign_products() {
 		<h2>Assign Products to Venues</h2>
 		<?php
 
-		if (isset($_POST['venue-id'])) {
-			$venue_id = $_POST['venue-id'];
+		if (isset($_POST['venue_id'])) {
+			$venue_id = $_POST['venue_id'];
 			display_products($venue_id);
 		} else {
 			// display form to select Venue
@@ -41,7 +41,7 @@ function taste_assign_products() {
 	<?php
 }
 
-function display_venue_select($display_submit=true) {
+function display_venue_select($display_submit=true, $venue_id = 0, $add_form=true) {
 	global $wpdb;
 	// build list of venues 
 	$venue_rows = $wpdb->get_results("
@@ -51,13 +51,15 @@ function display_venue_select($display_submit=true) {
 	", ARRAY_A);
 	?>
 	<div id="venue-form-container" class="wrap">
-	<form method="post" action="" id="venue-select-form">
+	<?php echo ($add_form) ?	'<form method="post" action="" id="venue-select-form">' : '' ?>
 		<label for="venue-select">Choose a Venue:</label>
-		<select name="venue-id" id="venue-select" class="form-control">
-			<option value=0>Select a Venue</option>
+		<select name="venue_id" id="venue-select" class="form-control">
+			<option value=0 <?php echo (0 === $venue_id) ? 'selected' : ''?> >Select a Venue</option>
 		<?php 
 			foreach ($venue_rows as $venue_row) {
-				echo "<option value={$venue_row['venue_id']}>{$venue_row['name']}</option>";
+				echo "<option value={$venue_row['venue_id']} " . (($venue_id  === $venue_row['venue_id']) ? 'selected' : '') . ">
+					{$venue_row['name']}
+				</option>";
 			}
 		?>
 		</select>
@@ -69,7 +71,7 @@ function display_venue_select($display_submit=true) {
 				<?php
 			}
 		?>
-	</form>
+		<?php echo ($add_form) ?	'</form>' : '' ?>
 	</div>
 
 <?php
