@@ -79,6 +79,7 @@ function get_venue_products($venue_id) {
 		JOIN {$wpdb->prefix}posts posts ON posts.ID = ven_prod.product_id
 		LEFT JOIN {$wpdb->prefix}postmeta pmeta ON pmeta.post_id = ven_prod.product_id AND meta_key = 'Expired'
 		WHERE ven_prod.venue_id = %d
+		ORDER BY posts.post_date DESC
 	", $venue_id), ARRAY_A);
 
 	return $venue_product_rows;
@@ -94,6 +95,7 @@ function get_non_venue_products() {
 		JOIN {$wpdb->prefix}posts posts ON posts.ID = prod_look.product_id
 		LEFT JOIN {$wpdb->prefix}postmeta pmeta ON pmeta.post_id = prod_look.product_id AND meta_key = 'Expired'
 		WHERE prod_look.product_id NOT IN (SELECT product_id FROM {$wpdb->prefix}taste_venue_products)
+		ORDER BY posts.post_date DESC
 		LIMIT 100
 	", ARRAY_A);
 
