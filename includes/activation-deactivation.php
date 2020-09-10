@@ -23,6 +23,9 @@ function taste_add_venue_table() {
 			city VARCHAR(100),
 			venue_type ENUM ('Restaurant', 'Pub', 'Hotel', 'Cafe', 'Other'),
 			voucher_pct FLOAT,
+			paid_member TINYINT ZEROFILL NOT NULL DEFAULT 0, 
+			member_renewal_date DATETIME,
+			membership_cost FLOAT,
 			PRIMARY KEY (venue_id),
 			UNIQUE KEY (name),
 			KEY (venue_type)
