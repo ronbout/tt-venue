@@ -109,45 +109,57 @@ class VenueUserFields
     public function taste_user_register($user_id)
     {
 			global $wpdb;
-				// get values and write to taste_venue table if role is venue
+			// get values and write to taste_venue table if role is venue
 
-				// echo '<h1><pre>', print_r($_POST), '</pre></h1>';
-				// wp_die();
+			// echo '<h1><pre>', print_r($_POST), '</pre></h1>';
+			// wp_die();
 
-				if ('venue' === $_POST['role']) {
-					$name = stripslashes($_POST['venue_name']);
-					$desc = !empty($_POST['venue_desc']) ? stripslashes($_POST['venue_desc']) : 'NULL';
-					$city = !empty($_POST['venue_city']) ? stripslashes($_POST['venue_city']) : 'NULL';
-					$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? 'NULL' : stripslashes($_POST['venue_type']);
-					$pct = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : 'NULL';
-					$paid = !empty($_POST['venue_paid']) && $_POST['venue_paid'] === "on" ? 1 : 0;
-					$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : 'NULL';
-					$renewal = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : 'NULL';
+			if ('venue' === $_POST['role']) {
 
-					$sql = "
-						INSERT INTO {$wpdb->prefix}taste_venue
-						(venue_id, name, description, city, venue_type, voucher_pct, 
-							paid_member, member_renewal_date, membership_cost )
-						VALUES (%d, %s, %s, %s, %s, %f, %d, '$renewal', %f)
-						ON DUPLICATE KEY UPDATE
-							name = %s,
-							description = %s,
-							city = %s,
-							venue_type = %s,
-							voucher_pct = %f,
-							paid_member = %d,
-							member_renewal_date = '$renewal',
-							membership_cost = %f
-					";
+				// check if venue already exists to determine 
+				// insert or  update method 
 
-					$field_list = array($user_id, $name, $desc, $city, $type, $pct, $paid, $cost, 
-																				$name, $desc, $city, $type, $pct, $paid, $cost);
+				$venue_table = "{$wpdb->prefix}taste_venue";
+				$sql = "SELECT venue_id	FROM $venue_table	WHERE venue_id = %d	";
+				$venue_row = $wpdb->get_results($wpdb->prepare($sql, $user_id));
 
-					$rows_affected = $wpdb->query(
-						$wpdb->prepare($sql, $field_list)
-					);
-
+				if (count($venue_row)) {
+					$data = array();
+					$format = array();
+					$insert_flg = false;
+					$where = array( 'venue_id' => $user_id);
+				} else {
+					$data = array('venue_id' => $user_id );
+					$format = array('%d');
+					$insert_flg = true;
 				}
+
+				$name = stripslashes($_POST['venue_name']);
+				$desc = !empty($_POST['venue_desc']) ? stripslashes($_POST['venue_desc']) : NULL;
+				$city = !empty($_POST['venue_city']) ? stripslashes($_POST['venue_city']) : NULL;
+				$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? NULL : stripslashes($_POST['venue_type']);
+				$pct = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : NULL;
+				$paid = !empty($_POST['venue_paid']) && $_POST['venue_paid'] === "on" ? 1 : 0;
+				$renewal = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : NULL;
+				$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : NULL;
+
+				$data['name'] = $name;
+				$data['description'] =  $desc;
+				$data['city'] = $city;
+				$data['venue_type'] = $type;
+				$data['voucher_pct'] = $pct;
+				$data['paid_member'] = $paid;
+				$data['member_renewal_date'] = $renewal;
+				$data['membership_cost'] = $cost;
+
+				$format = array_merge($format, array('%s', '%s', '%s', '%s', '%f', '%d', '%s', '%f'));
+
+				if ($insert_flg) {
+					$rows_affected = $wpdb->insert($venue_table, $data, $format);
+				} else  {
+					$rows_affected = $wpdb->update($venue_table, $data, $where, $format);
+				}
+			}
     }
 
 		
