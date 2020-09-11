@@ -68,9 +68,12 @@ class VenueUserFields
 			$desc = !empty($_POST['venue_desc']) ? $_POST['venue_desc'] : '';
 			$city = !empty($_POST['venue_city']) ? $_POST['venue_city'] : '';
 			$type = !empty($_POST['venue_type']) ? $_POST['venue_type'] : 'none';
-			$pct = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : '10';
+			$pct  = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : 10;
+			$paid = !empty($_POST['venue_paid']) ? $_POST['venue_paid'] : 0;
+			$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
+			$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : '';
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
-			display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct);
+			display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct, $paid, $renewal, $cost);
 		}
 		
 		/**
@@ -84,8 +87,17 @@ class VenueUserFields
     {
 			// echo '<h1><pre>USER: ', print_r($user), '</pre></h1>';
 			// echo '<h1><pre>POST: ', print_r($_POST), '</pre></h1>';
-			if ( 'venue' === $user->role && empty( $_POST['venue_name'] ) ) {
-				$errors->add( 'required_venue_name_error', __( '<strong>ERROR</strong>: Venue Name is a required field.', 'crf' ) );
+			if ( 'venue' === $user->role ) {
+				if ( empty( $_POST['venue_name'] ))  {
+					$errors->add( 'required_venue_name_error', __( '<strong>ERROR</strong>: Venue Name is a required field.', 'crf' ) );
+				}
+
+				/**
+				 * IF PAID MEMBER, renewal and cost are required
+				 */
+				if ( !empty($_POST['venue_paid']) && (empty($_POST['venue_renewal_date']) || empty($_POST['venue_cost']) )) {
+					$errors->add( 'required_venue_member_error', __( '<strong>ERROR</strong>: Renewal Date and Membership Cost are required for Paid Member Venues', 'crf' ) );
+				}
 			}
     }
 
@@ -99,26 +111,37 @@ class VenueUserFields
 			global $wpdb;
 				// get values and write to taste_venue table if role is venue
 
+				// echo '<h1><pre>', print_r($_POST), '</pre></h1>';
+				// wp_die();
+
 				if ('venue' === $_POST['role']) {
 					$name = stripslashes($_POST['venue_name']);
 					$desc = !empty($_POST['venue_desc']) ? stripslashes($_POST['venue_desc']) : 'NULL';
 					$city = !empty($_POST['venue_city']) ? stripslashes($_POST['venue_city']) : 'NULL';
 					$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? 'NULL' : stripslashes($_POST['venue_type']);
-					$pct = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : 'NULLO';
+					$pct = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : 'NULL';
+					$paid = !empty($_POST['venue_paid']) && $_POST['venue_paid'] === "on" ? 1 : 0;
+					$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : 'NULL';
+					$renewal = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : 'NULL';
 
 					$sql = "
 						INSERT INTO {$wpdb->prefix}taste_venue
-						(venue_id, name, description, city, venue_type, voucher_pct)
-						VALUES (%d, %s, %s, %s, %s, %f)
+						(venue_id, name, description, city, venue_type, voucher_pct, 
+							paid_member, member_renewal_date, membership_cost )
+						VALUES (%d, %s, %s, %s, %s, %f, %d, '$renewal', %f)
 						ON DUPLICATE KEY UPDATE
 							name = %s,
 							description = %s,
 							city = %s,
 							venue_type = %s,
-							voucher_pct = %f
+							voucher_pct = %f,
+							paid_member = %d,
+							member_renewal_date = '$renewal',
+							membership_cost = %f
 					";
 
-					$field_list = array($user_id, $name, $desc, $city, $type, $pct, $name, $desc, $city, $type, $pct);
+					$field_list = array($user_id, $name, $desc, $city, $type, $pct, $paid, $cost, 
+																				$name, $desc, $city, $type, $pct, $paid, $cost);
 
 					$rows_affected = $wpdb->query(
 						$wpdb->prepare($sql, $field_list)
@@ -143,6 +166,9 @@ class VenueUserFields
 			$city = '';
 			$type = 'none';
 			$pct = 10;
+			$paid = 0;
+			$renewal  = '';
+			$cost  = '';
 
 			// if POST has venue data, it takes precedence as it means the user 
 			// created info but could not save due to error (missing venue name?)
@@ -152,10 +178,14 @@ class VenueUserFields
 				$city = $_POST['venue_city'];
 				$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? 'none' : $_POST['venue_type'];
 				$pct = $_POST['venue_pct'];
+				$paid = !empty($_POST['venue_paid']) ? $_POST['venue_paid'] : 0;
+				$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
+				$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : '';
 			} elseif ('venue' === $role) {
 					// we came in with the user role = venue and should have db row
 					$sql = "
-					SELECT name, description, city, venue_type, voucher_pct
+					SELECT name, description, city, venue_type, voucher_pct, paid_member,
+						DATE(member_renewal_date) as member_renewal_date, membership_cost
 					FROM {$wpdb->prefix}taste_venue
 					WHERE venue_id = %d
 				";
@@ -166,11 +196,14 @@ class VenueUserFields
 					$city = $venue_row[0]['city'];
 					$type = ($venue_row[0]['venue_type']) ? $venue_row[0]['venue_type'] : 'none';
 					$pct  = $venue_row[0]['voucher_pct'];
+					$paid  = $venue_row[0]['paid_member'];
+					$renewal  = ($venue_row[0]['member_renewal_date']) ? $venue_row[0]['member_renewal_date'] : '';
+					$cost  = ($venue_row[0]['membership_cost']) ? $venue_row[0]['membership_cost'] : '';
 				}
 			}
 
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
-			display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct);
+			display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct, $paid, $renewal, $cost);
 		}
 		
 

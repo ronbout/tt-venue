@@ -1,7 +1,7 @@
 <?php 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct) {
+function display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct, $paid, $renewal, $cost) {
 			?>
 			<div id="user-venue-fields" style="display: <?php echo ('venue' === $role) ? 'block' : 'none' ?>">
 				<h3><?php esc_html_e('Venue Information'); ?>
@@ -61,6 +61,33 @@ function display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct
 						<td>
 							<input type="number" min="0" max="100" id="venue-pct" name="venue_pct"
 								value="<?php echo $pct ?>"
+							/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-paid"><?php esc_html_e('Paid Membership'); ?></label>
+						</th>
+						<td>
+							<input type="checkbox" id="venue-paid" name="venue_paid"
+								<?php echo $paid ? 'checked' : '' ?>
+							 />
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-renewal-date"><?php esc_html_e('Membership Renewal Date'); ?></label>
+						</th>
+						<td>
+							<input type="date" id="venue-renewal-date" name="venue_renewal_date"
+								value="<?php echo ($renewal); ?>"
+								/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-cost"><?php esc_html_e('Membership Cost'); ?></label>
+						</th>
+						<td>
+							<input type="number" id="venue-cost" min="0" max="1000" name="venue_cost"
+								value="<?php echo $cost ?>" 
 							/>
 						</td>
 					</tr>
