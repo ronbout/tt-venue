@@ -4,7 +4,8 @@
     Plugin Name: TheTaste Venue Plugin
     Plugin URI: http://thetaste.ie
     Description: Various functionalities for thetaste.ie Venue Portal
-    Version: 1.0.0
+		Version: 1.0.0
+		Date: 9/15/2020
     Author: Ron Boutilier
     Text Domain: taste-plugin
  */
@@ -27,6 +28,7 @@ if (is_admin()) {
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/venue-admin-menus.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/admin-enqueues.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/venue-user-fields.php';
+	//require_once TASTE_PLUGIN_INCLUDES.'/admin/prod-listing.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/metabox/product-metabox.php';
 	VenueUserFields::get_instance();
 }

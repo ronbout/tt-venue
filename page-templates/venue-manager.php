@@ -2,6 +2,11 @@
 /*
 Template Name: Venue Manager
 */
+
+/**
+ *  Date:  9/15/2020
+ * 	Author: Ron Boutilier
+ */
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 global $wpdb;
@@ -46,7 +51,7 @@ global $wpdb;
 
 	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js"></script>
 	<link rel="stylesheet" href="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/css/thetaste-venue.css">
-	<title><?php _e('Venue Portal'); ?></title>
+	<title><?php _e(the_title()); ?></title>
 </head>
 
 <body>
@@ -83,7 +88,6 @@ global $wpdb;
 
 		<?php // get the product listing from db 
 
-
 			$product_table = $wpdb->prefix."wc_product_meta_lookup";
 			$product_order_table = $wpdb->prefix."wc_order_product_lookup";
 			$post_meta_table = $wpdb->prefix."postmeta";
@@ -91,51 +95,94 @@ global $wpdb;
 			$order_items_table = $wpdb->prefix."woocommerce_order_items";
 			$venue_table = $wpdb->prefix."taste_venue";
 			$v_p_join_table = $wpdb->prefix."taste_venue_products";
+			$payment_table = $wpdb->prefix."offer_payments";
 
 			// get venue name 
 			$venue_row = $wpdb->get_results($wpdb->prepare("
-			SELECT v.name
+			SELECT v.name, v.venue_type
 			FROM $venue_table v
 			WHERE	v.venue_id = %d", 
 			$venue_id));
 
 			$venue_name = $venue_row[0]->name;
+			$venue_type = $venue_row[0]->venue_type;
+			switch($venue_type) {
+				case 'Restaurant':
+				case 'Pub':
+				case 'Cafe':
+					$served_heading = "Tables</br>Booked";
+					$type_desc = "Restaurant";
+					break;
+				case 'Hotel':
+					$served_heading = "Rooms</br>Booked";
+					$type_desc = "Hotel";
+					break;	
+				default: 
+					$served_heading = "Orders</br>Served";
+					$type_desc = "Venue";
+			}
 
 			$product_rows = $wpdb->get_results($wpdb->prepare("
-							SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, 
-										 pm.meta_value AS 'children', pm2.meta_value AS 'expired',
-										 COUNT(plook.order_id) AS 'orderCnt',
-										 SUM(wc_oi.downloaded) AS 'redeemed'
+							SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, pm.meta_value AS 'children', 
+								pm2.meta_value AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
+								pm5.meta_value AS 'commission',
+								COUNT(plook.order_id) AS 'order_cnt', SUM(wc_oi.downloaded) AS 'redeemed'
 							FROM $v_p_join_table vp 
 							JOIN $product_table pr ON vp.product_id = pr.product_id
 							JOIN $posts_table p ON vp.product_id =  p.ID
 							LEFT JOIN $post_meta_table pm ON vp.product_id = pm.post_id AND pm.meta_key = '_children'
 							LEFT JOIN $post_meta_table pm2 ON vp.product_id = pm2.post_id AND pm2.meta_key = 'Expired'
+							LEFT JOIN $post_meta_table pm3 ON vp.product_id = pm3.post_id AND pm3.meta_key = '_price'
+							LEFT JOIN $post_meta_table pm4 ON vp.product_id = pm4.post_id AND pm4.meta_key = 'vat'
+							LEFT JOIN $post_meta_table pm5 ON vp.product_id = pm5.post_id AND pm5.meta_key = 'commission'
 							LEFT JOIN $product_order_table plook ON plook.product_id = pr.product_id
-							JOIN $posts_table orderp ON orderp.ID = plook.order_id AND orderp.post_status = 'wc-completed'
+							JOIN $posts_table orderp ON orderp.ID = plook.order_id 
+								AND orderp.post_status = 'wc-completed'
+								AND orderp.post_type = 'shop_order'
 							LEFT JOIN $order_items_table wc_oi ON wc_oi.order_item_id = plook.order_item_id
 							WHERE	vp.venue_id = %d
 							GROUP BY pr.product_id
 							ORDER BY pr.onsale, p.post_date DESC", 
 							$venue_id), ARRAY_A);
+						
+			// more efficient just to grab this a separate statement
+			$payment_rows = $wpdb->get_results($wpdb->prepare("
+					SELECT  vp.product_id, sum(pmnt.amount) as 'total_amount'
+					FROM $v_p_join_table vp
+					JOIN $payment_table pmnt ON pmnt.pid = vp.product_id
+					WHERE vp.venue_id = %d
+					GROUP BY vp.product_id
+					", $venue_id), ARRAY_A);
+
+			// create array w product id's as keys and pay totals as values
+			$payments = array_combine(array_column($payment_rows, "product_id"), array_column($payment_rows, "total_amount"));
 
 			// first thing to do is order the rows by most recent
 			// but also grouping related products under the group,
 			// using the date of the group for the order
 			// *** GROUPING INFO NOT CURRENTLY RETURNING FROM SQL 
+			// *** TO ADD SQL, CONVERT TO 'LEFT' JOIN on posts p
 			// *** KEEPING LOGIC IN CASE THAT CHANGES
 			$ordered_products = order_product_table($product_rows);
+
+			// returns array with 'totals' and 'calcs' keys
+			$totals_calcs = get_totals_calcs($ordered_products, $payments);
+
+			$product_calcs = $totals_calcs['calcs'];
+			$venue_totals = $totals_calcs['totals'];
+
 		?>
 
 		<div class="panel panel-default">
 			<div class="panel-heading text-center"">
 						<h2>Welcome <?php echo $venue_name; ?></h2>
-						<h3>Venue Products</h3>
+						<?php display_venue_summary($venue_totals, $venue_type) ?>
 			</div>
 			<div class="panel-body">
 				<?php
 				if (count($product_rows)) {
-					display_products_table($ordered_products);
+					echo "<h3>$type_desc Offers</h3>";
+					display_products_table($product_calcs, $served_heading);
 				} else {
 					echo "<h3>No Products Found</h3>";
 				}
@@ -160,30 +207,140 @@ global $wpdb;
 
 <?php 
 
-function display_products_table($ordered_products) {
+function get_totals_calcs($ordered_products, $payments) {
+	$venue_totals = array(
+		'offers' => 0,
+		'redeemed' => 0,
+		'order_cnt' => 0,
+		'revenue' => 0,
+		'commission' => 0,
+		'vat' => 0,
+		'net_payable' => 0,
+		'paid_amt' => 0,
+		'balance_due' => 0,
+	);
+	$product_calcs = array();
+	foreach($ordered_products as $product_row) {
+		$product_id = $product_row['product_id'];
+		$tmp = array();
+		$tmp['product_id'] = $product_id;
+		$tmp['title'] = $product_row['post_title'];
+		$tmp['status'] = ("N" === $product_row['expired']) ? "Active" : "Expired";
+		$tmp['redeemed'] = $product_row['redeemed'];
+		$tmp['order_cnt'] = $product_row['order_cnt'];
+		$tmp['revenue'] = $product_row['price'] * $tmp['redeemed'];
+		$tmp['view'] = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>View</button>";
+		$tmp['commission'] = ($tmp['revenue'] / 100) * $product_row['commission'];
+		$tmp['vat'] = ($tmp['commission'] / 100) * $product_row['vat'];
+		$tmp['net_payable'] = $tmp['revenue'] - ($tmp['commission'] + $tmp['vat']);
+		$tmp['paid_amt'] = empty($payments[$product_id]) ? 0 : $payments[$product_id];
+		$tmp['balance_due'] = $tmp['net_payable'] - $tmp['paid_amt'];
+		$product_calcs[] = $tmp;
+
+		foreach($venue_totals as $k => &$total) {
+			if ($k === 'offers') {
+				$total += 1;
+			} else {
+				$total += $tmp[$k];
+			}
+		}
+	}
+	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
+}
+
+function display_venue_summary($venue_totals, $venue_type) {
+	$currency =  get_woocommerce_currency_symbol();
+	?>
+	<div class="v-summary-container">
+		<div class="v-summary-section">
+			<h3>Offers</h3>
+			<h3>
+				<span id="offers-total">
+					<?php echo $venue_totals['offers'] ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Gross Revenue</h3>
+			<h3>
+				<span id="grevenue-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['revenue']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Net Payable</h3>
+			<h3>
+				<span id="net-payable-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['net_payable']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Commission</h3>
+			<h3>
+				<span id="commission-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['commission']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>VAT</h3>
+			<h3>
+				<span id="vat-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['vat']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Balance Due</h3>
+			<h3>
+				<span id="balance-due-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['balance_due']) ?>
+				</span>
+			</h3>
+		</div>
+	</div>
+	<div id="summary-hidden-values">
+		<input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
+		<input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">
+		<input type="hidden" id="sum-vat" value="<?php echo $venue_totals['vat'] ?>">
+		<input type="hidden" id="sum-redeemed" value="<?php echo $venue_totals['redeemed'] ?>">
+		<input type="hidden" id="sum-net-payable" value="<?php echo $venue_totals['net_payable'] ?>">
+		<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
+		<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
+	</div>
+
+	<?php
+}
+
+function display_products_table($product_calcs, $served_heading) {
 	?>
 	<table class="table table-striped table-bordered">
 		<thead>
-			<th>Prod ID</th>
-			<th>Title</th>
+			<th>ID</th>
+			<th>Offer</th>
 			<th>Status</th>
-			<th>Post Date</th>
-			<th>Quantity<br/>Redeemed</th>
-			<th>Redeem</th>
+			<th>Revenue</th>
+			<th><?php echo $served_heading ?></th>
+			<th>Commission</th>
+			<th>Vat</th>
+			<th>Net</br>Payable</th>
+			<th>Balance</br>Due</th>
+			<th>Action</th>
 		</thead>
 		<tbody>
 			<?php
-				foreach($ordered_products as $product_row) {
-					$title = $product_row['post_title'];
-					$status = ("N" === $product_row['expired']) ? "Active" : "Expired";
-					$date = str_replace('-', '<span>&#8209;</span>', explode(' ', $product_row['post_date'])[0]);
-					$qty = "{$product_row['redeemed']} / ({$product_row['orderCnt']})";
-					$redeem = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>Select</button>";
-					if ( count($product_row['child_list'])) {
-						$qty = '';
-						$redeem = "Group";
+				foreach($product_calcs as $product_row) {
+					// if ( count($product_row['child_list'])) {
+					// 	$qty = '';
+					// 	$view = "Group";
+					// }
+					extract($product_row);
+					/** only display if either not expired or un-redeemed orders */
+					if ($qty !== $order_cnt || $status === 'Active') {
+						display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view);
 					}
-					display_product_row($product_row['product_id'], $title, $status, $date, $qty, $redeem);
 					// if children, display them now
 					// if ( count($product_row['child_list']) ) {
 					// 	foreach($product_row['child_list'] as $child_row) {
@@ -191,8 +348,8 @@ function display_products_table($ordered_products) {
 					// 		$status = ("N" === $child_row['expired']) ? "Active" : "Expired";
 					// 		$type = "Pkg Item";
 					// 		$qty = "{$child_row['redeemed']} / ({$child_row['orderCnt']})";
-					// 		$redeem = "<button data-prod-id='" . $child_row['product_id'] . "' class='btn btn-primary product-select-btn'>Select</button>";
-					// 		display_product_row($child_row['product_id'], "--- $title", $status, $type, $qty, $redeem);
+					// 		$view = "<button data-prod-id='" . $child_row['product_id'] . "' class='btn btn-primary product-select-btn'>Select</button>";
+					// 		display_product_row($child_row['product_id'], "--- $title", $status, $type, $qty, $view);
 					// 	}
 					// }
 				}
@@ -202,15 +359,43 @@ function display_products_table($ordered_products) {
 	<?php
 }
 
-function display_product_row($id, $title, $status, $date, $qty, $redeem) {
+function display_product_row($id, $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view) {
  ?>
 	<tr>
 		<td><?php echo $id ?></td>
 		<td><?php echo $title ?></td>
 		<td><?php echo $status ?></td>
-		<td><?php echo $date ?></td>
-		<td><?php echo $qty ?></td>
-		<td><?php echo $redeem ?></td>
+		<td class="table-nbr">
+			<span id="grevenue-display-<?php echo $id ?>">
+				<?php echo num_display($revenue) ?>
+			</span>
+		</td>
+		<td class="table-nbr">
+			<span id="redeem-display-<?php echo $id ?>">
+				<?php echo $redeemed ?>
+			</span>
+		</td>
+		<td class="table-nbr">
+			<span id="commission-display-<?php echo $id ?>">
+				<?php echo num_display($commission) ?>
+			</span>
+		</td>
+		<td class="table-nbr">
+			<span id="vat-display-<?php echo $id ?>">
+				<?php echo num_display($vat) ?>
+			</span>
+		</td>
+		<td class="table-nbr">
+			<span id="payable-display-<?php echo $id ?>">
+				<?php echo num_display($net_payable) ?>
+			</span>
+		</td>
+		<td class="table-nbr">
+			<span id="balance-due-display-<?php echo $id ?>">
+				<?php echo num_display($balance_due) ?>
+			</span>
+		</td>
+		<td><?php echo $view ?></td>
 	</tr>
  <?php
 }
@@ -278,4 +463,9 @@ function display_venue_select() {
 	</div>
 
 <?php
+}
+
+function num_display ($num) {
+	// display number with 2 decimal rounding and formatting
+	return number_format(round($num,2), 2);
 }

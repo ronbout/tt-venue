@@ -7,16 +7,24 @@
 	margin-right: 15px;
 }
 
-/*
-body {
-	background: #f2f2f2;
+.table-nbr {
+	text-align: right;
 }
-*/
 
 #venue-form-container {
 	text-align: center;
 	width: 200px;
 	margin: 100px auto;
+}
+
+.v-summary-container {
+	display: grid;
+	grid-template-columns: 33% 33% 33%;
+	column-gap: 4px;
+	row-gap: 8px;
+}
+.v-summary-section {
+	border: 1px solid lightgray;
 }
 
 /* MODAL STYLES FOR AJAX SPINNER/MSG */

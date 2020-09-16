@@ -4,7 +4,6 @@ jQuery(document).ready(function () {
 });
 
 const tasteLoadVouchers = (prodId) => {
-	console.log("prodId: ", prodId);
 	let modalMsg = "Loading Vouchers...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	jQuery.ajax({
@@ -30,11 +29,12 @@ const tasteLoadVouchers = (prodId) => {
 };
 
 const tasteRedeemVoucher = (orderList) => {
-	console.log(orderList);
 	let modalMsg = "Redeeming Voucher(s)...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	// get info from hidden inputs to pass up for re-calc
 	let productInfo = tasteGetProductInfo();
+	let productId = productInfo.product_id;
+	let venueInfo = tasteGetVenueInfo();
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
 		type: "POST",
@@ -44,6 +44,7 @@ const tasteRedeemVoucher = (orderList) => {
 			security: tasteVenue.security,
 			order_list: orderList,
 			product_info: productInfo,
+			venue_info: venueInfo,
 		},
 		success: function (responseText) {
 			tasteCloseMsg();
@@ -61,14 +62,8 @@ const tasteRedeemVoucher = (orderList) => {
 					jQuery("#email-display-" + emailInfo.orderId).html(emailInfo.email);
 				});
 
-				jQuery("#grevenue-display").html(respObj.grevenue);
-				jQuery("#commission-display").html(respObj.commission);
-				jQuery("#vat-display").html(respObj.vat);
-				jQuery("#payable-display").html(respObj.payable);
-				jQuery("#redeem-display").html(respObj.redeem);
-				jQuery("#total-display").html(respObj.total);
-				jQuery("#balance-due-display").html(respObj.balanceDue);
-				jQuery("#hidden-values").html(respObj.hiddenValues);
+				updateOfferCalcs(respObj, productId);
+				updateVenueCalcs(respObj);
 			}
 		},
 		error: function (xhr, status, errorThrown) {
@@ -78,9 +73,86 @@ const tasteRedeemVoucher = (orderList) => {
 	});
 };
 
+const tasteMakePayment = (mapAmount) => {
+	let modalMsg = "Making Payment...";
+	tasteDispMsg("<br><br>" + modalMsg, false);
+	// get info from hidden inputs to pass up for re-calc
+	let productInfo = tasteGetProductInfo();
+	let venueInfo = tasteGetVenueInfo();
+	jQuery.ajax({
+		url: tasteVenue.ajaxurl,
+		type: "POST",
+		datatype: "JSON",
+		data: {
+			action: "make_payment",
+			security: tasteVenue.security,
+			map_amount: mapAmount,
+			product_info: productInfo,
+			venue_info: venueInfo,
+		},
+		success: function (responseText) {
+			tasteCloseMsg();
+			let respObj = JSON.parse(responseText);
+			if (respObj.error) {
+				alert("error in Make Payment ajax code");
+			} else {
+				console.log(respObj);
+
+				updateVenueCalcs(respObj);
+				jQuery("#map-amount").val("0.00");
+				jQuery("#balance-due-display").html(respObj.balanceDue);
+				jQuery("#payment-lines").append(respObj.paymentLine);
+				jQuery("#hidden-values").html(respObj.hiddenValues);
+			}
+		},
+		error: function (xhr, status, errorThrown) {
+			tasteCloseMsg();
+			alert("Error making payment: " + errorThrown);
+		},
+	});
+};
+
+const updateOfferCalcs = (respObj, productId) => {
+	jQuery("#grevenue-display").html(respObj.grevenue);
+	jQuery("#commission-display").html(respObj.commission);
+	jQuery("#vat-display").html(respObj.vat);
+	jQuery("#payable-display").html(respObj.payable);
+	jQuery("#redeem-display").html(respObj.redeem);
+	jQuery("#total-display").html(respObj.total);
+	jQuery("#balance-due-display").html(respObj.balanceDue);
+	// table items per product id  -- must strip currency sign
+	console.log("gross revenue : ", respObj.grevenue);
+	console.log("gross revenue split: ", respObj.grevenue.split(" "));
+	console.log("gross revenue split[1]: ", respObj.grevenue.split(" ")[1]);
+	jQuery("#grevenue-display-" + productId).html(respObj.grevenue.split(" ")[1]);
+	jQuery("#commission-display-" + productId).html(
+		respObj.commission.split(" ")[1]
+	);
+	jQuery("#vat-display-" + productId).html(respObj.vat.split(" ")[1]);
+	jQuery("#payable-display-" + productId).html(respObj.payable.split(" ")[1]);
+	jQuery("#redeem-display-" + productId).html(respObj.redeem);
+	jQuery("#total-display-" + productId).html(respObj.total.split(" ")[1]);
+	jQuery("#balance-due-display-" + productId).html(
+		respObj.balanceDue.split(" ")[1]
+	);
+
+	jQuery("#hidden-values").html(respObj.hiddenValues);
+};
+
+const updateVenueCalcs = (respObj) => {
+	jQuery("#grevenue-total").html(respObj.sumGrValue);
+	jQuery("#commission-total").html(respObj.sumCommision);
+	jQuery("#vat-total").html(respObj.sumVat);
+	// jQuery("#redeemed-total").html(respObj.sumRedeemed);
+	jQuery("#net-payable-total").html(respObj.sumNetPayable);
+	// jQuery("#total-paid-total").html(respObj.sumTotalPaid);
+	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
+	jQuery("#summary-hidden-values").html(respObj.sumHiddenValues);
+};
+
 const tasteGetProductInfo = () => {
 	let productInfo = {};
-	productInfo.product_id = jQuery("taste-product-id").val();
+	productInfo.product_id = jQuery("#taste-product-id").val();
 	productInfo.gr_value = jQuery("#taste-gr-value").val();
 	productInfo.commission_value = jQuery("#taste-commission-value").val();
 	productInfo.vat_value = jQuery("#taste-vat-value").val();
@@ -88,6 +160,18 @@ const tasteGetProductInfo = () => {
 	productInfo.total = jQuery("#taste-total").val();
 	productInfo.total_paid = jQuery("#taste-total-paid").val();
 	return productInfo;
+};
+
+const tasteGetVenueInfo = () => {
+	let venueInfo = {};
+	venueInfo.revenue = jQuery("#sum-gr-value").val();
+	venueInfo.commission = jQuery("#sum-commission").val();
+	venueInfo.vat = jQuery("#sum-vat").val();
+	venueInfo.redeemed = jQuery("#sum-redeemed").val();
+	venueInfo.net_payable = jQuery("#sum-net-payable").val();
+	venueInfo.paid_amount = jQuery("#sum-total-paid").val();
+	venueInfo.balance_due = jQuery("#sum-balance-due").val();
+	return venueInfo;
 };
 
 const tasteLoadRedeemButtons = () => {
@@ -123,6 +207,13 @@ const tasteLoadRedeemButtons = () => {
 		});
 		tasteRedeemVoucher(orderInfoList);
 	});
+
+	jQuery("#make-payment-btn").length &&
+		jQuery("#make-payment-btn").click(function (e) {
+			e.preventDefault();
+			let mapAmount = jQuery("#map-amount").val();
+			tasteMakePayment(mapAmount);
+		});
 };
 
 const tasteLoadButtons = () => {
@@ -139,8 +230,6 @@ const tasteLoadVenueFormEvents = () => {
 		$venueSelect.change(function () {
 			let $selectVenueBtn = jQuery("#select-venue-btn");
 			let selectVal = parseInt(this.value);
-			console.log(selectVal);
-			console.log($selectVenueBtn.prop("disabled"));
 			if (selectVal) {
 				$selectVenueBtn.prop("disabled", false);
 			} else {

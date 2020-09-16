@@ -36,12 +36,12 @@ $myrows = $wpdb->get_results($wpdb->prepare("
 $product_row = $wpdb->get_results($wpdb->prepare("
 	SELECT  pm.post_id, 
 					MAX(CASE WHEN pm.meta_key = '_price' then pm.meta_value ELSE NULL END) as price,
-					MAX(CASE WHEN pm.meta_key = 'Vat' then pm.meta_value ELSE NULL END) as vat,
-					MAX(CASE WHEN pm.meta_key = 'Commission' then pm.meta_value ELSE NULL END) as commission,
-					MAX(CASE WHEN pm.meta_key = 'Expired' then pm.meta_value ELSE NULL END) as expired,
+					MAX(CASE WHEN pm.meta_key = 'vat' then pm.meta_value ELSE NULL END) as vat,
+					MAX(CASE WHEN pm.meta_key = 'commission' then pm.meta_value ELSE NULL END) as commission,
+					MAX(CASE WHEN pm.meta_key = 'expired' then pm.meta_value ELSE NULL END) as expired,
 					MAX(CASE WHEN pm.meta_key = '_purchase_note' then pm.meta_value ELSE NULL END) as purchase_note
 
-	FROM   wp_postmeta pm
+	FROM   {$wpdb->prefix}postmeta pm
 	WHERE pm.post_id = %d                    
 	GROUP BY
 		pm.post_id
@@ -52,18 +52,6 @@ $vat_val = $product_row[0]['vat'];
 $commission_val = $product_row[0]['commission'];
 $expired_val = $product_row[0]['expired'];
 $tandc_val = $product_row[0]['purchase_note'];
-
-/*
-SELECT  wp_postmeta.post_id, 
-        MAX(CASE WHEN wp_postmeta.meta_key = '_price' then wp_postmeta.meta_value ELSE NULL END) as price,
-        MAX(CASE WHEN wp_postmeta.meta_key = 'Vat' then wp_postmeta.meta_value ELSE NULL END) as vat,
-        MAX(CASE WHEN wp_postmeta.meta_key = 'Commission' then wp_postmeta.meta_value ELSE NULL END) as commission
-
- FROM   wp_postmeta 
- WHERE wp_postmeta.post_id = 310687                    
-GROUP BY
-   wp_postmeta.post_id
-*/
 
 $termsandconditions = str_replace('\r\n','<br>', json_encode($tandc_val));
 $termsandconditions = str_replace('[{"meta_value":"','', $termsandconditions);
@@ -142,7 +130,7 @@ VAT No 3312776JH<br>
 				<thead>
 					<th>
 						<?php 
-							if ($expired_val === 'N' && in_array('1', array_column($myrows, 'downloaded'))) {
+							if ($expired_val === 'N' && in_array('0', array_column($myrows, 'downloaded'))) {
 								?>
 									<input type="checkbox" id="checkbox-all">
 								<?php
@@ -315,7 +303,7 @@ $total_paid_to_customer = 0;
 						<th>Payment Amount</th>
 </tr>
 				</thead>
-<tbody>
+<tbody id="payment-lines">
 	<?php
 	
 	foreach($paymentList as $val){ ?>
@@ -339,22 +327,17 @@ $total_paid_to_customer = 0;
 		<center>
 			<div style="width:200px;">
 				<b>For Office Use Only:</b><br><br>
-				<form method="post" action="">
-						<b>€</b> <input type="text" name="MAP_Amount" value="0.00" style="width='100px';">
+				<form>
+						<b>€</b> <input type="text" id="map-amount" name="MAP_Amount" value="0.00" style="width='100px';">
 						<input type="hidden" name="product_id" value="<?= $pid ?>">
 						<input type="hidden" name="product_pass" value="<?= $pass ?>"><br><br>
-						<input type="submit" value="Make a Payment" name="makeapayment">
+						<button type="button" id="make-payment-btn" class="btn btn-primary">Make a Payment</button>
 				</form>
 			</div>
 		</center>
 		<?php
 	}
 	?>
-
-
-
-
-
 <br><br>
 </div>
 
@@ -366,11 +349,11 @@ By using our Management Console, you have agreed to our Terms & Conditions : <a 
 <br><br>
 
 <div id="hidden-values">
-<input type="hidden" id="taste-product-id" value="<?php echo $pid ?>">
-<input type="hidden" id="taste-gr-value" value="<?php echo $gr ?>">
-<input type="hidden" id="taste-commission-value" value="<?php echo $commission_val ?>">
-<input type="hidden" id="taste-vat-value" value="<?php echo $vat_val ?>">
-<input type="hidden" id="taste-redeem" value="<?php echo $redeem ?>">
-<input type="hidden" id="taste-total" value="<?php echo $total ?>">
-<input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_customer ?>">
+	<input type="hidden" id="taste-product-id" value="<?php echo $pid ?>">
+	<input type="hidden" id="taste-gr-value" value="<?php echo $gr ?>">
+	<input type="hidden" id="taste-commission-value" value="<?php echo $commission_val ?>">
+	<input type="hidden" id="taste-vat-value" value="<?php echo $vat_val ?>">
+	<input type="hidden" id="taste-redeem" value="<?php echo $redeem ?>">
+	<input type="hidden" id="taste-total" value="<?php echo $total ?>">
+	<input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_customer ?>">
 </div>

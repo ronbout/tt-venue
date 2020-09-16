@@ -25,7 +25,7 @@ function taste_add_venue_table() {
 			voucher_pct FLOAT,
 			paid_member TINYINT(1) ZEROFILL NOT NULL DEFAULT 0, 
 			member_renewal_date DATETIME,
-			membership_cost FLOAT,
+			membership_cost DECIMAL(10,2),
 			PRIMARY KEY (venue_id),
 			UNIQUE KEY (name),
 			KEY (venue_type)
