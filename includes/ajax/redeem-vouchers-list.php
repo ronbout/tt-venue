@@ -327,12 +327,10 @@ $total_paid_to_customer = 0;
 		<center>
 			<div style="width:200px;">
 				<b>For Office Use Only:</b><br><br>
-				<form>
-						<b>€</b> <input type="text" id="map-amount" name="MAP_Amount" value="0.00" style="width='100px';">
-						<input type="hidden" name="product_id" value="<?= $pid ?>">
-						<input type="hidden" name="product_pass" value="<?= $pass ?>"><br><br>
-						<button type="button" id="make-payment-btn" class="btn btn-primary">Make a Payment</button>
-				</form>
+				<b>€</b> <input type="text" id="map-amount" name="MAP_Amount" value="0.00" style="width='100px';">
+				<input type="hidden" name="product_id" value="<?= $pid ?>">
+				<input type="hidden" name="product_pass" value="<?= $pass ?>"><br><br>
+				<button type="button" id="make-payment-btn" class="btn btn-primary">Make a Payment</button>
 			</div>
 		</center>
 		<?php

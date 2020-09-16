@@ -78,6 +78,7 @@ const tasteMakePayment = (mapAmount) => {
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	// get info from hidden inputs to pass up for re-calc
 	let productInfo = tasteGetProductInfo();
+	let productId = productInfo.product_id;
 	let venueInfo = tasteGetVenueInfo();
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
@@ -101,6 +102,9 @@ const tasteMakePayment = (mapAmount) => {
 				updateVenueCalcs(respObj);
 				jQuery("#map-amount").val("0.00");
 				jQuery("#balance-due-display").html(respObj.balanceDue);
+				jQuery("#balance-due-display-" + productId).html(
+					respObj.balanceDue.split(" ")[1]
+				);
 				jQuery("#payment-lines").append(respObj.paymentLine);
 				jQuery("#hidden-values").html(respObj.hiddenValues);
 			}
@@ -121,9 +125,6 @@ const updateOfferCalcs = (respObj, productId) => {
 	jQuery("#total-display").html(respObj.total);
 	jQuery("#balance-due-display").html(respObj.balanceDue);
 	// table items per product id  -- must strip currency sign
-	console.log("gross revenue : ", respObj.grevenue);
-	console.log("gross revenue split: ", respObj.grevenue.split(" "));
-	console.log("gross revenue split[1]: ", respObj.grevenue.split(" ")[1]);
 	jQuery("#grevenue-display-" + productId).html(respObj.grevenue.split(" ")[1]);
 	jQuery("#commission-display-" + productId).html(
 		respObj.commission.split(" ")[1]
