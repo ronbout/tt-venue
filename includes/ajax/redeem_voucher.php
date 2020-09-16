@@ -64,7 +64,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info) {
 	$commission_increase = ($revenue_increase / 100) * $commission_value;
 	$vat_increase = ($commission_increase / 100) * $vat_value;
 	$payable_increase = $revenue_increase - ($commission_increase + $vat_increase);
-	$balance_due_increase = $payable_increase - $total_paid;
+	$balance_due_increase = $payable_increase ;
 
 	$grevenue = round($grevenue, 2);
 	$commission = round($commission, 2);
