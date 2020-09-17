@@ -49,7 +49,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info) {
 	$gr_value = $product_info['gr_value'];
 	$commission_value = $product_info['commission_value'];
 	$vat_value = $product_info['vat_value'];
-	$total = $product_info['total'];
+	$total_sold = $product_info['total_sold'];
 	$total_paid = $product_info['total_paid'];
 
 	// $redeem += $order_qty;
@@ -80,7 +80,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info) {
 	<input type='hidden' id='taste-commission-value' value='$commission_value'>
 	<input type='hidden' id='taste-vat-value' value='$vat_value'>
 	<input type='hidden' id='taste-redeem' value='$redeem'>
-	<input type='hidden' id='taste-total' value='$total'>
+	<input type='hidden' id='taste-total-sold' value='$total_sold'>
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
 	";
 
@@ -88,7 +88,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info) {
 	$sum_gr_value = $venue_info['revenue'] + $revenue_increase;
 	$sum_commission = $venue_info['commission'] + $commission_increase;
 	$sum_vat = $venue_info['vat'] + $vat_increase;
-	$sum_redeemed = $venue_info['redeemed'] + $qty;
+	$sum_redeemed = $venue_info['redeemed'] + $qty_increase;
 	$sum_net_payable = $venue_info['net_payable'] + $payable_increase;
 	$sum_total_paid = $venue_info['paid_amount'];
 	$sum_balance_due = $venue_info['balance_due'] + $balance_due_increase;
@@ -105,7 +105,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info) {
 
 	$ret_json = array(
 		'redeem' => $redeem,
-		'total' => $total,
+		'totalSold' => $total_sold,
 		'grevenue' => $currency . ' ' . number_format($grevenue, 2),
 		'commission' => $currency . ' ' . number_format($commission, 2),
 		'vat' => $currency . ' ' .number_format($vat, 2),
@@ -113,9 +113,9 @@ function redeem_voucher_update($order_list, $product_info, $venue_info) {
 		'balanceDue' => $currency . ' ' . number_format($balance_due, 2),
 		'emails' => $email_rows,
 		'sumGrValue' => $currency . ' ' . num_display($sum_gr_value),
-		'sumCommision' => $currency . ' ' . num_display($sum_commission),
+		'sumCommission' => $currency . ' ' . num_display($sum_commission),
 		'sumVat'  => $currency . ' ' . num_display($sum_vat),
-		'sumRedeemed' => $currency . ' ' . num_display($sum_redeemed),
+		'sumRedeemed' => $sum_redeemed,
 		'sumNetPayable' => $currency . ' ' . num_display($sum_net_payable),
 		'sumTotalPaid' => $currency . ' ' . num_display($sum_total_paid),
 		'sumBalanceDue' => $currency . ' ' . num_display($sum_balance_due),

@@ -122,7 +122,7 @@ const updateOfferCalcs = (respObj, productId) => {
 	jQuery("#vat-display").html(respObj.vat);
 	jQuery("#payable-display").html(respObj.payable);
 	jQuery("#redeem-display").html(respObj.redeem);
-	jQuery("#total-display").html(respObj.total);
+	jQuery("#total-sold-display").html(respObj.total_sold);
 	jQuery("#balance-due-display").html(respObj.balanceDue);
 	// table items per product id  -- must strip currency sign
 	jQuery("#grevenue-display-" + productId).html(respObj.grevenue.split(" ")[1]);
@@ -132,7 +132,7 @@ const updateOfferCalcs = (respObj, productId) => {
 	jQuery("#vat-display-" + productId).html(respObj.vat.split(" ")[1]);
 	jQuery("#payable-display-" + productId).html(respObj.payable.split(" ")[1]);
 	jQuery("#redeem-display-" + productId).html(respObj.redeem);
-	jQuery("#total-display-" + productId).html(respObj.total.split(" ")[1]);
+	// jQuery("#total-sold-display-" + productId).html(respObj.total_sold.split(" ")[1]);
 	jQuery("#balance-due-display-" + productId).html(
 		respObj.balanceDue.split(" ")[1]
 	);
@@ -141,14 +141,31 @@ const updateOfferCalcs = (respObj, productId) => {
 };
 
 const updateVenueCalcs = (respObj) => {
-	jQuery("#grevenue-total").html(respObj.sumGrValue);
-	jQuery("#commission-total").html(respObj.sumCommision);
-	jQuery("#vat-total").html(respObj.sumVat);
-	// jQuery("#redeemed-total").html(respObj.sumRedeemed);
+	let servedMulti = jQuery("#sum-multiplier").val();
+	jQuery("#gr-value-total").html(respObj.sumGrValue);
+	jQuery("#paid-amount-total").html(respObj.sumTotalPaid);
+	jQuery("#served-total").html(
+		parseInt(respObj.sumRedeemed) * parseInt(servedMulti)
+	);
 	jQuery("#net-payable-total").html(respObj.sumNetPayable);
-	// jQuery("#total-paid-total").html(respObj.sumTotalPaid);
 	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
 	jQuery("#summary-hidden-values").html(respObj.sumHiddenValues);
+	jQuery("#gr-value-table-total").html(
+		tasteNumDispNoDecs(respObj.sumGrValue.split(" ")[1])
+	);
+	jQuery("#net-payable-table-total").html(
+		tasteNumDispNoDecs(respObj.sumNetPayable.split(" ")[1])
+	);
+	jQuery("#balance-due-table-total").html(
+		tasteNumDispNoDecs(respObj.sumBalanceDue.split(" ")[1])
+	);
+	jQuery("#redeem-display-table-total").html(respObj.sumRedeemed);
+	jQuery("#commission-display-table-total").html(
+		tasteNumDispNoDecs(respObj.sumCommission.split(" ")[1])
+	);
+	jQuery("#vat-display-table-total").html(
+		tasteNumDispNoDecs(respObj.sumVat.split(" ")[1])
+	);
 };
 
 const tasteGetProductInfo = () => {
@@ -158,7 +175,7 @@ const tasteGetProductInfo = () => {
 	productInfo.commission_value = jQuery("#taste-commission-value").val();
 	productInfo.vat_value = jQuery("#taste-vat-value").val();
 	productInfo.redeem = jQuery("#taste-redeem").val();
-	productInfo.total = jQuery("#taste-total").val();
+	productInfo.total_sold = jQuery("#taste-total-sold").val();
 	productInfo.total_paid = jQuery("#taste-total-paid").val();
 	return productInfo;
 };
@@ -247,6 +264,11 @@ const checkRedeemAllDisable = () => {
 		console.log("turn disable on");
 		jQuery("#order-redeem-checked-btn").prop("disabled", true);
 	}
+};
+
+const tasteNumDispNoDecs = (num) => {
+	let retNum = typeof num === "string" ? parseInt(num) : num;
+	return retNum.toFixed(0);
 };
 
 /***********************************************************

@@ -35,7 +35,7 @@ $myrows = $wpdb->get_results($wpdb->prepare("
 
 $product_row = $wpdb->get_results($wpdb->prepare("
 	SELECT  pm.post_id, 
-					MAX(CASE WHEN pm.meta_key = '_price' then pm.meta_value ELSE NULL END) as price,
+					MAX(CASE WHEN pm.meta_key = '_sale_price' then pm.meta_value ELSE NULL END) as price,
 					MAX(CASE WHEN pm.meta_key = 'vat' then pm.meta_value ELSE NULL END) as vat,
 					MAX(CASE WHEN pm.meta_key = 'commission' then pm.meta_value ELSE NULL END) as commission,
 					MAX(CASE WHEN pm.meta_key = 'expired' then pm.meta_value ELSE NULL END) as expired,
@@ -147,7 +147,9 @@ VAT No 3312776JH<br>
 				</thead>
 				<tbody>
 
-					<?php foreach ($myrows as $val) {
+					<?php 
+						$total_sold = 0;
+						foreach ($myrows as $val) {
 							$tproduct = $tproduct + 1;
 							?>
 							<tr data-order-id="<?php echo $val->order_id ?>" 
@@ -202,7 +204,7 @@ VAT No 3312776JH<br>
 							</tr>
 							<?php
 
-$total = $total + $val->quan;
+							$total_sold = $total_sold + $val->quan;
 							$grevenue = $redeem * $gr;
 							$commission = ($grevenue / 100) * $commission_val;
 							$vat = ($commission / 100) * $vat_val;
@@ -274,7 +276,7 @@ $total = $total + $val->quan;
 							<td></td>
 							<td></td>
 							<td style="text-align: right; padding-right: 120px;"><b>Redeemed</b></td>
-							<td>Served <span id="redeem-display"><?= $redeem ?></span> customers <br> out of a possible <span id="total-display"><?= $total ?></span></td>
+							<td>Served <span id="redeem-display"><?= $redeem ?></span> customers <br> out of a possible <span id="total-sold-display"><?= $total_sold ?></span></td>
 					</tr>
 				</tbody>
 			</table>
@@ -352,6 +354,6 @@ By using our Management Console, you have agreed to our Terms & Conditions : <a 
 	<input type="hidden" id="taste-commission-value" value="<?php echo $commission_val ?>">
 	<input type="hidden" id="taste-vat-value" value="<?php echo $vat_val ?>">
 	<input type="hidden" id="taste-redeem" value="<?php echo $redeem ?>">
-	<input type="hidden" id="taste-total" value="<?php echo $total ?>">
+	<input type="hidden" id="taste-total-sold" value="<?php echo $total_sold ?>">
 	<input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_customer ?>">
 </div>

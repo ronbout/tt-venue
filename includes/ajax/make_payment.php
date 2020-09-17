@@ -45,7 +45,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	$gr_value = $product_info['gr_value'];
 	$commission_value = $product_info['commission_value'];
 	$vat_value = $product_info['vat_value'];
-	$total = $product_info['total'];
+	$total_sold = $product_info['total_sold'];
 	$total_paid = $product_info['total_paid'] + $map_amount;
 
 	$redeem += $order_qty;
@@ -67,7 +67,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	<input type='hidden' id='taste-commission-value' value='$commission_value'>
 	<input type='hidden' id='taste-vat-value' value='$vat_value'>
 	<input type='hidden' id='taste-redeem' value='$redeem'>
-	<input type='hidden' id='taste-total' value='$total'>
+	<input type='hidden' id='taste-total-sold' value='$total_sold'>
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
 	";
 	

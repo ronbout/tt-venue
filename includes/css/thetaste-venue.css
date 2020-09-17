@@ -27,6 +27,10 @@
 	border: 1px solid lightgray;
 }
 
+.table-total-label {
+	text-align: center;
+	font-weight: bold;
+}
 /* MODAL STYLES FOR AJAX SPINNER/MSG */
 
 #taste-msg-box {

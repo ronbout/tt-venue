@@ -111,14 +111,18 @@ global $wpdb;
 				case 'Pub':
 				case 'Cafe':
 					$served_heading = "Tables</br>Booked";
+					$summ_heading= "Total</br>Covers";
 					$type_desc = "Restaurant";
 					break;
 				case 'Hotel':
 					$served_heading = "Rooms</br>Booked";
+					$summ_heading= "People</br>Covers";
+					// $summ_heading= "Bed</br>Nights";
 					$type_desc = "Hotel";
 					break;	
 				default: 
 					$served_heading = "Orders</br>Served";
+					$summ_heading= "Products</br>Sold";
 					$type_desc = "Venue";
 			}
 
@@ -132,7 +136,7 @@ global $wpdb;
 							JOIN $posts_table p ON vp.product_id =  p.ID
 							LEFT JOIN $post_meta_table pm ON vp.product_id = pm.post_id AND pm.meta_key = '_children'
 							LEFT JOIN $post_meta_table pm2 ON vp.product_id = pm2.post_id AND pm2.meta_key = 'Expired'
-							LEFT JOIN $post_meta_table pm3 ON vp.product_id = pm3.post_id AND pm3.meta_key = '_price'
+							LEFT JOIN $post_meta_table pm3 ON vp.product_id = pm3.post_id AND pm3.meta_key = '_sale_price'
 							LEFT JOIN $post_meta_table pm4 ON vp.product_id = pm4.post_id AND pm4.meta_key = 'vat'
 							LEFT JOIN $post_meta_table pm5 ON vp.product_id = pm5.post_id AND pm5.meta_key = 'commission'
 							LEFT JOIN $product_order_table plook ON plook.product_id = pr.product_id
@@ -142,7 +146,7 @@ global $wpdb;
 							LEFT JOIN $order_items_table wc_oi ON wc_oi.order_item_id = plook.order_item_id
 							WHERE	vp.venue_id = %d
 							GROUP BY pr.product_id
-							ORDER BY pr.onsale, p.post_date DESC", 
+							ORDER BY p.post_date DESC", 
 							$venue_id), ARRAY_A);
 						
 			// more efficient just to grab this a separate statement
@@ -176,13 +180,13 @@ global $wpdb;
 		<div class="panel panel-default">
 			<div class="panel-heading text-center"">
 						<h2>Welcome <?php echo $venue_name; ?></h2>
-						<?php display_venue_summary($venue_totals, $venue_type) ?>
+						<?php display_venue_summary($venue_totals, $summ_heading, $venue_type) ?>
 			</div>
 			<div class="panel-body">
 				<?php
 				if (count($product_rows)) {
 					echo "<h3>$type_desc Offers</h3>";
-					display_products_table($product_calcs, $served_heading);
+					display_products_table($product_calcs, $served_heading, $venue_totals);
 				} else {
 					echo "<h3>No Products Found</h3>";
 				}
@@ -216,7 +220,7 @@ function get_totals_calcs($ordered_products, $payments) {
 		'commission' => 0,
 		'vat' => 0,
 		'net_payable' => 0,
-		'paid_amt' => 0,
+		'paid_amount' => 0,
 		'balance_due' => 0,
 	);
 	$product_calcs = array();
@@ -233,8 +237,8 @@ function get_totals_calcs($ordered_products, $payments) {
 		$tmp['commission'] = ($tmp['revenue'] / 100) * $product_row['commission'];
 		$tmp['vat'] = ($tmp['commission'] / 100) * $product_row['vat'];
 		$tmp['net_payable'] = $tmp['revenue'] - ($tmp['commission'] + $tmp['vat']);
-		$tmp['paid_amt'] = empty($payments[$product_id]) ? 0 : $payments[$product_id];
-		$tmp['balance_due'] = $tmp['net_payable'] - $tmp['paid_amt'];
+		$tmp['paid_amount'] = empty($payments[$product_id]) ? 0 : $payments[$product_id];
+		$tmp['balance_due'] = $tmp['net_payable'] - $tmp['paid_amount'];
 		$product_calcs[] = $tmp;
 
 		foreach($venue_totals as $k => &$total) {
@@ -248,28 +252,38 @@ function get_totals_calcs($ordered_products, $payments) {
 	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
 }
 
-function display_venue_summary($venue_totals, $venue_type) {
+function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	$currency =  get_woocommerce_currency_symbol();
+	$multiplier = 'Other' === $venue_type ? 1 : 2;
+	$num_served =  $venue_totals['redeemed'] * $multiplier;
 	?>
 	<div class="v-summary-container">
 		<div class="v-summary-section">
-			<h3>Offers</h3>
+			<h3>Vouchers</br>Sold</h3>
 			<h3>
-				<span id="offers-total">
-					<?php echo $venue_totals['offers'] ?>
+				<span id="vouchers-total">
+					<?php echo $venue_totals['order_cnt'] ?>
 				</span>
 			</h3>
 		</div>
 		<div class="v-summary-section">
-			<h3>Gross Revenue</h3>
+			<h3><?php echo $summ_heading ?></h3>
 			<h3>
-				<span id="grevenue-total">
+				<span id="served-total">
+					<?php echo $num_served ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Gross</br>Revenue</h3>
+			<h3>
+				<span id="gr-value-total">
 					<?php echo $currency . ' ' . num_display($venue_totals['revenue']) ?>
 				</span>
 			</h3>
 		</div>
 		<div class="v-summary-section">
-			<h3>Net Payable</h3>
+			<h3>Net</br>Payable</h3>
 			<h3>
 				<span id="net-payable-total">
 					<?php echo $currency . ' ' . num_display($venue_totals['net_payable']) ?>
@@ -277,23 +291,15 @@ function display_venue_summary($venue_totals, $venue_type) {
 			</h3>
 		</div>
 		<div class="v-summary-section">
-			<h3>Commission</h3>
+			<h3>Total</br>Payments</h3>
 			<h3>
-				<span id="commission-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['commission']) ?>
+				<span id="paid-amount-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['paid_amount']) ?>
 				</span>
 			</h3>
 		</div>
 		<div class="v-summary-section">
-			<h3>VAT</h3>
-			<h3>
-				<span id="vat-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['vat']) ?>
-				</span>
-			</h3>
-		</div>
-		<div class="v-summary-section">
-			<h3>Balance Due</h3>
+			<h3>Balance</br>Due</h3>
 			<h3>
 				<span id="balance-due-total">
 					<?php echo $currency . ' ' . num_display($venue_totals['balance_due']) ?>
@@ -309,12 +315,13 @@ function display_venue_summary($venue_totals, $venue_type) {
 		<input type="hidden" id="sum-net-payable" value="<?php echo $venue_totals['net_payable'] ?>">
 		<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
 		<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
+		<input type="hidden" id="sum-multiplier" value="<?php echo $multiplier ?>">
 	</div>
 
 	<?php
 }
 
-function display_products_table($product_calcs, $served_heading) {
+function display_products_table($product_calcs, $served_heading, $venue_totals) {
 	?>
 	<table class="table table-striped table-bordered">
 		<thead>
@@ -332,31 +339,55 @@ function display_products_table($product_calcs, $served_heading) {
 		<tbody>
 			<?php
 				foreach($product_calcs as $product_row) {
-					// if ( count($product_row['child_list'])) {
-					// 	$qty = '';
-					// 	$view = "Group";
-					// }
 					extract($product_row);
-					/** only display if either not expired or un-redeemed orders */
-					if ($qty !== $order_cnt || $status === 'Active') {
-						display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view);
-					}
-					// if children, display them now
-					// if ( count($product_row['child_list']) ) {
-					// 	foreach($product_row['child_list'] as $child_row) {
-					// 		$title = $child_row['post_title'];
-					// 		$status = ("N" === $child_row['expired']) ? "Active" : "Expired";
-					// 		$type = "Pkg Item";
-					// 		$qty = "{$child_row['redeemed']} / ({$child_row['orderCnt']})";
-					// 		$view = "<button data-prod-id='" . $child_row['product_id'] . "' class='btn btn-primary product-select-btn'>Select</button>";
-					// 		display_product_row($child_row['product_id'], "--- $title", $status, $type, $qty, $view);
-					// 	}
-					// }
+					display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view);
 				}
 			?>
+			<tr>
+				<?php display_table_totals($venue_totals) ?>
+			</tr>
 		</tbody>
 	</table>
 	<?php
+}
+
+function display_table_totals($venue_totals) {
+	?>
+	<td colspan="3" class="table-total-label">
+		Totals:
+	</td>
+	<td class="table-nbr">
+		<span id="gr-value-table-total">
+			<?php echo num_display_no_decs($venue_totals['revenue']) ?>
+		</span>
+	</td>
+	<td class="table-nbr">
+		<span id="redeem-display-table-total">
+			<?php echo $venue_totals['redeemed'] ?>
+		</span>
+	</td>
+	<td class="table-nbr">
+		<span id="commission-display-table-total">
+			<?php echo num_display_no_decs($venue_totals['commission']) ?>
+		</span>
+	</td>
+	<td class="table-nbr">
+		<span id="vat-display-table-total">
+			<?php echo num_display_no_decs($venue_totals['vat']) ?>
+		</span>
+	</td>
+	<td class="table-nbr">
+		<span id="net-payable-table-total">
+			<?php echo num_display_no_decs($venue_totals['net_payable']) ?>
+		</span>
+	</td>
+	<td class="table-nbr">
+		<span id="balance-due-table-total">
+			<?php echo num_display_no_decs($venue_totals['balance_due']) ?>
+		</span>
+	</td>
+	<td>&nbsp; </td>
+<?php
 }
 
 function display_product_row($id, $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view) {
@@ -401,39 +432,24 @@ function display_product_row($id, $title, $status, $revenue, $redeemed, $commiss
 }
 
 function order_product_table($product_rows) {
-	$ordered_products = array();
-	// DEPRECATED FOR NOW
-	// loop through the group rows (groups come first), 
-	// creating a child_list subarray on each group
-	// removing those children from the product_rows 
-	// so they do not appear twice
-	// then resort based on post date
-	while (count($product_rows)) {
-		$row = array_shift($product_rows);
-		$row['child_list'] = array();
-		// some products have children but are not groupings??
-		// check 'onsale'
-		if ($row['children'] && !$row['onsale']) {
-			// unserialize the children and put the 
-			// corresponding elements in a subarray
-			$children_list = unserialize($row['children']);
-			foreach ($children_list as $child_id) {
-				$key = array_search($child_id, array_column($product_rows, 'product_id'));
-				if (false !== $key) {
-					unset($product_rows[$key]['children']);
-					$row['child_list'][] = $product_rows[$key];
-					array_splice($product_rows, $key, 1);
-				}
-			}
+	/**
+	 * 
+	 * filter by active and expired, then merge 
+	 * 2nd sort should be by date
+	 * 
+	 * 
+	 */
+	$active_products = array();
+	$expired_products = array();
+	array_walk($product_rows, function($row, $k) use (&$active_products, &$expired_products) {
+		if ("N" === strtoupper($row['expired'])) {
+			$active_products[] = $row;
+		} else {
+			$expired_products[] = $row;
 		}
-		unset($row['children']);
-		$ordered_products[] = $row;
-	}
-
-	usort($ordered_products, function($a, $b) {
-		return $b['post_date'] <=> $a['post_date'];
 	});
-
+	
+	$ordered_products = array_merge($active_products, $expired_products);
 	return $ordered_products;
 }
 
@@ -468,4 +484,9 @@ function display_venue_select() {
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting
 	return number_format(round($num,2), 2);
+}
+
+function num_display_no_decs ($num) {
+	// display number with 2 decimal rounding and formatting
+	return number_format(round($num), 0);
 }
