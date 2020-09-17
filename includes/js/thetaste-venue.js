@@ -150,22 +150,14 @@ const updateVenueCalcs = (respObj) => {
 	jQuery("#net-payable-total").html(respObj.sumNetPayable);
 	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
 	jQuery("#summary-hidden-values").html(respObj.sumHiddenValues);
-	jQuery("#gr-value-table-total").html(
-		tasteNumDispNoDecs(respObj.sumGrValue.split(" ")[1])
-	);
-	jQuery("#net-payable-table-total").html(
-		tasteNumDispNoDecs(respObj.sumNetPayable.split(" ")[1])
-	);
-	jQuery("#balance-due-table-total").html(
-		tasteNumDispNoDecs(respObj.sumBalanceDue.split(" ")[1])
-	);
+	jQuery("#gr-value-table-total").html(respObj.sumGrValue.split(" ")[1]);
+	jQuery("#net-payable-table-total").html(respObj.sumNetPayable.split(" ")[1]);
+	jQuery("#balance-due-table-total").html(respObj.sumBalanceDue.split(" ")[1]);
 	jQuery("#redeem-display-table-total").html(respObj.sumRedeemed);
 	jQuery("#commission-display-table-total").html(
-		tasteNumDispNoDecs(respObj.sumCommission.split(" ")[1])
+		respObj.sumCommission.split(" ")[1]
 	);
-	jQuery("#vat-display-table-total").html(
-		tasteNumDispNoDecs(respObj.sumVat.split(" ")[1])
-	);
+	jQuery("#vat-display-table-total").html(respObj.sumVat.split(" ")[1]);
 };
 
 const tasteGetProductInfo = () => {
@@ -264,11 +256,6 @@ const checkRedeemAllDisable = () => {
 		console.log("turn disable on");
 		jQuery("#order-redeem-checked-btn").prop("disabled", true);
 	}
-};
-
-const tasteNumDispNoDecs = (num) => {
-	let retNum = typeof num === "string" ? parseInt(num) : num;
-	return retNum.toFixed(0);
 };
 
 /***********************************************************

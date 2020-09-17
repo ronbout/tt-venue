@@ -358,7 +358,7 @@ function display_table_totals($venue_totals) {
 	</td>
 	<td class="table-nbr">
 		<span id="gr-value-table-total">
-			<?php echo num_display_no_decs($venue_totals['revenue']) ?>
+			<?php echo num_display($venue_totals['revenue']) ?>
 		</span>
 	</td>
 	<td class="table-nbr">
@@ -368,22 +368,22 @@ function display_table_totals($venue_totals) {
 	</td>
 	<td class="table-nbr">
 		<span id="commission-display-table-total">
-			<?php echo num_display_no_decs($venue_totals['commission']) ?>
+			<?php echo num_display($venue_totals['commission']) ?>
 		</span>
 	</td>
 	<td class="table-nbr">
 		<span id="vat-display-table-total">
-			<?php echo num_display_no_decs($venue_totals['vat']) ?>
+			<?php echo num_display($venue_totals['vat']) ?>
 		</span>
 	</td>
 	<td class="table-nbr">
 		<span id="net-payable-table-total">
-			<?php echo num_display_no_decs($venue_totals['net_payable']) ?>
+			<?php echo num_display($venue_totals['net_payable']) ?>
 		</span>
 	</td>
 	<td class="table-nbr">
 		<span id="balance-due-table-total">
-			<?php echo num_display_no_decs($venue_totals['balance_due']) ?>
+			<?php echo num_display($venue_totals['balance_due']) ?>
 		</span>
 	</td>
 	<td>&nbsp; </td>
