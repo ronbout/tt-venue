@@ -1,6 +1,7 @@
 jQuery(document).ready(function () {
 	tasteLoadButtons();
 	tasteLoadVenueFormEvents();
+	jQuery("#topbutton").length && tasteLoadScrollUp();
 });
 
 const tasteLoadVouchers = (prodId) => {
@@ -20,6 +21,13 @@ const tasteLoadVouchers = (prodId) => {
 			//console.log(responseText);
 			jQuery("#voucher-list-div").html(responseText);
 			tasteLoadRedeemButtons();
+			// make sure that we scroll down to the section
+			$("html, body").animate(
+				{
+					scrollTop: $("#voucher-list-div").offset().top,
+				},
+				600
+			);
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
@@ -256,6 +264,27 @@ const checkRedeemAllDisable = () => {
 		console.log("turn disable on");
 		jQuery("#order-redeem-checked-btn").prop("disabled", true);
 	}
+};
+
+const tasteLoadScrollUp = () => {
+	var offset = $("#voucher-list-div").offset().top;
+	var duration = 500;
+	$(window).scroll(function () {
+		if ($(this).scrollTop() < offset) {
+			$("#topbutton").fadeOut(duration);
+		} else {
+			$("#topbutton").fadeIn(duration);
+		}
+	});
+	jQuery("#topbutton").click(function (e) {
+		e.preventDefault();
+		$("html, body").animate(
+			{
+				scrollTop: $("#venue-summary-div").offset().top,
+			},
+			600
+		);
+	});
 };
 
 /***********************************************************

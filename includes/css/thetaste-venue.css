@@ -31,8 +31,23 @@
 	text-align: center;
 	font-weight: bold;
 }
-/* MODAL STYLES FOR AJAX SPINNER/MSG */
 
+/* style for scroll up arrow */
+#topbutton {
+	height: 50px;
+	width: 50px;
+	position: fixed;
+	right: 85px;
+	bottom: 25px;
+	z-index: 1;
+	display: none;
+}
+
+#topbutton i {
+	font-size: 3em;
+}
+
+/* MODAL STYLES FOR AJAX SPINNER/MSG */
 #taste-msg-box {
 	width: 30%;
 	margin: auto;
