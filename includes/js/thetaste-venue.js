@@ -21,13 +21,7 @@ const tasteLoadVouchers = (prodId) => {
 			//console.log(responseText);
 			jQuery("#voucher-list-div").html(responseText);
 			tasteLoadRedeemButtons();
-			// make sure that we scroll down to the section
-			$("html, body").animate(
-				{
-					scrollTop: $("#voucher-list-div").offset().top,
-				},
-				600
-			);
+			tasteScrollToVouchers();
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
@@ -213,7 +207,7 @@ const tasteLoadRedeemButtons = () => {
 		checkRedeemAllDisable();
 	});
 
-	jQuery("#order-redeem-checked-btn").click(function (e) {
+	jQuery(".order-redeem-checked-btn").click(function (e) {
 		e.preventDefault();
 		let orderInfoList = [];
 		jQuery(".order-redeem-check:checked").each((ndx, chckbox) => {
@@ -238,7 +232,13 @@ const tasteLoadButtons = () => {
 	jQuery(".product-select-btn").click(function (e) {
 		e.preventDefault();
 		let prodId = jQuery(this).data("prod-id");
-		tasteLoadVouchers(prodId);
+		let $curProdInput = jQuery("#taste-product-id");
+		if ($curProdInput.length && $curProdInput.val() === prodId.toString()) {
+			// prod is already loaded, just scroll to the section
+			tasteScrollToVouchers();
+		} else {
+			tasteLoadVouchers(prodId);
+		}
 	});
 };
 
@@ -259,10 +259,10 @@ const tasteLoadVenueFormEvents = () => {
 const checkRedeemAllDisable = () => {
 	if (jQuery(".order-redeem-check:checked").length) {
 		console.log("turn off disable");
-		jQuery("#order-redeem-checked-btn").prop("disabled", false);
+		jQuery(".order-redeem-checked-btn").prop("disabled", false);
 	} else {
 		console.log("turn disable on");
-		jQuery("#order-redeem-checked-btn").prop("disabled", true);
+		jQuery(".order-redeem-checked-btn").prop("disabled", true);
 	}
 };
 
@@ -285,6 +285,15 @@ const tasteLoadScrollUp = () => {
 			600
 		);
 	});
+};
+
+const tasteScrollToVouchers = () => {
+	$("html, body").animate(
+		{
+			scrollTop: $("#voucher-list-div").offset().top,
+		},
+		600
+	);
 };
 
 /***********************************************************

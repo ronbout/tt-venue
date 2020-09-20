@@ -331,31 +331,33 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 
 function display_products_table($product_calcs, $served_heading, $venue_totals) {
 	?>
-	<table class="table table-striped table-bordered">
-		<thead>
-			<th>ID</th>
-			<th>Offer</th>
-			<th>Status</th>
-			<th>Revenue</th>
-			<th><?php echo $served_heading ?></th>
-			<th>Commission</th>
-			<th>Vat</th>
-			<th>Net</br>Payable</th>
-			<th>Balance</br>Due</th>
-			<th>Action</th>
-		</thead>
-		<tbody>
-			<?php
-				foreach($product_calcs as $product_row) {
-					extract($product_row);
-					display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view);
-				}
-			?>
-			<tr>
-				<?php display_table_totals($venue_totals) ?>
-			</tr>
-		</tbody>
-	</table>
+	<div id="product-table-container" class="table-fixed-container">
+		<table class="table table-striped table-bordered table-fixed">
+			<thead>
+				<th>ID</th>
+				<th>Offer</th>
+				<th>Status</th>
+				<th>Revenue</th>
+				<th><?php echo $served_heading ?></th>
+				<th>Commission</th>
+				<th>Vat</th>
+				<th>Net</br>Payable</th>
+				<th>Balance</br>Due</th>
+				<th>Action</th>
+			</thead>
+			<tbody>
+				<?php
+					foreach($product_calcs as $product_row) {
+						extract($product_row);
+						display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view);
+					}
+				?>
+				<tr>
+					<?php display_table_totals($venue_totals) ?>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 	<?php
 }
 

@@ -125,29 +125,30 @@ VAT No 3312776JH<br>
 <div class="panel panel-default">
 		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
 		<div class="panel-body">
-		<button	id="order-redeem-checked-btn" disabled >Redeem Checked</button>
-			<table class="table table-striped table-bordered">
-				<thead>
-					<th>
-						<?php 
-							if ($expired_val === 'N' && in_array('0', array_column($myrows, 'downloaded'))) {
-								?>
-									<input type="checkbox" id="checkbox-all">
-								<?php
-							} else {
-								echo '';
-							}
-						?>
-					</th>
-					<th>Order ID</th>
-					<th>Customer Name</th>
-					<th>Customer Email</th>
-					<th>Quantity</th>
-					<th>Redeem</th>
-				</thead>
-				<tbody>
+			<button	class="order-redeem-checked-btn" disabled >Redeem Checked</button>
+			<div id="voucher-table-container" class="table-fixed-container">
+				<table class="table table-striped table-bordered table-fixed">
+					<thead>
+						<th>
+							<?php 
+								if ($expired_val === 'N' && in_array('0', array_column($myrows, 'downloaded'))) {
+									?>
+										<input type="checkbox" id="checkbox-all">
+									<?php
+								} else {
+									echo '';
+								}
+							?>
+						</th>
+						<th>Order ID</th>
+						<th>Customer Name</th>
+						<th>Customer Email</th>
+						<th>Quantity</th>
+						<th>Redeem</th>
+					</thead>
+					<tbody id="voucher-table-body">
 
-					<?php 
+						<?php 
 						$total_sold = 0;
 						foreach ($myrows as $val) {
 							$tproduct = $tproduct + 1;
@@ -202,33 +203,31 @@ VAT No 3312776JH<br>
 												?>
 								</td> 
 							</tr>
-							<?php
-
-							$total_sold = $total_sold + $val->quan;
-							$grevenue = $redeem * $gr;
-							$commission = ($grevenue / 100) * $commission_val;
-							$vat = ($commission / 100) * $vat_val;
-							$grevenue = round($grevenue, 2);
-							$commission = round($commission, 2);
-							$vat = round($vat, 2);
-							$payable = $grevenue - ($commission + $vat);
-							$payable = round($payable, 2);
-
-					}
-					?>
+						<?php }	?>
+					</tbody>
+				</table>
+			</div>
+			<table id="voucher-summary-table" class="table table-striped table-bordered">
+				<?php
+				$total_sold = $total_sold + $val->quan;
+				$grevenue = $redeem * $gr;
+				$commission = ($grevenue / 100) * $commission_val;
+				$vat = ($commission / 100) * $vat_val;
+				$grevenue = round($grevenue, 2);
+				$commission = round($commission, 2);
+				$vat = round($vat, 2);
+				$payable = $grevenue - ($commission + $vat);
+				$payable = round($payable, 2);
+				?>
+				<tbody>
 					<tr>
-							<td></td>
-							<td></td>
 							<td></td>
 							<td></td>
 					</tr>
 					<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td style="text-align: right; padding-right: 120px;"><b>Gross Revenue</b></td>
+							<td class="voucher-summary-header"><b>Gross Revenue</b></td>
 
-							<td>
+							<td class="voucher-summary-data">
 								<b>
 								<span id="grevenue-display">
 									<?= get_woocommerce_currency_symbol() ?> <?= number_format($grevenue, 2)  ?>
@@ -237,33 +236,24 @@ VAT No 3312776JH<br>
 							</td>
 					</tr>
 					<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td style="text-align: right; padding-right: 120px;">Commission</td>
-							<td>
+							<td class="voucher-summary-header">Commission</td>
+							<td class="voucher-summary-data">
 								<span id="commission-display">
 									<?= get_woocommerce_currency_symbol() ?> <?= number_format($commission, 2)  ?>
 								</span>
 							</td>
 					</tr>
 					<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td style="text-align: right; padding-right: 120px;">Vat</td>
-							<td>
+							<td class="voucher-summary-header">Vat</td>
+							<td class="voucher-summary-data">
 								<span id="vat-display">
 									<?= get_woocommerce_currency_symbol() ?> <?= number_format($vat, 2)  ?>
 								</span>
 							</td>
 					</tr>
 					<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td style="text-align: right; padding-right: 120px;"><b>Net Payable </b></td>
-							<td>
+							<td class="voucher-summary-header"><b>Net Payable </b></td>
+							<td class="voucher-summary-data">
 								<b>
 								<span id="payable-display">
 									<?= get_woocommerce_currency_symbol() ?> <?= number_format($payable, 2)  ?>
@@ -272,11 +262,11 @@ VAT No 3312776JH<br>
 							</td>
 					</tr>
 					<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td style="text-align: right; padding-right: 120px;"><b>Redeemed</b></td>
-							<td>Served <span id="redeem-display"><?= $redeem ?></span> customers <br> out of a possible <span id="total-sold-display"><?= $total_sold ?></span></td>
+							<td class="voucher-summary-header"><b>Redeemed</b></td>
+							<td class="voucher-summary-data">Served 
+								<span id="redeem-display"><?= $redeem ?></span> customers <br> out of a possible <span id="total-sold-display"><?= $total_sold ?>
+								</span>
+							</td>
 					</tr>
 				</tbody>
 			</table>
@@ -320,13 +310,15 @@ $total_paid_to_customer = 0;
 
 		</div>
 <br>
-<center><b>Balance Due : <span id="balance-due-display"> <?= get_woocommerce_currency_symbol() ?> <?= number_format($payable - $total_paid_to_customer, 2) ?></span></b></center>
+<div class="text-center">
+	<b>Balance Due : <span id="balance-due-display"> <?= get_woocommerce_currency_symbol() ?> <?= number_format($payable - $total_paid_to_customer, 2) ?></span></b>
+</div>
 <br>
 <?php 
 	if ($admin) {
 		?>
 		<hr>
-		<center>
+		<div class="text-center">
 			<div style="width:200px;">
 				<b>For Office Use Only:</b><br><br>
 				<b>€</b> <input type="text" id="map-amount" name="MAP_Amount" value="0.00" style="width='100px';">
@@ -334,7 +326,7 @@ $total_paid_to_customer = 0;
 				<input type="hidden" name="product_pass" value="<?= $pass ?>"><br><br>
 				<button type="button" id="make-payment-btn" class="btn btn-primary">Make a Payment</button>
 			</div>
-		</center>
+		</div>
 		<?php
 	}
 	?>

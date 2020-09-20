@@ -23,13 +23,56 @@
 	column-gap: 4px;
 	row-gap: 8px;
 }
+
 .v-summary-section {
 	border: 1px solid lightgray;
+}
+
+.order-redeem-checked-btn {
+	margin: 10px 0;
+}
+
+.table-fixed {
+	border: none;
+}
+
+.table-fixed tbody {
+	overflow-y: auto;
+}
+
+#product-table-container {
+	height: 700px;
+}
+
+#voucher-table-container {
+	height: 640px;
+}
+
+.table-fixed-container {
+	overflow-y: auto;
+	border-top: 1px solid #ddd;
+}
+
+.table-fixed-container thead th {
+	background-color: #eee;
+	position: sticky;
+	top: 0;
+	z-index: 2;
 }
 
 .table-total-label {
 	text-align: center;
 	font-weight: bold;
+}
+
+#voucher-summary-table .voucher-summary-header {
+	text-align: right;
+	padding-left: 400px;
+	padding-right: 80px;
+}
+
+#voucher-summary-table .voucher-summary-data {
+	padding-left: 80px;
 }
 
 /* style for scroll up arrow */
