@@ -41,11 +41,11 @@
 }
 
 #product-table-container {
-	height: 700px;
+	max-height: 700px;
 }
 
 #voucher-table-container {
-	height: 640px;
+	max-height: 640px;
 }
 
 .table-fixed-container {
