@@ -30,7 +30,7 @@ function taste_venue_column( $column, $product_id ) {
 			", $product_id), ARRAY_A
 		);
 		if (count($venue_row)) {
-			$venue_name = $venue_row[0]['name'];
+			$venue_name = "<div class='venue-data'><strong>{$venue_row[0]['name']}</strong></div>";
 		}
 		echo $venue_name;
   }

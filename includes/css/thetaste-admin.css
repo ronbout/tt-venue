@@ -6,3 +6,7 @@
 	width: 600px;
 	margin: 80px auto;
 }
+
+.fixed .venue.column-venue {
+	width: 15% !important;
+}
