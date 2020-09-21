@@ -1,8 +1,17 @@
 <?php 
+/**
+ * 
+ *  Redeem a voucher, updating the db and recalc'ing totals
+ *  9/15/2020  Ron Boutilier
+ * 
+ *  Add Unredeem to code 
+ *  9/21/2020  Ron Boutilier
+ * 
+ */
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function redeem_voucher_update($order_list, $product_info, $venue_info) {
+function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_flg) {
 	global $wpdb;
 
 	$order_item_list = array_column($order_list, 'orderItemId');
@@ -10,11 +19,11 @@ function redeem_voucher_update($order_list, $product_info, $venue_info) {
 	$placeholders = implode(', ', $placeholders);
 
 	// update the database with multiple rows if necessary
+	$sql = "UPDATE " . $wpdb->prefix . "woocommerce_order_items
+					SET downloaded = '$redeem_flg' where order_item_id in ($placeholders) ";
+
 	$rows_affected = $wpdb->query(
-		$wpdb->prepare(
-				"UPDATE " . $wpdb->prefix . "woocommerce_order_items
-				SET downloaded = '1' where order_item_id in ($placeholders) ",$order_item_list
-		)
+		$wpdb->prepare($sql, $order_item_list)
 	);
 
 	// if not success set error array and return
@@ -28,21 +37,26 @@ function redeem_voucher_update($order_list, $product_info, $venue_info) {
 	$placeholders = array_fill(0, count($order_id_list), '%s');
 	$placeholders = implode(', ', $placeholders);
 	
-	$email_rows = $wpdb->get_results(
-		$wpdb->prepare(
-			"SELECT post_id AS orderId, meta_value as email
-			FROM " . $wpdb->prefix . "postmeta
-			WHERE post_id in ($placeholders)
-			AND meta_key = '_billing_email'", $order_id_list
-		), ARRAY_A);
+	if ($redeem_flg) {
+		$email_rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT post_id AS orderId, meta_value as email
+				FROM " . $wpdb->prefix . "postmeta
+				WHERE post_id in ($placeholders)
+				AND meta_key = '_billing_email'", $order_id_list
+			), ARRAY_A);
+	} else {
+		$email_rows = array(array("orderId" => $order_id_list[0], "email" => "*** GDPR BLANKED EMAIL ***"));
+	}
+
 
 	// update the redeem amount and recalc as necessary
 	$order_qty_list = array_column($order_list, 'orderQty');
 	// have to know qty increase to apply to total amounts across products
 	$orig_redeem = $product_info['redeem'];
-	$redeem = array_reduce($order_qty_list, function ($r, $qty ) {
-		$qty_increase += $qty;
-		return $r + $qty;
+	$redeem = array_reduce($order_qty_list, function ($r, $qty ) use ($redeem_flg) {
+		$ret_qty = $redeem_flg ? ($r + $qty) : ($r - $qty);
+		return $ret_qty;
 	}, $product_info['redeem']);
 	
 	$product_id = $product_info['product_id'];

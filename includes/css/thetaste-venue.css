@@ -75,6 +75,16 @@
 	padding-left: 80px;
 }
 
+.order-redeem-btn,
+.order-unredeem-btn {
+	width: 92px;
+}
+
+#make-payment-div {
+	width: 200px;
+	margin: 0 auto;
+}
+
 /* style for scroll up arrow */
 #topbutton {
 	height: 50px;

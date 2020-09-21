@@ -125,7 +125,7 @@ VAT No 3312776JH<br>
 <div class="panel panel-default">
 		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
 		<div class="panel-body">
-			<button	class="order-redeem-checked-btn" disabled >Redeem Checked</button>
+			<button	class="btn btn-success order-redeem-checked-btn" disabled >Redeem Checked</button>
 			<div id="voucher-table-container" class="table-fixed-container">
 				<table class="table table-striped table-bordered table-fixed">
 					<thead>
@@ -173,7 +173,7 @@ VAT No 3312776JH<br>
 								<?php
 											if ($val->downloaded == '1') {
 										?>
-											<td><?= $val->b_email ?></td>
+											<td><span id="email-display-<?php echo $val->order_id ?>"><?= $val->b_email ?></span></td>
 										<?php
 											} else {
 										?>
@@ -183,33 +183,35 @@ VAT No 3312776JH<br>
 										?>
 
 								<td><?= $val->quan ?> </td>
-								<td id="td-btn-order-id-<?php echo $val->order_id ?>">
+								<td id="td-btn-order-id-<?php echo $val->order_id ?>" class="text-center">
 										<?php
 										if ($val->downloaded == '0') {
 												if ($expired_val == 'N') {
-												?>
-													<button	class="order-redeem-btn">Redeem</button>
-										<?php
+													echo '<button	class="btn btn-success order-redeem-btn">Redeem</button>';
 												}
 												else {
 														echo 'Not Served / Expired';
 												}
-										}
-										else
-										{
+										}	else {
+											if ($expired_val == 'N') {
 												$redeem = $redeem + $val->quan;
+												echo '<button	class="btn btn-info order-unredeem-btn">Unredeem</button>';
+											} else {
 												echo '<b>Served</b>';
+											}
 										}
 												?>
 								</td> 
 							</tr>
-						<?php }	?>
+						<?php 
+							$total_sold = $total_sold + $val->quan;
+						}	
+						?>
 					</tbody>
 				</table>
 			</div>
 			<table id="voucher-summary-table" class="table table-striped table-bordered">
 				<?php
-				$total_sold = $total_sold + $val->quan;
 				$grevenue = $redeem * $gr;
 				$commission = ($grevenue / 100) * $commission_val;
 				$vat = ($commission / 100) * $vat_val;
@@ -319,7 +321,7 @@ $total_paid_to_customer = 0;
 		?>
 		<hr>
 		<div class="text-center">
-			<div style="width:200px;">
+			<div id="make-payment-div">
 				<b>For Office Use Only:</b><br><br>
 				<b>€</b> <input type="text" id="map-amount" name="MAP_Amount" value="0.00" style="width='100px';">
 				<input type="hidden" name="product_id" value="<?= $pid ?>">

@@ -30,8 +30,10 @@ const tasteLoadVouchers = (prodId) => {
 	});
 };
 
-const tasteRedeemVoucher = (orderList) => {
-	let modalMsg = "Redeeming Voucher(s)...";
+const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
+	let modalMsg = redeemFlg
+		? "Redeeming Voucher(s)..."
+		: "Un Redeeming Voucher...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	// get info from hidden inputs to pass up for re-calc
 	let productInfo = tasteGetProductInfo();
@@ -47,17 +49,30 @@ const tasteRedeemVoucher = (orderList) => {
 			order_list: orderList,
 			product_info: productInfo,
 			venue_info: venueInfo,
+			redeem_flg: redeemFlg ? 1 : 0,
 		},
 		success: function (responseText) {
 			tasteCloseMsg();
+			// console.log(responseText);
 			let respObj = JSON.parse(responseText);
 			if (respObj.error) {
+				console.log(respObj);
 				alert("error in redeem Voucher ajax code");
 			} else {
-				console.log(respObj);
 				orderList.map((orderInfo) => {
-					jQuery("#td-btn-order-id-" + orderInfo.orderId).html("<b>Served</b>");
-					jQuery("#td-check-order-id-" + orderInfo.orderId).html("");
+					if (redeemFlg) {
+						jQuery("#td-btn-order-id-" + orderInfo.orderId).html(
+							"<b>Served</b>"
+						);
+						jQuery("#td-check-order-id-" + orderInfo.orderId).html("");
+					} else {
+						jQuery("#td-btn-order-id-" + orderInfo.orderId).html(
+							'<button	class="btn btn-success order-redeem-btn">Redeem</button>'
+						);
+						jQuery("#td-check-order-id-" + orderInfo.orderId).html(
+							'<input type="checkbox" class="order-redeem-check">'
+						);
+					}
 				});
 
 				respObj.emails.map((emailInfo) => {
@@ -194,7 +209,16 @@ const tasteLoadRedeemButtons = () => {
 		let orderId = $rowData.data("order-id");
 		let orderItemId = $rowData.data("order-item-id");
 		let orderQty = $rowData.data("order-qty");
-		tasteRedeemVoucher([{ orderId, orderItemId, orderQty }]);
+		tasteRedeemVoucher([{ orderId, orderItemId, orderQty }], true);
+	});
+
+	jQuery(".order-unredeem-btn").click(function (e) {
+		e.preventDefault();
+		let $rowData = jQuery(this).parent().parent();
+		let orderId = $rowData.data("order-id");
+		let orderItemId = $rowData.data("order-item-id");
+		let orderQty = $rowData.data("order-qty");
+		tasteRedeemVoucher([{ orderId, orderItemId, orderQty }], false);
 	});
 
 	jQuery("#checkbox-all").click(function (e) {
@@ -217,7 +241,7 @@ const tasteLoadRedeemButtons = () => {
 			let orderQty = $rowData.data("order-qty");
 			orderInfoList.push({ orderId, orderItemId, orderQty });
 		});
-		tasteRedeemVoucher(orderInfoList);
+		tasteRedeemVoucher(orderInfoList, true);
 	});
 
 	jQuery("#make-payment-btn").length &&

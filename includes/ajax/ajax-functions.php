@@ -36,9 +36,10 @@ function taste_ajax_redeem_voucher() {
 	$order_list = $_POST['order_list'];
 	$product_info = $_POST['product_info'];
 	$venue_info = $_POST['venue_info'];
+	$redeem_flg = $_POST['redeem_flg'];
 
 	require_once(plugin_dir_path(__FILE__). 'redeem_voucher.php');
-	redeem_voucher_update($order_list, $product_info, $venue_info);
+	redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_flg);
 
 	wp_die();
 }
