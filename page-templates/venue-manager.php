@@ -75,7 +75,16 @@ global $wpdb;
 		</br>
 		</br>
 		<div class="container">
-
+		<?php 
+		if ($admin) {
+			// add a back link to the venue selection
+			?>
+				<div class="admin-back-link">
+					<a href="<?php echo get_page_link() ?>"><== Return to Venue Selection</a>
+				</div>
+			<?php
+		}
+		?>
 		<div class="text-center">
 			<a href="<?php echo get_site_url() ?>">
 					<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
