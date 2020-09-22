@@ -29,6 +29,7 @@ if (is_admin()) {
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/admin-enqueues.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/venue-user-fields.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/prod-listing.php';
+	require_once TASTE_PLUGIN_INCLUDES.'/admin/bulk-product-assign.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/metabox/product-metabox.php';
 	VenueUserFields::get_instance();
 }
@@ -36,6 +37,7 @@ if (is_admin()) {
 // enqueues 
 //require_once TASTE_PLUGIN_INCLUDES.'/enqueues.php';
 require_once TASTE_PLUGIN_INCLUDES.'/ajax/ajax-functions.php';
+require_once TASTE_PLUGIN_INCLUDES.'/functions.php';
 
 // set up venue-manager.php as page template 
 function taste_add_venue_manager_template ($templates) {

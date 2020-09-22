@@ -14,7 +14,8 @@ defined('ABSPATH') or die('Direct script access disallowed.');
  */
 function taste_register_product_meta_box() {
 
-	$post_types = array('product', 'post', 'page');
+	// $post_types = array('product', 'post', 'page');
+	$post_types = array('product');
 
 	foreach($post_types as $p_type) {
 		add_meta_box( 'taste-product-venue-box', __( 'Venue'), 'taste_display_product_venue_box', $p_type, 'normal', 'high' );
@@ -55,7 +56,13 @@ function taste_save_venue_metabox($post_id) {
 	if (wp_is_post_autosave($post_id) || wp_is_post_revision( $post_id )) {
 		return;
 	}
-
+	// echo '<h1><pre>POST: ', var_dump($_POST), '</pre></h1>';
+	// echo '<h1><pre>REQUEST: ', var_dump($_REQUEST), '</pre></h1>';
+	// die(); 
+	// might be here through quick/bulk edit.  if so, just return 
+	if (!count($_POST)) {
+		return;
+	}
 	if (! isset($_POST['venue_id']) || !$_POST['venue_id']) {
 		// have to make sure that no entry exists
 		$sql = "
@@ -69,21 +76,7 @@ function taste_save_venue_metabox($post_id) {
 		return;
 	}
 	$venue_id = $_POST['venue_id'];
-
-	$sql = "
-		INSERT INTO {$wpdb->prefix}taste_venue_products
-		(venue_id, product_id)
-		VALUES (%d, %d)
-		ON DUPLICATE KEY UPDATE
-			venue_id = %d,
-			product_id = %d
-		";
-
-	$field_list = array($venue_id, $post_id, $venue_id, $post_id);
-
-	$rows_affected = $wpdb->query(
-		$wpdb->prepare($sql, $field_list)
-	);
+	insert_venue_product_on_dup($venue_id, $post_id);
 
 }
 add_action('save_post_product', 'taste_save_venue_metabox', 10, 2);
