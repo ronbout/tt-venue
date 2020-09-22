@@ -13,8 +13,12 @@
 
 #venue-form-container {
 	text-align: center;
-	width: 200px;
+	width: 400px;
 	margin: 100px auto;
+}
+
+#venue-form-container select {
+	margin: 10px auto;
 }
 
 .v-summary-container {

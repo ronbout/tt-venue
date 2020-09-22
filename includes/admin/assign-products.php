@@ -31,6 +31,11 @@ function taste_assign_products() {
 
 		if (isset($_POST['venue-id'])) {
 			$venue_id = $_POST['venue-id'];
+			?>
+			<div class="admin-back-link">
+				<a href="<?php echo admin_url("edit.php?post_type=product&page=venue-assign-products") ?>"><== Return to Venue Selection</a>
+			</div>
+			<?php
 			display_products($venue_id);
 		} else {
 			// display form to select Venue

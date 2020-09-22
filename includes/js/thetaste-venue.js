@@ -1,6 +1,5 @@
 jQuery(document).ready(function () {
 	tasteLoadButtons();
-	tasteLoadVenueFormEvents();
 	jQuery("#topbutton").length && tasteLoadScrollUp();
 });
 
@@ -264,20 +263,6 @@ const tasteLoadButtons = () => {
 			tasteLoadVouchers(prodId);
 		}
 	});
-};
-
-const tasteLoadVenueFormEvents = () => {
-	let $venueSelect = jQuery("#venue-select");
-	$venueSelect.length &&
-		$venueSelect.change(function () {
-			let $selectVenueBtn = jQuery("#select-venue-btn");
-			let selectVal = parseInt(this.value);
-			if (selectVal) {
-				$selectVenueBtn.prop("disabled", false);
-			} else {
-				$selectVenueBtn.prop("disabled", true);
-			}
-		});
 };
 
 const checkRedeemAllDisable = () => {

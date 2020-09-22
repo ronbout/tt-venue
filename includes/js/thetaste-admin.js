@@ -1,6 +1,5 @@
 jQuery(document).ready(function () {
 	userForms();
-	tasteLoadVenueFormEvents();
 	if (typeof products != "undefined") {
 		// console.log("products ", products);
 		let selectedProds = [];
@@ -28,22 +27,6 @@ const userForms = () => {
 	}
 };
 
-const tasteLoadVenueFormEvents = () => {
-	if (jQuery("body").hasClass("product_page_venue-assign-products")) {
-		let $venueSelect = jQuery("#venue-select");
-		$venueSelect.length &&
-			$venueSelect.change(function () {
-				let $selectVenueBtn = jQuery("#select-venue-btn");
-				let selectVal = parseInt(this.value);
-				if (selectVal) {
-					$selectVenueBtn.prop("disabled", false);
-				} else {
-					$selectVenueBtn.prop("disabled", true);
-				}
-			});
-	}
-};
-
 const loadSelectProducts = (selectedProds) => {
 	jQuery("#product-input").autocomplete({
 		source: products,
@@ -63,9 +46,11 @@ const loadSelectProducts = (selectedProds) => {
 		},
 	});
 
+	/*
 	jQuery("#assign-products-btn").click(function (e) {
 		// no use for this now...later can use with ajax call
 	});
+	*/
 };
 
 const setupUnSelect = (selectedProds, products) => {

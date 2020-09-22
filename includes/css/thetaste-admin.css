@@ -10,3 +10,24 @@
 .fixed .venue.column-venue {
 	width: 15% !important;
 }
+
+body.product_page_venue-assign-products #venue-form-container {
+	text-align: center;
+	width: 400px;
+	margin: 40px auto;
+}
+
+body.product_page_venue-assign-products #venue-form-container select,
+body.post-php.post-type-product #venue-form-container select {
+	margin: 10px auto;
+}
+
+body.edit-php.post-type-product #venue-form-container {
+	border: 1px solid lightgrey;
+	padding: 4px;
+}
+
+body.edit-php.post-type-product #venue-form-container label {
+	display: inline-block;
+	width: 120px;
+}

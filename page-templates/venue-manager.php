@@ -50,8 +50,6 @@ global $wpdb;
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	<link rel="stylesheet" href="<?php echo TASTE_PLUGIN_URL ?>assets/css/font-awesome.min.css">
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-
-	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js"></script>
 	<link rel="stylesheet" href="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/css/thetaste-venue.css">
 	<title><?php _e(the_title()); ?></title>
 </head>
@@ -65,6 +63,7 @@ global $wpdb;
 		} else {
 			// display form to select Venue
 			display_venue_select(true, 0, true, get_page_link());
+			echo '<script type="text/javascript" src= "' . TASTE_PLUGIN_INCLUDES_URL . '/js/thetaste-venue-select.js"></script>';
 			die();
 		}
 	} else {
@@ -118,20 +117,22 @@ global $wpdb;
 
 			$venue_name = $venue_row[0]->name;
 			$venue_type = $venue_row[0]->venue_type;
+			$type_desc = $venue_type;
 			switch($venue_type) {
 				case 'Restaurant':
-				case 'Pub':
-				case 'Cafe':
+				case 'Bar':
 					$served_heading = "Tables</br>Booked";
 					$summ_heading= "Total</br>Covers";
-					$type_desc = "Restaurant";
 					break;
 				case 'Hotel':
 					$served_heading = "Rooms</br>Booked";
 					$summ_heading= "People";
 					// $summ_heading= "Bed</br>Nights";
-					$type_desc = "Hotel";
 					break;	
+				case 'Product': 
+					$served_heading = "Orders</br>Served";
+					$summ_heading= "Products</br>Sold";
+					break;
 				default: 
 					$served_heading = "Orders</br>Served";
 					$summ_heading= "Products</br>Sold";
@@ -210,18 +211,19 @@ global $wpdb;
 		</div>
 	</section>
 	<div id="taste-modal-layer">
-			<div id="taste-msg-box" class="modalContainer">
-				<div>
-					<p id="taste-msg-text">Some sample text</p>
-					<div id="taste-msg-close" class="btn btn-close">Close</div>
-				</div>
-			</div><!-- taste-msg-box -->
-		</div><!-- taste-modal-layer -->
-		<footer>
-		<a href="#" id="topbutton">
-			<i class="fas fa-angle-up"></i>
-		</a>
-		</footer>
+		<div id="taste-msg-box" class="modalContainer">
+			<div>
+				<p id="taste-msg-text">Some sample text</p>
+				<div id="taste-msg-close" class="btn btn-close">Close</div>
+			</div>
+		</div><!-- taste-msg-box -->
+	</div><!-- taste-modal-layer -->
+	<footer>
+	<a href="#" id="topbutton">
+		<i class="fas fa-angle-up"></i>
+	</a>
+	</footer>
+	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js"></script>
 </body>
 
 </html>
