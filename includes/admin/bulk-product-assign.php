@@ -19,7 +19,7 @@ function venue_bulk_edit_input() {
 		FROM " . $wpdb->prefix . "taste_venue
 		ORDER BY venue_type, name
 	", ARRAY_A);
-	display_venue_select(false, 0, false, true);
+	display_venue_select(false, 0, false, '', true);
 }
 add_action( 'woocommerce_product_bulk_edit_start', 'venue_bulk_edit_input' );
 		
@@ -28,8 +28,8 @@ function venue_bulk_edit_save( $product ) {
 		$product_id = $product->get_id();   
 		// echo '<h1><pre>', var_dump($_REQUEST), '</pre></h1>';
 		// die(); 
-   if ( isset( $_REQUEST['venue_id'] ) ) {
-				$venue_id = intval($_REQUEST['venue_id']);
+   if ( isset( $_REQUEST['venue-id'] ) ) {
+				$venue_id = intval($_REQUEST['venue-id']);
 				if ($venue_id) {
 					insert_venue_product_on_dup($venue_id, $product_id);
 				}

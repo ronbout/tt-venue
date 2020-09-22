@@ -29,8 +29,8 @@ function taste_assign_products() {
 		<h2>Assign Products to Venues</h2>
 		<?php
 
-		if (isset($_POST['venue_id'])) {
-			$venue_id = $_POST['venue_id'];
+		if (isset($_POST['venue-id'])) {
+			$venue_id = $_POST['venue-id'];
 			display_products($venue_id);
 		} else {
 			// display form to select Venue

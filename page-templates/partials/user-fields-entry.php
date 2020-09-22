@@ -48,10 +48,9 @@ function display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct
 							<select id="venue-type" name="venue_type">
 								<option value="none" disabled <?php echo ('none' === $type) ? 'selected' : ''?>>Select Venue Type</option>
 								<option value="Restaurant" <?php echo ('Restaurant' === $type) ? 'selected' : ''?>>Restaurant</option>
-								<option value="Pub" <?php echo ('Pub' === $type) ? 'selected' : ''?>>Pub</option>
 								<option value="Hotel" <?php echo ('Hotel' === $type) ? 'selected' : ''?>>Hotel</option>
-								<option value="Cafe" <?php echo ('Cafe' === $type) ? 'selected' : ''?>>Cafe</option>
-								<option value="Other" <?php echo ('Other' === $type) ? 'selected' : ''?>>Other</option>
+								<option value="Bar" <?php echo ('Bar' === $type) ? 'selected' : ''?>>Bar</option>
+								<option value="Product" <?php echo ('Product' === $type) ? 'selected' : ''?>>Product</option>
 							</select>
 						</td>
 					</tr>

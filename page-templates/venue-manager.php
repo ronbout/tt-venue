@@ -64,7 +64,7 @@ global $wpdb;
 			$venue_id = $_POST['venue-id'];
 		} else {
 			// display form to select Venue
-			display_venue_select();
+			display_venue_select(true, 0, true, get_page_link());
 			die();
 		}
 	} else {
@@ -471,7 +471,7 @@ function order_product_table($product_rows) {
 	$ordered_products = array_merge($active_products, $expired_products);
 	return $ordered_products;
 }
-
+/*
 function display_venue_select() {
 	global $wpdb;
 	// build list of venues 
@@ -499,7 +499,7 @@ function display_venue_select() {
 
 <?php
 }
-
+*/
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting
 	return number_format(round($num,2), 2);
