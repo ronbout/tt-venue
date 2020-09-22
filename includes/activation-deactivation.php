@@ -21,7 +21,7 @@ function taste_add_venue_table() {
 			name VARCHAR(80) NOT NULL,
 			description VARCHAR(255),
 			city VARCHAR(100),
-			venue_type ENUM ('Restaurant', 'Pub', 'Hotel', 'Cafe', 'Other'),
+			venue_type ENUM ('Restaurant', 'Bar', 'Hotel', 'Product'),
 			voucher_pct FLOAT,
 			paid_member TINYINT(1) ZEROFILL NOT NULL DEFAULT 0, 
 			member_renewal_date DATETIME,
