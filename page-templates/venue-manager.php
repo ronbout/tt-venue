@@ -275,6 +275,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	$currency =  get_woocommerce_currency_symbol();
 	$multiplier = 'Product' === $venue_type ? 1 : 2;
 	$num_served =  $venue_totals['redeemed'] * $multiplier;
+	$num_served =  $venue_totals['order_cnt'] * $multiplier;
 	?>
 	<div class="v-summary-container">
 		<div class="v-summary-section">
