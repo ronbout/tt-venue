@@ -39,6 +39,9 @@ if (is_admin()) {
 require_once TASTE_PLUGIN_INCLUDES.'/ajax/ajax-functions.php';
 require_once TASTE_PLUGIN_INCLUDES.'/functions.php';
 
+/**
+ * Venue manager set up code
+ */
 // set up venue-manager.php as page template 
 function taste_add_venue_manager_template ($templates) {
 	$templates['venue-manager.php'] = 'Venue Manager';
@@ -54,4 +57,19 @@ function taste_redirect_page_template ($template) {
 }
 add_filter ('page_template', 'taste_redirect_page_template');
 
+// make sure the venue manager login does not redirect to wp-admin
+add_action( 'wp_login_failed', 'taste_venue_login_fail' );  // hook failed login
 
+function taste_venue_login_fail( $username ) {
+   $referrer = $_SERVER['HTTP_REFERER'];  
+   // if there's a valid referrer, and it's not the default log-in screen
+   if ( !empty($referrer) && !strstr($referrer,'wp-login') && !strstr($referrer,'wp-admin') ) {
+      wp_redirect( $referrer . '?login=failed' );  // let's append some information (login=failed) to the URL for the theme to use
+      exit;
+   }
+}
+function taste_venue_query_vars( $qvars ) {
+	$qvars[] = 'login';
+	return $qvars;
+}
+add_filter( 'query_vars', 'taste_venue_query_vars' );

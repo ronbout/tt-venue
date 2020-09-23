@@ -11,3 +11,7 @@
 #loginform label {
 	width: 135px;
 }
+
+.login-error {
+	color: red;
+}

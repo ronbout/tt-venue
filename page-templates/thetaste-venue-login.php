@@ -48,6 +48,15 @@
 					wp_login_form($login_args); 
 				?>
 			</div>
+			<?php
+				if (get_query_var('login') === 'failed') {
+					?>
+					<div class="login-error">
+						<h3>Invalid Login.  Please try again.</h3>
+					</div>
+					<?php
+				}
+			?>
 		</div>
 	</body>
 </html>
