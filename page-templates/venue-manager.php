@@ -273,7 +273,7 @@ function get_totals_calcs($ordered_products, $payments) {
 
 function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	$currency =  get_woocommerce_currency_symbol();
-	$multiplier = 'Other' === $venue_type ? 1 : 2;
+	$multiplier = 'Product' === $venue_type ? 1 : 2;
 	$num_served =  $venue_totals['redeemed'] * $multiplier;
 	?>
 	<div class="v-summary-container">
