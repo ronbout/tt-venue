@@ -63,7 +63,9 @@ function taste_save_venue_metabox($post_id) {
 	if (!count($_POST)) {
 		return;
 	}
-	if (! isset($_POST['venue_id']) || !$_POST['venue_id']) {
+	
+	$venue_id = isset($_POST['venue-id']) ? intval($_POST['venue-id']) : 0;
+	if (! $venue_id) {
 		// have to make sure that no entry exists
 		$sql = "
 		DELETE FROM {$wpdb->prefix}taste_venue_products
@@ -75,7 +77,6 @@ function taste_save_venue_metabox($post_id) {
 		);
 		return;
 	}
-	$venue_id = $_POST['venue_id'];
 	insert_venue_product_on_dup($venue_id, $post_id);
 
 }
