@@ -143,7 +143,8 @@ global $wpdb;
 							SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, pm.meta_value AS 'children', 
 								pm2.meta_value AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
 								pm5.meta_value AS 'commission',
-								COUNT(plook.order_id) AS 'order_cnt', SUM(wc_oi.downloaded) AS 'redeemed'
+								COUNT(plook.order_id) AS 'order_cnt', SUM(plook.product_qty) AS 'order_qty', 
+								SUM(wc_oi.downloaded) AS 'redeemed_cnt', SUM(wc_oi.downloaded * plook.product_qty) AS 'redeemed_qty'
 							FROM $v_p_join_table vp 
 							JOIN $product_table pr ON vp.product_id = pr.product_id
 							JOIN $posts_table p ON vp.product_id =  p.ID
@@ -233,8 +234,10 @@ global $wpdb;
 function get_totals_calcs($ordered_products, $payments) {
 	$venue_totals = array(
 		'offers' => 0,
-		'redeemed' => 0,
+		'redeemed_cnt' => 0,
+		'redeemed_qty' => 0,
 		'order_cnt' => 0,
+		'order_qty' => 0,
 		'revenue' => 0,
 		'commission' => 0,
 		'vat' => 0,
@@ -249,9 +252,11 @@ function get_totals_calcs($ordered_products, $payments) {
 		$tmp['product_id'] = $product_id;
 		$tmp['title'] = $product_row['post_title'];
 		$tmp['status'] = ("N" === $product_row['expired']) ? "Active" : "Expired";
-		$tmp['redeemed'] = $product_row['redeemed'];
+		$tmp['redeemed_cnt'] = $product_row['redeemed_cnt'];
+		$tmp['redeemed_qty'] = $product_row['redeemed_qty'];
 		$tmp['order_cnt'] = $product_row['order_cnt'];
-		$tmp['revenue'] = $product_row['price'] * $tmp['redeemed'];
+		$tmp['order_qty'] = $product_row['order_qty'];
+		$tmp['revenue'] = $product_row['price'] * $tmp['redeemed_qty'];
 		$tmp['view'] = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>View</button>";
 		$tmp['commission'] = ($tmp['revenue'] / 100) * $product_row['commission'];
 		$tmp['vat'] = ($tmp['commission'] / 100) * $product_row['vat'];
@@ -274,15 +279,15 @@ function get_totals_calcs($ordered_products, $payments) {
 function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	$currency =  get_woocommerce_currency_symbol();
 	$multiplier = 'Product' === $venue_type ? 1 : 2;
-	$num_served =  $venue_totals['redeemed'] * $multiplier;
-	$num_served =  $venue_totals['order_cnt'] * $multiplier;
+	// $num_served =  $venue_totals['redeemed_qty'] * $multiplier;
+	$num_served =  $venue_totals['order_qty'] * $multiplier;
 	?>
 	<div class="v-summary-container">
 		<div class="v-summary-section">
 			<h3>Vouchers</br>Sold</h3>
 			<h3>
 				<span id="vouchers-total">
-					<?php echo $venue_totals['order_cnt'] ?>
+					<?php echo $venue_totals['order_qty'] ?>
 				</span>
 			</h3>
 		</div>
@@ -331,7 +336,8 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 		<input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
 		<input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">
 		<input type="hidden" id="sum-vat" value="<?php echo $venue_totals['vat'] ?>">
-		<input type="hidden" id="sum-redeemed" value="<?php echo $venue_totals['redeemed'] ?>">
+		<input type="hidden" id="sum-redeemed_cnt" value="<?php echo $venue_totals['redeemed_cnt'] ?>">
+		<input type="hidden" id="sum-redeemed_qty" value="<?php echo $venue_totals['redeemed_qty'] ?>">
 		<input type="hidden" id="sum-net-payable" value="<?php echo $venue_totals['net_payable'] ?>">
 		<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
 		<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
@@ -361,7 +367,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals) 
 				<?php
 					foreach($product_calcs as $product_row) {
 						extract($product_row);
-						display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view);
+						display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed_qty, $commission, $vat, $net_payable, $balance_due, $view);
 					}
 				?>
 				<tr>
@@ -384,8 +390,8 @@ function display_table_totals($venue_totals) {
 		</span>
 	</td>
 	<td class="table-nbr">
-		<span id="redeem-display-table-total">
-			<?php echo $venue_totals['redeemed'] ?>
+		<span id="redeem-qty-display-table-total">
+			<?php echo $venue_totals['redeemed_qty'] ?>
 		</span>
 	</td>
 	<td class="table-nbr">
@@ -412,7 +418,7 @@ function display_table_totals($venue_totals) {
 <?php
 }
 
-function display_product_row($id, $title, $status, $revenue, $redeemed, $commission, $vat, $net_payable, $balance_due, $view) {
+function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $commission, $vat, $net_payable, $balance_due, $view) {
  ?>
 	<tr>
 		<td><?php echo $id ?></td>
@@ -424,8 +430,8 @@ function display_product_row($id, $title, $status, $revenue, $redeemed, $commiss
 			</span>
 		</td>
 		<td class="table-nbr">
-			<span id="redeem-display-<?php echo $id ?>">
-				<?php echo $redeemed ?>
+			<span id="redeem-qty_display-<?php echo $id ?>">
+				<?php echo $redeemed_qty ?>
 			</span>
 		</td>
 		<td class="table-nbr">

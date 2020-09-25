@@ -194,11 +194,11 @@ VAT No 3312776JH<br>
 												}
 										}	else {
 											if ($expired_val == 'N') {
-												$redeem = $redeem + $val->quan;
 												echo '<button	class="btn btn-info order-unredeem-btn">Unredeem</button>';
 											} else {
 												echo '<b>Served</b>';
 											}
+											$redeem_qty = $redeem_qty + $val->quan;
 										}
 												?>
 								</td> 
@@ -212,7 +212,7 @@ VAT No 3312776JH<br>
 			</div>
 			<table id="voucher-summary-table" class="table table-striped table-bordered">
 				<?php
-				$grevenue = $redeem * $gr;
+				$grevenue = $redeem_qty * $gr;
 				$commission = ($grevenue / 100) * $commission_val;
 				$vat = ($commission / 100) * $vat_val;
 				$grevenue = round($grevenue, 2);
@@ -266,7 +266,7 @@ VAT No 3312776JH<br>
 					<tr>
 							<td class="voucher-summary-header"><b>Redeemed</b></td>
 							<td class="voucher-summary-data">Served 
-								<span id="redeem-display"><?= $redeem ?></span> customers <br> out of a possible <span id="total-sold-display"><?= $total_sold ?>
+								<span id="redeem-qty-display"><?= $redeem_qty ?></span> customers <br> out of a possible <span id="total-sold-display"><?= $total_sold ?>
 								</span>
 							</td>
 					</tr>
@@ -347,7 +347,7 @@ By using our Management Console, you have agreed to our Terms & Conditions : <a 
 	<input type="hidden" id="taste-gr-value" value="<?php echo $gr ?>">
 	<input type="hidden" id="taste-commission-value" value="<?php echo $commission_val ?>">
 	<input type="hidden" id="taste-vat-value" value="<?php echo $vat_val ?>">
-	<input type="hidden" id="taste-redeem" value="<?php echo $redeem ?>">
+	<input type="hidden" id="taste-redeem-qty" value="<?php echo $redeem_qty ?>">
 	<input type="hidden" id="taste-total-sold" value="<?php echo $total_sold ?>">
 	<input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_customer ?>">
 </div>

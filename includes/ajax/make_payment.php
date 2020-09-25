@@ -41,15 +41,15 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 
 	// update calcs.  some calcs are necessary because all 
 	// values must be passed back for hidden section
-	$redeem = $product_info['redeem'];
+	$redeem_qty = $product_info['redeem_qty'];
 	$gr_value = $product_info['gr_value'];
 	$commission_value = $product_info['commission_value'];
 	$vat_value = $product_info['vat_value'];
 	$total_sold = $product_info['total_sold'];
 	$total_paid = $product_info['total_paid'] + $map_amount;
 
-	$redeem += $order_qty;
-	$grevenue = $redeem * $gr_value; 
+	$redeem_qty += $order_qty;
+	$grevenue = $redeem_qty * $gr_value; 
 	$commission = ($grevenue / 100) * $commission_value;
 	$vat = ($commission / 100) * $vat_value;
 	$payable = $grevenue - ($commission + $vat);
@@ -66,7 +66,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	<input type='hidden' id='taste-gr-value' value='$gr_value'>
 	<input type='hidden' id='taste-commission-value' value='$commission_value'>
 	<input type='hidden' id='taste-vat-value' value='$vat_value'>
-	<input type='hidden' id='taste-redeem' value='$redeem'>
+	<input type='hidden' id='taste-redeem-qty' value='$redeem_qty'>
 	<input type='hidden' id='taste-total-sold' value='$total_sold'>
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
 	";
@@ -75,7 +75,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	$sum_gr_value = $venue_info['revenue'];
 	$sum_commission = $venue_info['commission'];
 	$sum_vat = $venue_info['vat'];
-	$sum_redeemed = $venue_info['redeemed'];
+	$sum_redeemed_qty = $venue_info['redeemed_qty'];
 	$sum_net_payable = $venue_info['net_payable'];
 	$sum_total_paid = $venue_info['paid_amount'] + $map_amount;
 	$sum_balance_due = $venue_info['balance_due'] - $map_amount;
@@ -84,7 +84,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	<input type='hidden' id='sum-gr-value' value='$sum_gr_value'>
 	<input type='hidden' id='sum-commission' value='$sum_commission'>
 	<input type='hidden' id='sum-vat' value='$sum_vat'>
-	<input type='hidden' id='sum-redeemed' value='$sum_redeemed'>
+	<input type='hidden' id='sum-redeemed-qty' value='$sum_redeemed_qty'>
 	<input type='hidden' id='sum-net-payable' value='$sum_net_payable'>
 	<input type='hidden' id='sum-total-paid' value='$sum_total_paid'>
 	<input type='hidden' id='sum-balance-due' value='$sum_balance_due'>
@@ -95,7 +95,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 		'sumGrValue' => $currency . ' ' . num_display($sum_gr_value),
 		'sumCommision' => $currency . ' ' . num_display($sum_commission),
 		'sumVat'  => $currency . ' ' . num_display($sum_vat),
-		'sumRedeemed' => $currency . ' ' . num_display($sum_redeemed),
+		'sumRedeemedQty' => $currency . ' ' . num_display($sum_redeemed_qty),
 		'sumNetPayable' => $currency . ' ' . num_display($sum_net_payable),
 		'sumTotalPaid' => $currency . ' ' . num_display($sum_total_paid),
 		'sumBalanceDue' => $currency . ' ' . num_display($sum_balance_due),

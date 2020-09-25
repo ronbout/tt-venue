@@ -53,11 +53,11 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	// update the redeem amount and recalc as necessary
 	$order_qty_list = array_column($order_list, 'orderQty');
 	// have to know qty increase to apply to total amounts across products
-	$orig_redeem = $product_info['redeem'];
-	$redeem = array_reduce($order_qty_list, function ($r, $qty ) use ($redeem_flg) {
+	$orig_redeem_qty = $product_info['redeem_qty'];
+	$redeem_qty = array_reduce($order_qty_list, function ($r, $qty ) use ($redeem_flg) {
 		$ret_qty = $redeem_flg ? ($r + $qty) : ($r - $qty);
 		return $ret_qty;
-	}, $product_info['redeem']);
+	}, $product_info['redeem_qty']);
 	
 	$product_id = $product_info['product_id'];
 	$gr_value = $product_info['gr_value'];
@@ -66,14 +66,14 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	$total_sold = $product_info['total_sold'];
 	$total_paid = $product_info['total_paid'];
 
-	// $redeem += $order_qty;
-	$grevenue = $redeem * $gr_value; 
+	// $redeem_qty += $order_qty;
+	$grevenue = $redeem_qty * $gr_value; 
 	$commission = ($grevenue / 100) * $commission_value;
 	$vat = ($commission / 100) * $vat_value;
 	$payable = $grevenue - ($commission + $vat);
 	$balance_due = $payable - $total_paid;
 	// for summary section, just adjust based on increase/decrease
-	$qty_increase = $redeem - $orig_redeem;
+	$qty_increase = $redeem_qty- $orig_redeem_qty;
 	$revenue_increase = $qty_increase * $gr_value;
 	$commission_increase = ($revenue_increase / 100) * $commission_value;
 	$vat_increase = ($commission_increase / 100) * $vat_value;
@@ -93,7 +93,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	<input type='hidden' id='taste-gr-value' value='$gr_value'>
 	<input type='hidden' id='taste-commission-value' value='$commission_value'>
 	<input type='hidden' id='taste-vat-value' value='$vat_value'>
-	<input type='hidden' id='taste-redeem' value='$redeem'>
+	<input type='hidden' id='taste-redeem-qty' value='$redeem_qty'>
 	<input type='hidden' id='taste-total-sold' value='$total_sold'>
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
 	";
@@ -102,7 +102,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	$sum_gr_value = $venue_info['revenue'] + $revenue_increase;
 	$sum_commission = $venue_info['commission'] + $commission_increase;
 	$sum_vat = $venue_info['vat'] + $vat_increase;
-	$sum_redeemed = $venue_info['redeemed'] + $qty_increase;
+	$sum_redeemed_qty = $venue_info['redeemed_qty'] + $qty_increase;
 	$sum_net_payable = $venue_info['net_payable'] + $payable_increase;
 	$sum_total_paid = $venue_info['paid_amount'];
 	$sum_balance_due = $venue_info['balance_due'] + $balance_due_increase;
@@ -111,14 +111,14 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	<input type='hidden' id='sum-gr-value' value='$sum_gr_value'>
 	<input type='hidden' id='sum-commission' value='$sum_commission'>
 	<input type='hidden' id='sum-vat' value='$sum_vat'>
-	<input type='hidden' id='sum-redeemed' value='$sum_redeemed'>
+	<input type='hidden' id='sum-redeemed-qty' value='$sum_redeemed_qty'>
 	<input type='hidden' id='sum-net-payable' value='$sum_net_payable'>
 	<input type='hidden' id='sum-total-paid' value='$sum_total_paid'>
 	<input type='hidden' id='sum-balance-due' value='$sum_balance_due'>
 	";
 
 	$ret_json = array(
-		'redeem' => $redeem,
+		'redeemQty' => $redeem_qty,
 		'totalSold' => $total_sold,
 		'grevenue' => $currency . ' ' . number_format($grevenue, 2),
 		'commission' => $currency . ' ' . number_format($commission, 2),
@@ -129,7 +129,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 		'sumGrValue' => $currency . ' ' . num_display($sum_gr_value),
 		'sumCommission' => $currency . ' ' . num_display($sum_commission),
 		'sumVat'  => $currency . ' ' . num_display($sum_vat),
-		'sumRedeemed' => $sum_redeemed,
+		'sumRedeemedQty' => $sum_redeemed_qty,
 		'sumNetPayable' => $currency . ' ' . num_display($sum_net_payable),
 		'sumTotalPaid' => $currency . ' ' . num_display($sum_total_paid),
 		'sumBalanceDue' => $currency . ' ' . num_display($sum_balance_due),

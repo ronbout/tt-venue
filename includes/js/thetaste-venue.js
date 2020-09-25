@@ -137,8 +137,8 @@ const updateOfferCalcs = (respObj, productId) => {
 	jQuery("#commission-display").html(respObj.commission);
 	jQuery("#vat-display").html(respObj.vat);
 	jQuery("#payable-display").html(respObj.payable);
-	jQuery("#redeem-display").html(respObj.redeem);
-	jQuery("#total-sold-display").html(respObj.total_sold);
+	jQuery("#redeem-qty-display").html(respObj.redeemQty);
+	jQuery("#total-sold-display").html(respObj.totalSold);
 	jQuery("#balance-due-display").html(respObj.balanceDue);
 	// table items per product id  -- must strip currency sign
 	jQuery("#grevenue-display-" + productId).html(respObj.grevenue.split(" ")[1]);
@@ -147,7 +147,7 @@ const updateOfferCalcs = (respObj, productId) => {
 	);
 	jQuery("#vat-display-" + productId).html(respObj.vat.split(" ")[1]);
 	jQuery("#payable-display-" + productId).html(respObj.payable.split(" ")[1]);
-	jQuery("#redeem-display-" + productId).html(respObj.redeem);
+	jQuery("#redeem-qty-display-" + productId).html(respObj.redeemQty);
 	// jQuery("#total-sold-display-" + productId).html(respObj.total_sold.split(" ")[1]);
 	jQuery("#balance-due-display-" + productId).html(
 		respObj.balanceDue.split(" ")[1]
@@ -169,7 +169,7 @@ const updateVenueCalcs = (respObj) => {
 	jQuery("#gr-value-table-total").html(respObj.sumGrValue.split(" ")[1]);
 	jQuery("#net-payable-table-total").html(respObj.sumNetPayable.split(" ")[1]);
 	jQuery("#balance-due-table-total").html(respObj.sumBalanceDue.split(" ")[1]);
-	jQuery("#redeem-display-table-total").html(respObj.sumRedeemed);
+	jQuery("#redeem-qty-display-table-total").html(respObj.sumRedeemedQty);
 	jQuery("#commission-display-table-total").html(
 		respObj.sumCommission.split(" ")[1]
 	);
@@ -182,7 +182,7 @@ const tasteGetProductInfo = () => {
 	productInfo.gr_value = jQuery("#taste-gr-value").val();
 	productInfo.commission_value = jQuery("#taste-commission-value").val();
 	productInfo.vat_value = jQuery("#taste-vat-value").val();
-	productInfo.redeem = jQuery("#taste-redeem").val();
+	productInfo.redeem_qty = jQuery("#taste-redeem-qty").val();
 	productInfo.total_sold = jQuery("#taste-total-sold").val();
 	productInfo.total_paid = jQuery("#taste-total-paid").val();
 	return productInfo;
@@ -193,7 +193,7 @@ const tasteGetVenueInfo = () => {
 	venueInfo.revenue = jQuery("#sum-gr-value").val();
 	venueInfo.commission = jQuery("#sum-commission").val();
 	venueInfo.vat = jQuery("#sum-vat").val();
-	venueInfo.redeemed = jQuery("#sum-redeemed").val();
+	venueInfo.redeemed_qty = jQuery("#sum-redeemed-qty").val();
 	venueInfo.net_payable = jQuery("#sum-net-payable").val();
 	venueInfo.paid_amount = jQuery("#sum-total-paid").val();
 	venueInfo.balance_due = jQuery("#sum-balance-due").val();
