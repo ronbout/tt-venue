@@ -95,7 +95,13 @@ class VenueUserFields
 				/**
 				 * IF PAID MEMBER, renewal and cost are required
 				 */
-				if ( !empty($_POST['venue_paid']) && (empty($_POST['venue_renewal_date']) || empty($_POST['venue_cost']) )) {
+
+				if (empty($_POST['venue_renewal_date'])) {
+					$date_test = false;
+				} else {
+					$date_test = strtotime($_POST['venue_renewal_date']) > 0 ? strtotime($_POST['venue_renewal_date']) : false;
+				}
+				if ( !empty($_POST['venue_paid']) && (!$date_test || empty($_POST['venue_cost']) )) {
 					$errors->add( 'required_venue_member_error', __( '<strong>ERROR</strong>: Renewal Date and Membership Cost are required for Paid Member Venues', 'crf' ) );
 				}
 			}

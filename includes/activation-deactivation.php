@@ -24,7 +24,7 @@ function taste_add_venue_table() {
 			venue_type ENUM ('Restaurant', 'Bar', 'Hotel', 'Product'),
 			voucher_pct FLOAT,
 			paid_member TINYINT(1) ZEROFILL NOT NULL DEFAULT 0, 
-			member_renewal_date DATETIME,
+			member_renewal_date DATE,
 			membership_cost DECIMAL(10,2),
 			PRIMARY KEY (venue_id),
 			UNIQUE KEY (name),
