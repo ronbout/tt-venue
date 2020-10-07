@@ -75,27 +75,31 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	$sum_gr_value = $venue_info['revenue'];
 	$sum_commission = $venue_info['commission'];
 	$sum_vat = $venue_info['vat'];
+	$sum_redeemed_cnt = $venue_info['redeemed_cnt'];
 	$sum_redeemed_qty = $venue_info['redeemed_qty'];
 	$sum_net_payable = $venue_info['net_payable'];
 	$sum_total_paid = $venue_info['paid_amount'] + $map_amount;
 	$sum_balance_due = $venue_info['balance_due'] - $map_amount;
+	$multiplier = $venue_info['multiplier'];
 
 	$sum_hidden_values = "
 	<input type='hidden' id='sum-gr-value' value='$sum_gr_value'>
 	<input type='hidden' id='sum-commission' value='$sum_commission'>
 	<input type='hidden' id='sum-vat' value='$sum_vat'>
+	<input type='hidden' id='sum-redeemed-cnt' value='$sum_redeemed_cnt'>
 	<input type='hidden' id='sum-redeemed-qty' value='$sum_redeemed_qty'>
 	<input type='hidden' id='sum-net-payable' value='$sum_net_payable'>
 	<input type='hidden' id='sum-total-paid' value='$sum_total_paid'>
 	<input type='hidden' id='sum-balance-due' value='$sum_balance_due'>
+	<input type='hidden' id='sum-multiplier' value='$multiplier'>
 	";
 
 	$ret_json = array(
 		'balanceDue' => $currency . ' ' . num_display($balance_due),
 		'sumGrValue' => $currency . ' ' . num_display($sum_gr_value),
-		'sumCommision' => $currency . ' ' . num_display($sum_commission),
+		'sumCommission' => $currency . ' ' . num_display($sum_commission),
 		'sumVat'  => $currency . ' ' . num_display($sum_vat),
-		'sumRedeemedQty' => $currency . ' ' . num_display($sum_redeemed_qty),
+		'sumRedeemedQty' => $sum_redeemed_qty,
 		'sumNetPayable' => $currency . ' ' . num_display($sum_net_payable),
 		'sumTotalPaid' => $currency . ' ' . num_display($sum_total_paid),
 		'sumBalanceDue' => $currency . ' ' . num_display($sum_balance_due),

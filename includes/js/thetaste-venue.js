@@ -61,7 +61,7 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 				orderList.map((orderInfo) => {
 					if (redeemFlg) {
 						jQuery("#td-btn-order-id-" + orderInfo.orderId).html(
-							"<b>Served</b>"
+							'<button	class="btn btn-info order-unredeem-btn">Unredeem</button>'
 						);
 						jQuery("#td-check-order-id-" + orderInfo.orderId).html("");
 					} else {
@@ -80,6 +80,7 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 
 				updateOfferCalcs(respObj, productId);
 				updateVenueCalcs(respObj);
+				tasteLoadRedeemButtons();
 			}
 		},
 		error: function (xhr, status, errorThrown) {
@@ -160,8 +161,9 @@ const updateVenueCalcs = (respObj) => {
 	let servedMulti = jQuery("#sum-multiplier").val();
 	jQuery("#gr-value-total").html(respObj.sumGrValue);
 	jQuery("#paid-amount-total").html(respObj.sumTotalPaid);
+	jQuery("#vouchers-total").html(respObj.sumRedeemedQty);
 	jQuery("#served-total").html(
-		parseInt(respObj.sumRedeemed) * parseInt(servedMulti)
+		parseInt(respObj.sumRedeemedQty) * parseInt(servedMulti)
 	);
 	jQuery("#net-payable-total").html(respObj.sumNetPayable);
 	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
@@ -193,76 +195,92 @@ const tasteGetVenueInfo = () => {
 	venueInfo.revenue = jQuery("#sum-gr-value").val();
 	venueInfo.commission = jQuery("#sum-commission").val();
 	venueInfo.vat = jQuery("#sum-vat").val();
+	venueInfo.redeemed_cnt = jQuery("#sum-redeemed-cnt").val();
 	venueInfo.redeemed_qty = jQuery("#sum-redeemed-qty").val();
 	venueInfo.net_payable = jQuery("#sum-net-payable").val();
 	venueInfo.paid_amount = jQuery("#sum-total-paid").val();
 	venueInfo.balance_due = jQuery("#sum-balance-due").val();
+	venueInfo.multiplier = jQuery("#sum-multiplier").val();
 	return venueInfo;
 };
 
 const tasteLoadRedeemButtons = () => {
 	// this sets up click event for the ajax returned html
-	jQuery(".order-redeem-btn").click(function (e) {
-		e.preventDefault();
-		let $rowData = jQuery(this).parent().parent();
-		let orderId = $rowData.data("order-id");
-		let orderItemId = $rowData.data("order-item-id");
-		let orderQty = $rowData.data("order-qty");
-		tasteRedeemVoucher([{ orderId, orderItemId, orderQty }], true);
-	});
-
-	jQuery(".order-unredeem-btn").click(function (e) {
-		e.preventDefault();
-		let $rowData = jQuery(this).parent().parent();
-		let orderId = $rowData.data("order-id");
-		let orderItemId = $rowData.data("order-item-id");
-		let orderQty = $rowData.data("order-qty");
-		tasteRedeemVoucher([{ orderId, orderItemId, orderQty }], false);
-	});
-
-	jQuery("#checkbox-all").click(function (e) {
-		let checkVal = jQuery(this).prop("checked");
-		jQuery(".order-redeem-check").prop("checked", checkVal);
-		checkRedeemAllDisable();
-	});
-
-	jQuery(".order-redeem-check").click(function (e) {
-		checkRedeemAllDisable();
-	});
-
-	jQuery(".order-redeem-checked-btn").click(function (e) {
-		e.preventDefault();
-		let orderInfoList = [];
-		jQuery(".order-redeem-check:checked").each((ndx, chckbox) => {
-			let $rowData = jQuery(chckbox).parent().parent();
+	jQuery(".order-redeem-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			let $rowData = jQuery(this).parent().parent();
 			let orderId = $rowData.data("order-id");
 			let orderItemId = $rowData.data("order-item-id");
 			let orderQty = $rowData.data("order-qty");
-			orderInfoList.push({ orderId, orderItemId, orderQty });
+			tasteRedeemVoucher([{ orderId, orderItemId, orderQty }], true);
 		});
-		tasteRedeemVoucher(orderInfoList, true);
-	});
+
+	jQuery(".order-unredeem-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			let $rowData = jQuery(this).parent().parent();
+			let orderId = $rowData.data("order-id");
+			let orderItemId = $rowData.data("order-item-id");
+			let orderQty = $rowData.data("order-qty");
+			tasteRedeemVoucher([{ orderId, orderItemId, orderQty }], false);
+		});
+
+	jQuery("#checkbox-all")
+		.unbind("click")
+		.click(function (e) {
+			let checkVal = jQuery(this).prop("checked");
+			jQuery(".order-redeem-check").prop("checked", checkVal);
+			checkRedeemAllDisable();
+		});
+
+	jQuery(".order-redeem-check")
+		.unbind("click")
+		.click(function (e) {
+			checkRedeemAllDisable();
+		});
+
+	jQuery(".order-redeem-checked-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			let orderInfoList = [];
+			jQuery(".order-redeem-check:checked").each((ndx, chckbox) => {
+				let $rowData = jQuery(chckbox).parent().parent();
+				let orderId = $rowData.data("order-id");
+				let orderItemId = $rowData.data("order-item-id");
+				let orderQty = $rowData.data("order-qty");
+				orderInfoList.push({ orderId, orderItemId, orderQty });
+			});
+			tasteRedeemVoucher(orderInfoList, true);
+		});
 
 	jQuery("#make-payment-btn").length &&
-		jQuery("#make-payment-btn").click(function (e) {
-			e.preventDefault();
-			let mapAmount = jQuery("#map-amount").val();
-			tasteMakePayment(mapAmount);
-		});
+		jQuery("#make-payment-btn")
+			.unbind("click")
+			.click(function (e) {
+				e.preventDefault();
+				let mapAmount = jQuery("#map-amount").val();
+				tasteMakePayment(mapAmount);
+			});
 };
 
 const tasteLoadButtons = () => {
-	jQuery(".product-select-btn").click(function (e) {
-		e.preventDefault();
-		let prodId = jQuery(this).data("prod-id");
-		let $curProdInput = jQuery("#taste-product-id");
-		if ($curProdInput.length && $curProdInput.val() === prodId.toString()) {
-			// prod is already loaded, just scroll to the section
-			tasteScrollToVouchers();
-		} else {
-			tasteLoadVouchers(prodId);
-		}
-	});
+	jQuery(".product-select-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			let prodId = jQuery(this).data("prod-id");
+			let $curProdInput = jQuery("#taste-product-id");
+			if ($curProdInput.length && $curProdInput.val() === prodId.toString()) {
+				// prod is already loaded, just scroll to the section
+				tasteScrollToVouchers();
+			} else {
+				tasteLoadVouchers(prodId);
+			}
+		});
 };
 
 const checkRedeemAllDisable = () => {
@@ -285,15 +303,17 @@ const tasteLoadScrollUp = () => {
 			$("#topbutton").fadeIn(duration);
 		}
 	});
-	jQuery("#topbutton").click(function (e) {
-		e.preventDefault();
-		$("html, body").animate(
-			{
-				scrollTop: $("#venue-summary-div").offset().top,
-			},
-			600
-		);
-	});
+	jQuery("#topbutton")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			$("html, body").animate(
+				{
+					scrollTop: $("#venue-summary-div").offset().top,
+				},
+				600
+			);
+		});
 };
 
 const tasteScrollToVouchers = () => {

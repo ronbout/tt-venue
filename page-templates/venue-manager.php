@@ -126,7 +126,7 @@ global $wpdb;
 					break;
 				case 'Hotel':
 					$served_heading = "Rooms</br>Booked";
-					$summ_heading= "People";
+					$summ_heading= "Total</br>People";
 					// $summ_heading= "Bed</br>Nights";
 					break;	
 				case 'Product': 
@@ -279,15 +279,15 @@ function get_totals_calcs($ordered_products, $payments) {
 function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	$currency =  get_woocommerce_currency_symbol();
 	$multiplier = 'Product' === $venue_type ? 1 : 2;
-	// $num_served =  $venue_totals['redeemed_qty'] * $multiplier;
-	$num_served =  $venue_totals['order_qty'] * $multiplier;
+	$num_served =  $venue_totals['redeemed_qty'] * $multiplier;
+	// $num_served =  $venue_totals['order_qty'] * $multiplier;
 	?>
 	<div class="v-summary-container">
 		<div class="v-summary-section">
 			<h3>Vouchers</br>Sold</h3>
 			<h3>
 				<span id="vouchers-total">
-					<?php echo $venue_totals['order_qty'] ?>
+					<?php echo $venue_totals['redeemed_qty'] ?>
 				</span>
 			</h3>
 		</div>
@@ -336,8 +336,8 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 		<input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
 		<input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">
 		<input type="hidden" id="sum-vat" value="<?php echo $venue_totals['vat'] ?>">
-		<input type="hidden" id="sum-redeemed_cnt" value="<?php echo $venue_totals['redeemed_cnt'] ?>">
-		<input type="hidden" id="sum-redeemed_qty" value="<?php echo $venue_totals['redeemed_qty'] ?>">
+		<input type="hidden" id="sum-redeemed-cnt" value="<?php echo $venue_totals['redeemed_cnt'] ?>">
+		<input type="hidden" id="sum-redeemed-qty" value="<?php echo $venue_totals['redeemed_qty'] ?>">
 		<input type="hidden" id="sum-net-payable" value="<?php echo $venue_totals['net_payable'] ?>">
 		<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
 		<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
@@ -430,7 +430,7 @@ function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $com
 			</span>
 		</td>
 		<td class="table-nbr">
-			<span id="redeem-qty_display-<?php echo $id ?>">
+			<span id="redeem-qty-display-<?php echo $id ?>">
 				<?php echo $redeemed_qty ?>
 			</span>
 		</td>

@@ -58,6 +58,8 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 		$ret_qty = $redeem_flg ? ($r + $qty) : ($r - $qty);
 		return $ret_qty;
 	}, $product_info['redeem_qty']);
+	$order_cnt = count($order_qty_list);
+	$cnt_increase = $redeem_flg ?  -1 * ($order_cnt)  : $order_cnt;
 	
 	$product_id = $product_info['product_id'];
 	$gr_value = $product_info['gr_value'];
@@ -73,7 +75,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	$payable = $grevenue - ($commission + $vat);
 	$balance_due = $payable - $total_paid;
 	// for summary section, just adjust based on increase/decrease
-	$qty_increase = $redeem_qty- $orig_redeem_qty;
+	$qty_increase = $redeem_qty - $orig_redeem_qty;
 	$revenue_increase = $qty_increase * $gr_value;
 	$commission_increase = ($revenue_increase / 100) * $commission_value;
 	$vat_increase = ($commission_increase / 100) * $vat_value;
@@ -102,19 +104,23 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	$sum_gr_value = $venue_info['revenue'] + $revenue_increase;
 	$sum_commission = $venue_info['commission'] + $commission_increase;
 	$sum_vat = $venue_info['vat'] + $vat_increase;
+	$sum_redeemed_cnt = $venue_info['redeemed_cnt'] + $cnt_increase;
 	$sum_redeemed_qty = $venue_info['redeemed_qty'] + $qty_increase;
 	$sum_net_payable = $venue_info['net_payable'] + $payable_increase;
 	$sum_total_paid = $venue_info['paid_amount'];
 	$sum_balance_due = $venue_info['balance_due'] + $balance_due_increase;
+	$multiplier = $venue_info['multiplier'];
 	
 	$sum_hidden_values = "
 	<input type='hidden' id='sum-gr-value' value='$sum_gr_value'>
 	<input type='hidden' id='sum-commission' value='$sum_commission'>
 	<input type='hidden' id='sum-vat' value='$sum_vat'>
+	<input type='hidden' id='sum-redeemed-cnt' value='$sum_redeemed_cnt'>
 	<input type='hidden' id='sum-redeemed-qty' value='$sum_redeemed_qty'>
 	<input type='hidden' id='sum-net-payable' value='$sum_net_payable'>
 	<input type='hidden' id='sum-total-paid' value='$sum_total_paid'>
 	<input type='hidden' id='sum-balance-due' value='$sum_balance_due'>
+	<input type='hidden' id='sum-multiplier' value='$multiplier'>
 	";
 
 	$ret_json = array(
