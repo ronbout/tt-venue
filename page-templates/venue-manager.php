@@ -9,6 +9,17 @@ Template Name: Venue Manager
  */
 defined('ABSPATH') or die('Direct script access disallowed.');
 
+// to make the totals at the bottom of the offers list line up 
+// must set some standard td widths.  It has to be a separate 
+// table due to difficulty of scrolling a table
+// probably should convet to div's or jquery ui datatable
+define('TOTALS_TD_WIDTH', '80px');
+define('ID_TD_WIDTH', '64px', true);
+define('QTY_TD_WIDTH', '69px');
+define('EXP_TD_WIDTH', '65px');
+define('COMM_TD_WIDTH', '102px');
+define('ACTION_TD_WIDTH', '74px');
+
 global $wpdb;
 
 	if ( !is_user_logged_in()) {
@@ -121,21 +132,25 @@ global $wpdb;
 			switch($venue_type) {
 				case 'Restaurant':
 				case 'Bar':
-					$served_heading = "Tables</br>Booked";
+					$served_heading = "Total</br>Covers";
 					$summ_heading= "Total</br>Covers";
+					$multiplier = 2;
 					break;
 				case 'Hotel':
-					$served_heading = "Rooms</br>Booked";
+					$served_heading = "Total</br>People";
 					$summ_heading= "Total</br>People";
 					// $summ_heading= "Bed</br>Nights";
+					$multiplier = 2;
 					break;	
 				case 'Product': 
-					$served_heading = "Orders</br>Served";
+					$served_heading = "Products</br>Sold";
 					$summ_heading= "Products</br>Sold";
+					$multiplier = 1;
 					break;
 				default: 
-					$served_heading = "Orders</br>Served";
+					$served_heading = "Products</br>Sold";
 					$summ_heading= "Products</br>Sold";
+					$multiplier = 1;
 					$type_desc = "Venue";
 			}
 
@@ -194,13 +209,13 @@ global $wpdb;
 		<div class="panel panel-default">
 			<div id="venue-summary-div" class="panel-heading text-center"">
 						<h2>Welcome <?php echo $venue_name; ?></h2>
-						<?php display_venue_summary($venue_totals, $summ_heading, $venue_type) ?>
+						<?php display_venue_summary($venue_totals, $summ_heading, $venue_type, $multiplier) ?>
 			</div>
 			<div id="product-table-div" class="panel-body">
 				<?php
 				if (count($product_rows)) {
 					echo "<h3>$type_desc Offers</h3>";
-					display_products_table($product_calcs, $served_heading, $venue_totals);
+					display_products_table($product_calcs, $served_heading, $venue_totals, $multiplier);
 				} else {
 					echo "<h3>No Products Found</h3>";
 				}
@@ -276,11 +291,9 @@ function get_totals_calcs($ordered_products, $payments) {
 	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
 }
 
-function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
+function display_venue_summary($venue_totals, $summ_heading, $venue_type, $multiplier) {
 	$currency =  get_woocommerce_currency_symbol();
-	$multiplier = 'Product' === $venue_type ? 1 : 2;
 	$num_served =  $venue_totals['redeemed_qty'] * $multiplier;
-	// $num_served =  $venue_totals['order_qty'] * $multiplier;
 	?>
 	<div class="v-summary-container">
 		<div class="v-summary-section">
@@ -347,7 +360,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	<?php
 }
 
-function display_products_table($product_calcs, $served_heading, $venue_totals) {
+function display_products_table($product_calcs, $served_heading, $venue_totals, $multiplier) {
 	?>
 	<div id="product-table-container" class="table-fixed-container">
 		<table class="table table-striped table-bordered table-fixed">
@@ -367,106 +380,109 @@ function display_products_table($product_calcs, $served_heading, $venue_totals) 
 				<?php
 					foreach($product_calcs as $product_row) {
 						extract($product_row);
-						display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed_qty, $commission, $vat, $net_payable, $balance_due, $view);
+						display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed_qty, $commission, 
+																$vat, $net_payable, $balance_due, $view, $multiplier);
 					}
 				?>
-				<tr>
-					<?php display_table_totals($venue_totals) ?>
-				</tr>
 			</tbody>
 		</table>
 	</div>
+	<?php display_table_totals($venue_totals, $multiplier) ?>
 	<?php
 }
 
-function display_table_totals($venue_totals) {
+function display_table_totals($venue_totals, $multiplier) {
 	?>
-	<td colspan="3" class="table-total-label">
-		Totals:
-	</td>
-	<td class="table-nbr">
-		<span id="gr-value-table-total">
-			<?php echo num_display($venue_totals['revenue']) ?>
-		</span>
-	</td>
-	<td class="table-nbr">
-		<span id="redeem-qty-display-table-total">
-			<?php echo $venue_totals['redeemed_qty'] ?>
-		</span>
-	</td>
-	<td class="table-nbr">
-		<span id="commission-display-table-total">
-			<?php echo num_display($venue_totals['commission']) ?>
-		</span>
-	</td>
-	<td class="table-nbr">
-		<span id="vat-display-table-total">
-			<?php echo num_display($venue_totals['vat']) ?>
-		</span>
-	</td>
-	<td class="table-nbr">
-		<span id="net-payable-table-total">
-			<?php echo num_display($venue_totals['net_payable']) ?>
-		</span>
-	</td>
-	<td class="table-nbr">
-		<span id="balance-due-table-total">
-			<?php echo num_display($venue_totals['balance_due']) ?>
-		</span>
-	</td>
-	<td>&nbsp; </td>
+	<table class="table table-striped table-bordered table-fixed" style="width: 1091px;">
+		<tbody>
+			<tr>
+				<td style="width: <?php echo ID_TD_WIDTH?>;">&nbsp;</td>
+				<td>&nbsp;</td>
+				<td class="table-total-label" style="width: <?php echo EXP_TD_WIDTH?>;">
+					Totals:
+				</td>
+				<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
+					<span id="gr-value-table-total">
+						<?php echo num_display($venue_totals['revenue']) ?>
+					</span>
+				</td>
+				<td class="table-nbr" style="width: <?php echo QTY_TD_WIDTH?>;">
+					<span id="redeem-qty-display-table-total">
+						<?php echo $venue_totals['redeemed_qty']  * $multiplier ?>
+					</span>
+				</td>
+				<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
+					<span id="commission-display-table-total">
+						<?php echo num_display($venue_totals['commission']) ?>
+					</span>
+				</td>
+				<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
+					<span id="vat-display-table-total">
+						<?php echo num_display($venue_totals['vat']) ?>
+					</span>
+				</td>
+				<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
+					<span id="net-payable-table-total">
+						<?php echo num_display($venue_totals['net_payable']) ?>
+					</span>
+				</td>
+				<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
+					<span id="balance-due-table-total">
+						<?php echo num_display($venue_totals['balance_due']) ?>
+					</span>
+				</td>
+				<td style="width: <?php echo ACTION_TD_WIDTH?>;">&nbsp; </td>
+			</tr>
+		</tbody>
+	</table>
 <?php
 }
 
-function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $commission, $vat, $net_payable, $balance_due, $view) {
+function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $commission, 
+														 $vat, $net_payable, $balance_due, $view, $multiplier) {
  ?>
 	<tr>
-		<td><?php echo $id ?></td>
+		<td style="width: <?php echo ID_TD_WIDTH?>;"><?php echo $id ?></td>
 		<td><?php echo $title ?></td>
-		<td><?php echo $status ?></td>
-		<td class="table-nbr">
+		<td style="width: <?php echo EXP_TD_WIDTH?>;"><?php echo $status ?></td>
+		<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
 			<span id="grevenue-display-<?php echo $id ?>">
 				<?php echo num_display($revenue) ?>
 			</span>
 		</td>
-		<td class="table-nbr">
+		<td class="table-nbr" style="width: <?php echo QTY_TD_WIDTH?>;">
 			<span id="redeem-qty-display-<?php echo $id ?>">
-				<?php echo $redeemed_qty ?>
+				<?php echo $redeemed_qty * $multiplier ?>
 			</span>
 		</td>
-		<td class="table-nbr">
+		<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
 			<span id="commission-display-<?php echo $id ?>">
 				<?php echo num_display($commission) ?>
 			</span>
 		</td>
-		<td class="table-nbr">
+		<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
 			<span id="vat-display-<?php echo $id ?>">
 				<?php echo num_display($vat) ?>
 			</span>
 		</td>
-		<td class="table-nbr">
+		<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
 			<span id="payable-display-<?php echo $id ?>">
 				<?php echo num_display($net_payable) ?>
 			</span>
 		</td>
-		<td class="table-nbr">
+		<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
 			<span id="balance-due-display-<?php echo $id ?>">
 				<?php echo num_display($balance_due) ?>
 			</span>
 		</td>
-		<td><?php echo $view ?></td>
+		<td style="width: <?php echo ACTION_TD_WIDTH?>;"><?php echo $view ?></td>
 	</tr>
  <?php
 }
 
 function order_product_table($product_rows) {
-	/**
-	 * 
-	 * filter by active and expired, then merge 
-	 * 2nd sort should be by date
-	 * 
-	 * 
-	 */
+	// filter by active and expired, then merge 
+	// 2nd sort should be by date
 	$active_products = array();
 	$expired_products = array();
 	array_walk($product_rows, function($row, $k) use (&$active_products, &$expired_products) {
@@ -480,35 +496,7 @@ function order_product_table($product_rows) {
 	$ordered_products = array_merge($active_products, $expired_products);
 	return $ordered_products;
 }
-/*
-function display_venue_select() {
-	global $wpdb;
-	// build list of venues 
-	$venue_rows = $wpdb->get_results("
-		SELECT venue_id, name, description, venue_type
-		FROM " . $wpdb->prefix . "taste_venue
-		ORDER BY venue_type, name
-	", ARRAY_A);
-	?>
-	<div id="venue-form-container">
-	<form method="post" action="" id="venue-select-form">
-		<label for="venue-select">Choose a Venue:</label>
-		<select name="venue-id" id="venue-select" class="form-control">
-			<option value=0>Select a Venue</option>
-		<?php 
-			foreach ($venue_rows as $venue_row) {
-				echo "<option value={$venue_row['venue_id']}>{$venue_row['name']}</option>";
-			}
-		?>
-		</select>
-		<br/>
-		<button type="submit" id="select-venue-btn" disabled class="btn btn-default">Submit</button>
-	</form>
-	</div>
 
-<?php
-}
-*/
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting
 	return number_format(round($num,2), 2);

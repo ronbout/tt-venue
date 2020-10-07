@@ -53,7 +53,7 @@
 }
 
 .table-fixed-container {
-	overflow-y: auto;
+	overflow-y: scroll;
 	border-top: 1px solid #ddd;
 }
 
