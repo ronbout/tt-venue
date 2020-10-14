@@ -1,7 +1,8 @@
 <?php 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct, $paid, $renewal, $cost) {
+function display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
+																				 $country, $phone, $type, $pct, $paid, $renewal, $cost) {
 			?>
 			<div id="user-venue-fields" style="display: <?php echo ('venue' === $role) ? 'block' : 'none' ?>">
 				<h3><?php esc_html_e('Venue Information'); ?>
@@ -33,11 +34,65 @@ function display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct
 						</td>
 					</tr>
 					<tr>
+						<th><label for="venue-address1"><?php esc_html_e('Address Line 1'); ?></label>
+						</th>
+						<td>
+							<input type="text" id="venue-address1" name="venue_address1"
+								value="<?php echo esc_attr($address1); ?>"
+								class="regular-text" />
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-address2"><?php esc_html_e('Address Line 2'); ?></label>
+						</th>
+						<td>
+							<input type="text" id="venue-address2" name="venue_address2"
+								value="<?php echo esc_attr($address2); ?>"
+								class="regular-text" />
+						</td>
+					</tr>
+					<tr>
 						<th><label for="venue-city"><?php esc_html_e('City'); ?></label>
 						</th>
 						<td>
 							<input type="text" id="venue-city" name="venue_city"
 								value="<?php echo esc_attr($city); ?>"
+								class="regular-text" />
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-postcode"><?php esc_html_e('Postcode / ZIP'); ?></label>
+						</th>
+						<td>
+							<input type="text" id="venue-postcode" name="venue_postcode"
+								value="<?php echo esc_attr($postcode); ?>"
+								class="regular-text" />
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-country"><?php esc_html_e('Country / Region'); ?></label>
+						</th>
+						<td>
+							<input type="text" id="venue-country" name="venue_country"
+								value="<?php echo esc_attr($country); ?>"
+								class="regular-text" />
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-state"><?php esc_html_e('State / County'); ?></label>
+						</th>
+						<td>
+							<input type="text" id="venue-state" name="venue_state"
+								value="<?php echo esc_attr($state); ?>"
+								class="regular-text" />
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-phone"><?php esc_html_e('Phone'); ?></label>
+						</th>
+						<td>
+							<input type="text" id="venue-phone" name="venue_phone"
+								value="<?php echo esc_attr($phone); ?>"
 								class="regular-text" />
 						</td>
 					</tr>

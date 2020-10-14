@@ -66,14 +66,21 @@ class VenueUserFields
 			$role = !empty($_POST['role']) ? $_POST['role'] : '';
 			$name = !empty($_POST['venue_name']) ? $_POST['venue_name'] : '';
 			$desc = !empty($_POST['venue_desc']) ? $_POST['venue_desc'] : '';
+			$address1 = !empty($_POST['venue_address1']) ? $_POST['venue_address1'] : '';
+			$address2 = !empty($_POST['venue_address2']) ? $_POST['venue_address2'] : '';
 			$city = !empty($_POST['venue_city']) ? $_POST['venue_city'] : '';
+			$postcode = !empty($_POST['venue_postcode']) ? $_POST['venue_postcode'] : '';
+			$state = !empty($_POST['venue_state']) ? $_POST['venue_state'] : '';
+			$country = !empty($_POST['venue_country']) ? $_POST['venue_country'] : '';
+			$phone = !empty($_POST['venue_phone']) ? $_POST['venue_phone'] : '';
 			$type = !empty($_POST['venue_type']) ? $_POST['venue_type'] : 'none';
 			$pct  = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : 10;
 			$paid = !empty($_POST['venue_paid']) ? $_POST['venue_paid'] : 0;
 			$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
 			$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : '';
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
-			display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct, $paid, $renewal, $cost);
+			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
+																			$country, $phone, $type, $pct, $paid, $renewal, $cost);
 		}
 		
 		/**
@@ -142,7 +149,13 @@ class VenueUserFields
 
 				$name = stripslashes($_POST['venue_name']);
 				$desc = !empty($_POST['venue_desc']) ? stripslashes($_POST['venue_desc']) : NULL;
+				$address1 = !empty($_POST['venue_address1']) ? stripslashes($_POST['venue_address1']) : NULL;
+				$address2 = !empty($_POST['venue_address2']) ? stripslashes($_POST['venue_address2']) : NULL;
 				$city = !empty($_POST['venue_city']) ? stripslashes($_POST['venue_city']) : NULL;
+				$postcode = !empty($_POST['venue_postcode']) ? stripslashes($_POST['venue_postcode']) : NULL;
+				$state = !empty($_POST['venue_state']) ? stripslashes($_POST['venue_state']) : NULL;
+				$country = !empty($_POST['venue_country']) ? stripslashes($_POST['venue_country']) : NULL;
+				$phone = !empty($_POST['venue_phone']) ? stripslashes($_POST['venue_phone']) : NULL;
 				$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? NULL : stripslashes($_POST['venue_type']);
 				$pct = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : NULL;
 				$paid = !empty($_POST['venue_paid']) && $_POST['venue_paid'] === "on" ? 1 : 0;
@@ -151,14 +164,20 @@ class VenueUserFields
 
 				$data['name'] = $name;
 				$data['description'] =  $desc;
+				$data['address1'] = $address1;
+				$data['address2'] = $address2;
 				$data['city'] = $city;
+				$data['postcode'] = $postcode;
+				$data['state'] = $state;
+				$data['country'] = $country;
+				$data['phone'] = $phone;
 				$data['venue_type'] = $type;
 				$data['voucher_pct'] = $pct;
 				$data['paid_member'] = $paid;
 				$data['member_renewal_date'] = $renewal;
 				$data['membership_cost'] = $cost;
 
-				$format = array_merge($format, array('%s', '%s', '%s', '%s', '%f', '%d', '%s', '%f'));
+				$format = array_merge($format, array('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%f','%d','%s','%f'));
 
 				if ($insert_flg) {
 					$rows_affected = $wpdb->insert($venue_table, $data, $format);
@@ -181,7 +200,13 @@ class VenueUserFields
 			// set up defaults
 			$name = '';
 			$desc = '';
+			$address1 = '';
+			$address2 = '';
 			$city = '';
+			$postcode = '';
+			$state = '';
+			$country = '';
+			$phone = '';
 			$type = 'none';
 			$pct = 10;
 			$paid = 0;
@@ -193,7 +218,13 @@ class VenueUserFields
 			if (isset($_POST['venue_name'])) {
 				$name = $_POST['venue_name'];
 				$desc = $_POST['venue_desc'];
+				$address1 = $_POST['venue_address1'];
+				$address2 = $_POST['venue_address2'];
 				$city = $_POST['venue_city'];
+				$postcode = $_POST['venue_postcode'];
+				$state = $_POST['venue_state'];
+				$country = $_POST['venue_country'];
+				$phone = $_POST['venue_phone'];
 				$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? 'none' : $_POST['venue_type'];
 				$pct = $_POST['venue_pct'];
 				$paid = !empty($_POST['venue_paid']) ? $_POST['venue_paid'] : 0;
@@ -202,8 +233,8 @@ class VenueUserFields
 			} elseif ('venue' === $role) {
 					// we came in with the user role = venue and should have db row
 					$sql = "
-					SELECT name, description, city, venue_type, voucher_pct, paid_member,
-						DATE(member_renewal_date) as member_renewal_date, membership_cost
+					SELECT name, description, address1, address2, city, postcode, state, country, phone, venue_type, voucher_pct, 
+								 paid_member,	DATE(member_renewal_date) as member_renewal_date, membership_cost
 					FROM {$wpdb->prefix}taste_venue
 					WHERE venue_id = %d
 				";
@@ -211,7 +242,13 @@ class VenueUserFields
 				if (count($venue_row)) {
 					$name = $venue_row[0]['name'];
 					$desc = $venue_row[0]['description'];
+					$address1 = $venue_row[0]['address1'];
+					$address2 = $venue_row[0]['address2'];
 					$city = $venue_row[0]['city'];
+					$postcode = $venue_row[0]['postcode'];
+					$state = $venue_row[0]['state'];
+					$country = $venue_row[0]['country'];
+					$phone = $venue_row[0]['phone'];
 					$type = ($venue_row[0]['venue_type']) ? $venue_row[0]['venue_type'] : 'none';
 					$pct  = $venue_row[0]['voucher_pct'];
 					$paid  = $venue_row[0]['paid_member'];
@@ -221,7 +258,8 @@ class VenueUserFields
 			}
 
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
-			display_venue_fields_user_forms($role, $name, $desc, $city, $type, $pct, $paid, $renewal, $cost);
+			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
+																			$country, $phone, $type, $pct, $paid, $renewal, $cost);
 		}
 		
 
