@@ -140,3 +140,38 @@
 	display: none;
 	z-index: 9999;
 }
+
+.portal-welcome {
+	margin-top: 15px;
+}
+
+.portal-links-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.portal-link {
+	padding: 24px;
+	border-radius: 6px;
+	background-color: #eee;
+	text-align: center;
+	margin: 8px;
+	width: 45%;
+}
+
+.portal-link p {
+	margin-bottom: 14px;
+}
+
+.portal-link.coming-soon {
+	background-color: lightgreen;
+}
+
+.portal-link.coming-soon p {
+	font-size: 1.1em;
+}
+
+.venue-profile-form {
+	width: 80%;
+	margin: 12px auto;
+}

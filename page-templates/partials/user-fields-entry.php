@@ -38,7 +38,7 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</th>
 						<td>
 							<input type="text" id="venue-address1" name="venue_address1"
-								value="<?php echo esc_attr($address1); ?>"
+								value="<?php echo esc_attr($address1); ?>" maxlength="120"
 								class="regular-text" />
 						</td>
 					</tr>
@@ -47,7 +47,7 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</th>
 						<td>
 							<input type="text" id="venue-address2" name="venue_address2"
-								value="<?php echo esc_attr($address2); ?>"
+								value="<?php echo esc_attr($address2); ?>"  maxlength="120"
 								class="regular-text" />
 						</td>
 					</tr>
@@ -56,7 +56,7 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</th>
 						<td>
 							<input type="text" id="venue-city" name="venue_city"
-								value="<?php echo esc_attr($city); ?>"
+								value="<?php echo esc_attr($city); ?>" maxlength="100"
 								class="regular-text" />
 						</td>
 					</tr>
@@ -65,7 +65,7 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</th>
 						<td>
 							<input type="text" id="venue-postcode" name="venue_postcode"
-								value="<?php echo esc_attr($postcode); ?>"
+								value="<?php echo esc_attr($postcode); ?>" maxlength="20"
 								class="regular-text" />
 						</td>
 					</tr>
@@ -74,7 +74,7 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</th>
 						<td>
 							<input type="text" id="venue-country" name="venue_country"
-								value="<?php echo esc_attr($country); ?>"
+								value="<?php echo esc_attr($country); ?>" maxlength="100"
 								class="regular-text" />
 						</td>
 					</tr>
@@ -83,7 +83,7 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</th>
 						<td>
 							<input type="text" id="venue-state" name="venue_state"
-								value="<?php echo esc_attr($state); ?>"
+								value="<?php echo esc_attr($state); ?>" maxlength="100"
 								class="regular-text" />
 						</td>
 					</tr>
@@ -92,7 +92,7 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</th>
 						<td>
 							<input type="text" id="venue-phone" name="venue_phone"
-								value="<?php echo esc_attr($phone); ?>"
+								value="<?php echo esc_attr($phone); ?>" maxlength="40"
 								class="regular-text" />
 						</td>
 					</tr>

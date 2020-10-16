@@ -42,9 +42,11 @@ require_once TASTE_PLUGIN_INCLUDES.'/functions.php';
 /**
  * Venue manager set up code
  */
-// set up venue-manager.php as page template 
+// set up page templates
 function taste_add_venue_manager_template ($templates) {
 	$templates['venue-manager.php'] = 'Venue Manager';
+	$templates['venue-portal.php'] = 'Venue Portal';
+	$templates['venue-profile-page.php'] = 'Venue Profile Page';
 	return $templates;
 	}
 add_filter ('theme_page_templates', 'taste_add_venue_manager_template');
@@ -52,6 +54,12 @@ add_filter ('theme_page_templates', 'taste_add_venue_manager_template');
 function taste_redirect_page_template ($template) {
 	if (is_page_template('venue-manager.php')) {
 		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-manager.php';
+	}
+	if (is_page_template('venue-portal.php')) {
+		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-portal.php';
+	}
+	if (is_page_template('venue-profile-page.php')) {
+		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-profile-page.php';
 	}
 	return $template;
 }
