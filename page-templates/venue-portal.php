@@ -57,7 +57,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 		</header>
 		<div class="portal-welcome panel panel-default">
 			<div id="venue-summary-div" class="panel-heading text-center"">
-				<h2>Welcome to Your Portal, <?php echo $venue_name; ?></h2>
+				<h2>Welcome to Your Dashboard, <?php echo $venue_name; ?></h2>
 			</div>
 			<div class="portal-links-container panel-body">
 				<div class="portal-link">
@@ -69,7 +69,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 				<div class="portal-link">
 					<p>Access the original Voucher Redemption page</p>
 					<a href="<?php echo get_site_url(null, $venue_voucher_page) ?>" target="_blank">
-						<button class="btn btn-primary">Manager Vouchers</button>
+						<button class="btn btn-primary">Manage Vouchers</button>
 					</a>
 				</div>
 				<div class="portal-link coming-soon">
