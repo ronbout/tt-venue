@@ -148,6 +148,7 @@
 .portal-links-container {
 	display: flex;
 	flex-direction: row;
+	justify-content: space-around;
 }
 
 .portal-link {
@@ -157,18 +158,18 @@
 	text-align: center;
 	margin: 8px;
 	width: 45%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
 }
 
 .portal-link p {
 	margin-bottom: 14px;
+	font-size: 1.1em;
 }
 
 .portal-link.coming-soon {
 	background-color: lightgreen;
-}
-
-.portal-link.coming-soon p {
-	font-size: 1.1em;
 }
 
 .venue-profile-form {

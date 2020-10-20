@@ -78,9 +78,10 @@ class VenueUserFields
 			$paid = !empty($_POST['venue_paid']) ? $_POST['venue_paid'] : 0;
 			$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
 			$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : '';
+			$use_new = !empty($_POST['venue_use_new']) ? $_POST['venue_use_new'] : 0;
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
 			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																			$country, $phone, $type, $pct, $paid, $renewal, $cost);
+																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new);
 		}
 		
 		/**
@@ -161,6 +162,7 @@ class VenueUserFields
 				$paid = !empty($_POST['venue_paid']) && $_POST['venue_paid'] === "on" ? 1 : 0;
 				$renewal = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : NULL;
 				$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : NULL;
+				$use_new = !empty($_POST['venue_use_new']) && $_POST['venue_use_new'] === "on" ? 1 : 0;
 
 				$data['name'] = $name;
 				$data['description'] =  $desc;
@@ -176,8 +178,9 @@ class VenueUserFields
 				$data['paid_member'] = $paid;
 				$data['member_renewal_date'] = $renewal;
 				$data['membership_cost'] = $cost;
+				$data['use_new_campaign'] = $use_new;
 
-				$format = array_merge($format, array('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%f','%d','%s','%f'));
+				$format = array_merge($format, array('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%f','%d','%s','%f', '%d'));
 
 				if ($insert_flg) {
 					$rows_affected = $wpdb->insert($venue_table, $data, $format);
@@ -212,6 +215,7 @@ class VenueUserFields
 			$paid = 0;
 			$renewal  = '';
 			$cost  = '';
+			$use_new = 0;
 
 			// if POST has venue data, it takes precedence as it means the user 
 			// created info but could not save due to error (missing venue name?)
@@ -230,11 +234,12 @@ class VenueUserFields
 				$paid = !empty($_POST['venue_paid']) ? $_POST['venue_paid'] : 0;
 				$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
 				$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : '';
+				$use_new = !empty($_POST['venue_use_new']) ? $_POST['venue_use_new'] : 0;
 			} elseif ('venue' === $role) {
 					// we came in with the user role = venue and should have db row
 					$sql = "
 					SELECT name, description, address1, address2, city, postcode, state, country, phone, venue_type, voucher_pct, 
-								 paid_member,	DATE(member_renewal_date) as member_renewal_date, membership_cost
+								 paid_member,	DATE(member_renewal_date) as member_renewal_date, membership_cost, use_new_campaign
 					FROM {$wpdb->prefix}taste_venue
 					WHERE venue_id = %d
 				";
@@ -254,12 +259,13 @@ class VenueUserFields
 					$paid  = $venue_row[0]['paid_member'];
 					$renewal  = ($venue_row[0]['member_renewal_date']) ? $venue_row[0]['member_renewal_date'] : '';
 					$cost  = ($venue_row[0]['membership_cost']) ? $venue_row[0]['membership_cost'] : '';
+					$use_new  = $venue_row[0]['use_new_campaign'];
 				}
 			}
 
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
 			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																			$country, $phone, $type, $pct, $paid, $renewal, $cost);
+																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new);
 		}
 		
 

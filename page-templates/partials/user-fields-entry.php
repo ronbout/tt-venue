@@ -2,7 +2,7 @@
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 function display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																				 $country, $phone, $type, $pct, $paid, $renewal, $cost) {
+																				 $country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new) {
 			?>
 			<div id="user-venue-fields" style="display: <?php echo ('venue' === $role) ? 'block' : 'none' ?>">
 				<h3><?php esc_html_e('Venue Information'); ?>
@@ -143,6 +143,15 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 							<input type="number" id="venue-cost" min="0" max="1000" name="venue_cost"
 								value="<?php echo $cost ?>" 
 							/>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue_use_new"><?php esc_html_e('Use New Campaign Manager'); ?></label>
+						</th>
+						<td>
+							<input type="checkbox" id="venue-use-new" name="venue_use_new"
+								<?php echo $use_new ? 'checked' : '' ?>
+							 />
 						</td>
 					</tr>
 				</table>

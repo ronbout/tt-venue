@@ -24,12 +24,13 @@ if ( !is_user_logged_in()) {
 	// get venue name and other info
 	$venue_table = $wpdb->prefix."taste_venue";
 	$venue_row = $wpdb->get_results($wpdb->prepare("
-		SELECT v.name, v.venue_type
+		SELECT v.name, v.venue_type, v.use_new_campaign
 		FROM $venue_table v
 		WHERE	v.venue_id = %d", 
 	$venue_id));
 	$venue_name = $venue_row[0]->name;
 	$venue_type = $venue_row[0]->venue_type;
+	$use_new_campaign = $venue_row[0]->use_new_campaign;
 	$venue_voucher_page = 'Hotel' === $venue_type ? '/hotelmanager' : '/restaurantmanager';
 	$type_desc = $venue_type;
 }
@@ -66,19 +67,42 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 						<button class="btn btn-primary">Profile Information Page</button>
 					</a>
 				</div>
-				<div class="portal-link">
-					<p>Access the original Voucher Redemption page</p>
-					<a href="<?php echo get_site_url(null, $venue_voucher_page) ?>" target="_blank">
-						<button class="btn btn-primary">Manage Vouchers</button>
-					</a>
-				</div>
-				<div class="portal-link coming-soon">
-					<h2>Coming Soon!</h2>
-					<p>A full-service Campaign Manager </br>for all your Offers</p>
-				</div>
-				
+				<?php if ($use_new_campaign) {
+					display_new_portal();
+				} else {
+					display_old_portal();
+				}
+				?>
 			</div>
 		</div>
 	</main>
 </body>
 </html>
+
+<?php
+function display_new_portal() {
+	?>
+	<div class="portal-link coming-soon">
+		<h2>Now Available!</h2>
+		<p>Manage all your offers</p>
+		<a href="<?php echo get_site_url(null, '/campaign-manager') ?>">
+			<button class="btn btn-primary">Campaign Manager</button>
+		</a>
+	</div>
+	<?php
+}
+
+function display_old_portal() {
+	?>
+	<div class="portal-link">
+		<p>Access the original Voucher Redemption page</p>
+		<a href="<?php echo get_site_url(null, $venue_voucher_page) ?>" target="_blank">
+			<button class="btn btn-primary">Manage Vouchers</button>
+		</a>
+	</div>
+	<div class="portal-link coming-soon">
+		<h2>Coming Soon!</h2>
+		<p>A full-service Campaign Manager </br>for all your Offers</p>
+	</div>
+	<?php
+}
