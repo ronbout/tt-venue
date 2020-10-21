@@ -70,12 +70,21 @@ function outstanding_display_product_table($year, $year_type) {
 	<div class="panel panel-default">
 		<div id="venue-summary-div" class="panel-heading text-center"">
 					<h2>Year:  <?php echo $year ?></h2>
-					<?php display_venue_summary($venue_totals, $venue_type) ?>
+					<?php display_venue_summary($venue_totals, $venue_type, $year, $year_type) ?>
 		</div>
 		<div id="product-table-div" class="panel-body">
 			<?php
 			if (count($product_rows)) {
-				echo "<h3>$type_desc Offers</h3>";
+				?>
+				<div id="out-products-table-title-action">
+					<div><h3>Offers</h3></div>
+					<div>
+						<a href="#" id ="export" role='button'>
+							<button class="btn btn-info">Download CSV</button>
+						</a>
+					</div>
+				</div>
+				<?php
 				display_products_table($product_calcs, $served_heading, $venue_totals);
 			} else {
 				echo "<h3>No Products Found</h3>";
@@ -139,7 +148,7 @@ function get_totals_calcs($ordered_products, $payments) {
 	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
 }
 
-function display_venue_summary($venue_totals, $venue_type) {
+function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 	$currency =  get_woocommerce_currency_symbol();
 	?>
 	<div class="v-summary-container">
@@ -193,6 +202,8 @@ function display_venue_summary($venue_totals, $venue_type) {
 	</div>
 	</div>
 	<div id="summary-hidden-values">
+	<input type="hidden" id="outstanding-year" value="<?php echo $year ?>">
+	<input type="hidden" id="outstanding-year-type" value="<?php echo $year_type ?>">
 	<input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
 	<input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">
 	<input type="hidden" id="sum-vat" value="<?php echo $venue_totals['vat'] ?>">
@@ -210,7 +221,7 @@ function display_venue_summary($venue_totals, $venue_type) {
 function display_products_table($product_calcs, $venue_totals) {
 	?>
 	<div id="product-table-container" class="table-fixed-container">
-	<table class="table table-striped table-bordered table-fixed">
+	<table id="out-product-table" class="table table-striped table-bordered table-fixed">
 		<thead>
 			<th>ID</th>
 			<th>Offer</th>

@@ -185,3 +185,14 @@
 	width: 50%;
 	margin: auto;
 }
+
+#out-products-table-title-action {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin-top: 8px;
+}
+
+#out-products-table-title-action div {
+	width: 120px;
+}
