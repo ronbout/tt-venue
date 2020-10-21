@@ -185,7 +185,7 @@ function display_venue_form($venue_info, $name) {
 		<div class="form-group">
     	<div class="col-sm-offset-2 col-sm-10">
 				<button type="submit" name="venue_profile_form_submit" class="btn btn-primary">Update</button>
-		</div>
+			</div>
 		</div>
 	<?php
 }

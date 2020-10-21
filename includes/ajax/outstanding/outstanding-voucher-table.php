@@ -13,7 +13,7 @@ function display_voucher_table($product_id, $multiplier) {
 		AND p.id = %d", $product_id));
 
 	if (count($myrows1) > 0) {
-		require_once(plugin_dir_path(__FILE__). 'redeem-vouchers-list.php');
+		require_once(plugin_dir_path(__FILE__). 'outstanding-vouchers-list.php');
 	}	else {
 		echo  '<div class="alert alert-danger" role="alert">
 				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>

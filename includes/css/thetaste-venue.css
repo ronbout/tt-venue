@@ -176,3 +176,12 @@
 	width: 80%;
 	margin: 12px auto;
 }
+
+.highlight-row {
+	background-color: orange;
+}
+
+.year-form-container {
+	width: 50%;
+	margin: auto;
+}

@@ -39,6 +39,8 @@ if (is_admin()) {
 require_once TASTE_PLUGIN_INCLUDES.'/ajax/ajax-functions.php';
 require_once TASTE_PLUGIN_INCLUDES.'/functions.php';
 
+require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/ajax-functions.php';
+
 /**
  * Venue manager set up code
  */
@@ -47,6 +49,7 @@ function taste_add_venue_manager_template ($templates) {
 	$templates['venue-manager.php'] = 'Venue Manager';
 	$templates['venue-portal.php'] = 'Venue Portal';
 	$templates['venue-profile-page.php'] = 'Venue Profile Page';
+	$templates['outstanding.php'] = 'Outstanding Debts';
 	return $templates;
 	}
 add_filter ('theme_page_templates', 'taste_add_venue_manager_template');
@@ -60,6 +63,9 @@ function taste_redirect_page_template ($template) {
 	}
 	if (is_page_template('venue-profile-page.php')) {
 		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-profile-page.php';
+	}
+	if (is_page_template('outstanding.php')) {
+		$template = plugin_dir_path( __FILE__ ).'page-templates/outstanding.php';
 	}
 	return $template;
 }

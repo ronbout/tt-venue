@@ -3,7 +3,7 @@ jQuery(document).ready(function () {
 	jQuery("#topbutton").length && tasteLoadScrollUp();
 });
 
-const tasteLoadVouchers = (prodId) => {
+const tasteLoadVouchers = (prodId, multiplier) => {
 	let modalMsg = "Loading Vouchers...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	jQuery.ajax({
@@ -14,6 +14,7 @@ const tasteLoadVouchers = (prodId) => {
 			action: "load_vouchers",
 			security: tasteVenue.security,
 			product_id: prodId,
+			multiplier: multiplier,
 		},
 		success: function (responseText) {
 			tasteCloseMsg();
@@ -134,7 +135,6 @@ const tasteMakePayment = (mapAmount) => {
 };
 
 const updateOfferCalcs = (respObj, productId) => {
-	let servedMulti = parseInt(jQuery("#sum-multiplier").val());
 	jQuery("#grevenue-display").html(respObj.grevenue);
 	jQuery("#commission-display").html(respObj.commission);
 	jQuery("#vat-display").html(respObj.vat);
@@ -149,9 +149,7 @@ const updateOfferCalcs = (respObj, productId) => {
 	);
 	jQuery("#vat-display-" + productId).html(respObj.vat.split(" ")[1]);
 	jQuery("#payable-display-" + productId).html(respObj.payable.split(" ")[1]);
-	jQuery("#redeem-qty-display-" + productId).html(
-		parseInt(respObj.redeemQty) * servedMulti
-	);
+	jQuery("#redeem-qty-display-" + productId).html(respObj.numServed);
 	// jQuery("#total-sold-display-" + productId).html(respObj.total_sold.split(" ")[1]);
 	jQuery("#balance-due-display-" + productId).html(
 		respObj.balanceDue.split(" ")[1]
@@ -161,20 +159,17 @@ const updateOfferCalcs = (respObj, productId) => {
 };
 
 const updateVenueCalcs = (respObj) => {
-	let servedMulti = parseInt(jQuery("#sum-multiplier").val());
 	jQuery("#gr-value-total").html(respObj.sumGrValue);
 	jQuery("#paid-amount-total").html(respObj.sumTotalPaid);
 	jQuery("#vouchers-total").html(respObj.sumRedeemedQty);
-	jQuery("#served-total").html(parseInt(respObj.sumRedeemedQty) * servedMulti);
+	jQuery("#served-total").html(respObj.sumNumServed);
 	jQuery("#net-payable-total").html(respObj.sumNetPayable);
 	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
 	jQuery("#summary-hidden-values").html(respObj.sumHiddenValues);
 	jQuery("#gr-value-table-total").html(respObj.sumGrValue.split(" ")[1]);
 	jQuery("#net-payable-table-total").html(respObj.sumNetPayable.split(" ")[1]);
 	jQuery("#balance-due-table-total").html(respObj.sumBalanceDue.split(" ")[1]);
-	jQuery("#redeem-qty-display-table-total").html(
-		parseInt(respObj.sumRedeemedQty) * servedMulti
-	);
+	jQuery("#redeem-qty-display-table-total").html(respObj.sumNumServed);
 	jQuery("#commission-display-table-total").html(
 		respObj.sumCommission.split(" ")[1]
 	);
@@ -190,6 +185,7 @@ const tasteGetProductInfo = () => {
 	productInfo.redeem_qty = jQuery("#taste-redeem-qty").val();
 	productInfo.total_sold = jQuery("#taste-total-sold").val();
 	productInfo.total_paid = jQuery("#taste-total-paid").val();
+	productInfo.multiplier = jQuery("#taste-product-multiplier").val();
 	return productInfo;
 };
 
@@ -200,10 +196,10 @@ const tasteGetVenueInfo = () => {
 	venueInfo.vat = jQuery("#sum-vat").val();
 	venueInfo.redeemed_cnt = jQuery("#sum-redeemed-cnt").val();
 	venueInfo.redeemed_qty = jQuery("#sum-redeemed-qty").val();
+	venueInfo.num_served = jQuery("#sum-num-served").val();
 	venueInfo.net_payable = jQuery("#sum-net-payable").val();
 	venueInfo.paid_amount = jQuery("#sum-total-paid").val();
 	venueInfo.balance_due = jQuery("#sum-balance-due").val();
-	venueInfo.multiplier = jQuery("#sum-multiplier").val();
 	return venueInfo;
 };
 
@@ -281,7 +277,9 @@ const tasteLoadButtons = () => {
 				// prod is already loaded, just scroll to the section
 				tasteScrollToVouchers();
 			} else {
-				tasteLoadVouchers(prodId);
+				let $rowData = jQuery(this).parent().parent();
+				let multiplier = $rowData.data("multiplier");
+				tasteLoadVouchers(prodId, multiplier);
 			}
 		});
 };

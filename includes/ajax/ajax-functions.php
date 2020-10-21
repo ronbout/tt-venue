@@ -14,9 +14,10 @@ function taste_ajax_load_vouchers() {
 		wp_die();
 	}
 	$product_id = $_POST['product_id'];
+	$multiplier = $_POST['multiplier'];
 
 	require_once(plugin_dir_path(__FILE__). 'display-voucher-table.php');
-	display_voucher_table($product_id);
+	display_voucher_table($product_id, $multiplier);
 
 	wp_die();
 }

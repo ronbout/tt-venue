@@ -16,7 +16,8 @@ $myrows = $wpdb->get_results($wpdb->prepare("
 			bf.meta_value AS b_fname,
 			bl.meta_value AS b_lname,
 			be.meta_value AS b_email,
-			i.order_id, i.order_item_id as itemid, i.downloaded as downloaded,i.paid as paid
+			i.order_id, i.order_item_id as itemid, i.downloaded as downloaded,i.paid as paid,
+			o.post_date as 'order_date'
 		FROM " . $wpdb->prefix . "wc_order_product_lookup wclook
 		JOIN " . $wpdb->prefix . "woocommerce_order_itemmeta im ON im.order_item_id = wclook.order_item_id
 		LEFT JOIN " . $wpdb->prefix . "woocommerce_order_items i ON i.order_item_id = wclook.order_item_id
@@ -125,7 +126,6 @@ VAT No 3312776JH<br>
 <div class="panel panel-default">
 		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
 		<div class="panel-body">
-			<button	class="btn btn-success order-redeem-checked-btn" disabled >Redeem Checked</button>
 			<div id="voucher-table-container" class="table-fixed-container">
 				<table class="table table-striped table-bordered table-fixed">
 					<thead>
@@ -144,7 +144,7 @@ VAT No 3312776JH<br>
 						<th>Customer Name</th>
 						<th>Customer Email</th>
 						<th>Quantity</th>
-						<th>Redeem</th>
+						<th>Date</th>
 					</thead>
 					<tbody id="voucher-table-body">
 
@@ -184,27 +184,14 @@ VAT No 3312776JH<br>
 
 								<td><?= $val->quan ?> </td>
 								<td id="td-btn-order-id-<?php echo $val->order_id ?>" class="text-center">
-										<?php
-										if ($val->downloaded == '0') {
-												if ($expired_val == 'N') {
-													echo '<button	class="btn btn-success order-redeem-btn">Redeem</button>';
-												}
-												else {
-														echo 'Not Served / Expired';
-												}
-										}	else {
-											if ($expired_val == 'N') {
-												echo '<button	class="btn btn-info order-unredeem-btn">Unredeem</button>';
-											} else {
-												echo '<b>Served</b>';
-											}
-											$redeem_qty = $redeem_qty + $val->quan;
-										}
-												?>
+											<span><?php echo explode(' ',$val->order_date)[0] ?></span>
 								</td> 
 							</tr>
 						<?php 
 							$total_sold = $total_sold + $val->quan;
+							if (1 == $val->downloaded ) {
+								$redeem_qty = $redeem_qty + $val->quan;
+							}
 						}	
 						?>
 					</tbody>

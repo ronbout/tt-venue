@@ -14,7 +14,7 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 // table due to difficulty of scrolling a table
 // probably should convet to div's or jquery ui datatable
 define('TOTALS_TD_WIDTH', '80px');
-define('ID_TD_WIDTH', '64px', true);
+define('ID_TD_WIDTH', '64px');
 define('QTY_TD_WIDTH', '69px');
 define('EXP_TD_WIDTH', '65px');
 define('COMM_TD_WIDTH', '102px');
@@ -120,38 +120,11 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 				WHERE	v.venue_id = %d", 
 			$venue_id));
 
-			$venue_name = $venue_row[0]->name;
-			$venue_type = $venue_row[0]->venue_type;
-			$type_desc = $venue_type;
-			switch($venue_type) {
-				case 'Restaurant':
-				case 'Bar':
-					$served_heading = "Total</br>Covers";
-					$summ_heading= "Total</br>Covers";
-					$multiplier = 2;
-					break;
-				case 'Hotel':
-					$served_heading = "Total</br>People";
-					$summ_heading= "Total</br>People";
-					// $summ_heading= "Bed</br>Nights";
-					$multiplier = 2;
-					break;	
-				case 'Product': 
-					$served_heading = "Products</br>Sold";
-					$summ_heading= "Products</br>Sold";
-					$multiplier = 1;
-					break;
-				default: 
-					$served_heading = "Products</br>Sold";
-					$summ_heading= "Products</br>Sold";
-					$multiplier = 1;
-					$type_desc = "Venue";
-			}
-
 			$product_rows = $wpdb->get_results($wpdb->prepare("
 							SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, pm.meta_value AS 'children', 
 								pm2.meta_value AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
-								pm5.meta_value AS 'commission',
+								pm5.meta_value AS 'commission', pm6.meta_value AS 'bed_nights', 
+								COALESCE(pm7.meta_value, 2) AS 'total_covers',
 								COUNT(plook.order_id) AS 'order_cnt', SUM(plook.product_qty) AS 'order_qty', 
 								SUM(wc_oi.downloaded) AS 'redeemed_cnt', SUM(wc_oi.downloaded * plook.product_qty) AS 'redeemed_qty'
 							FROM $v_p_join_table vp 
@@ -162,6 +135,8 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 							LEFT JOIN $post_meta_table pm3 ON vp.product_id = pm3.post_id AND pm3.meta_key = '_sale_price'
 							LEFT JOIN $post_meta_table pm4 ON vp.product_id = pm4.post_id AND pm4.meta_key = 'vat'
 							LEFT JOIN $post_meta_table pm5 ON vp.product_id = pm5.post_id AND pm5.meta_key = 'commission'
+							LEFT JOIN $post_meta_table pm6 ON vp.product_id = pm6.post_id AND pm6.meta_key = 'bed_nights'
+							LEFT JOIN $post_meta_table pm7 ON vp.product_id = pm7.post_id AND pm7.meta_key = 'total_covers'
 							LEFT JOIN $product_order_table plook ON plook.product_id = pr.product_id
 							JOIN $posts_table orderp ON orderp.ID = plook.order_id 
 								AND orderp.post_status = 'wc-completed'
@@ -181,6 +156,33 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 					GROUP BY vp.product_id
 					", $venue_id), ARRAY_A);
 
+
+			$venue_name = $venue_row[0]->name;
+			$venue_type = $venue_row[0]->venue_type;
+			$type_desc = $venue_type;
+			$bed_nights_flg = array_search(null, array_column($product_rows, 'bed_nights')) === false ? true : false;
+			switch($venue_type) {
+				case 'Restaurant':
+				case 'Bar':
+					$served_heading = "Total</br>Covers";
+					$summ_heading= "Total</br>Covers";
+					break;
+				case 'Hotel':
+					// need to know if we have all bed nights, if so, 
+					// we can use that as multiplier per row and use as heading
+					$served_heading = $bed_nights_flg ? "Bed</br>Nights" : "Total</br>People";
+					$summ_heading= $bed_nights_flg ? "Bed</br>Nights" : "Total</br>People";
+					break;	
+				case 'Product': 
+					$served_heading = "Products</br>Sold";
+					$summ_heading= "Products</br>Sold";
+					break;
+				default: 
+					$served_heading = "Products</br>Sold";
+					$summ_heading= "Products</br>Sold";
+					$type_desc = "Venue";
+			}
+
 			// create array w product id's as keys and pay totals as values
 			$payments = array_combine(array_column($payment_rows, "product_id"), array_column($payment_rows, "total_amount"));
 
@@ -193,7 +195,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 			$ordered_products = order_product_table($product_rows);
 
 			// returns array with 'totals' and 'calcs' keys
-			$totals_calcs = get_totals_calcs($ordered_products, $payments);
+			$totals_calcs = get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights_flg);
 
 			$product_calcs = $totals_calcs['calcs'];
 			$venue_totals = $totals_calcs['totals'];
@@ -203,13 +205,13 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 		<div class="panel panel-default">
 			<div id="venue-summary-div" class="panel-heading text-center"">
 						<h2>Welcome <?php echo $venue_name; ?></h2>
-						<?php display_venue_summary($venue_totals, $summ_heading, $venue_type, $multiplier) ?>
+						<?php display_venue_summary($venue_totals, $summ_heading, $venue_type) ?>
 			</div>
 			<div id="product-table-div" class="panel-body">
 				<?php
 				if (count($product_rows)) {
 					echo "<h3>$type_desc Offers</h3>";
-					display_products_table($product_calcs, $served_heading, $venue_totals, $multiplier);
+					display_products_table($product_calcs, $served_heading, $venue_totals);
 				} else {
 					echo "<h3>No Products Found</h3>";
 				}
@@ -240,11 +242,12 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 
 <?php 
 
-function get_totals_calcs($ordered_products, $payments) {
+function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights_flg) {
 	$venue_totals = array(
 		'offers' => 0,
 		'redeemed_cnt' => 0,
 		'redeemed_qty' => 0,
+		'num_served' => 0,
 		'order_cnt' => 0,
 		'order_qty' => 0,
 		'revenue' => 0,
@@ -272,6 +275,26 @@ function get_totals_calcs($ordered_products, $payments) {
 		$tmp['net_payable'] = $tmp['revenue'] - ($tmp['commission'] + $tmp['vat']);
 		$tmp['paid_amount'] = empty($payments[$product_id]) ? 0 : $payments[$product_id];
 		$tmp['balance_due'] = $tmp['net_payable'] - $tmp['paid_amount'];
+		// display qty must now have the multiplier applied per row, 
+		// dependent on the venue type and whether bed_nights are present (hotels only)
+		switch($venue_type) {
+			case 'Restaurant':
+			case 'Bar':
+				$multiplier = $product_row['total_covers'];
+				break;
+			case 'Hotel':
+				$multiplier = $bed_nights_flg ? $product_row['bed_nights'] : 2;
+				break;	
+			case 'Product': 
+				$multiplier = 1;
+				break;
+			default: 
+				$multiplier = 1;
+				$type_desc = "Venue";
+		}
+		$tmp['num_served'] = $tmp['redeemed_qty'] * $multiplier;
+		$tmp['multiplier'] = $multiplier;
+
 		$product_calcs[] = $tmp;
 
 		foreach($venue_totals as $k => &$total) {
@@ -285,9 +308,8 @@ function get_totals_calcs($ordered_products, $payments) {
 	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
 }
 
-function display_venue_summary($venue_totals, $summ_heading, $venue_type, $multiplier) {
+function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	$currency =  get_woocommerce_currency_symbol();
-	$num_served =  $venue_totals['redeemed_qty'] * $multiplier;
 	?>
 	<div class="v-summary-container">
 		<div class="v-summary-section">
@@ -302,7 +324,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type, $multi
 			<h3><?php echo $summ_heading ?></h3>
 			<h3>
 				<span id="served-total">
-					<?php echo $num_served ?>
+					<?php echo $venue_totals['num_served'] ?>
 				</span>
 			</h3>
 		</div>
@@ -345,16 +367,16 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type, $multi
 		<input type="hidden" id="sum-vat" value="<?php echo $venue_totals['vat'] ?>">
 		<input type="hidden" id="sum-redeemed-cnt" value="<?php echo $venue_totals['redeemed_cnt'] ?>">
 		<input type="hidden" id="sum-redeemed-qty" value="<?php echo $venue_totals['redeemed_qty'] ?>">
+		<input type="hidden" id="sum-num-served" value="<?php echo $venue_totals['num_served'] ?>">
 		<input type="hidden" id="sum-net-payable" value="<?php echo $venue_totals['net_payable'] ?>">
 		<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
 		<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
-		<input type="hidden" id="sum-multiplier" value="<?php echo $multiplier ?>">
 	</div>
 
 	<?php
 }
 
-function display_products_table($product_calcs, $served_heading, $venue_totals, $multiplier) {
+function display_products_table($product_calcs, $served_heading, $venue_totals) {
 	?>
 	<div id="product-table-container" class="table-fixed-container">
 		<table class="table table-striped table-bordered table-fixed">
@@ -374,18 +396,18 @@ function display_products_table($product_calcs, $served_heading, $venue_totals, 
 				<?php
 					foreach($product_calcs as $product_row) {
 						extract($product_row);
-						display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed_qty, $commission, 
+						display_product_row($product_row['product_id'], $title, $status, $revenue, $num_served, $commission, 
 																$vat, $net_payable, $balance_due, $view, $multiplier);
 					}
 				?>
 			</tbody>
 		</table>
 	</div>
-	<?php display_table_totals($venue_totals, $multiplier) ?>
+	<?php display_table_totals($venue_totals) ?>
 	<?php
 }
 
-function display_table_totals($venue_totals, $multiplier) {
+function display_table_totals($venue_totals) {
 	?>
 	<table class="table table-striped table-bordered table-fixed" style="width: 1091px;">
 		<tbody>
@@ -402,7 +424,7 @@ function display_table_totals($venue_totals, $multiplier) {
 				</td>
 				<td class="table-nbr" style="width: <?php echo QTY_TD_WIDTH?>;">
 					<span id="redeem-qty-display-table-total">
-						<?php echo $venue_totals['redeemed_qty']  * $multiplier ?>
+						<?php echo $venue_totals['num_served'] ?>
 					</span>
 				</td>
 				<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
@@ -432,10 +454,10 @@ function display_table_totals($venue_totals, $multiplier) {
 <?php
 }
 
-function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $commission, 
+function display_product_row($id, $title, $status, $revenue, $num_served, $commission, 
 														 $vat, $net_payable, $balance_due, $view, $multiplier) {
  ?>
-	<tr>
+	<tr data-multiplier="<?php echo $multiplier ?>">
 		<td style="width: <?php echo ID_TD_WIDTH?>;"><?php echo $id ?></td>
 		<td><?php echo $title ?></td>
 		<td style="width: <?php echo EXP_TD_WIDTH?>;"><?php echo $status ?></td>
@@ -446,7 +468,7 @@ function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $com
 		</td>
 		<td class="table-nbr" style="width: <?php echo QTY_TD_WIDTH?>;">
 			<span id="redeem-qty-display-<?php echo $id ?>">
-				<?php echo $redeemed_qty * $multiplier ?>
+				<?php echo $num_served ?>
 			</span>
 		</td>
 		<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
