@@ -9,8 +9,6 @@ const tasteLoadFormSubmit = () => {
 		.click(function (e) {
 			e.preventDefault();
 			let formData = new FormData(jQuery("#year-form")[0]);
-			console.log(formData.get("year_select"));
-			console.log(formData.get("year_type"));
 			tasteLoadProducts(formData);
 		});
 };

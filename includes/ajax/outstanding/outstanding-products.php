@@ -104,12 +104,15 @@ function get_totals_calcs($ordered_products, $payments) {
 	'redeemed_qty' => 0,
 	'order_cnt' => 0,
 	'order_qty' => 0,
+	'sales_amt' => 0,
 	'revenue' => 0,
 	'commission' => 0,
 	'vat' => 0,
 	'net_payable' => 0,
 	'paid_amount' => 0,
 	'balance_due' => 0,
+	'unredeemed_income' => 0,
+	'total_income' => 0
 	);
 
 	$product_calcs = array();
@@ -123,6 +126,7 @@ function get_totals_calcs($ordered_products, $payments) {
 		$tmp['redeemed_qty'] = $product_row['redeemed_qty'];
 		$tmp['order_cnt'] = $product_row['order_cnt'];
 		$tmp['order_qty'] = $product_row['order_qty'];
+		$tmp['sales_amt'] = $product_row['price'] * $tmp['order_qty'];
 		$tmp['revenue'] = $product_row['price'] * $tmp['redeemed_qty'];
 		$tmp['view'] = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>View</button>";
 		$tmp['commission'] = ($tmp['revenue'] / 100) * $product_row['commission'];
@@ -134,6 +138,10 @@ function get_totals_calcs($ordered_products, $payments) {
 		$tmp['min_order_date'] = explode(' ', $product_row['min_order_date'])[0];
 		$tmp['max_order_date'] = explode(' ', $product_row['max_order_date'])[0];
 		$tmp['product_date'] = explode(' ', $product_row['post_date'])[0];
+		// new...calculate income from expired, unredeemed orders!!
+		$tmp['unredeemed_income'] = ("N" === $product_row['expired']) ? 0 : ($tmp['order_qty'] - $tmp['redeemed_qty']) * $product_row['price'];
+		$tmp['total_income'] = $tmp['commission'] + $tmp['unredeemed_income'];
+		$tmp['profit_margin'] = $tmp['total_income'] / $tmp['sales_amt'] * 100;
 
 		$product_calcs[] = $tmp;
 
@@ -150,57 +158,107 @@ function get_totals_calcs($ordered_products, $payments) {
 
 function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 	$currency =  get_woocommerce_currency_symbol();
+	$profit_margin = $venue_totals['total_income'] / $venue_totals['sales_amt'] * 100;
 	?>
 	<div class="v-summary-container">
-	<div class="v-summary-section">
-		<h3>Vouchers</br>Sold</h3>
-		<h3>
-			<span id="vouchers-total">
-				<?php echo $venue_totals['order_qty'] ?>
-			</span>
-		</h3>
+		<div class="v-summary-section">
+			<h3>Vouchers</br>Sold</h3>
+			<h3>
+				<span id="vouchers-total">
+					<?php echo $venue_totals['order_qty'] ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Vouchers</br>Redeemed</h3>
+			<h3>
+				<span id="served-total">
+					<?php echo $venue_totals['redeemed_qty'] ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Total</br>Sales</h3>
+			<h3>
+				<span id="gr-value-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['sales_amt']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Venue Gross</br>Payable</h3>
+			<h3>
+				<span id="gr-value-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['revenue']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Total</br>VAT</h3>
+			<h3>
+				<span id="gr-value-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['vat']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Total</br>Commission</h3>
+			<h3>
+				<span id="gr-value-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['commission']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Net</br>Payable</h3>
+			<h3>
+				<span id="net-payable-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['net_payable']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Total</br>Payments</h3>
+			<h3>
+				<span id="paid-amount-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['paid_amount']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Balance</br>Due</h3>
+			<h3>
+				<span id="balance-due-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['balance_due']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>UnRedeemed</br>Income</h3>
+			<h3>
+				<span id="gr-value-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['unredeemed_income']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Total</br>Income</h3>
+			<h3>
+				<span id="gr-value-total">
+					<?php echo $currency . ' ' . num_display($venue_totals['total_income']) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Income /</br>Sales</h3>
+			<h3>
+				<span id="gr-value-total">
+					<?php echo num_display($profit_margin) ?>
+				</span>
+			</h3>
+		</div>
 	</div>
-	<div class="v-summary-section">
-		<h3>Vouchers</br>Redeemed</h3>
-		<h3>
-			<span id="served-total">
-				<?php echo $venue_totals['redeemed_qty'] ?>
-			</span>
-		</h3>
-	</div>
-	<div class="v-summary-section">
-		<h3>Gross</br>Revenue</h3>
-		<h3>
-			<span id="gr-value-total">
-				<?php echo $currency . ' ' . num_display($venue_totals['revenue']) ?>
-			</span>
-		</h3>
-	</div>
-	<div class="v-summary-section">
-		<h3>Net</br>Payable</h3>
-		<h3>
-			<span id="net-payable-total">
-				<?php echo $currency . ' ' . num_display($venue_totals['net_payable']) ?>
-			</span>
-		</h3>
-	</div>
-	<div class="v-summary-section">
-		<h3>Total</br>Payments</h3>
-		<h3>
-			<span id="paid-amount-total">
-				<?php echo $currency . ' ' . num_display($venue_totals['paid_amount']) ?>
-			</span>
-		</h3>
-	</div>
-	<div class="v-summary-section">
-		<h3>Balance</br>Due</h3>
-		<h3>
-			<span id="balance-due-total">
-				<?php echo $currency . ' ' . num_display($venue_totals['balance_due']) ?>
-			</span>
-		</h3>
-	</div>
-	</div>
+
 	<div id="summary-hidden-values">
 	<input type="hidden" id="outstanding-year" value="<?php echo $year ?>">
 	<input type="hidden" id="outstanding-year-type" value="<?php echo $year_type ?>">

@@ -8,12 +8,6 @@ Template Name: Outstanding Debts
  * 	Author: Ron Boutilier
  */
 defined('ABSPATH') or die('Direct script access disallowed.');
-
-// to make the totals at the bottom of the offers list line up 
-// must set some standard td widths.  It has to be a separate 
-// table due to difficulty of scrolling a table
-// probably should convet to div's or jquery ui datatable
-
 global $wpdb;
 
 if ( !is_user_logged_in()) {

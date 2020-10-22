@@ -150,6 +150,8 @@ VAT No 3312776JH<br>
 
 						<?php 
 						$total_sold = 0;
+						$redeem_qty = 0;
+						$tproduct = 0;
 						foreach ($myrows as $val) {
 							$tproduct = $tproduct + 1;
 							?>

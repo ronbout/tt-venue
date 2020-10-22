@@ -150,6 +150,8 @@ VAT No 3312776JH<br>
 
 						<?php 
 						$total_sold = 0;
+						$redeem_qty = 0;
+						$tproduct = 0;
 						foreach ($myrows as $val) {
 							$tproduct = $tproduct + 1;
 							?>
@@ -303,31 +305,8 @@ $total_paid_to_customer = 0;
 	<b>Balance Due : <span id="balance-due-display"> <?= get_woocommerce_currency_symbol() ?> <?= number_format($payable - $total_paid_to_customer, 2) ?></span></b>
 </div>
 <br>
-<?php 
-	if ($admin) {
-		?>
-		<hr>
-		<div class="text-center">
-			<div id="make-payment-div">
-				<b>For Office Use Only:</b><br><br>
-				<b>€</b> <input type="text" id="map-amount" name="MAP_Amount" value="0.00" style="width='100px';">
-				<input type="hidden" name="product_id" value="<?= $pid ?>">
-				<input type="hidden" name="product_pass" value="<?= $pass ?>"><br><br>
-				<button type="button" id="make-payment-btn" class="btn btn-primary">Make a Payment</button>
-			</div>
-		</div>
-		<?php
-	}
-	?>
 <br><br>
 </div>
-
-<br><br>
-<b>Important : </b> By clicking the Redeem button below you are confirming you have fully served that customer and the customer will receive an automatic email thanking them and asking them to share their experience feedback with us. Fraudulently Redeeming Vouchers will expose details of customers below and break GDPR Laws.
-<br><br>
-
-By using our Management Console, you have agreed to our Terms & Conditions : <a href="httphttp://thetaste.ie/wp/terms-use/">Terms of Use</a> | <a href="http://thetaste.ie/wp/our-refund-policy/">Refund Policy</a>
-<br><br>
 
 <div id="hidden-values">
 	<input type="hidden" id="taste-product-id" value="<?php echo $pid ?>">
