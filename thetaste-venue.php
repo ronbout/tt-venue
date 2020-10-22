@@ -87,3 +87,16 @@ function taste_venue_query_vars( $qvars ) {
 	return $qvars;
 }
 add_filter( 'query_vars', 'taste_venue_query_vars' );
+
+/**
+ * TEST theme hooks for google ads
+ */
+
+ function google_fake_ad() {
+	 ?>
+	 <div style="width: 100%; height: 200px; background-color: green; color: white; font-size: 96px; display: flex; justify-content: center; align-items: center; position: relative;">
+	 	<span>X</span>
+	 </div>
+	 <?php
+ }
+ add_action('__before_main', 'google_fake_ad');
