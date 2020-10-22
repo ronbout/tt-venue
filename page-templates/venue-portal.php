@@ -70,7 +70,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 				<?php if ($use_new_campaign) {
 					display_new_portal();
 				} else {
-					display_old_portal();
+					display_old_portal($venue_voucher_page);
 				}
 				?>
 			</div>
@@ -92,7 +92,7 @@ function display_new_portal() {
 	<?php
 }
 
-function display_old_portal() {
+function display_old_portal($venue_voucher_page) {
 	?>
 	<div class="portal-link">
 		<p>Access the original Voucher Redemption page</p>
