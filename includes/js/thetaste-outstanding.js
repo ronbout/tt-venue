@@ -39,6 +39,7 @@ const tasteGetProductFilterData = (formData) => {
 		prodSelectType: formData.get("product-select-type"),
 		orderSelectType: formData.get("order-select-type"),
 		venueSelectType: formData.get("venue-select-type"),
+		recurringProductCheck: formData.get("recurring-product-check"),
 	};
 
 	if ("year" === filterData.prodSelectType) {

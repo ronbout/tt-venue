@@ -117,6 +117,7 @@ function build_sql_filters($filter_data) {
 	$prod_select_type = $filter_data['prodSelectType'];
 	$order_select_type = $filter_data['orderSelectType'];
 	$venue_select_type = $filter_data['venueSelectType'];
+	$recurring_product_check = $filter_data['recurringProductCheck'];
 
 	// check venue conditions
 	if ('any' !== $venue_select_type) {
@@ -162,6 +163,12 @@ function build_sql_filters($filter_data) {
 				$parms[] = convert_date($filter_data['orderStartDt']);
 				$parms[] = convert_date($filter_data['orderEndDt']);
 		}
+	}
+
+	// check recurring product flag
+	if ($recurring_product_check) {
+		$having_clause .= $having_clause ? ' AND ' : 'HAVING ';
+		$having_clause .= "MIN(plook.date_created) < p.post_date";
 	}
 
 	return array('where' => $where_clause, 'having' => $having_clause, 'parms' => $parms);

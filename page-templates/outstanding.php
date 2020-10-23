@@ -139,6 +139,18 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 						</div>
 					</div>
 					<div class="filter-form-row">
+						<div class="col-sm-8 form-group">
+							<label for="recurring-product-check" class="col-sm-12">
+								<div class="col-sm-4 text-right" style="padding-right: 34px;" >
+									<input type="checkbox" name="recurring-product-check" id="recurring-product-check">
+								</div>
+								<span class="col-sm-8">
+									Recurring Products Only - (Order Date < Product Date)
+								</span>
+							</label>
+						</div>
+					</div>
+					<div class="filter-form-row">
 						<div class="col-sm-6 form-group">
 							<label for="venue-select-type" class="col-sm-4 control-label">Venue</label>
 							<div class="col-sm-7">
