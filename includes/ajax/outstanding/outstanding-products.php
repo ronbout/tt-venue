@@ -203,7 +203,7 @@ function get_totals_calcs($ordered_products, $payments) {
 		$product_id = $product_row['product_id'];
 		$tmp = array();
 		$tmp['product_id'] = $product_id;
-		$tmp['title'] = substr($product_row['post_title'],0,40);
+		$tmp['title'] = $product_row['post_title'];
 		$tmp['status'] = ("N" === $product_row['expired']) ? "Active" : "Expired";
 		$tmp['redeemed_cnt'] = $product_row['redeemed_cnt'];
 		$tmp['redeemed_qty'] = $product_row['redeemed_qty'];
@@ -221,6 +221,7 @@ function get_totals_calcs($ordered_products, $payments) {
 		$tmp['min_order_date'] = explode(' ', $product_row['min_order_date'])[0];
 		$tmp['max_order_date'] = explode(' ', $product_row['max_order_date'])[0];
 		$tmp['product_date'] = explode(' ', $product_row['post_date'])[0];
+		$tmp['venue_name'] = $product_row['venue_name'] ? $product_row['venue_name'] : ' ------- ';
 		// new...calculate income from expired, unredeemed orders!!
 		$tmp['unredeemed_income'] = ("N" === $product_row['expired']) ? 0 : ($tmp['order_qty'] - $tmp['redeemed_qty']) * $product_row['price'];
 		$tmp['total_income'] = $tmp['commission'] + $tmp['unredeemed_income'];
@@ -370,7 +371,7 @@ function display_products_table($product_calcs, $venue_totals) {
 			<th>Revenue</th>
 			<th>Redeemed</th>
 			<th>Min Order</br>Date</th>
-			<th>Max Order</br>Date</th>
+			<th>Venue Name</th>
 			<th>Product</br>Date</th>
 			<th>Net</br>Payable</th>
 			<th>Balance</br>Due</th>
@@ -379,9 +380,7 @@ function display_products_table($product_calcs, $venue_totals) {
 		<tbody>
 			<?php
 				foreach($product_calcs as $product_row) {
-					extract($product_row);
-					display_product_row($product_row['product_id'], $title, $status, $revenue, $redeemed_qty, $min_order_date, 
-															$max_order_date, $product_date, $net_payable, $balance_due, $view);
+					display_product_row($product_row);
 				}
 			?>
 		</tbody>
@@ -437,9 +436,9 @@ function display_table_totals($venue_totals) {
 	<?php
 }
 
-function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $min_order_date,
-												$max_order_date, $product_date, $net_payable, $balance_due, $view) {
-
+function display_product_row($product_row) {
+	extract($product_row);
+	$id = $product_id;
 	// determine if the order date is earlier than the product date, indicating a repeating product
 	$ord_date = new DateTime($min_order_date);
 	$prod_date = new DateTime($product_date);
@@ -447,7 +446,7 @@ function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $min
 	?>
 	<tr class="<?php echo $tr_class ?>">
 	<td style="width: <?php echo ID_TD_WIDTH?>;"><?php echo $id ?></td>
-	<td><?php echo $title ?></td>
+	<td><?php echo substr($title, 0, 50) ?></td>
 	<td style="width: <?php echo EXP_TD_WIDTH?>;"><?php echo $status ?></td>
 	<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
 		<span id="grevenue-display-<?php echo $id ?>">
@@ -466,7 +465,7 @@ function display_product_row($id, $title, $status, $revenue, $redeemed_qty, $min
 	</td>
 	<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
 		<span id="max_order_date-display-<?php echo $id ?>">
-			<?php echo $max_order_date ?>
+			<?php echo $venue_name ?>
 		</span>
 	</td>
 	<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
