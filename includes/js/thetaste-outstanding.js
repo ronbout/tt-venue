@@ -1,6 +1,23 @@
 jQuery(document).ready(function () {
 	tasteLoadFormSubmit();
+	tasteLoadFilterEvents();
 	jQuery("#topbutton").length && tasteLoadScrollUp();
+	let $datepickers = jQuery(
+		"#product-date-start, #product-date-end, #order-date-start, #order-date-end"
+	);
+	let prodStartDateDefault = jQuery("#product-date-start").val();
+	let prodEndDateDefault = jQuery("#product-date-end").val();
+	let ordStartDateDefault = jQuery("#order-date-start").val();
+	let ordEndDateDefault = jQuery("#order-date-end").val();
+	$datepickers.datepicker();
+	$datepickers.datepicker("option", {
+		showAnim: "slideDown",
+		dateFormat: "yy-mm-dd",
+	});
+	jQuery("#product-date-start").datepicker("setDate", prodStartDateDefault);
+	jQuery("#product-date-end").datepicker("setDate", prodEndDateDefault);
+	jQuery("#order-date-start").datepicker("setDate", ordStartDateDefault);
+	jQuery("#order-date-end").datepicker("setDate", ordEndDateDefault);
 });
 
 const tasteLoadFormSubmit = () => {
@@ -8,12 +25,87 @@ const tasteLoadFormSubmit = () => {
 		.unbind("click")
 		.click(function (e) {
 			e.preventDefault();
-			let formData = new FormData(jQuery("#year-form")[0]);
-			tasteLoadProducts(formData);
+			let formData = new FormData(jQuery("#audit-filter-form")[0]);
+			for (var pair of formData.entries()) {
+				console.log(pair[0] + ", " + pair[1]);
+			}
+			let prodFilterData = tasteGetProductFilterData(formData);
+			tasteLoadProducts(prodFilterData);
 		});
 };
 
-const tasteLoadProducts = (formData) => {
+const tasteGetProductFilterData = (formData) => {
+	const filterData = {
+		prodSelectType: formData.get("product-select-type"),
+		orderSelectType: formData.get("order-select-type"),
+		venueSelectType: formData.get("venue-select-type"),
+	};
+
+	if ("year" === filterData.prodSelectType) {
+		filterData.prodYear = formData.get("product-year-select");
+	} else {
+		filterData.prodStartDt = jQuery("#product-date-start").datepicker(
+			"getDate"
+		);
+		filterData.prodEndDt = jQuery("#product-date-end").datepicker("getDate");
+	}
+
+	if ("year" === filterData.orderSelectType) {
+		filterData.orderYear = formData.get("order-year-select");
+	} else {
+		filterData.orderStartDt = jQuery("#order-date-start").datepicker("getDate");
+		filterData.orderEndDt = jQuery("#order-date-end").datepicker("getDate");
+	}
+
+	if ("venue" === filterData.venueSelectType) {
+		filterData.venueId = formData.get("venue-id");
+	}
+	return filterData;
+};
+
+const tasteLoadFilterEvents = () => {
+	let $prodYear = jQuery("#product-year-select-container");
+	let $prodRange = jQuery("#product-date-range-container");
+	jQuery("#product-select-type").change(function () {
+		let prodSelectType = jQuery(this).val();
+		if ("year" === prodSelectType) {
+			$prodRange.hide();
+			$prodYear.show();
+		} else if ("range" === prodSelectType) {
+			$prodYear.hide();
+			$prodRange.show();
+		} else {
+			$prodYear.hide();
+			$prodRange.hide();
+		}
+	});
+	let $ordYear = jQuery("#order-year-select-container");
+	let $ordRange = jQuery("#order-date-range-container");
+	jQuery("#order-select-type").change(function () {
+		let orderSelectType = jQuery(this).val();
+		if ("year" === orderSelectType) {
+			$ordRange.hide();
+			$ordYear.show();
+		} else if ("range" === orderSelectType) {
+			$ordYear.hide();
+			$ordRange.show();
+		} else {
+			$ordYear.hide();
+			$ordRange.hide();
+		}
+	});
+	let $venueSelect = jQuery("#venue-select-container");
+	jQuery("#venue-select-type").change(function () {
+		let venueSelectType = jQuery(this).val();
+		if ("venue" === venueSelectType) {
+			$venueSelect.show();
+		} else {
+			$venueSelect.hide();
+		}
+	});
+};
+
+const tasteLoadProducts = (filterData) => {
 	let modalMsg = "Loading Products...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	jQuery.ajax({
@@ -23,8 +115,7 @@ const tasteLoadProducts = (formData) => {
 		data: {
 			action: "outstanding_load_products",
 			security: tasteVenue.security,
-			year_select: formData.get("year_select"),
-			year_type: formData.get("year_type"),
+			filterData,
 		},
 		success: function (responseText) {
 			tasteCloseMsg();

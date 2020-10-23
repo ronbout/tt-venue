@@ -181,9 +181,37 @@
 	background-color: orange;
 }
 
-.year-form-container {
-	width: 50%;
-	margin: auto;
+#audit-filter-container {
+	width: 90%;
+	margin: 12px auto;
+	box-sizing: border-box;
+}
+
+#audit-filter-container .btn {
+	margin-top: 16px;
+}
+
+#audit-filter-container #venue-form-container {
+	margin: 12px auto;
+}
+
+.filter-form-row {
+	display: flex;
+	flex-direction: row;
+	padding: 8px 4px;
+	margin-bottom: 6px;
+	border-bottom: 3px inset lightblue;
+}
+
+#product-date-range-container,
+#order-date-range-container,
+#order-year-select-container,
+#venue-select-container {
+	display: none;
+}
+
+.date-range-container span {
+	padding: 0;
 }
 
 #out-products-table-title-action {

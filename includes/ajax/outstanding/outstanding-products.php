@@ -7,8 +7,17 @@ define('EXP_TD_WIDTH', '65px');
 define('COMM_TD_WIDTH', '102px');
 define('ACTION_TD_WIDTH', '74px');
 
-function outstanding_display_product_table($year, $year_type) {
+function outstanding_display_product_table($filter_data) {
 	global $wpdb;
+
+	// var_dump($filter_data);
+	$sql_filters = build_sql_filters($filter_data);
+
+	// var_dump($sql_filters);
+
+	$where_clause = $sql_filters['where'];
+	$having_clause = $sql_filters['having'];
+	$parms = $sql_filters['parms'];
 	
 	$product_table = $wpdb->prefix."wc_product_meta_lookup";
 	$product_order_table = $wpdb->prefix."wc_order_product_lookup";
@@ -19,9 +28,8 @@ function outstanding_display_product_table($year, $year_type) {
 	$v_p_join_table = $wpdb->prefix."taste_venue_products";
 	$payment_table = $wpdb->prefix."offer_payments";
 
-	// $year = date("Y");
-	$where_clause = ('order' === $year_type) ? " GROUP BY pr.product_id  HAVING YEAR(MIN(plook.date_created)) = '%d'  " :
-																					 " WHERE YEAR(p.post_date) = '%d' GROUP BY pr.product_id  ";
+	// $where_clause = ('order' === $year_type) ? " GROUP BY pr.product_id  HAVING YEAR(MIN(plook.date_created)) = '%d'  " :
+	// 																				 " WHERE YEAR(p.post_date) = '%d' GROUP BY pr.product_id  ";
 
 	$product_rows = $wpdb->get_results($wpdb->prepare("
 					SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, 
@@ -29,10 +37,12 @@ function outstanding_display_product_table($year, $year_type) {
 						pm5.meta_value AS 'commission', 
 						COUNT(plook.order_id) AS 'order_cnt', SUM(plook.product_qty) AS 'order_qty', 
 						SUM(wc_oi.downloaded) AS 'redeemed_cnt', SUM(wc_oi.downloaded * plook.product_qty) AS 'redeemed_qty',
-						MIN(plook.date_created) AS 'min_order_date',
-						MAX(plook.date_created) AS 'max_order_date'
+						MIN(plook.date_created) AS 'min_order_date', MAX(plook.date_created) AS 'max_order_date',
+						ven.venue_id, ven.name AS 'venue_name'
 					FROM $product_table pr 
 					JOIN $posts_table p ON pr.product_id =  p.ID
+					LEFT JOIN $v_p_join_table venprod ON venprod.product_id = pr.product_id
+					LEFT JOIN $venue_table ven ON ven.venue_id = venprod.venue_id
 					LEFT JOIN $post_meta_table pm2 ON pr.product_id = pm2.post_id AND pm2.meta_key = 'Expired'
 					LEFT JOIN $post_meta_table pm3 ON pr.product_id = pm3.post_id AND pm3.meta_key = '_sale_price'
 					LEFT JOIN $post_meta_table pm4 ON pr.product_id = pm4.post_id AND pm4.meta_key = 'vat'
@@ -43,8 +53,10 @@ function outstanding_display_product_table($year, $year_type) {
 						AND orderp.post_type = 'shop_order'
 					LEFT JOIN $order_items_table wc_oi ON wc_oi.order_item_id = plook.order_item_id
 					$where_clause
+					GROUP BY pr.product_id
+					$having_clause
 					ORDER BY p.post_date DESC", 
-					$year), ARRAY_A);
+					$parms), ARRAY_A);
 				
 	// more efficient just to grab this a separate statement
 	$payment_rows = $wpdb->get_results($wpdb->prepare("
@@ -95,6 +107,70 @@ function outstanding_display_product_table($year, $year_type) {
 
 <?php 
 return;
+}
+
+function build_sql_filters($filter_data) {
+	$where_clause = '';
+	$having_clause = '';
+	$parms = array();
+
+	$prod_select_type = $filter_data['prodSelectType'];
+	$order_select_type = $filter_data['orderSelectType'];
+	$venue_select_type = $filter_data['venueSelectType'];
+
+	// check venue conditions
+	if ('any' !== $venue_select_type) {
+		$where_clause .= $where_clause ? ' AND ' : 'WHERE ';
+		switch($venue_select_type) {
+			case 'unassigned':
+				$where_clause .= "ven.venue_id IS NULL";
+				break;
+			case 'assigned':
+				$where_clause .= "ven.venue_id IS NOT NULL";
+				break;
+			case 'venue':
+				$where_clause .= "ven.venue_id = '%d'";
+				$parms[] = $filter_data['venueId'];
+		}
+	}
+
+	// check product year
+	if ('all' !== $prod_select_type) {
+		$where_clause .= $where_clause ? ' AND ' : 'WHERE ';
+		switch($prod_select_type) {
+			case 'year':
+				$where_clause .= "YEAR(p.post_date) = '%d'";
+				$parms[] = $filter_data['prodYear'];
+				break;
+			case 'range':
+				$where_clause .= "p.post_date >= '%s' AND p.post_date <= '%s'";
+				$parms[] = convert_date($filter_data['prodStartDt']);
+				$parms[] = convert_date($filter_data['prodEndDt']);
+		}
+	}
+	
+	// check order year
+	if ('all' !== $order_select_type) {
+		$having_clause .= $having_clause ? ' AND ' : 'HAVING ';
+		switch($order_select_type) {
+			case 'year':
+				$having_clause .= "YEAR(MIN(plook.date_created)) = '%d'";
+				$parms[] = $filter_data['orderYear'];
+				break;
+			case 'range':
+				$having_clause .= "MIN(plook.date_created) >= '%s' AND MIN(plook.date_created) <= '%s'";
+				$parms[] = convert_date($filter_data['orderStartDt']);
+				$parms[] = convert_date($filter_data['orderEndDt']);
+		}
+	}
+
+	return array('where' => $where_clause, 'having' => $having_clause, 'parms' => $parms);
+}
+
+function convert_date($date_str) {
+	// datepicker gives full date string
+	$tmp_date = new DateTime(explode('(', $date_str)[0]);
+	return $tmp_date->format('Y-m-d');
 }
 
 function get_totals_calcs($ordered_products, $payments) {

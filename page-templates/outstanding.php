@@ -57,32 +57,101 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 			</div>
 		</header>
 		<br><br>
-		<div class="panel panel-default year-form-container">
+		<div id="audit-filter-container" class="panel panel-default ">
 			<div class="panel-heading">
-				<form class="form-horizontal" id="year-form">
-					<div class="form-group">
-						<label for="year" class="col-sm-4 control-label">Select Year</label>
-						<div class="col-sm-4">
-							<select name="year_select" id="year-select" class="form-control">
-								<option value="2020" selected>2020</option>
-								<option value="2019">2019</option>
-								<option value="2018">2018</option>
-								<option value="2017">2017</option>
-								<option value="2016">2016</option>
-								<option value="2015">2015</option>
-								<option value="2014">2014</option>
-							</select>
+				<form class="form-horizontal" id="audit-filter-form">
+					<?php
+						$year = date('Y');
+						$month = date('m');
+						$day = date('d');
+						$start_year = $year - 1;
+						$start_date_default =  "$start_year-$month-$day";
+						$current_date = date('Y-m-d');
+					?>
+					<div class="filter-form-row">
+						<div class="col-sm-6 form-group">
+							<label for="product-select-type" class="col-sm-4 control-label">Product Date</label>
+							<div class="col-sm-7">
+								<select name="product-select-type" id="product-select-type" class="form-control">
+									<option value="all">All</option>
+									<option value="year" selected>Year</option>
+									<option value="range">Date Range</option>
+								</select>
+							</div>
+						</div>
+						<div id="product-year-select-container" class="col-sm-6 form-group">
+							<label for="product-year-select" class="col-sm-4 control-label">Select Year</label>
+							<div class="col-sm-7">
+								<select name="product-year-select" id="product-year-select" class="form-control">
+									<option value="2020" selected>2020</option>
+									<option value="2019">2019</option>
+									<option value="2018">2018</option>
+									<option value="2017">2017</option>
+									<option value="2016">2016</option>
+									<option value="2015">2015</option>
+									<option value="2014">2014</option>
+								</select>
+							</div>
+						</div>
+						<div id="product-date-range-container" class=" col-sm-6 date-range-container">
+							<div class="col-sm-5">
+								<input type="text" id="product-date-start" value="<?php echo $start_date_default ?>">
+							</div>
+							<span class="col-sm-1 text-center">to</span>
+							<div class="col-sm-5">
+								<input type="text" id="product-date-end" value="<?php echo $current_date ?>">
+							</div>
 						</div>
 					</div>
-					<div class="form-group">
-						<div class="col-sm-2"></div>
-						<div class="col-sm-8">
-							<label class="radio-inline">
-								<input type="radio" name="year_type" id="radio-year-product" value="product" checked> Use Product Year
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="year_type" id="radio-year-order" value="order"> Use First Order Year
-							</label>
+					<div class="filter-form-row">
+						<div class="col-sm-6 form-group">
+							<label for="order-select-type" class="col-sm-4 control-label">Min Order Date</label>
+							<div class="col-sm-7">
+								<select name="order-select-type" id="order-select-type" class="form-control">
+									<option value="all" selected>All</option>
+									<option value="year">Year</option>
+									<option value="range">Date Range</option>
+								</select>
+							</div>
+						</div>
+						<div id="order-year-select-container" class="col-sm-6 form-group">
+							<label for="order-year-select" class="col-sm-4 control-label">Select Year</label>
+							<div class="col-sm-7">
+								<select name="order-year-select" id="order-year-select" class="form-control">
+									<option value="2020" selected>2020</option>
+									<option value="2019">2019</option>
+									<option value="2018">2018</option>
+									<option value="2017">2017</option>
+									<option value="2016">2016</option>
+									<option value="2015">2015</option>
+									<option value="2014">2014</option>
+								</select>
+							</div>
+						</div>
+						<div id="order-date-range-container" class=" col-sm-6 date-range-container">
+							<div class="col-sm-5">
+								<input type="text" id="order-date-start" value="<?php echo $start_date_default ?>">
+							</div>
+							<span class="col-sm-1 text-center">to</span>
+							<div class="col-sm-5">
+								<input type="text" id="order-date-end" value="<?php echo $current_date ?>">
+							</div>
+						</div>
+					</div>
+					<div class="filter-form-row">
+						<div class="col-sm-6 form-group">
+							<label for="venue-select-type" class="col-sm-4 control-label">Venue</label>
+							<div class="col-sm-7">
+								<select name="venue-select-type" id="venue-select-type" class="form-control">
+									<option value="any" selected>Any or Unassigned</option>
+									<option value="unassigned">Unassigned Only</option>
+									<option value="assigned">Assigned Only - Any Venue</option>
+									<option value="venue">Choose Venue</option>
+								</select>
+							</div>
+						</div>
+						<div id="venue-select-container" class="col-sm-6 form-group">
+							<?php display_venue_select(false, 0, false); ?>
 						</div>
 					</div>
 					<div class="form-group">
@@ -110,5 +179,6 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 			</a>
 		</footer>
 		<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-outstanding.js"></script>
+		<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue-select.js"></script>
 		</body>
 	</html>

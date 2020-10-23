@@ -29,15 +29,14 @@ function taste_ajax_outstanding_load_products() {
 		wp_die();
 	}
 
-	if (!isset($_POST['year_select']) || !isset($_POST['year_type'])) {
-		echo 'Missing valid year information';
+	if (!isset($_POST['filterData'])) {
+		echo 'Missing filter data';
 		wp_die();
 	}
-	$year = $_POST['year_select'];
-	$year_type = $_POST['year_type'];
+	$filter_data = $_POST['filterData'];
 
 	require_once(plugin_dir_path(__FILE__). 'outstanding-products.php');
-	outstanding_display_product_table($year, $year_type);
+	outstanding_display_product_table($filter_data);
 
 	wp_die();
 }
