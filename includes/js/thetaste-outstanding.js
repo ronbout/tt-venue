@@ -70,14 +70,14 @@ const tasteLoadFilterEvents = () => {
 	jQuery("#product-select-type").change(function () {
 		let prodSelectType = jQuery(this).val();
 		if ("year" === prodSelectType) {
-			$prodRange.hide();
-			$prodYear.show();
+			$prodRange.hide(300);
+			$prodYear.show(300);
 		} else if ("range" === prodSelectType) {
 			$prodYear.hide();
-			$prodRange.show();
+			$prodRange.show(300);
 		} else {
-			$prodYear.hide();
-			$prodRange.hide();
+			$prodYear.hide(300);
+			$prodRange.hide(300);
 		}
 	});
 	let $ordYear = jQuery("#order-year-select-container");
@@ -85,23 +85,23 @@ const tasteLoadFilterEvents = () => {
 	jQuery("#order-select-type").change(function () {
 		let orderSelectType = jQuery(this).val();
 		if ("year" === orderSelectType) {
-			$ordRange.hide();
-			$ordYear.show();
+			$ordRange.hide(300);
+			$ordYear.show(300);
 		} else if ("range" === orderSelectType) {
-			$ordYear.hide();
-			$ordRange.show();
+			$ordYear.hide(300);
+			$ordRange.show(300);
 		} else {
-			$ordYear.hide();
-			$ordRange.hide();
+			$ordYear.hide(300);
+			$ordRange.hide(300);
 		}
 	});
 	let $venueSelect = jQuery("#venue-select-container");
 	jQuery("#venue-select-type").change(function () {
 		let venueSelectType = jQuery(this).val();
 		if ("venue" === venueSelectType) {
-			$venueSelect.show();
+			$venueSelect.show(300);
 		} else {
-			$venueSelect.hide();
+			$venueSelect.hide(300);
 		}
 	});
 };

@@ -1,4 +1,12 @@
 <?php 
+/**
+ * 	outstanding-products.php
+ * 	ajax routine for displaying the products table
+ *  in the outstanding debts page template
+ * 	10/20/2020	Ron Boutilier
+ */
+
+defined('ABSPATH') or die('Direct script access disallowed.');
 
 define('TOTALS_TD_WIDTH', '80px');
 define('ID_TD_WIDTH', '64px');
@@ -144,7 +152,7 @@ function build_sql_filters($filter_data) {
 				$parms[] = $filter_data['prodYear'];
 				break;
 			case 'range':
-				$where_clause .= "p.post_date >= '%s' AND p.post_date <= '%s'";
+				$where_clause .= "p.post_date >= '%s' AND CAST(p.post_date AS DATE) <= '%s'";
 				$parms[] = convert_date($filter_data['prodStartDt']);
 				$parms[] = convert_date($filter_data['prodEndDt']);
 		}
@@ -159,7 +167,7 @@ function build_sql_filters($filter_data) {
 				$parms[] = $filter_data['orderYear'];
 				break;
 			case 'range':
-				$having_clause .= "MIN(plook.date_created) >= '%s' AND MIN(plook.date_created) <= '%s'";
+				$having_clause .= "MIN(plook.date_created) >= '%s' AND CAST(MIN(plook.date_created) AS DATE) <= '%s'";
 				$parms[] = convert_date($filter_data['orderStartDt']);
 				$parms[] = convert_date($filter_data['orderEndDt']);
 		}
@@ -168,7 +176,7 @@ function build_sql_filters($filter_data) {
 	// check recurring product flag
 	if ($recurring_product_check) {
 		$having_clause .= $having_clause ? ' AND ' : 'HAVING ';
-		$having_clause .= "MIN(plook.date_created) < p.post_date";
+		$having_clause .= "CAST(MIN(plook.date_created) AS DATE) < CAST(p.post_date AS DATE)";
 	}
 
 	return array('where' => $where_clause, 'having' => $having_clause, 'parms' => $parms);
