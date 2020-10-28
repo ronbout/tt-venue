@@ -221,6 +221,9 @@
 	margin-top: 8px;
 }
 
-#out-products-table-title-action div {
+#product-table-offer-count {
+	width: 220px;
+}
+#product-table-download-div {
 	width: 120px;
 }

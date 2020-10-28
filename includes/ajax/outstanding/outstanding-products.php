@@ -97,7 +97,7 @@ function outstanding_display_product_table($filter_data) {
 			if (count($product_rows)) {
 				?>
 				<div id="out-products-table-title-action">
-					<div><h3>Offers</h3></div>
+					<div><h3>Offers (<?php echo $venue_totals['offers'] ?> Rows)</h3></div>
 					<div>
 						<a href="#" id ="export" role='button'>
 							<button class="btn btn-info">Download CSV</button>
@@ -345,7 +345,7 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			<h3>Income /</br>Sales</h3>
 			<h3>
 				<span id="gr-value-total">
-					<?php echo num_display($profit_margin) ?>
+					<?php echo num_display($profit_margin) ?> %
 				</span>
 			</h3>
 		</div>
