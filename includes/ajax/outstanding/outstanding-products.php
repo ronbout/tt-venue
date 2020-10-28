@@ -81,7 +81,8 @@ function outstanding_display_product_table($filter_data) {
 
 	// create array w product id's as keys and pay totals as values
 	$payments = array_combine(array_column($payment_rows, "product_id"), array_column($payment_rows, "total_amount"));
-
+// var_dump($payments);
+// return;
 	$ordered_products = order_product_table($product_rows);
 
 	// returns array with 'totals' and 'calcs' keys

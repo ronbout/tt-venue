@@ -122,6 +122,7 @@ const tasteLoadProducts = (filterData) => {
 			tasteCloseMsg();
 			// console.log(responseText);
 			jQuery("#product-list-div").html(responseText);
+			jQuery("#voucher-list-div").html("");
 			tasteLoadProductButtons();
 		},
 		error: function (xhr, status, errorThrown) {
