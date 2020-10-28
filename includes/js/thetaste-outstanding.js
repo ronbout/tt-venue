@@ -26,9 +26,9 @@ const tasteLoadFormSubmit = () => {
 		.click(function (e) {
 			e.preventDefault();
 			let formData = new FormData(jQuery("#audit-filter-form")[0]);
-			for (var pair of formData.entries()) {
-				console.log(pair[0] + ", " + pair[1]);
-			}
+			// for (var pair of formData.entries()) {
+			// 	console.log(pair[0] + ", " + pair[1]);
+			// }
 			let prodFilterData = tasteGetProductFilterData(formData);
 			tasteLoadProducts(prodFilterData);
 		});
@@ -61,6 +61,12 @@ const tasteGetProductFilterData = (formData) => {
 	if ("venue" === filterData.venueSelectType) {
 		filterData.venueId = formData.get("venue-id");
 	}
+	// have to pull all checkboxes for the product columns
+	$customCols = jQuery("[id^=custom-col]:checked");
+	filterData.prodCols = jQuery.map($customCols, (col) => {
+		$col = jQuery(col);
+		return $col.attr("id").replace("custom-col-", "");
+	});
 	return filterData;
 };
 
@@ -104,6 +110,24 @@ const tasteLoadFilterEvents = () => {
 			$venueSelect.hide(300);
 		}
 	});
+	let $arrowSpan = jQuery("#custom-columns-arrow");
+	let $customColumns = jQuery("#custom-columns-list-div");
+	jQuery("#custom-columns-toggle-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			if ($arrowSpan.hasClass("glyphicon-menu-down")) {
+				$arrowSpan
+					.removeClass("glyphicon-menu-down")
+					.addClass("glyphicon-menu-up");
+				$customColumns.show(300);
+			} else {
+				$arrowSpan
+					.removeClass("glyphicon-menu-up")
+					.addClass("glyphicon-menu-down");
+				$customColumns.hide(300);
+			}
+		});
 };
 
 const tasteLoadProducts = (filterData) => {

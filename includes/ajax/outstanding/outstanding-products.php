@@ -8,8 +8,6 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
-
 define('TOTALS_TD_WIDTH', '80px');
 define('ID_TD_WIDTH', '64px');
 define('QTY_TD_WIDTH', '69px');
@@ -19,9 +17,13 @@ define('ACTION_TD_WIDTH', '74px');
 
 function outstanding_display_product_table($filter_data) {
 	global $wpdb;
+	
+	require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
 
 	// var_dump($filter_data);
+	// return;
 	$sql_filters = build_sql_filters($filter_data);
+	$disp_cols = $filter_data['prodCols'];
 
 	// var_dump($sql_filters);
 
@@ -37,9 +39,6 @@ function outstanding_display_product_table($filter_data) {
 	$venue_table = $wpdb->prefix."taste_venue";
 	$v_p_join_table = $wpdb->prefix."taste_venue_products";
 	$payment_table = $wpdb->prefix."offer_payments";
-
-	// $where_clause = ('order' === $year_type) ? " GROUP BY pr.product_id  HAVING YEAR(MIN(plook.date_created)) = '%d'  " :
-	// 																				 " WHERE YEAR(p.post_date) = '%d' GROUP BY pr.product_id  ";
 
 	$product_rows = $wpdb->get_results($wpdb->prepare("
 					SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, 
@@ -111,7 +110,7 @@ function outstanding_display_product_table($filter_data) {
 					</div>
 				</div>
 				<?php
-				display_products_table($product_calcs, $served_heading, $venue_totals);
+				display_products_table($product_calcs, $outstanding_product_columns, $disp_cols);
 			} else {
 				echo "<h3>No Products Found</h3>";
 			}
@@ -234,29 +233,30 @@ function get_totals_calcs($ordered_products, $payments) {
 		$product_id = $product_row['product_id'];
 		$tmp = array();
 		$tmp['product_id'] = $product_id;
-		$tmp['title'] = $product_row['post_title'];
+		$tmp['title'] = substr($product_row['post_title'], 0, 50);
+		$tmp['sku'] = $product_row['sku'];
 		$tmp['status'] = ("N" === $product_row['expired']) ? "Active" : "Expired";
 		$tmp['redeemed_cnt'] = $product_row['redeemed_cnt'];
 		$tmp['redeemed_qty'] = $product_row['redeemed_qty'];
 		$tmp['order_cnt'] = $product_row['order_cnt'];
 		$tmp['order_qty'] = $product_row['order_qty'];
-		$tmp['sales_amt'] = $product_row['price'] * $tmp['order_qty'];
-		$tmp['revenue'] = $product_row['price'] * $tmp['redeemed_qty'];
+		$tmp['sales_amt'] = num_display($product_row['price'] * $tmp['order_qty']);
+		$tmp['revenue'] = num_display($product_row['price'] * $tmp['redeemed_qty']);
 		$tmp['view'] = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>View</button>";
-		$tmp['commission'] = ($tmp['revenue'] / 100) * $product_row['commission'];
-		$tmp['vat'] = ($tmp['commission'] / 100) * $product_row['vat'];
-		$tmp['net_payable'] = $tmp['revenue'] - ($tmp['commission'] + $tmp['vat']);
-		$tmp['paid_amount'] = empty($payments[$product_id]) ? 0 : $payments[$product_id]['total'];
+		$tmp['commission'] = num_display(($tmp['revenue'] / 100) * $product_row['commission']);
+		$tmp['vat'] = num_display(($tmp['commission'] / 100) * $product_row['vat']);
+		$tmp['net_payable'] = num_display($tmp['revenue'] - ($tmp['commission'] + $tmp['vat']));
+		$tmp['paid_amount'] = num_display(empty($payments[$product_id]) ? 0 : $payments[$product_id]['total']);
 		$tmp['payment_list'] = empty($payments[$product_id]) ? '' : $payments[$product_id]['listing'];
-		$tmp['balance_due'] = $tmp['net_payable'] - $tmp['paid_amount'];
+		$tmp['balance_due'] = num_display($tmp['net_payable'] - $tmp['paid_amount']);
 		// new...show min / max date of orders as well as product date
 		$tmp['min_order_date'] = explode(' ', $product_row['min_order_date'])[0];
 		$tmp['max_order_date'] = explode(' ', $product_row['max_order_date'])[0];
 		$tmp['product_date'] = explode(' ', $product_row['post_date'])[0];
 		$tmp['venue_name'] = $product_row['venue_name'] ? $product_row['venue_name'] : ' ------- ';
 		// new...calculate income from expired, unredeemed orders!!
-		$tmp['unredeemed_income'] = ("N" === $product_row['expired']) ? 0 : ($tmp['order_qty'] - $tmp['redeemed_qty']) * $product_row['price'];
-		$tmp['total_income'] = $tmp['commission'] + $tmp['unredeemed_income'];
+		$tmp['unredeemed_income'] = ("N" === $product_row['expired']) ? 0 : num_display(($tmp['order_qty'] - $tmp['redeemed_qty']) * $product_row['price']);
+		$tmp['total_income'] = num_display($tmp['commission'] + $tmp['unredeemed_income']);
 		$tmp['profit_margin'] = $tmp['total_income'] / $tmp['sales_amt'] * 100;
 
 		$product_calcs[] = $tmp;
@@ -392,130 +392,43 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 	<?php
 }
 
-function display_products_table($product_calcs, $venue_totals) {
+function display_products_table($product_calcs, $outstanding_product_columns, $disp_cols) {
 	?>
 	<div id="product-table-container" class="table-fixed-container">
 	<table id="out-product-table" class="table table-striped table-bordered table-fixed">
 		<thead>
-			<th>ID</th>
-			<th>Offer</th>
-			<th>Status</th>
-			<th>Revenue</th>
-			<th>Redeemed</th>
-			<th>Min Order</br>Date</th>
-			<th>Venue Name</th>
-			<th>Product</br>Date</th>
-			<th>Net</br>Payable</th>
-			<th>Balance</br>Due</th>
+			<?php 
+				foreach($disp_cols as $col) {
+					echo "<th>$outstanding_product_columns[$col]</th>";
+				}
+			?>
 			<th>Action</th>
 		</thead>
 		<tbody>
-			<?php
+			<?php									
 				foreach($product_calcs as $product_row) {
-					display_product_row($product_row);
+					display_product_row($product_row, $disp_cols);
 				}
 			?>
 		</tbody>
 	</table>
 	</div>
-	<?php //display_table_totals($venue_totals) ?>
 	<?php
 }
 
-function display_table_totals($venue_totals) {
-?>
-	<table class="table table-striped table-bordered table-fixed" style="width: 1091px;">
-	<tbody>
-		<tr>
-			<td style="width: <?php echo ID_TD_WIDTH?>;">&nbsp;</td>
-			<td>&nbsp;</td>
-			<td class="table-total-label" style="width: <?php echo EXP_TD_WIDTH?>;">
-				Totals:
-			</td>
-			<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
-				<span id="gr-value-table-total">
-					<?php echo num_display($venue_totals['revenue']) ?>
-				</span>
-			</td>
-			<td class="table-nbr" style="width: <?php echo QTY_TD_WIDTH?>;">
-				<span id="redeem-qty-display-table-total">
-					<?php echo $venue_totals['redeemed-qty'] ?>
-				</span>
-			</td>
-			<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
-				<span id="commission-display-table-total">
-					<?php echo num_display($venue_totals['commission']) ?>
-				</span>
-			</td>
-			<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
-				<span id="vat-display-table-total">
-					<?php echo num_display($venue_totals['vat']) ?>
-				</span>
-			</td>
-			<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
-				<span id="net-payable-table-total">
-					<?php echo num_display($venue_totals['net_payable']) ?>
-				</span>
-			</td>
-			<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
-				<span id="balance-due-table-total">
-					<?php echo num_display($venue_totals['balance_due']) ?>
-				</span>
-			</td>
-		</tr>
-	</tbody>
-	</table>
-	<?php
-}
-
-function display_product_row($product_row) {
-	extract($product_row);
-	$id = $product_id;
+function display_product_row($product_row, $disp_cols) {
 	// determine if the order date is earlier than the product date, indicating a repeating product
-	$ord_date = new DateTime($min_order_date);
-	$prod_date = new DateTime($product_date);
-	$tr_class = ($ord_date < $prod_date) ? 'highlight-row' : '';											
+	$ord_date = new DateTime($product_row['min_order_date']);
+	$prod_date = new DateTime($product_row['product_date']);
+	$tr_class = ($ord_date < $prod_date) ? 'highlight-row' : '';									
 	?>
 	<tr class="<?php echo $tr_class ?>">
-	<td style="width: <?php echo ID_TD_WIDTH?>;"><?php echo $id ?></td>
-	<td><?php echo substr($title, 0, 50) ?></td>
-	<td style="width: <?php echo EXP_TD_WIDTH?>;"><?php echo $status ?></td>
-	<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
-		<span id="grevenue-display-<?php echo $id ?>">
-			<?php echo num_display($revenue) ?>
-		</span>
-	</td>
-	<td class="table-nbr" style="width: <?php echo QTY_TD_WIDTH?>;">
-		<span id="redeem-qty-display-<?php echo $id ?>">
-			<?php echo $redeemed_qty ?>
-		</span>
-	</td>
-	<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
-		<span id="min_order_date-display-<?php echo $id ?>">
-			<?php echo $min_order_date ?>
-		</span>
-	</td>
-	<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
-		<span id="max_order_date-display-<?php echo $id ?>">
-			<?php echo $venue_name ?>
-		</span>
-	</td>
-	<td class="table-nbr" style="width: <?php echo COMM_TD_WIDTH?>;">
-		<span id="product_date-display-<?php echo $id ?>">
-			<?php echo $product_date ?>
-		</span>
-	</td>
-	<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
-		<span id="payable-display-<?php echo $id ?>">
-			<?php echo num_display($net_payable) ?>
-		</span>
-	</td>
-	<td class="table-nbr" style="width: <?php echo TOTALS_TD_WIDTH?>;">
-		<span id="balance-due-display-<?php echo $id ?>">
-			<?php echo num_display($balance_due) ?>
-		</span>
-	</td>
-	<td style="width: <?php echo ACTION_TD_WIDTH?>;"><?php echo $view ?></td>
+		<?php
+			foreach($disp_cols as $col) {
+				echo "<td>$product_row[$col]</td>";
+			}
+			?>
+			<td style="width: <?php echo ACTION_TD_WIDTH?>;"><?php echo $product_row['view'] ?></td>
 	</tr>
 	<?php
 }
@@ -538,8 +451,9 @@ function order_product_table($product_rows) {
 }
 
 function num_display ($num) {
-	// display number with 2 decimal rounding and formatting
-	return number_format(round($num,2), 2);
+	// display number with 2 decimal rounding -- NO FORMATTING
+	// return number_format(round($num,2), 2);
+	return round($num,2);
 }
 
 function num_display_no_decs ($num) {

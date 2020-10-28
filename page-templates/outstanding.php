@@ -167,6 +167,29 @@ require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
 							<?php display_venue_select(false, 0, false); ?>
 						</div>
 					</div>
+					<div id="custom-columns-row" class="filter-form-row">
+						<div>
+							<button id="custom-columns-toggle-btn" class='btn btn-info'>
+								Customize Product Columns &nbsp; 
+								<span id="custom-columns-arrow" class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+							</button>
+						</div>
+						<div id="custom-columns-list-div">
+							<fieldset class="metabox-prefs">
+								<?php
+									foreach($outstanding_product_columns as $key => $out_col) {
+										?>
+										<label for="custom-col-<?php echo $key ?>">
+											<input type="checkbox" data-colkey="<?php echo $key?>" id="custom-col-<?php echo $key ?>" 
+												<?php echo in_array($key, $out_default_product_columns) ? 'checked' : ''; ?> >
+											<?php echo str_replace('</br>', ' ', $out_col) ?>
+										</label>
+										<?php
+									}
+								?>
+							</fieldset>
+						</div>
+					</div>
 					<div class="form-group">
 						<div class="text-center">
 							<button type="submit" name="load_products" id="load-products" class="btn btn-primary">Load Products</button>
