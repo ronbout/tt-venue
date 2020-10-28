@@ -8,6 +8,8 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
+require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
+
 define('TOTALS_TD_WIDTH', '80px');
 define('ID_TD_WIDTH', '64px');
 define('QTY_TD_WIDTH', '69px');
@@ -66,13 +68,16 @@ function outstanding_display_product_table($filter_data) {
 					ORDER BY p.post_date DESC", 
 					$parms), ARRAY_A);
 				
-	// more efficient just to grab this a separate statement
+	// pull out all payments for the product id's returned above
+	$product_id_list = array_column($product_rows, 'product_id');
+	$placeholders = array_fill(0, count($product_id_list), '%s');
+	$placeholders = implode(', ', $placeholders);
 	$payment_rows = $wpdb->get_results($wpdb->prepare("
-			SELECT  pr.product_id, sum(pmnt.amount) as 'total_amount'
+			SELECT  pr.product_id, SUM(pmnt.amount) AS 'total_amount'
 			FROM $product_table pr
 			JOIN $payment_table pmnt ON pmnt.pid = pr.product_id
-			WHERE YEAR(pmnt.timestamp) = '%d'
-			GROUP BY pr.product_id", $year), ARRAY_A);
+			WHERE pr.product_id IN ($placeholders)
+			GROUP BY pr.product_id", $product_id_list), ARRAY_A);
 
 	// create array w product id's as keys and pay totals as values
 	$payments = array_combine(array_column($payment_rows, "product_id"), array_column($payment_rows, "total_amount"));

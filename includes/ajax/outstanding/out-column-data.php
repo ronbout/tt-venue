@@ -29,3 +29,16 @@ $outstanding_product_columns = array(
 	'total_income' => 'Total</br>Income',
 	'profit_margin' => 'Income /</br>Sales',
 );
+
+$out_default_product_columns = array(
+	'product_id',
+	'title',
+	'status',
+	'revenue',
+	'redeemed_qty',
+	'min_order_date',
+	'venue_name',
+	'product_date',
+	'net_payable',
+	'balance_due',
+);
