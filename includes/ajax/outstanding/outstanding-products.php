@@ -73,16 +73,16 @@ function outstanding_display_product_table($filter_data) {
 	$placeholders = array_fill(0, count($product_id_list), '%s');
 	$placeholders = implode(', ', $placeholders);
 	$payment_rows = $wpdb->get_results($wpdb->prepare("
-			SELECT  pr.product_id, SUM(pmnt.amount) AS 'total_amount'
+			SELECT  pr.product_id, pmnt.amount, CAST(pmnt.timestamp AS DATE) AS payment_date
 			FROM $product_table pr
 			JOIN $payment_table pmnt ON pmnt.pid = pr.product_id
 			WHERE pr.product_id IN ($placeholders)
-			GROUP BY pr.product_id", $product_id_list), ARRAY_A);
+			ORDER BY pr.product_id, CAST(pmnt.timestamp AS DATE)", $product_id_list), ARRAY_A);
 
 	// create array w product id's as keys and pay totals as values
-	$payments = array_combine(array_column($payment_rows, "product_id"), array_column($payment_rows, "total_amount"));
-// var_dump($payments);
-// return;
+	$payments = build_payments($payment_rows);
+	// $payments = array_combine(array_column($payment_rows, "product_id"), array_column($payment_rows, "total_amount"));
+
 	$ordered_products = order_product_table($product_rows);
 
 	// returns array with 'totals' and 'calcs' keys
@@ -121,6 +121,23 @@ function outstanding_display_product_table($filter_data) {
 
 <?php 
 return;
+}
+
+function build_payments($payment_rows) {
+	$payments = array();
+	foreach($payment_rows as $payment) {
+		$prod_id = $payment['product_id'];
+		if (isset($payments[$prod_id])) {
+			$payments[$prod_id]['total'] += $payment['amount'];
+			$payments[$prod_id]['listing'] .= ';' . $payment['amount'] . ',' . $payment['payment_date'];
+		} else {
+			$payments[$prod_id] = array('total' => $payment['amount'],
+																				 'listing' =>  $payment['amount'] . ',' . $payment['payment_date']
+			);
+		}
+	}
+
+	return $payments;
 }
 
 function build_sql_filters($filter_data) {
@@ -229,7 +246,8 @@ function get_totals_calcs($ordered_products, $payments) {
 		$tmp['commission'] = ($tmp['revenue'] / 100) * $product_row['commission'];
 		$tmp['vat'] = ($tmp['commission'] / 100) * $product_row['vat'];
 		$tmp['net_payable'] = $tmp['revenue'] - ($tmp['commission'] + $tmp['vat']);
-		$tmp['paid_amount'] = empty($payments[$product_id]) ? 0 : $payments[$product_id];
+		$tmp['paid_amount'] = empty($payments[$product_id]) ? 0 : $payments[$product_id]['total'];
+		$tmp['payment_list'] = empty($payments[$product_id]) ? '' : $payments[$product_id]['listing'];
 		$tmp['balance_due'] = $tmp['net_payable'] - $tmp['paid_amount'];
 		// new...show min / max date of orders as well as product date
 		$tmp['min_order_date'] = explode(' ', $product_row['min_order_date'])[0];
