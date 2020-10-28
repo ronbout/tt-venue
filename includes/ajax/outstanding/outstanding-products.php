@@ -73,7 +73,7 @@ function outstanding_display_product_table($filter_data) {
 	$placeholders = array_fill(0, count($product_id_list), '%s');
 	$placeholders = implode(', ', $placeholders);
 	$payment_rows = $wpdb->get_results($wpdb->prepare("
-			SELECT  pr.product_id, pmnt.amount, CAST(pmnt.timestamp AS DATE) AS payment_date
+			SELECT  pmnt.id, pr.product_id, pmnt.amount, CAST(pmnt.timestamp AS DATE) AS payment_date
 			FROM $product_table pr
 			JOIN $payment_table pmnt ON pmnt.pid = pr.product_id
 			WHERE pr.product_id IN ($placeholders)
@@ -129,10 +129,10 @@ function build_payments($payment_rows) {
 		$prod_id = $payment['product_id'];
 		if (isset($payments[$prod_id])) {
 			$payments[$prod_id]['total'] += $payment['amount'];
-			$payments[$prod_id]['listing'] .= ';' . $payment['amount'] . ',' . $payment['payment_date'];
+			$payments[$prod_id]['listing'] .= ';' . $payment['id'] . ', ' . $payment['amount'] . ',' . $payment['payment_date'];
 		} else {
 			$payments[$prod_id] = array('total' => $payment['amount'],
-																				 'listing' =>  $payment['amount'] . ',' . $payment['payment_date']
+																				 'listing' => $payment['id'] . ', ' . $payment['amount'] . ',' . $payment['payment_date']
 			);
 		}
 	}
