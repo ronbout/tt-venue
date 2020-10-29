@@ -140,15 +140,27 @@ require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
 						</div>
 					</div>
 					<div class="filter-form-row">
-						<div class="col-sm-8 form-group">
+						<div class="col-sm-6 form-group" style="border-right: 1px solid #aaa;">
 							<label for="recurring-product-check" class="col-sm-12">
 								<div class="col-sm-4 text-right" style="padding-right: 34px;" >
 									<input type="checkbox" name="recurring-product-check" id="recurring-product-check">
 								</div>
 								<span class="col-sm-8">
-									Recurring Products Only - (Order Date < Product Date)
+									Recurring Products Only</br>(Order Date < Product Date)
 								</span>
 							</label>
+						</div>
+						<div class="col-sm-6 form-group" style="padding-left: 22px;">
+							<label for="balance-select-type" class="col-sm-4 control-label">Balance Due Filter</label>
+							<div class="col-sm-7">
+								<select name="balance-select-type" id="balance-select-type" class="form-control">
+									<option value="any" selected>Any</option>
+									<option value="positive">Positive</option>
+									<option value="negative">Negative</option>
+									<option value="zero">Zero</option>
+									<option value="nonzero">Non Zero</option>
+								</select>
+							</div>
 						</div>
 					</div>
 					<div class="filter-form-row">

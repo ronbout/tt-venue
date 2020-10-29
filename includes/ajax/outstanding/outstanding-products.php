@@ -24,6 +24,8 @@ function outstanding_display_product_table($filter_data) {
 	// return;
 	$sql_filters = build_sql_filters($filter_data);
 	$disp_cols = $filter_data['prodCols'];
+	// balance due filter cannot be done with sql as only known after calcs
+	$balance_due_filter = $filter_data['balanceSelectType'];
 
 	// var_dump($sql_filters);
 
@@ -85,7 +87,7 @@ function outstanding_display_product_table($filter_data) {
 	$ordered_products = order_product_table($product_rows);
 
 	// returns array with 'totals' and 'calcs' keys
-	$totals_calcs = get_totals_calcs($ordered_products, $payments);
+	$totals_calcs = get_totals_calcs($ordered_products, $payments, $balance_due_filter);
 
 	$product_calcs = $totals_calcs['calcs'];
 	$venue_totals = $totals_calcs['totals'];
@@ -210,7 +212,7 @@ function convert_date($date_str) {
 	return $tmp_date->format('Y-m-d');
 }
 
-function get_totals_calcs($ordered_products, $payments) {
+function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 	$venue_totals = array(
 	'offers' => 0,
 	'redeemed_cnt' => 0,
@@ -230,6 +232,7 @@ function get_totals_calcs($ordered_products, $payments) {
 
 	$product_calcs = array();
 	foreach($ordered_products as $product_row) {
+
 		$product_id = $product_row['product_id'];
 		$tmp = array();
 		$tmp['product_id'] = $product_id;
@@ -249,6 +252,12 @@ function get_totals_calcs($ordered_products, $payments) {
 		$tmp['paid_amount'] = num_display(empty($payments[$product_id]) ? 0 : $payments[$product_id]['total']);
 		$tmp['payment_list'] = empty($payments[$product_id]) ? '' : $payments[$product_id]['listing'];
 		$tmp['balance_due'] = num_display($tmp['net_payable'] - $tmp['paid_amount']);
+
+		// check against balance due filter 
+		if (!balance_due_filter_ok($tmp['balance_due'], $balance_due_filter)) {
+			continue;
+		}
+
 		// new...show min / max date of orders as well as product date
 		$tmp['min_order_date'] = explode(' ', $product_row['min_order_date'])[0];
 		$tmp['max_order_date'] = explode(' ', $product_row['max_order_date'])[0];
@@ -270,6 +279,23 @@ function get_totals_calcs($ordered_products, $payments) {
 		}
 	}
 	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
+}
+
+function balance_due_filter_ok ($balance_due, $balance_due_filter) {
+	switch($balance_due_filter) {
+		case 'any':
+			return true;
+		case 'positive': 
+			return $balance_due > 0;
+		case 'negative':
+			return $balance_due < 0;
+		case 'zero': 
+			return $balance_due == 0;
+		case 'nonzero': 
+			return $balance_due != 0;
+		default:
+		return true;
+	}
 }
 
 function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
