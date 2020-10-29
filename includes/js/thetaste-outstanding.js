@@ -179,7 +179,7 @@ const tasteLoadProductButtons = () => {
 			// var outputFile = 'export'
 			let year = jQuery("#outstanding-year").val();
 			let yearType = jQuery("#outstanding-year-type").val();
-			let outputFile = `export_${yearType}_year_${year}.csv`;
+			let outputFile = `export.csv`;
 
 			// CSV
 			exportTableToCSV.apply(this, [jQuery("#out-product-table"), outputFile]);
