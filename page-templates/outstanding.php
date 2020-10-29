@@ -179,6 +179,15 @@ require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
 							<?php display_venue_select(false, 0, false); ?>
 						</div>
 					</div>
+					<div class="filter-form-row">
+						<div class="col-sm-12 form-group" style="padding-left: 34px;">
+							<label for="product-id-list">Enter Product ID's, separated by commas (overrides all other filters)</label>
+							<div class="col-sm-5">
+								<input type="number" id="product-id-entry">
+							</div>
+							<textarea name="product-id-list" id="product-id-list" cols="30" rows="2" disabled class="form-control"></textarea>
+						</div>
+					</div>
 					<div id="custom-columns-row" class="filter-form-row">
 						<div>
 							<button id="custom-columns-toggle-btn" class='btn btn-info'>

@@ -47,6 +47,7 @@ function outstanding_display_product_table($filter_data) {
 						pm2.meta_value AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
 						pm5.meta_value AS 'commission', 
 						COUNT(plook.order_id) AS 'order_cnt', SUM(plook.product_qty) AS 'order_qty', 
+						SUM(plook.coupon_amount) AS 'coupon_amt',
 						SUM(wc_oi.downloaded) AS 'redeemed_cnt', SUM(wc_oi.downloaded * plook.product_qty) AS 'redeemed_qty',
 						MIN(plook.date_created) AS 'min_order_date', MAX(plook.date_created) AS 'max_order_date',
 						ven.venue_id, ven.name AS 'venue_name'
@@ -220,6 +221,8 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 	'order_cnt' => 0,
 	'order_qty' => 0,
 	'sales_amt' => 0,
+	'coupon_amt' => 0,
+	'net_sales' => 0,
 	'revenue' => 0,
 	'commission' => 0,
 	'vat' => 0,
@@ -244,6 +247,8 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 		$tmp['order_cnt'] = $product_row['order_cnt'];
 		$tmp['order_qty'] = $product_row['order_qty'];
 		$tmp['sales_amt'] = num_display($product_row['price'] * $tmp['order_qty']);
+		$tmp['coupon_amt'] = num_display($product_row['coupon_amt']);
+		$tmp['net_sales'] = num_display($tmp['sales_amt'] - $product_row['coupon_amt']);
 		$tmp['revenue'] = num_display($product_row['price'] * $tmp['redeemed_qty']);
 		$tmp['view'] = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>View</button>";
 		$tmp['commission'] = num_display(($tmp['revenue'] / 100) * $product_row['commission']);
@@ -304,26 +309,26 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 	?>
 	<div class="v-summary-container">
 		<div class="v-summary-section">
-			<h3>Vouchers</br>Sold</h3>
+			<h3>Vouchers Sold</br> => Redeemed</h3>
 			<h3>
 				<span id="vouchers-total">
-					<?php echo $venue_totals['order_qty'] ?>
+					<?php echo number_format($venue_totals['order_qty']) ?> => <?php echo number_format($venue_totals['redeemed_qty']) ?>
 				</span>
 			</h3>
 		</div>
 		<div class="v-summary-section">
-			<h3>Vouchers</br>Redeemed</h3>
-			<h3>
-				<span id="served-total">
-					<?php echo $venue_totals['redeemed_qty'] ?>
-				</span>
-			</h3>
-		</div>
-		<div class="v-summary-section">
-			<h3>Total</br>Sales</h3>
+			<h3>Gross</br>Sales</h3>
 			<h3>
 				<span id="gr-value-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['sales_amt']) ?>
+				<?php echo $currency . ' ' . number_format(num_display($venue_totals['sales_amt']),2) ?>
+				</span>
+			</h3>
+		</div>
+		<div class="v-summary-section">
+			<h3>Net</br>Sales</h3>
+			<h3>
+				<span id="gr-value-total">
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['net_sales']),2) ?>
 				</span>
 			</h3>
 		</div>
@@ -331,7 +336,7 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			<h3>Venue Gross</br>Payable</h3>
 			<h3>
 				<span id="gr-value-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['revenue']) ?>
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['revenue']),2) ?>
 				</span>
 			</h3>
 		</div>
@@ -339,7 +344,7 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			<h3>Total</br>VAT</h3>
 			<h3>
 				<span id="gr-value-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['vat']) ?>
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['vat']),2) ?>
 				</span>
 			</h3>
 		</div>
@@ -347,15 +352,15 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			<h3>Total</br>Commission</h3>
 			<h3>
 				<span id="gr-value-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['commission']) ?>
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['commission']),2) ?>
 				</span>
 			</h3>
 		</div>
 		<div class="v-summary-section">
-			<h3>Net</br>Payable</h3>
+			<h3>Venue Net</br>Payable</h3>
 			<h3>
 				<span id="net-payable-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['net_payable']) ?>
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['net_payable']),2) ?>
 				</span>
 			</h3>
 		</div>
@@ -363,7 +368,7 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			<h3>Total</br>Payments</h3>
 			<h3>
 				<span id="paid-amount-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['paid_amount']) ?>
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['paid_amount']),2) ?>
 				</span>
 			</h3>
 		</div>
@@ -371,7 +376,7 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			<h3>Balance</br>Due</h3>
 			<h3>
 				<span id="balance-due-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['balance_due']) ?>
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['balance_due']),2) ?>
 				</span>
 			</h3>
 		</div>
@@ -379,7 +384,7 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			<h3>UnRedeemed</br>Income</h3>
 			<h3>
 				<span id="gr-value-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['unredeemed_income']) ?>
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['unredeemed_income']),2) ?>
 				</span>
 			</h3>
 		</div>
@@ -387,7 +392,7 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			<h3>Total</br>Income</h3>
 			<h3>
 				<span id="gr-value-total">
-					<?php echo $currency . ' ' . num_display($venue_totals['total_income']) ?>
+					<?php echo $currency . ' ' . number_format(num_display($venue_totals['total_income']),2) ?>
 				</span>
 			</h3>
 		</div>
@@ -400,21 +405,6 @@ function display_venue_summary($venue_totals, $venue_type, $year, $year_type) {
 			</h3>
 		</div>
 	</div>
-
-	<div id="summary-hidden-values">
-	<input type="hidden" id="outstanding-year" value="<?php echo $year ?>">
-	<input type="hidden" id="outstanding-year-type" value="<?php echo $year_type ?>">
-	<input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
-	<input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">
-	<input type="hidden" id="sum-vat" value="<?php echo $venue_totals['vat'] ?>">
-	<input type="hidden" id="sum-redeemed-cnt" value="<?php echo $venue_totals['redeemed_cnt'] ?>">
-	<input type="hidden" id="sum-redeemed-qty" value="<?php echo $venue_totals['redeemed_qty'] ?>">
-	<input type="hidden" id="sum-num-served" value="<?php echo $venue_totals['num_served'] ?>">
-	<input type="hidden" id="sum-net-payable" value="<?php echo $venue_totals['net_payable'] ?>">
-	<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
-	<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
-	</div>
-
 	<?php
 }
 
