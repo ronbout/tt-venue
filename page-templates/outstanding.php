@@ -180,10 +180,12 @@ require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
 						</div>
 					</div>
 					<div class="filter-form-row">
-						<div class="col-sm-12 form-group" style="padding-left: 34px;">
-							<label for="product-id-list">Enter Product ID's, separated by commas (overrides all other filters)</label>
-							<div class="col-sm-5">
+						<div class="col-sm-12 form-group">
+							<label for="product-id-entry" class="col-sm-5 control-label">Enter Product ID's (overrides all other filters)</label>
+							<div class="col-sm-7">
 								<input type="number" id="product-id-entry">
+								<button id="add-product-id-btn" class="btn btn-success">Add Product</button>
+								<button id="clear-product-list-btn" class="btn btn-warning">Clear List</button>
 							</div>
 							<textarea name="product-id-list" id="product-id-list" cols="30" rows="2" disabled class="form-control"></textarea>
 						</div>

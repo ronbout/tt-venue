@@ -35,33 +35,50 @@ const tasteLoadFormSubmit = () => {
 };
 
 const tasteGetProductFilterData = (formData) => {
-	const filterData = {
-		prodSelectType: formData.get("product-select-type"),
-		orderSelectType: formData.get("order-select-type"),
-		venueSelectType: formData.get("venue-select-type"),
-		balanceSelectType: formData.get("balance-select-type"),
-		recurringProductCheck: formData.get("recurring-product-check"),
-	};
-
-	if ("year" === filterData.prodSelectType) {
-		filterData.prodYear = formData.get("product-year-select");
+	let filterData = {};
+	// if prod id list, turn off all other filters
+	let prodIdList = jQuery("#product-id-list").val();
+	if (prodIdList) {
+		filterData = {
+			prodIdList,
+			prodSelectType: "all",
+			orderSelectType: "all",
+			venueSelectType: "any",
+			balanceSelectType: "any",
+			recurringProductCheck: 0,
+		};
 	} else {
-		filterData.prodStartDt = jQuery("#product-date-start").datepicker(
-			"getDate"
-		);
-		filterData.prodEndDt = jQuery("#product-date-end").datepicker("getDate");
+		filterData = {
+			prodSelectType: formData.get("product-select-type"),
+			orderSelectType: formData.get("order-select-type"),
+			venueSelectType: formData.get("venue-select-type"),
+			balanceSelectType: formData.get("balance-select-type"),
+			recurringProductCheck: formData.get("recurring-product-check"),
+		};
+
+		if ("year" === filterData.prodSelectType) {
+			filterData.prodYear = formData.get("product-year-select");
+		} else {
+			filterData.prodStartDt = jQuery("#product-date-start").datepicker(
+				"getDate"
+			);
+			filterData.prodEndDt = jQuery("#product-date-end").datepicker("getDate");
+		}
+
+		if ("year" === filterData.orderSelectType) {
+			filterData.orderYear = formData.get("order-year-select");
+		} else {
+			filterData.orderStartDt = jQuery("#order-date-start").datepicker(
+				"getDate"
+			);
+			filterData.orderEndDt = jQuery("#order-date-end").datepicker("getDate");
+		}
+
+		if ("venue" === filterData.venueSelectType) {
+			filterData.venueId = formData.get("venue-id");
+		}
 	}
 
-	if ("year" === filterData.orderSelectType) {
-		filterData.orderYear = formData.get("order-year-select");
-	} else {
-		filterData.orderStartDt = jQuery("#order-date-start").datepicker("getDate");
-		filterData.orderEndDt = jQuery("#order-date-end").datepicker("getDate");
-	}
-
-	if ("venue" === filterData.venueSelectType) {
-		filterData.venueId = formData.get("venue-id");
-	}
 	// have to pull all checkboxes for the product columns
 	$customCols = jQuery("[id^=custom-col]:checked");
 	filterData.prodCols = jQuery.map($customCols, (col) => {
@@ -129,6 +146,29 @@ const tasteLoadFilterEvents = () => {
 				$customColumns.hide(300);
 			}
 		});
+
+	let $prodIdEntry = jQuery("#product-id-entry");
+	jQuery("#add-product-id-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			let id = $prodIdEntry.val();
+			id && addProductIdToList(id.toString());
+			$prodIdEntry.val("");
+		});
+	jQuery("#clear-product-list-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			jQuery("#product-id-list").val("");
+		});
+};
+
+const addProductIdToList = (id) => {
+	$prodListTextArea = jQuery("#product-id-list");
+	let prodList = $prodListTextArea.val();
+	prodList = prodList ? prodList + ", " + id : id;
+	$prodListTextArea.val(prodList);
 };
 
 const tasteLoadProducts = (filterData) => {

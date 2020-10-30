@@ -239,3 +239,21 @@
 #custom-columns-row label {
 	margin: 4px 10px 2px;
 }
+
+#product-id-entry {
+	margin: 14px 0;
+}
+
+#product-id-entry::-webkit-inner-spin-button,
+#product-id-entry::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	margin: 0;
+}
+
+#add-product-id-btn,
+#clear-product-list-btn {
+	margin-left: 10px;
+	padding: 4px 6px;
+}

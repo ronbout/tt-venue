@@ -151,6 +151,18 @@ function build_sql_filters($filter_data) {
 	$order_select_type = $filter_data['orderSelectType'];
 	$venue_select_type = $filter_data['venueSelectType'];
 	$recurring_product_check = $filter_data['recurringProductCheck'];
+	$prod_id_list = $filter_data['prodIdList'];
+
+	if ($prod_id_list) {
+		$product_id_list = explode(', ',$prod_id_list);
+		$placeholders = array_fill(0, count($product_id_list), '%s');
+		$placeholders = implode(', ', $placeholders);
+
+		$where_clause .= $where_clause ? ' AND ' : 'WHERE ';
+		$where_clause .= " pr.product_id IN ($placeholders) ";
+		$parms = $product_id_list;
+		return array('where' => $where_clause, 'having' => $having_clause, 'parms' => $parms);
+	}
 
 	// check venue conditions
 	if ('any' !== $venue_select_type) {
