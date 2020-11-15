@@ -1,8 +1,8 @@
 <?php
 /**
- * 	out-column-data.php
- *  shared array for the customizable columns
- * 	various reporting page templates
+ * 	order-column-data.php
+ *  array for the customizable columns
+ * 	in the order reporting page
  * 	10/23/2020	Ron Boutilier
  */
 
