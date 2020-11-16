@@ -128,7 +128,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 								COUNT(plook.order_id) AS 'order_cnt', SUM(plook.product_qty) AS 'order_qty', 
 								SUM(wc_oi.downloaded) AS 'redeemed_cnt', SUM(wc_oi.downloaded * plook.product_qty) AS 'redeemed_qty'
 							FROM $v_p_join_table vp 
-							JOIN $product_table pr ON vp.product_id = pr.product_id
+							JOIN $product_table pr ON vp.product_id = pr.product_id AND pr.onsale = 1
 							JOIN $posts_table p ON vp.product_id =  p.ID
 							LEFT JOIN $post_meta_table pm ON vp.product_id = pm.post_id AND pm.meta_key = '_children'
 							LEFT JOIN $post_meta_table pm2 ON vp.product_id = pm2.post_id AND pm2.meta_key = 'Expired'
@@ -138,7 +138,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 							LEFT JOIN $post_meta_table pm6 ON vp.product_id = pm6.post_id AND pm6.meta_key = 'bed_nights'
 							LEFT JOIN $post_meta_table pm7 ON vp.product_id = pm7.post_id AND pm7.meta_key = 'total_covers'
 							LEFT JOIN $product_order_table plook ON plook.product_id = pr.product_id
-							JOIN $posts_table orderp ON orderp.ID = plook.order_id 
+							LEFT JOIN $posts_table orderp ON orderp.ID = plook.order_id 
 								AND orderp.post_status = 'wc-completed'
 								AND orderp.post_type = 'shop_order'
 							LEFT JOIN $order_items_table wc_oi ON wc_oi.order_item_id = plook.order_item_id

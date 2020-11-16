@@ -60,7 +60,7 @@ function outstanding_display_product_table($filter_data) {
 					LEFT JOIN $post_meta_table pm4 ON pr.product_id = pm4.post_id AND pm4.meta_key = 'vat'
 					LEFT JOIN $post_meta_table pm5 ON pr.product_id = pm5.post_id AND pm5.meta_key = 'commission'
 					LEFT JOIN $product_order_table plook ON plook.product_id = pr.product_id
-					JOIN $posts_table orderp ON orderp.ID = plook.order_id 
+					LEFT JOIN $posts_table orderp ON orderp.ID = plook.order_id 
 						AND orderp.post_status = 'wc-completed'
 						AND orderp.post_type = 'shop_order'
 					LEFT JOIN $order_items_table wc_oi ON wc_oi.order_item_id = plook.order_item_id
@@ -143,7 +143,7 @@ function build_payments($payment_rows) {
 }
 
 function build_sql_filters($filter_data) {
-	$where_clause = '';
+	$where_clause = 'WHERE pr.onsale = 1 ';
 	$having_clause = '';
 	$parms = array();
 
