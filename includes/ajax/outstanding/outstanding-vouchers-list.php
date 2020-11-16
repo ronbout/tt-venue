@@ -201,7 +201,7 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 							if (1 == $order_item_info->downloaded ) {
 								$redeem_qty = $redeem_qty + $order_item_info->quan;
 							}
-							display_order_table_row($order_item_info);
+							display_order_table_row($order_item_info, $expired_val);
 						}
 						?>
 						</tbody>
