@@ -29,6 +29,49 @@ function insert_venue_products($venue_id, $prod_ids) {
 	return $rows_affected;
 }
 
+function insert_post_venues($post_id, $venue_ids) {
+	global $wpdb;
+	$venues_posts_table = "{$wpdb->prefix}taste_venues_posts";
+
+	// start be deleting all the original venues attached to this post
+	// then add in the new list of venues.
+	$sql = "DELETE FROM {$venues_posts_table}
+					WHERE post_id = %d";
+
+	$rows_affected = $wpdb->query(
+		$wpdb->prepare($sql, $post_id)
+	);
+
+	$insert_values = '';
+	$insert_parms = [];
+
+// echo '<h1><pre>venueIds: ', var_dump($venue_ids), '</pre></h1>';
+// echo '<h1><pre>postId: ', var_dump($post_id), '</pre></h1>';
+//  die(); 
+
+	foreach($venue_ids as $venue_id) {
+		$insert_values .= '(%d, %d),';
+		$insert_parms[] = intval($venue_id);
+		$insert_parms[] = $post_id; 
+	}
+	$insert_values = rtrim($insert_values, ',');
+
+	$sql = "
+		INSERT INTO {$venues_posts_table}
+			(venue_id, post_id)
+		VALUES
+			{$insert_values}
+		";
+
+	$wpdb->show_errors();
+
+	$rows_affected = $wpdb->query(
+		$wpdb->prepare($sql, $insert_parms)
+	);
+
+	return $rows_affected;
+}
+
 function insert_venue_product_on_dup($venue_id, $post_id) {
 	global $wpdb;
 	// works for a single product/post, with check that it already exists

@@ -1,5 +1,7 @@
 jQuery(document).ready(function () {
-	userForms();
+	let $documentBody = jQuery("body");
+	userForms($documentBody);
+	editPostVenues($documentBody);
 	if (typeof products != "undefined") {
 		// console.log("products ", products);
 		let selectedProds = [];
@@ -9,10 +11,10 @@ jQuery(document).ready(function () {
 	}
 });
 
-const userForms = () => {
+const userForms = ($documentBody) => {
 	if (
-		jQuery("body").hasClass("user-new-php") ||
-		jQuery("body").hasClass("user-edit-php")
+		$documentBody.hasClass("user-new-php") ||
+		$documentBody.hasClass("user-edit-php")
 	) {
 		let $roleSelect = jQuery("#role");
 		$roleSelect.length &&
@@ -25,6 +27,71 @@ const userForms = () => {
 				}
 			});
 	}
+};
+
+const editPostVenues = ($documentBody) => {
+	if (
+		($documentBody.hasClass("post-php") ||
+			$documentBody.hasClass("post-new-php")) &&
+		$documentBody.hasClass("post-type-post")
+	) {
+		// postVenuesList is available
+		console.log("postVenuesList: ", postVenuesList);
+		buildVenueListsForPostAssign(postVenuesList);
+	}
+	// setup change of the venue select to add to the venue lists
+	$venueSelect = jQuery("#venue-select");
+	$venueSelect.change(() => {
+		let venueId = Number.parseInt($venueSelect.val());
+		let fnd = postVenuesList.findIndex((venInfo) => {
+			return Number.parseInt(venInfo.venueId) === venueId;
+		});
+		if (fnd !== -1) return;
+		let venueSelected = {
+			venueId,
+			name: jQuery("#venue-select option:selected").text().trim(),
+		};
+		postVenuesList.push(venueSelected);
+
+		buildVenueListsForPostAssign(postVenuesList);
+	});
+};
+
+const buildVenueListsForPostAssign = (postVenuesList) => {
+	let venueInputList = postVenuesList.reduce((venList, venInfo) => {
+		venList += venList ? "," : "";
+		venList += venInfo.venueId;
+		return venList;
+	}, "");
+
+	let venueChipList = postVenuesList.reduce((venList, venInfo) => {
+		venList += `
+			<div class="tt-chip">
+				${venInfo.name}
+				<span data-venid="${venInfo.venueId}" class="delete-venue-chip dashicons dashicons-no-alt tt-icon"></span>
+			</div>
+		`;
+		return venList;
+	}, "");
+	jQuery("#post-venue-id-list").val(venueInputList);
+	jQuery("#selected-venues-chips").html(venueChipList);
+	setupVenueChipClicks(postVenuesList);
+};
+
+const setupVenueChipClicks = (postVenuesList) => {
+	jQuery(".delete-venue-chip")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			let venueId = Number.parseInt(jQuery(this).data("venid"));
+			let fnd = postVenuesList.findIndex((venInfo) => {
+				return Number.parseInt(venInfo.venueId) === venueId;
+			});
+			if (fnd !== -1) {
+				postVenuesList.splice(fnd, 1);
+			}
+			buildVenueListsForPostAssign(postVenuesList);
+		});
 };
 
 const loadSelectProducts = (selectedProds) => {

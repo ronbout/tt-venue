@@ -58,6 +58,22 @@ function taste_add_venue_product_table() {
 	dbDelta($sql);
 }
 
+function taste_add_venues_posts_table() {
+	global $wpdb;
+	$venues_posts_table = $wpdb->prefix.'taste_venues_posts';
+	$venue_table = $wpdb->prefix.'taste_venue';
+
+	$sql = "CREATE TABLE IF NOT EXISTS $venues_posts_table (
+			venue_id BIGINT(20) UNSIGNED NOT NULL,
+			post_id BIGINT(20) UNSIGNED NOT NULL,
+			PRIMARY KEY  (venue_id, post_id),
+			KEY (post_id)
+		)";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql);
+}
+
 function taste_venue_activation() {
 
 	taste_add_venue_role();
@@ -65,6 +81,8 @@ function taste_venue_activation() {
 	taste_add_venue_table();
 
 	taste_add_venue_product_table();
+
+	taste_add_venues_posts_table();
 }
 /**** END OF ACTIVATION CODE ****/
 
