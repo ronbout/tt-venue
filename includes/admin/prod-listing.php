@@ -8,7 +8,7 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-// set up the venue column 
+// set up the venue column in the products listing
 function taste_add_venue_column( $columns ) {
   $columns['venue'] = __( 'Venue' );
   return $columns;

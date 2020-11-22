@@ -29,6 +29,7 @@ if (is_admin()) {
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/admin-enqueues.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/venue-user-fields.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/prod-listing.php';
+	require_once TASTE_PLUGIN_INCLUDES.'/admin/post-listing.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/bulk-product-assign.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/metabox/product-metabox.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/metabox/post-metabox.php';
