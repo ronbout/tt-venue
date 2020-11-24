@@ -51,37 +51,43 @@ function get_venue_products($venue_id) {
 
 function display_product_table($product_rows, $venue_id, $venue_name) {
 	?>
-	<h3>Products Assigned to <?php echo $venue_name ?></h3>
-	<div class="product-table-div">
-		<table id="product-table" class="fixed striped widefat">
-			<thead>
-				<tr>
-					<th class="manage-column">Product Id</th>
-					<th class="manage-column">Sku</th>
-					<th class="manage-column">Title</th>
-					<th class="manage-column">Date</th>
-					<th class="manage-column">Expired</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
-					foreach($product_rows as $prod_row) {
-						$date = str_replace('-', '<span>&#8209;</span>', explode(' ', $prod_row['post_date'])[0]);
-						?>
-						<tr>
-							<td><?php echo $prod_row['product_id'] ?></td>
-							<td><?php echo $prod_row['sku'] ?></td>
-							<td><?php echo $prod_row['post_title'] ?></td>
-							<td><?php echo $date ?></td>
-							<td><?php echo $prod_row['expired'] ?></td>
-						</tr>
-						<?php
-					}
-				?>
-			</tbody>
-		</table>
-	</div>
+	<h3>Products Assigned to <?php echo $venue_name ?>:</h3>
 	<?php
+		if (count($product_rows)) {
+			?>
+			<div class="product-table-div">
+				<table id="product-table" class="fixed striped widefat">
+					<thead>
+						<tr>
+							<th class="manage-column">Product Id</th>
+							<th class="manage-column">Sku</th>
+							<th class="manage-column">Title</th>
+							<th class="manage-column">Date</th>
+							<th class="manage-column">Expired</th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+							foreach($product_rows as $prod_row) {
+								$date = str_replace('-', '<span>&#8209;</span>', explode(' ', $prod_row['post_date'])[0]);
+								?>
+								<tr>
+									<td><?php echo $prod_row['product_id'] ?></td>
+									<td><?php echo $prod_row['sku'] ?></td>
+									<td><?php echo $prod_row['post_title'] ?></td>
+									<td><?php echo $date ?></td>
+									<td><?php echo $prod_row['expired'] ?></td>
+								</tr>
+								<?php
+							}
+						?>
+					</tbody>
+				</table>
+			</div>
+			<?php 
+		} else {
+			echo '<h2>No Products Found</h2>';
+		}
 }
 
 function display_products($venue_id) {

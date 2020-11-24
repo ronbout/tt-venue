@@ -20,8 +20,7 @@ function taste_view_posts_by_venue() {
 			$venue_id = $_POST['venue-id'];
 			?>
 			<div class="admin-back-link">
-				<a href="<?php echo admin_url("edit.php?post_type=post
-				&page=venue-view-posts") ?>"><== Return to Venue Selection</a>
+				<a href="<?php echo admin_url("edit.php?page=venue-view-posts") ?>"><== Return to Venue Selection</a>
 			</div>
 			<?php
 			display_posts($venue_id);
@@ -51,35 +50,41 @@ function get_venue_posts($venue_id) {
 
 function display_post_table($post_rows, $venue_id, $venue_name) {
 	?>
-	<h3>posts Assigned to <?php echo $venue_name ?></h3>
-	<div class="post-table-div">
-		<table id="post-table" class="fixed striped widefat">
-			<thead>
-				<tr>
-					<th class="manage-column">Post Id</th>
-					<th class="manage-column">Title</th>
-					<th class="manage-column">Date</th>
-					<th class="manage-column">Author</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
-					foreach($post_rows as $prod_row) {
-						$date = str_replace('-', '<span>&#8209;</span>', explode(' ', $prod_row['post_date'])[0]);
-						?>
-						<tr>
-							<td><?php echo $prod_row['post_id'] ?></td>
-							<td><?php echo $prod_row['post_title'] ?></td>
-							<td><?php echo $date ?></td>
-							<td><?php echo $prod_row['author'] ?></td>
-						</tr>
-						<?php
-					}
-				?>
-			</tbody>
-		</table>
-	</div>
+	<h3>Posts Assigned to <?php echo $venue_name ?>:</h3>
 	<?php
+		if (count($post_rows)) {
+			?>
+			<div class="post-table-div">
+			<table id="post-table" class="fixed striped widefat">
+				<thead>
+					<tr>
+						<th class="manage-column">Post Id</th>
+						<th class="manage-column">Title</th>
+						<th class="manage-column">Date</th>
+						<th class="manage-column">Author</th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+						foreach($post_rows as $prod_row) {
+							$date = str_replace('-', '<span>&#8209;</span>', explode(' ', $prod_row['post_date'])[0]);
+							?>
+							<tr>
+								<td><?php echo $prod_row['post_id'] ?></td>
+								<td><?php echo $prod_row['post_title'] ?></td>
+								<td><?php echo $date ?></td>
+								<td><?php echo $prod_row['author'] ?></td>
+							</tr>
+							<?php
+						}
+					?>
+				</tbody>
+			</table>
+		</div>
+		<?php
+		} else {
+			echo '<h2>No Posts Found</h2>';
+		}
 }
 
 function display_posts($venue_id) {
