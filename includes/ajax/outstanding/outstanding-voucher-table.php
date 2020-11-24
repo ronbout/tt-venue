@@ -1,6 +1,6 @@
 <?php 
 
-function display_voucher_table($product_id, $multiplier) {
+function display_voucher_table($product_id, $disp_order_cols) {
 	global $wpdb;
 
 	$tproduct = 0;

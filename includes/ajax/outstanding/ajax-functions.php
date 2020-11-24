@@ -9,15 +9,15 @@ function taste_ajax_outstanding_load_vouchers() {
 		wp_die();
 	}
 
-	if (!isset($_POST['product_id'])) {
-		echo 'No valid product id';
+	if (!isset($_POST['product_id']) || !isset($_POST['order_columns'])) {
+		echo 'No valid product id or missing order columns';
 		wp_die();
 	}
 	$product_id = $_POST['product_id'];
-	$multiplier = $_POST['multiplier'];
+	$disp_order_cols = $_POST['order_columns'];
 
 	require_once(plugin_dir_path(__FILE__). 'outstanding-voucher-table.php');
-	display_voucher_table($product_id, $multiplier);
+	display_voucher_table($product_id, $disp_order_cols);
 
 	wp_die();
 }

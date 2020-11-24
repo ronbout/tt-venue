@@ -214,29 +214,30 @@
 	padding: 0;
 }
 
-#out-products-table-title-action {
+#out-products-table-title-action,
+#audit-orders-table-title-action {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	margin-top: 8px;
 }
 
-#custom-columns-toggle-btn {
+.custom-columns-toggle-btn {
 	background-color: #f5f5f5;
 	border: 1px solid lightgray;
 	color: black;
 	outline: none;
 }
 
-#custom-columns-list-div {
+.custom-columns-list-div {
 	display: none;
 	padding: 8px 4px 4px;
 }
 
-#custom-columns-row {
+.custom-columns-row {
 	display: block;
 }
-#custom-columns-row label {
+.custom-columns-row label {
 	margin: 4px 10px 2px;
 }
 

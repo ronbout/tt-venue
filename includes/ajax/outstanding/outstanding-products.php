@@ -107,7 +107,7 @@ function outstanding_display_product_table($filter_data) {
 				<div id="out-products-table-title-action">
 					<div><h3>Offers (<?php echo $venue_totals['offers'] ?> Rows)</h3></div>
 					<div>
-						<a href="#" id ="export" role='button'>
+						<a href="#" id ="export-products" role='button'>
 							<button class="btn btn-info">Download CSV</button>
 						</a>
 					</div>

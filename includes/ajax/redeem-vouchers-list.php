@@ -239,11 +239,11 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 						}
 						?>
 						</tbody>
-						<?php 
-						$payable = display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val)
-					?>
 				</table>
 			</div>
+			<?php 
+				$payable = display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val)
+			?>
 		</div>
 	</div>
 	<?php

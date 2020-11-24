@@ -80,12 +80,23 @@ const tasteGetProductFilterData = (formData) => {
 	}
 
 	// have to pull all checkboxes for the product columns
-	$customCols = jQuery("[id^=custom-col]:checked");
+	let $customCols = jQuery("[id^=custom-prod-col]:checked");
 	filterData.prodCols = jQuery.map($customCols, (col) => {
 		$col = jQuery(col);
-		return $col.attr("id").replace("custom-col-", "");
+		return $col.attr("id").replace("custom-prod-col-", "");
 	});
+
 	return filterData;
+};
+
+const tasteGetOrderColumnData = () => {
+	// have to pull all checkboxes for the order columns
+	$customCols = jQuery("[id^=custom-order-col]:checked");
+	const orderCols = jQuery.map($customCols, (col) => {
+		$col = jQuery(col);
+		return $col.attr("id").replace("custom-order-col-", "");
+	});
+	return orderCols;
 };
 
 const tasteLoadFilterEvents = () => {
@@ -128,22 +139,40 @@ const tasteLoadFilterEvents = () => {
 			$venueSelect.hide(300);
 		}
 	});
-	let $arrowSpan = jQuery("#custom-columns-arrow");
-	let $customColumns = jQuery("#custom-columns-list-div");
-	jQuery("#custom-columns-toggle-btn")
+	let $prodArrowSpan = jQuery("#custom-products-columns-arrow");
+	let $customProdColumns = jQuery("#custom-products-columns-list-div");
+	jQuery("#custom-products-columns-toggle-btn")
 		.unbind("click")
 		.click(function (e) {
 			e.preventDefault();
-			if ($arrowSpan.hasClass("glyphicon-menu-down")) {
-				$arrowSpan
+			if ($prodArrowSpan.hasClass("glyphicon-menu-down")) {
+				$prodArrowSpan
 					.removeClass("glyphicon-menu-down")
 					.addClass("glyphicon-menu-up");
-				$customColumns.show(300);
+				$customProdColumns.show(300);
 			} else {
-				$arrowSpan
+				$prodArrowSpan
 					.removeClass("glyphicon-menu-up")
 					.addClass("glyphicon-menu-down");
-				$customColumns.hide(300);
+				$customProdColumns.hide(300);
+			}
+		});
+	let $ordArrowSpan = jQuery("#custom-orders-columns-arrow");
+	let $customOrdColumns = jQuery("#custom-orders-columns-list-div");
+	jQuery("#custom-orders-columns-toggle-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			if ($ordArrowSpan.hasClass("glyphicon-menu-down")) {
+				$ordArrowSpan
+					.removeClass("glyphicon-menu-down")
+					.addClass("glyphicon-menu-up");
+				$customOrdColumns.show(300);
+			} else {
+				$ordArrowSpan
+					.removeClass("glyphicon-menu-up")
+					.addClass("glyphicon-menu-down");
+				$customOrdColumns.hide(300);
 			}
 		});
 
@@ -208,29 +237,21 @@ const tasteLoadProductButtons = () => {
 				// prod is already loaded, just scroll to the section
 				tasteScrollToVouchers();
 			} else {
-				let $rowData = jQuery(this).parent().parent();
-				let multiplier = $rowData.data("multiplier");
-				tasteLoadVouchers(prodId, multiplier);
+				const orderColData = tasteGetOrderColumnData();
+				tasteLoadVouchers(prodId, orderColData);
 			}
 		});
 
-	jQuery("#export")
+	jQuery("#export-products")
 		.unbind("click")
 		.click(function (event) {
-			// var outputFile = 'export'
-			let year = jQuery("#outstanding-year").val();
-			let yearType = jQuery("#outstanding-year-type").val();
-			let outputFile = `export.csv`;
-
+			let outputFile = `export-products.csv`;
 			// CSV
 			exportTableToCSV.apply(this, [jQuery("#out-product-table"), outputFile]);
-
-			// IF CSV, don't do event.preventDefault() or return false
-			// We actually need this to be a typical hyperlink
 		});
 };
 
-const tasteLoadVouchers = (prodId, multiplier) => {
+const tasteLoadVouchers = (prodId, orderColData) => {
 	let modalMsg = "Loading Vouchers...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	jQuery.ajax({
@@ -241,19 +262,30 @@ const tasteLoadVouchers = (prodId, multiplier) => {
 			action: "outstanding_load_vouchers",
 			security: tasteVenue.security,
 			product_id: prodId,
-			multiplier: multiplier,
+			order_columns: orderColData,
 		},
 		success: function (responseText) {
 			tasteCloseMsg();
 			//console.log(responseText);
 			jQuery("#voucher-list-div").html(responseText);
 			tasteScrollToVouchers();
+			tasteLoadOrderCSVButton();
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
 			alert("Error loading vouchers: " + errorThrown);
 		},
 	});
+};
+
+const tasteLoadOrderCSVButton = () => {
+	jQuery("#export-orders")
+		.unbind("click")
+		.click(function (event) {
+			let outputFile = `export-orders.csv`;
+			// CSV
+			exportTableToCSV.apply(this, [jQuery("#out-order-table"), outputFile]);
+		});
 };
 
 const tasteLoadScrollUp = () => {

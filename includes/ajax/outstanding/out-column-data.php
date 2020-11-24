@@ -48,3 +48,31 @@ $out_default_product_columns = array(
 	'net_payable',
 	'balance_due',
 );
+
+$outstanding_order_columns = array(
+	'order_id' => 'Order Id',
+	'order_item_id' => 'Order</br>Item Id',
+	'customer_name' => 'Customer Name',
+	'customer_email' => 'Customer Email',
+	'redeemed' => 'Redeemed',
+	'qty' => 'Quantity',
+	'product_id' => 'Product Id',
+	'price' => 'Product</br>Price',
+	'paid_amt' => 'Amount</br>Paid',
+	'gross_revenue' => 'Gross</br>Revenue',
+	'coupon_amt' => 'Coupon</br>Amount',
+	'order_date' => 'Order Date',
+	'expired' => 'Expired',
+	'venue_name' => 'Venue Name',
+);
+
+$out_default_order_columns = array(
+	'order_id',
+	'order_item_id',
+	'redeemed',
+	'qty',
+	'price',
+	'paid_amt',
+	'coupon_amt',
+	'order_date',
+);
