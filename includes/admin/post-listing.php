@@ -28,6 +28,7 @@ function taste_venues_column_posts( $column, $post_id ) {
 			FROM {$wpdb->prefix}taste_venues_posts vp
 			JOIN {$wpdb->prefix}taste_venue v ON v.venue_id = vp.venue_id
 			WHERE vp.post_id = %d
+			ORDER BY v.name ASC
 			", $post_id), ARRAY_A
 		);
 		if (count($venue_rows)) {

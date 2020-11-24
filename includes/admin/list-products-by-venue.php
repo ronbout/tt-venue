@@ -1,14 +1,14 @@
 <?php 
 /**
- *  assign-products.php 
- *  admin menu page for assigning 
- * products (vouchers) to a venue 
+ *  list-products-by-venue.php 
+ *  admin menu page for viewing 
+ * 	products attached to a venue 
  * 
  */
  
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function taste_assign_products() {
+function taste_view_products_by_venue() {
 	// check for coming here as form submit with products to update
 	if (isset($_POST['assign_products_btn']) && isset($_POST['prod_ids'])) {
 		$prod_ids = $_POST['prod_ids'];
@@ -26,14 +26,14 @@ function taste_assign_products() {
 	}
 	?>
 	<div class="wrap">
-		<h2>Assign Products to Venues</h2>
+		<h2>View Products by Venue</h2>
 		<?php
 
 		if (isset($_POST['venue-id'])) {
 			$venue_id = $_POST['venue-id'];
 			?>
 			<div class="admin-back-link">
-				<a href="<?php echo admin_url("edit.php?post_type=product&page=venue-assign-products") ?>"><== Return to Venue Selection</a>
+				<a href="<?php echo admin_url("edit.php?post_type=product&page=venue-view-products") ?>"><== Return to Venue Selection</a>
 			</div>
 			<?php
 			display_products($venue_id);
@@ -206,7 +206,7 @@ function display_products($venue_id) {
 	display_product_table($venue_product_rows, $venue_id, $venue_name);
 
 	// display autocomplete and selected products table
-	display_product_select($product_rows, $venue_id);
+	//display_product_select($product_rows, $venue_id);
 }
 
 
