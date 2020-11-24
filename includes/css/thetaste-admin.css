@@ -21,7 +21,8 @@ body.product_page_venue-assign-products #venue-form-container select,
 body.post-php.post-type-product #venue-form-container select,
 body.post-php.post-type-post #venue-form-container select,
 body.post-new-php.post-type-product #venue-form-container select,
-body.post-new-php.post-type-post #venue-form-container select {
+body.post-new-php.post-type-post #venue-form-container select,
+body.edit-php.post-type-post #bulk-edit #venue-form-container select {
 	margin: 10px auto;
 }
 
@@ -74,4 +75,17 @@ body.post-new-php.post-type-post #venue-form-container label {
 	font-weight: 500;
 	vertical-align: sub;
 	cursor: pointer;
+}
+
+.post-venues-bulk-edit-container {
+	padding: 8px;
+	display: table-cell;
+	width: 1100px;
+}
+
+.post-venues-metabox-container {
+	width: 100%;
+	border: 1px solid lightgray;
+	margin: 20px 14px 8px 8px;
+	padding: 6px;
 }

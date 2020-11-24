@@ -65,20 +65,26 @@ function taste_display_post_venues_box($post_info) {
 /**
  *  Set up save of Venues meta box
  */
-function taste_save_post_venues_metabox($post_id) {
+function taste_save_post_venues_metabox($post_id, $post) {
 	global $wpdb;
-	if (wp_is_post_autosave($post_id) || wp_is_post_revision( $post_id )) {
+	$post_type = get_post_type($post);
+	if (wp_is_post_autosave($post_id) || wp_is_post_revision( $post_id ) || 'post' !== $post_type ) {
 		return;
 	}
+
+	// data could be in POST or REQUEST (or both).  Check each for venue list
 	// echo '<h1><pre>xxPOST: ', var_dump($_POST), '</pre></h1>';
 	// echo '<h1><pre>xxREQUEST: ', var_dump($_REQUEST), '</pre></h1>';
+	// echo '<h1><pre>GET: ', var_dump($_GET), '</pre></h1>';
 	// die(); 
-	// might be here through quick/bulk edit.  if so, just return 
-	if (!count($_POST)) {
-		return;
+
+	$venue_ids = array();
+	if (isset($_POST['post-venue-id-list'])) {
+		$venue_ids = explode(',', $_POST['post-venue-id-list']);
+	} elseif (isset($_REQUEST['post-venue-id-list'])) {
+		$venue_ids = explode(',', $_REQUEST['post-venue-id-list']);
 	}
-		
-	$venue_ids = isset($_POST['post-venue-id-list']) ? explode(',', $_POST['post-venue-id-list']) : [];
+
 	if (count($venue_ids)) {
 		insert_post_venues($post_id, $venue_ids);
 	}

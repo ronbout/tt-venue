@@ -2,18 +2,19 @@
 /**
  *  post-listing.php 
  *  add venue column to post listing 
- *  ***** add bulk assign capability
+ *  as well as bulk edit capability
  * 
  */
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 // set up the venue column in the pots listing
-function taste_add_venues_column_posts( $columns ) {
+function taste_add_venues_column_posts( $columns, $post_type ) {
+	if ('post' !== $post_type) return $columns;
   $columns['venues'] = __( 'Venues' );
   return $columns;
 }
-add_filter( 'manage_posts_columns', 'taste_add_venues_column_posts' );
+add_filter( 'manage_posts_columns', 'taste_add_venues_column_posts', 10, 2 );
 
 // get the data for the rows
 function taste_venues_column_posts( $column, $post_id ) {
@@ -37,3 +38,28 @@ function taste_venues_column_posts( $column, $post_id ) {
   }
 }
 add_action( 'manage_posts_custom_column', 'taste_venues_column_posts', 10, 2);
+
+// the bulk edit setup
+function taste_venues_posts_bulk_edit_input( $column_name, $post_type ) {
+	if ('post' !== $post_type || 'venues' !== $column_name) return;
+	?>
+	<div class="post-venues-bulk-edit-container">
+		<script>
+			let postVenuesList = <?php echo json_encode(array()) ?>;
+		</script>
+		<div class="post-venues-metabox-container">
+			<div class="select-post-venues">
+				<h3>Attach Venue(s)</h3>
+				<?php display_venue_select(false, $venue_id, false); ?>
+			</div>
+			<div class="display-post-venues">
+				<h3>Selected Venues</h3>
+				<div id="selected-venues-chips"></div>
+				
+			</div>
+		</div>
+		<input type="hidden" id="post-venue-id-list" name="post-venue-id-list" value="">
+	</div>
+	<?php
+}
+add_action( 'bulk_edit_custom_box', 'taste_venues_posts_bulk_edit_input', 10, 2 );
