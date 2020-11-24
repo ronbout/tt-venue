@@ -11,13 +11,15 @@
 	width: 15% !important;
 }
 
-body.product_page_venue-view-products #venue-form-container {
+body.product_page_venue-view-products #venue-form-container,
+body.posts_page_venue-view-posts #venue-form-container {
 	text-align: center;
 	width: 400px;
 	margin: 40px auto;
 }
 
 body.product_page_venue-view-products #venue-form-container select,
+body.posts_page_venue-view-posts #venue-form-container select,
 body.post-php.post-type-product #venue-form-container select,
 body.post-php.post-type-post #venue-form-container select,
 body.post-new-php.post-type-product #venue-form-container select,

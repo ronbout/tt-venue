@@ -25,6 +25,7 @@ register_deactivation_hook( __FILE__, 'taste_venue_deactivation' );
 
 if (is_admin()) {
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/list-products-by-venue.php';
+	require_once TASTE_PLUGIN_INCLUDES.'/admin/list-posts-by-venue.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/venue-admin-menus.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/admin-enqueues.php';
 	require_once TASTE_PLUGIN_INCLUDES.'/admin/venue-user-fields.php';
