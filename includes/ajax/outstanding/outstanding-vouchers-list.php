@@ -27,7 +27,7 @@ function display_voucher_table($product_ids, $disp_order_cols) {
 				bl.meta_value AS cust_lname,
 				be.meta_value AS cust_email, 
 				i.order_id, i.order_item_id, i.downloaded,
-				wclook.coupon_amount,
+				wclook.coupon_amount AS coupon_amt,
 				wclook.product_net_revenue AS paid_amt,
 				o.post_date as order_date
 			FROM {$wpdb->prefix}wc_order_product_lookup wclook
@@ -110,6 +110,12 @@ function calc_order_data($order_item_rows, $product_data) {
 		'orders' => 0,
 		'redeem_qty' => 0,
 		'total_sold' => 0,
+		'paid_amt' => 0,
+		'coupon_amt' => 0,
+		'gross_revenue' => 0,
+		'commission' => 0,
+		'vat' => 0,
+		'payable' => 0,
 	);
 
 	$order_data = array();
@@ -123,9 +129,14 @@ function calc_order_data($order_item_rows, $product_data) {
 
 		$order_totals['orders'] += 1;
 		$order_totals['total_sold'] += $order_item_row['qty'];
+		$redeemed_qty = 0;
 		if ('1' === $order_item_row['downloaded']) {
-			$order_totals['redeem_qty'] += $order_item_row['qty'];
+			$redeemed_qty  = $order_item_row['qty'];
+			$order_totals['redeem_qty'] += $redeemed_qty;
 		}
+		$order_totals['paid_amt'] += $order_item_row['paid_amt'];
+		$order_totals['coupon_amt'] += $order_item_row['coupon_amt'];
+
 		$tmp = array();
 		$tmp['order_id'] = $order_item_row['order_id'];
 		$tmp['order_item_id'] = $order_item_row['order_item_id'];
@@ -134,30 +145,28 @@ function calc_order_data($order_item_rows, $product_data) {
 		$tmp['redeemed'] = ('1' === $order_item_row['downloaded']) ? 'Y' : '';
 		$tmp['qty'] = $order_item_row['qty'];
 		$tmp['product_id'] = $product_id;
-		$tmp['price'] = $product_price;
-		$tmp['paid_amt'] = intval($order_item_row['paid_amt']);
-		$tmp['coupon_amt'] = intval($order_item_row['coupon_amt']);
-		$tmp['gross_revenue'] = $tmp['coupon_amt'] + $tmp['paid_amt'];
+		$tmp['price'] = number_format($product_price, 2);
+		$tmp['paid_amt'] = number_format(intval($order_item_row['paid_amt']), 2);
+		$tmp['coupon_amt'] = number_format(intval($order_item_row['coupon_amt']), 2);
+		$tmp['taste_gross_revenue'] = number_format($order_item_row['coupon_amt'] + $order_item_row['paid_amt'], 2);
 		$tmp['order_date'] = explode(' ', $order_item_row['order_date'])[0];
 		$tmp['expired'] = $expired_val;
-		$tmp['venue_name'] = $order_item_row['venue_name'] ? $order_item_row['venue_name'] : '------';
-		$tmp['venue_id'] = $order_item_row['venue_id'] ? $order_item_row['venue_id'] : '-----';
+		$tmp['venue_name'] = $product_data[$product_id]['venue_name'] ? $product_data[$product_id]['venue_name'] : '------';
+		$tmp['venue_id'] = $product_data[$product_id]['venue_id'] ? $product_data[$product_id]['venue_id'] : '-----';
 		$order_data[] = $tmp;
+
+		$grevenue = $redeemed_qty * $product_price;
+		$commission = ($grevenue / 100) * $commission_val;
+		$vat = ($commission / 100) * $vat_val;
+		$payable = $grevenue - ($commission + $vat);
+	
+		$order_totals['gross_revenue'] += $grevenue;
+		$order_totals['commission'] += $commission;
+		$order_totals['vat'] += $vat;
+		$order_totals['payable'] += $payable;
 	}
 
-	$grevenue = $order_totals['redeem_qty'] * $product_price;
-	$commission = ($grevenue / 100) * $commission_val;
-	$vat = ($commission / 100) * $vat_val;
-	$grevenue = round($grevenue, 2);
-	$commission = round($commission, 2);
-	$vat = round($vat, 2);
-	$payable = $grevenue - ($commission + $vat);
-	$payable = round($payable, 2);
 
-	$order_totals['gross_revenue'] = $grevenue;
-	$order_totals['commission'] = $commission;
-	$order_totals['vat'] = $vat;
-	$order_totals['payable'] = $payable;
 
 	return array('rows' => $order_data, 'totals' => $order_totals);
 }
@@ -294,7 +303,7 @@ function display_order_table_summary($order_totals) {
 						</td>
 				</tr>
 				<tr>
-						<td class="voucher-summary-header"><b>Net Payable </b></td>
+						<td class="voucher-summary-header"><b>Venue Net Payable </b></td>
 						<td class="voucher-summary-data">
 							<b>
 							<span id="payable-display">
@@ -308,6 +317,27 @@ function display_order_table_summary($order_totals) {
 						<td class="voucher-summary-data">Served 
 							<span id="redeem-qty-display"><?php echo $order_totals['redeem_qty'] ?></span> customers <br> out of a possible <span id="total-sold-display"><?php echo $order_totals['total_sold'] ?>
 							</span>
+						</td>
+				</tr>
+				<tr><td colspan="2"> </td></tr>
+				<tr>
+						<td class="voucher-summary-header"><b>Total Received From Customer</b></td>
+						<td class="voucher-summary-data">
+							<b>
+							<span id="payable-display">
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($order_totals['paid_amt'], 2)  ?>
+							</span>
+							</b>
+						</td>
+				</tr>
+				<tr>
+						<td class="voucher-summary-header"><b>Total Coupon Amount</b></td>
+						<td class="voucher-summary-data">
+							<b>
+							<span id="payable-display">
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($order_totals['coupon_amt'], 2)  ?>
+							</span>
+							</b>
 						</td>
 				</tr>
 			</tbody>
