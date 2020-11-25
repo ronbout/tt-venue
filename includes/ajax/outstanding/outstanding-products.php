@@ -104,8 +104,11 @@ function outstanding_display_product_table($filter_data) {
 			<?php
 			if (count($product_rows)) {
 				?>
-				<div id="out-products-table-title-action">
-					<div><h3>Offers (<?php echo $venue_totals['offers'] ?> Rows)</h3></div>
+				<div><h3>Offers (<?php echo $venue_totals['offers'] ?> Rows)</h3></div>
+				<div class="table-title-action">
+					<div>
+						<button class="btn btn-success product-view-checked-btn" disabled >View Checked Products</button>
+					</div>
 					<div>
 						<a href="#" id ="export-products" role='button'>
 							<button class="btn btn-info">Download CSV</button>
@@ -254,10 +257,10 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 		$tmp['title'] = substr($product_row['post_title'], 0, 50);
 		$tmp['sku'] = $product_row['sku'];
 		$tmp['status'] = ("N" === $product_row['expired']) ? "Active" : "Expired";
-		$tmp['redeemed_cnt'] = $product_row['redeemed_cnt'];
-		$tmp['redeemed_qty'] = $product_row['redeemed_qty'];
-		$tmp['order_cnt'] = $product_row['order_cnt'];
-		$tmp['order_qty'] = $product_row['order_qty'];
+		$tmp['redeemed_cnt'] = $product_row['redeemed_cnt'] ? $product_row['redeemed_cnt'] : 0;
+		$tmp['redeemed_qty'] = $product_row['redeemed_qty'] ? $product_row['redeemed_qty'] : 0;
+		$tmp['order_cnt'] = $product_row['order_cnt'] ? $product_row['order_cnt'] : 0;
+		$tmp['order_qty'] = $product_row['order_qty'] ? $product_row['order_qty'] : 0;
 		$tmp['sales_amt'] = num_display($product_row['price'] * $tmp['order_qty']);
 		$tmp['coupon_amt'] = num_display($product_row['coupon_amt']);
 		$tmp['net_sales'] = num_display($tmp['sales_amt'] - $product_row['coupon_amt']);
@@ -425,6 +428,7 @@ function display_products_table($product_calcs, $outstanding_product_columns, $d
 	<div id="product-table-container" class="table-fixed-container">
 	<table id="out-product-table" class="table table-striped table-bordered table-fixed">
 		<thead>
+			<th><input type="checkbox" id="checkbox-all"></th>
 			<?php 
 				foreach($disp_cols as $col) {
 					echo "<th>$outstanding_product_columns[$col]</th>";
@@ -451,6 +455,10 @@ function display_product_row($product_row, $disp_cols) {
 	$tr_class = ($ord_date < $prod_date) ? 'highlight-row' : '';									
 	?>
 	<tr class="<?php echo $tr_class ?>">
+			<td>
+				<input data-productid="<?php echo $product_row['product_id'] ?>" 
+							 type="checkbox" class="product-view-check">
+			</td>
 		<?php
 			foreach($disp_cols as $col) {
 				echo "<td>$product_row[$col]</td>";

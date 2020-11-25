@@ -238,20 +238,51 @@ const tasteLoadProductButtons = () => {
 				tasteScrollToVouchers();
 			} else {
 				const orderColData = tasteGetOrderColumnData();
-				tasteLoadVouchers(prodId, orderColData);
+				tasteLoadVouchers([prodId], orderColData);
 			}
 		});
 
 	jQuery("#export-products")
 		.unbind("click")
 		.click(function (event) {
-			let outputFile = `export-products.csv`;
+			let outputFile = "export-products.csv";
 			// CSV
-			exportTableToCSV.apply(this, [jQuery("#out-product-table"), outputFile]);
+			exportTableToCSV.apply(this, [
+				jQuery("#out-product-table"),
+				outputFile,
+				"products",
+			]);
+		});
+
+	jQuery("#checkbox-all")
+		.unbind("click")
+		.click(function (e) {
+			let checkVal = jQuery(this).prop("checked");
+			jQuery(".product-view-check").prop("checked", checkVal);
+			checkViewAllDisable();
+		});
+
+	jQuery(".product-view-check")
+		.unbind("click")
+		.click(function (e) {
+			checkViewAllDisable();
+		});
+
+	jQuery(".product-view-checked-btn")
+		.unbind("click")
+		.click(function (e) {
+			e.preventDefault();
+			let productIdList = [];
+			jQuery(".product-view-check:checked").each((ndx, chckbox) => {
+				let productId = jQuery(chckbox).data("productid");
+				productIdList.push(productId);
+			});
+			const orderColData = tasteGetOrderColumnData();
+			tasteLoadVouchers(productIdList, orderColData);
 		});
 };
 
-const tasteLoadVouchers = (prodId, orderColData) => {
+const tasteLoadVouchers = (productIdList, orderColData) => {
 	let modalMsg = "Loading Vouchers...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	jQuery.ajax({
@@ -261,7 +292,7 @@ const tasteLoadVouchers = (prodId, orderColData) => {
 		data: {
 			action: "outstanding_load_vouchers",
 			security: tasteVenue.security,
-			product_id: prodId,
+			product_ids: productIdList,
 			order_columns: orderColData,
 		},
 		success: function (responseText) {
@@ -269,7 +300,7 @@ const tasteLoadVouchers = (prodId, orderColData) => {
 			//console.log(responseText);
 			jQuery("#voucher-list-div").html(responseText);
 			tasteScrollToVouchers();
-			tasteLoadOrderCSVButton();
+			tasteLoadOrderCSVButtons();
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
@@ -278,13 +309,29 @@ const tasteLoadVouchers = (prodId, orderColData) => {
 	});
 };
 
-const tasteLoadOrderCSVButton = () => {
+const tasteLoadOrderCSVButtons = () => {
 	jQuery("#export-orders")
 		.unbind("click")
 		.click(function (event) {
-			let outputFile = `export-orders.csv`;
+			let outputFile = "export-orders.csv";
 			// CSV
-			exportTableToCSV.apply(this, [jQuery("#out-order-table"), outputFile]);
+			exportTableToCSV.apply(this, [
+				jQuery("#out-order-table"),
+				outputFile,
+				"orders",
+			]);
+		});
+
+	jQuery("#export-payments")
+		.unbind("click")
+		.click(function (event) {
+			let outputFile = "export-payments.csv";
+			// CSV
+			exportTableToCSV.apply(this, [
+				jQuery("#audit-payment-table"),
+				outputFile,
+				"payments",
+			]);
 		});
 };
 
@@ -304,7 +351,7 @@ const tasteLoadScrollUp = () => {
 			e.preventDefault();
 			$("html, body").animate(
 				{
-					scrollTop: $("#venue-summary-div").offset().top,
+					scrollTop: $("#audit-filter-container").offset().top,
 				},
 				600
 			);
@@ -318,6 +365,14 @@ const tasteScrollToVouchers = () => {
 		},
 		600
 	);
+};
+
+const checkViewAllDisable = () => {
+	if (jQuery(".product-view-check:checked").length) {
+		jQuery(".product-view-checked-btn").prop("disabled", false);
+	} else {
+		jQuery(".product-view-checked-btn").prop("disabled", true);
+	}
 };
 
 /***********************************************************
@@ -356,7 +411,7 @@ function tasteCloseMsg() {
 /**
  * code for exporting table to csv
  */
-function exportTableToCSV($table, filename) {
+function exportTableToCSV($table, filename, tableType) {
 	let $headers = $table.find("tr:has(th)"),
 		$rows = $table.find("tr:has(td)"),
 		// Temporary delimiter characters unlikely to be typed by keyboard
@@ -369,9 +424,9 @@ function exportTableToCSV($table, filename) {
 
 	// Grab text from table into CSV formatted string
 	var csv = '"';
-	csv += formatRows($headers.map(grabRow));
+	csv += formatRows($headers.map((i, row) => grabRow(i, row, tableType)));
 	csv += rowDelim;
-	csv += formatRows($rows.map(grabRow)) + '"';
+	csv += formatRows($rows.map((i, row) => grabRow(i, row, tableType))) + '"';
 
 	// Data URI
 	let csvData = "data:application/csv;charset=utf-8," + encodeURIComponent(csv);
@@ -391,7 +446,7 @@ function exportTableToCSV($table, filename) {
 	}
 
 	//------------------------------------------------------------
-	// Helper Functions
+	// CSV Helper Functions
 	//------------------------------------------------------------
 	// Format the output so it has the appropriate delimiters
 	function formatRows(rows) {
@@ -404,11 +459,14 @@ function exportTableToCSV($table, filename) {
 			.join(colDelim);
 	}
 	// Grab and format a row from the table
-	function grabRow(i, row) {
+	function grabRow(i, row, tableType) {
 		let $row = jQuery(row);
 		//for some reason $cols = $row.find('td') || $row.find('th') won't work...
 		let $cols = $row.find("td");
 		if (!$cols.length) $cols = $row.find("th");
+		// the first and last columns in the product table
+		// are inputs and should be ignored
+		$cols = "products" === tableType ? $cols.not(":first").not(":last") : $cols;
 
 		return $cols.map(grabCol).get().join(tmpColDelim);
 	}

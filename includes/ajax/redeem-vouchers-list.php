@@ -222,6 +222,7 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	<div class="panel panel-default">
 		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
 		<div class="panel-body">
+			<button class="btn btn-success order-redeem-checked-btn" disabled >Redeem Checked</button>
 			<div id="voucher-table-container" class="table-fixed-container">
 				<table class="table table-striped table-bordered table-fixed">
 					<?php display_order_table_heading($order_rows, $expired_val) ?>

@@ -9,15 +9,15 @@ function taste_ajax_outstanding_load_vouchers() {
 		wp_die();
 	}
 
-	if (!isset($_POST['product_id']) || !isset($_POST['order_columns'])) {
+	if (!isset($_POST['product_ids']) || !isset($_POST['order_columns'])) {
 		echo 'No valid product id or missing order columns';
 		wp_die();
 	}
-	$product_id = $_POST['product_id'];
+	$product_ids = $_POST['product_ids'];
 	$disp_order_cols = $_POST['order_columns'];
 
-	require_once(plugin_dir_path(__FILE__). 'outstanding-voucher-table.php');
-	display_voucher_table($product_id, $disp_order_cols);
+	require_once(plugin_dir_path(__FILE__). 'outstanding-vouchers-list.php');
+	display_voucher_table($product_ids, $disp_order_cols);
 
 	wp_die();
 }

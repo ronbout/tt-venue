@@ -286,10 +286,8 @@ const tasteLoadButtons = () => {
 
 const checkRedeemAllDisable = () => {
 	if (jQuery(".order-redeem-check:checked").length) {
-		console.log("turn off disable");
 		jQuery(".order-redeem-checked-btn").prop("disabled", false);
 	} else {
-		console.log("turn disable on");
 		jQuery(".order-redeem-checked-btn").prop("disabled", true);
 	}
 };

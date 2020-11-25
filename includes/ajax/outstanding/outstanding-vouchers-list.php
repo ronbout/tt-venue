@@ -1,106 +1,111 @@
 <?php 
-
 /**
+ * 
  * Template partial to display a list of vouchers
- * for a given product, which will be in the args
- * $product_id, $disp_order_cols are available in containing 
- * code
+ * for a given product(s) and list of columns
+ * 
+ * Author: Ron Boutilier
+ * Date: 11/15/2020
+ * 
  */
-$user = wp_get_current_user();
-$role = $user->roles[0];
-$admin = ('ADMINISTRATOR' === strtoupper($role));
+function display_voucher_table($product_ids, $disp_order_cols) {
+	global $wpdb;
+	$pid_placeholders = array_fill(0, count($product_ids), '%d');
+	$pid_placeholders = implode(', ', $pid_placeholders);
 
-require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
+	$user = wp_get_current_user();
+	$role = $user->roles[0];
+	$admin = ('ADMINISTRATOR' === strtoupper($role));
 
-$pid = $product_id;
-$order_item_rows = $wpdb->get_results($wpdb->prepare("
-		SELECT im.meta_value AS qty,
-			wclook.product_id AS productID,
-			bf.meta_value AS cust_fname,
-			bl.meta_value AS cust_lname,
-			be.meta_value AS cust_email, 
-			i.order_id, i.order_item_id, i.downloaded,
-			wclook.coupon_amount,
-			wclook.product_net_revenue as paid_amt,
-			o.post_date as order_date
-		FROM " . $wpdb->prefix . "wc_order_product_lookup wclook
-		JOIN " . $wpdb->prefix . "woocommerce_order_itemmeta im ON im.order_item_id = wclook.order_item_id
-		LEFT JOIN " . $wpdb->prefix . "woocommerce_order_items i ON i.order_item_id = wclook.order_item_id
-		LEFT JOIN " . $wpdb->prefix . "posts o ON o.id = wclook.order_id
-		LEFT JOIN " . $wpdb->prefix . "postmeta bf ON bf.post_id = wclook.order_id
-		LEFT JOIN " . $wpdb->prefix . "postmeta bl ON bl.post_id = wclook.order_id
-		LEFT JOIN " . $wpdb->prefix . "postmeta be ON be.post_id = wclook.order_id
-		WHERE im.meta_key = '_qty'
-		AND bf.meta_key = '_billing_first_name'
-		AND bl.meta_key = '_billing_last_name'
-		AND be.meta_key = '_billing_email'
-		AND o.post_status = 'wc-completed'
-		AND o.post_type = 'shop_order'
-		AND wclook.product_id = %d group by o.id", $pid, $pid), ARRAY_A);
+	require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
 
-$product_row = $wpdb->get_results($wpdb->prepare("
-	SELECT  pm.post_id, p.post_title,
-					MAX(CASE WHEN pm.meta_key = '_sale_price' then pm.meta_value ELSE NULL END) as price,
-					MAX(CASE WHEN pm.meta_key = 'vat' then pm.meta_value ELSE NULL END) as vat,
-					MAX(CASE WHEN pm.meta_key = 'commission' then pm.meta_value ELSE NULL END) as commission,
-					MAX(CASE WHEN pm.meta_key = 'expired' then pm.meta_value ELSE NULL END) as expired,
-					MAX(CASE WHEN pm.meta_key = '_purchase_note' then pm.meta_value ELSE NULL END) as purchase_note
+	$order_item_rows = $wpdb->get_results($wpdb->prepare("
+			SELECT 
+				im.meta_value AS qty,
+				wclook.product_id,
+				bf.meta_value AS cust_fname,
+				bl.meta_value AS cust_lname,
+				be.meta_value AS cust_email, 
+				i.order_id, i.order_item_id, i.downloaded,
+				wclook.coupon_amount,
+				wclook.product_net_revenue AS paid_amt,
+				o.post_date as order_date
+			FROM {$wpdb->prefix}wc_order_product_lookup wclook
+			JOIN {$wpdb->prefix}woocommerce_order_itemmeta im ON im.order_item_id = wclook.order_item_id
+			LEFT JOIN {$wpdb->prefix}woocommerce_order_items i ON i.order_item_id = wclook.order_item_id
+			LEFT JOIN {$wpdb->prefix}posts o ON o.id = wclook.order_id
+			LEFT JOIN {$wpdb->prefix}postmeta bf ON bf.post_id = wclook.order_id
+			LEFT JOIN {$wpdb->prefix}postmeta bl ON bl.post_id = wclook.order_id
+			LEFT JOIN {$wpdb->prefix}postmeta be ON be.post_id = wclook.order_id
+			WHERE im.meta_key = '_qty'
+			AND bf.meta_key = '_billing_first_name'
+			AND bl.meta_key = '_billing_last_name'
+			AND be.meta_key = '_billing_email'
+			AND o.post_status = 'wc-completed'
+			AND o.post_type = 'shop_order'
+			AND wclook.product_id in ($pid_placeholders) 
+			GROUP BY wclook.product_id, o.id
+			ORDER BY wclook.product_id, o.id", $product_ids), ARRAY_A);
 
-	FROM   {$wpdb->prefix}postmeta pm
-	JOIN " . $wpdb->prefix . "posts p ON p.id = %d
-	WHERE pm.post_id = %d                    
-	GROUP BY
-		pm.post_id
-", $pid, $pid), ARRAY_A);
+	$product_rows = $wpdb->get_results($wpdb->prepare("
+		SELECT  pm.post_id, p.post_title,
+						v.venue_id, v.name AS venue_name,
+						MAX(CASE WHEN pm.meta_key = '_sale_price' then pm.meta_value ELSE NULL END) as price,
+						MAX(CASE WHEN pm.meta_key = 'vat' then pm.meta_value ELSE NULL END) as vat,
+						MAX(CASE WHEN pm.meta_key = 'commission' then pm.meta_value ELSE NULL END) as commission,
+						MAX(CASE WHEN pm.meta_key = 'expired' then pm.meta_value ELSE NULL END) as expired,
+						MAX(CASE WHEN pm.meta_key = '_purchase_note' then pm.meta_value ELSE NULL END) as purchase_note
 
-$venue_info = $wpdb->get_results($wpdb->prepare("
-		SELECT v.venue_id, v.name
-		FROM {$wpdb->prefix}taste_venue_products vp
-		JOIN {$wpdb->prefix}taste_venue v ON v.venue_id = vp.venue_id
-		WHERE vp.product_id = %d		
-", $pid), ARRAY_A);
+		FROM   {$wpdb->prefix}postmeta pm
+		JOIN {$wpdb->prefix}posts p ON p.id = pm.post_id
+		LEFT JOIN {$wpdb->prefix}taste_venue_products vp ON vp.product_id = pm.post_id
+		LEFT JOIN {$wpdb->prefix}taste_venue v ON v.venue_id = vp.venue_id
+		WHERE pm.post_id in ($pid_placeholders)                 
+		GROUP BY
+			pm.post_id
+	", $product_ids), ARRAY_A);
 
-if (null === $venue_info) {
-	$venue_name = '-------';
-} else {
-	$venue_name = $venue_info[0]['name'];
+	$product_data = array();
+	foreach($product_rows as $product_row) {
+		$tmp = array();
+		$tmp['product_price'] = $product_row['price'];
+		$tmp['vat_val'] = $product_row['vat'];
+		$tmp['commission_val'] = $product_row['commission'];
+		$tmp['expired_val'] = $product_row['expired'];
+		$tmp['tandc_val'] = $product_row['purchase_note'];
+		$tmp['product_title'] = $product_row['post_title'];
+		$tmp['venue_id'] = $product_row['venue_id'];
+		$tmp['venue_name'] = $product_row['venue_name'];
+		$tmp['expired_val'] = (strpos($expired_val, 'N') !== false) ? 'N' : 'Y';
+		$product_data[$product_row['post_id']] = $tmp;
+	}
+
+	/*
+	$termsandconditions = str_replace('\r\n','<br>', json_encode($tandc_val));
+	$termsandconditions = str_replace('[{"meta_value":"','', $termsandconditions);
+	$termsandconditions = str_replace('"}]','', $termsandconditions);
+	$termsandconditions = str_replace('(\u20ac80)','', $termsandconditions);
+	$termsandconditions = str_replace('<a hef="mailto:','', $termsandconditions);
+	$termsandconditions = str_replace('<\/a>','', $termsandconditions);
+	$termsandconditions = str_replace('\u20ac','€', $termsandconditions);
+	$termsandconditions = str_replace('\u2013','-', $termsandconditions);
+	$termsandconditions = str_replace('\u2019','', $termsandconditions);
+	*/
+
+	$order_item_rows_and_totals = calc_order_data($order_item_rows, $product_data);
+
+	$order_item_row_data = $order_item_rows_and_totals['rows'];
+	$order_totals = $order_item_rows_and_totals['totals'];
+	$payable = $order_totals['payable'];
+
+	// display_campaign_header($expired_val, $product_title);
+	display_orders_table($order_item_row_data, $order_totals, $outstanding_order_columns, $disp_order_cols );
+	// display_terms($termsandconditions);
+	display_payments_table($product_ids, $pid_placeholders, $payable);
 }
 
-$product_price = $product_row[0]['price'];
-$vat_val = $product_row[0]['vat'];
-$commission_val = $product_row[0]['commission'];
-$expired_val = $product_row[0]['expired'];
-$tandc_val = $product_row[0]['purchase_note'];
-$product_title = $product_row[0]['post_title'];
-
-$termsandconditions = str_replace('\r\n','<br>', json_encode($tandc_val));
-$termsandconditions = str_replace('[{"meta_value":"','', $termsandconditions);
-$termsandconditions = str_replace('"}]','', $termsandconditions);
-$termsandconditions = str_replace('(\u20ac80)','', $termsandconditions);
-$termsandconditions = str_replace('<a hef="mailto:','', $termsandconditions);
-$termsandconditions = str_replace('<\/a>','', $termsandconditions);
-$termsandconditions = str_replace('\u20ac','€', $termsandconditions);
-$termsandconditions = str_replace('\u2013','-', $termsandconditions);
-$termsandconditions = str_replace('\u2019','', $termsandconditions);
-
-if (strpos($expired_val, 'N') !== false) {
-	$expired_val = 'N';
-} else {
-	$expired_val = 'Y';
-}
-
-$order_item_rows_and_totals = calc_order_data($order_item_rows, $expired_val, $product_price, $vat_val, $commission_val, $pid, $venue_name);
-
-$order_item_row_data = $order_item_rows_and_totals['rows'];
-$order_totals = $order_item_rows_and_totals['totals'];
-$payable = $order_totals['payable'];
-
-display_campaign_header($expired_val, $product_title);
-display_orders_table($order_item_row_data, $order_totals, $outstanding_order_columns, $disp_order_cols );
-display_terms($termsandconditions);
-display_payments_table($pid, $payable);
-
-function calc_order_data($order_item_rows, $expired_val, $product_price, $vat_val, $commission_val, $product_id, $venue_name) {
+function calc_order_data($order_item_rows, $product_data) {
+	// $expired_val, $product_price, $vatval, $commission_val, $product_id
 	$order_totals = array(
 		'orders' => 0,
 		'redeem_qty' => 0,
@@ -109,6 +114,13 @@ function calc_order_data($order_item_rows, $expired_val, $product_price, $vat_va
 
 	$order_data = array();
 	foreach($order_item_rows as $order_item_row) {
+		// get info from product data based on product id
+		$product_id = $order_item_row['product_id'];
+		$expired_val = $product_data[$product_id]['expired_val'];
+		$product_price = $product_data[$product_id]['product_price'];
+		$vat_val = $product_data[$product_id]['vat_val'];
+		$commission_val = $product_data[$product_id]['commission_val'];
+
 		$order_totals['orders'] += 1;
 		$order_totals['total_sold'] += $order_item_row['qty'];
 		if ('1' === $order_item_row['downloaded']) {
@@ -128,7 +140,8 @@ function calc_order_data($order_item_rows, $expired_val, $product_price, $vat_va
 		$tmp['gross_revenue'] = $tmp['coupon_amt'] + $tmp['paid_amt'];
 		$tmp['order_date'] = explode(' ', $order_item_row['order_date'])[0];
 		$tmp['expired'] = $expired_val;
-		$tmp['venue_name'] = $venue_name;
+		$tmp['venue_name'] = $order_item_row['venue_name'] ? $order_item_row['venue_name'] : '------';
+		$tmp['venue_id'] = $order_item_row['venue_id'] ? $order_item_row['venue_id'] : '-----';
 		$order_data[] = $tmp;
 	}
 
@@ -149,12 +162,13 @@ function calc_order_data($order_item_rows, $expired_val, $product_price, $vat_va
 	return array('rows' => $order_data, 'totals' => $order_totals);
 }
 
+/*
 function display_campaign_header($expired_val, $product_title) {
 	?>
 	<div class="row">
 		<div class="col-md-12">
 			<p class="pimage">
-			<b>Revenue Campaign : <u><?= $pid ?></u> : </b><?= $product_title ?></p>
+			<b>Revenue Campaign : <u><?php echo $pid ?></u> : </b><?php echo $product_title ?></p>
 
 			<b>Campaign Status : </b><?php echo ('N' === $expired_val) ? 'Active' : 'Expired' ?>
 			<hr>
@@ -178,16 +192,17 @@ function display_campaign_header($expired_val, $product_title) {
 	</div>
 	<?php
 }
+*/
 
 function display_orders_table($order_item_row_data, $order_totals, $outstanding_order_columns, $disp_order_cols  ) {
 	?>
 	<div class="panel panel-default">
-		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
+		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN(S) SUMMARY</h2></div>
 		<div class="panel-body">
 			<?php
 			if (count($order_item_row_data)) {
 				?>
-				<div id="audit-orders-table-title-action">
+				<div class="table-title-action">
 					<div><h3>Order Items (<?php echo $order_totals['orders'] ?> Rows)</h3></div>
 					<div>
 						<a href="#" id ="export-orders" role='button'>
@@ -257,7 +272,7 @@ function display_order_table_summary($order_totals) {
 						<td class="voucher-summary-data">
 							<b>
 							<span id="grevenue-display">
-								<?= get_woocommerce_currency_symbol() ?> <?= number_format($order_totals['gross_revenue'], 2)  ?>
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($order_totals['gross_revenue'], 2)  ?>
 							</span>
 							</b>
 						</td>
@@ -266,7 +281,7 @@ function display_order_table_summary($order_totals) {
 						<td class="voucher-summary-header">Commission</td>
 						<td class="voucher-summary-data">
 							<span id="commission-display">
-								<?= get_woocommerce_currency_symbol() ?> <?= number_format($order_totals['commission'], 2)  ?>
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($order_totals['commission'], 2)  ?>
 							</span>
 						</td>
 				</tr>
@@ -274,7 +289,7 @@ function display_order_table_summary($order_totals) {
 						<td class="voucher-summary-header">Vat</td>
 						<td class="voucher-summary-data">
 							<span id="vat-display">
-								<?= get_woocommerce_currency_symbol() ?> <?= number_format($order_totals['vat'], 2)  ?>
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($order_totals['vat'], 2)  ?>
 							</span>
 						</td>
 				</tr>
@@ -283,7 +298,7 @@ function display_order_table_summary($order_totals) {
 						<td class="voucher-summary-data">
 							<b>
 							<span id="payable-display">
-								<?= get_woocommerce_currency_symbol() ?> <?= number_format($order_totals['payable'], 2)  ?>
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($order_totals['payable'], 2)  ?>
 							</span>
 							</b>
 						</td>
@@ -291,7 +306,7 @@ function display_order_table_summary($order_totals) {
 				<tr>
 						<td class="voucher-summary-header"><b>Redeemed</b></td>
 						<td class="voucher-summary-data">Served 
-							<span id="redeem-qty-display"><?= $order_totals['redeem_qty'] ?></span> customers <br> out of a possible <span id="total-sold-display"><?= $order_totals['total_sold'] ?>
+							<span id="redeem-qty-display"><?php echo $order_totals['redeem_qty'] ?></span> customers <br> out of a possible <span id="total-sold-display"><?php echo $order_totals['total_sold'] ?>
 							</span>
 						</td>
 				</tr>
@@ -308,10 +323,14 @@ function display_terms($termsandconditions) {
 	echo stripslashes($termsandconditions);
 }
 
-function display_payments_table($pid, $payable) {
+function display_payments_table($product_ids, $pid_placeholders, $payable) {
 	global $wpdb;
 	
-	$paymentList = $wpdb->get_results($wpdb->prepare("SELECT  * from " . $wpdb->prefix . "offer_payments where pid = %d", $pid));
+	$paymentList = $wpdb->get_results($wpdb->prepare("
+				SELECT  id, timestamp, pid, amount
+				FROM {$wpdb->prefix}offer_payments 
+				WHERE pid IN ($pid_placeholders)
+				ORDER BY pid, timestamp DESC ", $product_ids), ARRAY_A);
 
 	$total_paid_to_customer = 0;
 
@@ -319,32 +338,54 @@ function display_payments_table($pid, $payable) {
 	<br><br>
 	<div class="panel panel-default">			
 		<div class="panel-heading"><h2 style="text-align: center">Payment Transactions </h2></div>
-		<div class="panel-body">			
-			<table class="table table-striped table-bordered">
+		<div class="panel-body">	
+			<?php
+			if (count($paymentList)) {
+				?>
+				<div class="table-title-action">
+					<div><h3>Payment Items (<?php echo count($paymentList) ?> Rows)</h3></div>
+					<div>
+						<a href="#" id="export-payments" role='button'>
+							<button class="btn btn-info">Download CSV</button>
+						</a>
+					</div>
+				</div>
+			<div id="payment-table-container" class="table-fixed-container">		
+			<table id="audit-payment-table" class="table table-striped table-bordered">
 				<thead>
 					<tr>
-							<th>Payment Date</th>
-							<th>Payment Amount</th>
+						<th>Product Id</th>
+						<th>Payment Id</th>
+						<th>Payment Date</th>
+						<th>Payment Amount</th>
 					</tr>
 				</thead>
 				<tbody id="payment-lines">
 					<?php
 					
-					foreach($paymentList as $val){ 
+					foreach($paymentList as $payment){ 
 						?>
 						<tr>
-							<td><?= $val->timestamp ?></td>
-							<td><?= get_woocommerce_currency_symbol() ?> <?= number_format($val->amount, 2) ?></td>
-							<?php $total_paid_to_customer = $total_paid_to_customer + $val->amount ?>
+							<td><?php echo $payment['pid'] ?></td>
+							<td><?php echo $payment['id'] ?></td>
+							<td><?php echo $payment['timestamp'] ?></td>
+							<td><?php echo number_format($payment['amount'], 2)	?></td>
+						</tr>
 						<?php 
-					} 
+							$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
+					}
 					?>
-					</tr>
 				</tbody>
 			</table>
+			</div>
+			<?php 
+			} else {
+				echo '<h3>No Payments Found</h3>';
+			}
+			?>
 			<br>
 			<div class="text-center">
-				<b>Balance Due : <span id="balance-due-display"> <?= get_woocommerce_currency_symbol() ?> <?= number_format($payable - $total_paid_to_customer, 2) ?></span></b>
+				<b>Balance Due : <span id="balance-due-display"> <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable - $total_paid_to_customer, 2) ?></span></b>
 		</div>
 		<br>
 		<br><br>
