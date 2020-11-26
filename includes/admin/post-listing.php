@@ -4,6 +4,7 @@
  *  add venues column to post listing 
  *  as well as bulk edit capability
  * 	and sort by venues
+ * 	Include code for deletion of post (including products)
  * 
  *  Author: Ron Boutilier
  *  Date: 11/23/2020
@@ -91,3 +92,6 @@ function taste_venues_posts_sortable_using_posts_clauses($clauses, $query) {
 	return $clauses;
 }
 add_filter( 'posts_clauses', 'taste_venues_posts_sortable_using_posts_clauses', 10, 2);
+
+// bring in the delete post cleanup 
+require_once TASTE_PLUGIN_INCLUDES.'/admin/deleted_post_cleanup.php';
