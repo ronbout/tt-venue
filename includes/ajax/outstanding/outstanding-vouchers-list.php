@@ -212,7 +212,7 @@ function display_orders_table($order_item_row_data, $order_totals, $outstanding_
 			if (count($order_item_row_data)) {
 				?>
 				<div class="table-title-action">
-					<div><h3>Order Items (<?php echo $order_totals['orders'] ?> Rows)</h3></div>
+					<div><h3>Order Items (<?php echo number_format($order_totals['orders']) ?> Rows)</h3></div>
 					<div>
 						<a href="#" id ="export-orders" role='button'>
 							<button class="btn btn-info">Download CSV</button>

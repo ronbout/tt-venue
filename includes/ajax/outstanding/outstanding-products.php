@@ -104,7 +104,7 @@ function outstanding_display_product_table($filter_data) {
 			<?php
 			if (count($product_rows)) {
 				?>
-				<div><h3>Offers (<?php echo $venue_totals['offers'] ?> Rows)</h3></div>
+				<div><h3>Offers (<?php echo number_format($venue_totals['offers']) ?> Rows)</h3></div>
 				<div class="table-title-action">
 					<div>
 						<button class="btn btn-success product-view-checked-btn" disabled >View Checked Products</button>
