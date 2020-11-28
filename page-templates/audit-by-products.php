@@ -36,6 +36,7 @@ $current_date = date('Y-m-d');
 ?>
 <body>
 	<?php
+	phpinfo();
 	/**
 	 * because this is not using the theme styling, I cannot (currently) run wp_head
 	 * as a result, this is my wp_localize_script replacement
