@@ -9,8 +9,6 @@ function taste_ajax_outstanding_load_vouchers() {
 		wp_die();
 	}
 
-	phpinfo();
-
 	if (!isset($_POST['product_ids']) || !isset($_POST['order_columns'])) {
 		echo 'No valid product id or missing order columns';
 		wp_die();
