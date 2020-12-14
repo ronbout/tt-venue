@@ -38,71 +38,55 @@ if ( !is_user_logged_in()) {
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 ?>
 <body>
+    <div class="container-fluid h-100">
+<!--        <div id="venue-summary-div" class="panel-heading text-center"">-->
+<!--            <h2 class="dashboard_heading mt-5">Welcome to Your Dashboard, --><?php //echo $venue_name; ?><!--</h2>-->
+<!--        </div>-->
+        <div class="row h-100">
+            <div class="col-sm-4 col-md-4 animate__animated animate__bounceInLeft dashboard_grid_cols d-flex justify-content-center align-items-center flex-column" id="profile">
+                <h2 class="col-heading">Edit your company contact info</h2>
 
-<main>
-		</br>
-		</br>
-		<div class="container">
-		<header>
-			<div class="text-center">
-				<a href="<?php echo get_site_url() ?>">
-						<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
-				</a>
-			</div>
-			<br><br>
-			<div class="text-center">
-				<b>WELCOME TO IRELAND’S AWARD WINNING FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</b>
-				<br><br>
-				<span style="font-size:12px;">19.6M READERS WORLDWIDE <b>|</b> 10K ARTICLES <b>|</b> €10M GENERATED FOR THE IRISH HOSPITALITY INDUSTRY <b>|</b> 726K REGISTERED MEMBERS <b>|</b> 200K+ TASTE EXPERIENCES SOLD <b>|</b> 300K SOCIAL MEDIA FOLLOWERS <b>|</b> WINNER OF BEST DIGITAL FOOD MAGAZINE IN THE WORLD <b>|</b> WINNER OF OUTSTANDING SMALL BUSINESS IN IRELAND</span>
-			</div>
-		</header>
-		<div class="portal-welcome panel panel-default">
-			<div id="venue-summary-div" class="panel-heading text-center"">
-				<h2>Welcome to Your Dashboard, <?php echo $venue_name; ?></h2>
-			</div>
-			<div class="portal-links-container panel-body">
-				<div class="portal-link">
-					<p>Edit your company contact info: </p>
-					<a href="<?php echo get_site_url(null, '/venue-profile-page') ?>">
-						<button class="btn btn-primary">Profile Information Page</button>
-					</a>
-				</div>
-				<?php if ($use_new_campaign) {
-					display_new_portal();
-				} else {
-					display_old_portal($venue_voucher_page);
-				}
-				?>
-			</div>
-		</div>
-	</main>
+                <a href="<?php echo get_site_url(null, '/venue-profile-page') ?>">
+                    <button class="btn btn-primary" id="profile_btn">Profile Information Page</button>
+                </a>
+            </div>
+            <?php
+                if ($use_new_campaign) {
+                    display_new_portal();
+                } else {
+                    display_old_portal($venue_voucher_page);
+                }
+            ?>
+    </div>
 </body>
 </html>
 
 <?php
 function display_new_portal() {
 	?>
-	<div class="portal-link coming-soon">
-		<h2>Now Available!</h2>
+	<div class="col-sm-8 col-md-8 dashboard_grid_cols d-flex justify-content-center align-items-center flex-column animate__animated animate__bounceInRight" id="coming_soon">
+		<h2 class="col-heading">Now Available!</h2>
 		<p>Manage all your offers</p>
 		<a href="<?php echo get_site_url(null, '/campaign-manager') ?>">
-			<button class="btn btn-primary">Campaign Manager</button>
+			<button class="btn btn-primary" id="campaing_manager">Campaign Manager</button>
 		</a>
+        <a href="http://localhost:8888/taste/wp-login.php?action=logout" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
 	</div>
 	<?php
 }
 
 function display_old_portal($venue_voucher_page) {
 	?>
-	<div class="portal-link">
-		<p>Access the original Voucher Redemption page</p>
+	<div class="col-sm-4 col-md-4 animate__animated animate__bounceInUp dashboard_grid_cols d-flex justify-content-center align-items-center flex-column" id="original_redemption">
+		<h2 class="col-heading">Original Voucher Redemption page</h2>
 		<a href="<?php echo get_site_url(null, $venue_voucher_page) ?>" target="_blank">
-			<button class="btn btn-primary">Manage Vouchers</button>
+			<button class="btn btn-primary" id="voucher_btn">Manage Vouchers</button>
 		</a>
 	</div>
-	<div class="portal-link coming-soon">
-		<h2>Coming Soon!</h2>
-		<p>A full-service Campaign Manager </br>for all your Offers</p>
+	<div class="col-sm-4 col-md-4 dashboard_grid_cols animate__animated animate__bounceInRight d-flex justify-content-center align-items-center flex-column" id="coming_soon">
+		<h2 class="col-heading">Coming Soon!</h2>
+		<p class="info_full">A full-service Campaign Manager for all your Offers</p>
+        <a href="http://localhost:8888/taste/wp-login.php?action=logout" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
 	</div>
 	<?php
 }
