@@ -153,7 +153,8 @@ button#voucher_btn:hover, #campaing_manager:hover {
 	border: 1px solid lightgray;
 }
 
-.order-redeem-checked-btn {
+.order-redeem-checked-btn,
+.product-view-checked-btn {
 	margin: 10px 0;
 }
 
@@ -171,6 +172,10 @@ button#voucher_btn:hover, #campaing_manager:hover {
 
 #voucher-table-container {
 	max-height: 640px;
+}
+
+#payment-table-container {
+	max-height: 560px;
 }
 
 .table-fixed-container {
@@ -335,8 +340,7 @@ button#voucher_btn:hover, #campaing_manager:hover {
 	padding: 0;
 }
 
-#out-products-table-title-action,
-#audit-orders-table-title-action {
+.table-title-action {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;

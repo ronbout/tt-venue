@@ -32,29 +32,30 @@ const userForms = ($documentBody) => {
 const editPostVenues = ($documentBody) => {
 	if (
 		($documentBody.hasClass("post-php") ||
-			$documentBody.hasClass("post-new-php")) &&
+			$documentBody.hasClass("post-new-php") ||
+			$documentBody.hasClass("edit-php")) &&
 		$documentBody.hasClass("post-type-post")
 	) {
 		// postVenuesList is available
 		console.log("postVenuesList: ", postVenuesList);
 		buildVenueListsForPostAssign(postVenuesList);
-	}
-	// setup change of the venue select to add to the venue lists
-	$venueSelect = jQuery("#venue-select");
-	$venueSelect.change(() => {
-		let venueId = Number.parseInt($venueSelect.val());
-		let fnd = postVenuesList.findIndex((venInfo) => {
-			return Number.parseInt(venInfo.venueId) === venueId;
-		});
-		if (fnd !== -1) return;
-		let venueSelected = {
-			venueId,
-			name: jQuery("#venue-select option:selected").text().trim(),
-		};
-		postVenuesList.push(venueSelected);
+		// setup change of the venue select to add to the venue lists
+		$venueSelect = jQuery("#venue-select");
+		$venueSelect.change(() => {
+			let venueId = Number.parseInt($venueSelect.val());
+			let fnd = postVenuesList.findIndex((venInfo) => {
+				return Number.parseInt(venInfo.venueId) === venueId;
+			});
+			if (fnd !== -1) return;
+			let venueSelected = {
+				venueId,
+				name: jQuery("#venue-select option:selected").text().trim(),
+			};
+			postVenuesList.push(venueSelected);
 
-		buildVenueListsForPostAssign(postVenuesList);
-	});
+			buildVenueListsForPostAssign(postVenuesList);
+		});
+	}
 };
 
 const buildVenueListsForPostAssign = (postVenuesList) => {

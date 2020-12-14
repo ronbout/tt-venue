@@ -36,6 +36,7 @@ $current_date = date('Y-m-d');
 ?>
 <body>
 	<?php
+	// phpinfo();
 	/**
 	 * because this is not using the theme styling, I cannot (currently) run wp_head
 	 * as a result, this is my wp_localize_script replacement
@@ -269,7 +270,8 @@ function filter_customize_product_columns($outstanding_product_columns, $out_def
 						?>
 						<label for="custom-prod-col-<?php echo $key ?>">
 							<input type="checkbox" data-colkey="<?php echo $key?>" id="custom-prod-col-<?php echo $key ?>" 
-								<?php echo in_array($key, $out_default_product_columns) ? 'checked' : ''; ?> >
+								<?php echo in_array($key, $out_default_product_columns) ? 'checked' : ''; ?> 
+								<?php echo ('product_id' === $key) ? 'disabled' : '' ?> >
 							<?php echo str_replace('</br>', ' ', $out_col) ?>
 						</label>
 						<?php

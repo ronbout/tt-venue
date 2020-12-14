@@ -13,7 +13,7 @@ $outstanding_product_columns = array(
 	'title' => 'Offer',
 	'sku' => 'SKU',
 	'status' => 'Status',
-	'revenue' => 'Revenue',
+	'revenue' => 'Venue Revenue',
 	'redeemed_qty' => 'Redeemed',
 	'order_qty' => 'Vouchers</br>Sold',
 	'sales_amt' => 'Gross</br>Sales',
@@ -50,23 +50,25 @@ $out_default_product_columns = array(
 );
 
 $outstanding_order_columns = array(
+	'product_id' => 'Product Id',
 	'order_id' => 'Order Id',
 	'order_item_id' => 'Order</br>Item Id',
 	'customer_name' => 'Customer Name',
 	'customer_email' => 'Customer Email',
 	'redeemed' => 'Redeemed',
 	'qty' => 'Quantity',
-	'product_id' => 'Product Id',
 	'price' => 'Product</br>Price',
-	'paid_amt' => 'Amount</br>Paid',
-	'gross_revenue' => 'Gross</br>Revenue',
+	'paid_amt' => 'Customer</br>Amount Paid',
+	'taste_gross_revenue' => 'TheTaste Gross</br>Revenue',
 	'coupon_amt' => 'Coupon</br>Amount',
 	'order_date' => 'Order Date',
 	'expired' => 'Expired',
+	'venue_id' => 'Venue Id',
 	'venue_name' => 'Venue Name',
 );
 
 $out_default_order_columns = array(
+	'product_id',
 	'order_id',
 	'order_item_id',
 	'redeemed',
@@ -75,4 +77,5 @@ $out_default_order_columns = array(
 	'paid_amt',
 	'coupon_amt',
 	'order_date',
+	'venue_name',
 );
