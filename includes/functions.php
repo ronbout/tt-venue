@@ -151,7 +151,7 @@ function display_venue_select($display_submit=true, $venue_id = 0, $add_form=tru
 		<?php
 			if ($display_submit) {
 				?>
-					<button type="submit" id="select-venue-btn" disabled class="button button-primary">Submit</button>
+					<button type="submit" id="select-venue-btn" disabled class="btn btn-primary button button-primary">Submit</button>
 				<?php
 			}
 		?>

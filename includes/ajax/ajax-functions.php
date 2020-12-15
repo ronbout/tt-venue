@@ -16,7 +16,8 @@ function taste_ajax_load_vouchers() {
 	$product_id = $_POST['product_id'];
 	$multiplier = $_POST['multiplier'];
 
-	require_once(plugin_dir_path(__FILE__). 'display-voucher-table.php');
+	// require_once(plugin_dir_path(__FILE__). 'display-voucher-table.php');
+	require_once(plugin_dir_path(__FILE__). 'redeem-vouchers-list.php');
 	display_voucher_table($product_id, $multiplier);
 
 	wp_die();
