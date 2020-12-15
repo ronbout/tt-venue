@@ -70,7 +70,7 @@ function display_new_portal() {
 		<a href="<?php echo get_site_url(null, '/campaign-manager') ?>">
 			<button class="btn btn-primary" id="campaing_manager">Campaign Manager</button>
 		</a>
-        <a href="http://localhost:8888/taste/wp-login.php?action=logout" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
+		<?php display_logout() ?>
 	</div>
 	<?php
 }
@@ -86,7 +86,14 @@ function display_old_portal($venue_voucher_page) {
 	<div class="col-sm-4 col-md-4 dashboard_grid_cols animate__animated animate__bounceInRight d-flex justify-content-center align-items-center flex-column" id="coming_soon">
 		<h2 class="col-heading">Coming Soon!</h2>
 		<p class="info_full">A full-service Campaign Manager for all your Offers</p>
-        <a href="http://localhost:8888/taste/wp-login.php?action=logout" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
+		<?php display_logout() ?>
 	</div>
+	<?php
+}
+
+function display_logout() {
+	?>
+	  <a href="<?php echo wp_logout_url(get_site_url()) ?>" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas 	fa-sign-out-alt"></i>
+		</a>
 	<?php
 }
