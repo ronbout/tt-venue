@@ -34,6 +34,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	", $payment_id), ARRAY_A);
 	$payment_line = "
 		<tr>
+			<td>$payment_id</td>
 			<td>{$pay_row[0]['timestamp']}</td>
 			<td>$currency " . num_display($map_amount) . "</td>
 		</tr>
