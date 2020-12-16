@@ -23,19 +23,13 @@ h2.dashboard_heading {
 }
 
 a#logout {
-	color: white;
-	font-size: 30px;
-	position: absolute;
-	top: 15px;
-	right: 15px;
+	color: black;
+	font-size: 16px;
 }
 
 a#logout:hover {
-	color: #eeeeee;
-	font-size: 30px;
-	position: absolute;
-	top: 15px;
-	right: 15px;
+	color: black;
+	font-size: 16px;
 }
 
 div#profile {
@@ -384,6 +378,10 @@ button#voucher_btn:hover, #campaing_manager:hover {
 	padding: 4px 6px;
 }
 
+.bodyScroll {
+	overflow: visible !important;
+}
+
 @media screen and (min-width: 576px) {
 	.col-sm-4 {
 		-ms-flex: 100%;
@@ -393,9 +391,18 @@ button#voucher_btn:hover, #campaing_manager:hover {
 }
 
 @media screen and (min-width: 1200px) {
+
+	h2.col-heading {
+		font-size: 28px;
+	}
+
 	.col-sm-4 {
 		-ms-flex: 33.333%;
 		flex: 33.333%;
 		max-width: 33.333%;
+	}
+
+	body {
+		overflow: hidden;
 	}
 }

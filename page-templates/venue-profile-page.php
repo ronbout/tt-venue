@@ -31,6 +31,7 @@ if ( !is_user_logged_in()) {
 	$venue_name = $venue_row[0]['name'];
 	$venue_type = $venue_row[0]['venue_type'];
 	$venue_info = $venue_row[0];
+	$use_new_campaign = $venue_row[0]['use_new_campaign'];
 	$venue_voucher_page = 'Hotel' === $venue_type ? '/hotelmanager' : '/restaurantmanager';
 	$type_desc = $venue_type;
 }
@@ -53,15 +54,43 @@ if (isset($_POST['venue_profile_form_submit'])) {
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 ?>
 <body>
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+        <img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo get_site_url(null, '/venue-portal') ?>">Home</a>
+            </li>
+            <?php
+            if ($use_new_campaign) {
+                display_new_portal_link();
+            } else {
+                display_old_portal_link();
+            }
+            ?>
+            <li class="nav-item active">
+                <a class="nav-link" href="<?php echo get_site_url(null, '/venue-profile-page') ?>">Profile</a>
+            </li>
+            <li class="nav-item">
+                <?php display_logout() ?>
+            </li>
+        </ul>
+    </div>
+</nav>
 
 <main>
 		</br>
 		</br>
 		<div class="container">
 		<header>
-			<div class="admin-back-link">
-				<a href="<?php echo get_site_url(null, '/venue-portal') ?>"><== Return to Portal</a>
-			</div>
+<!--			<div class="admin-back-link">-->
+<!--				<a href="--><?php //echo get_site_url(null, '/venue-portal') ?><!--"><== Return to Portal</a>-->
+<!--			</div>-->
 			<div class="text-center">
 				<a href="<?php echo get_site_url() ?>">
 						<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
@@ -95,6 +124,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 			</div>
 		</div>
 	</main>
+<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-profilePage.js"></script>
 </body>
 </html>
 
@@ -218,4 +248,23 @@ function update_venue_info($form_info, $venue_table, $venue_id) {
 	$rows_affected = $wpdb->update($venue_table, $data, $where, $format);
 	return $rows_affected;
 	// return true;
+}
+
+function display_logout() {
+	?>
+	  <a class="nav-link" href="<?php echo wp_logout_url(get_site_url()) ?>" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
+
+	<?php
+}
+
+function display_new_portal_link() {
+    ?>
+        <li><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Campaign Manager</a></li>
+    <?php
+}
+
+function display_old_portal_link() {
+    ?>
+        <li class="nav-item"><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Manage Vouchers</a></li>
+    <?php
 }

@@ -38,6 +38,34 @@ if ( !is_user_logged_in()) {
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 ?>
 <body>
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+        <img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="<?php echo get_site_url(null, '/venue-portal') ?>">Home</a>
+            </li>
+            <?php
+                if ($use_new_campaign) {
+                    display_new_portal_link();
+                } else {
+                    display_old_portal_link();
+                }
+            ?>
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo get_site_url(null, '/venue-profile-page') ?>">Profile</a>
+            </li>
+            <li class="nav-item">
+                <?php display_logout() ?>
+            </li>
+        </ul>
+    </div>
+</nav>
     <div class="container-fluid h-100">
 <!--        <div id="venue-summary-div" class="panel-heading text-center"">-->
 <!--            <h2 class="dashboard_heading mt-5">Welcome to Your Dashboard, --><?php //echo $venue_name; ?><!--</h2>-->
@@ -58,19 +86,19 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
                 }
             ?>
     </div>
+<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-dashboard.js"></script>
 </body>
 </html>
 
 <?php
 function display_new_portal() {
 	?>
-	<div class="col-sm-8 col-md-8 dashboard_grid_cols d-flex justify-content-center align-items-center flex-column animate__animated animate__bounceInRight" id="coming_soon">
+	<div class="col-sm-8 col-md-8 dashboard_grid_cols d-flex justify-content-center align-items-center flex-column animate__animated animate__bounceInRight new_port" id="coming_soon">
 		<h2 class="col-heading">Now Available!</h2>
 		<p>Manage all your offers</p>
 		<a href="<?php echo get_site_url(null, '/campaign-manager') ?>">
 			<button class="btn btn-primary" id="campaing_manager">Campaign Manager</button>
 		</a>
-		<?php display_logout() ?>
 	</div>
 	<?php
 }
@@ -93,7 +121,19 @@ function display_old_portal($venue_voucher_page) {
 
 function display_logout() {
 	?>
-	  <a href="<?php echo wp_logout_url(get_site_url()) ?>" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas 	fa-sign-out-alt"></i>
-		</a>
+	  <a class="nav-link" href="<?php echo wp_logout_url(get_site_url()) ?>" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
+
 	<?php
+}
+
+function display_new_portal_link() {
+    ?>
+        <li><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Campaign Manager</a></li>
+    <?php
+}
+
+function display_old_portal_link() {
+    ?>
+        <li class="nav-item"><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Manage Vouchers</a></li>
+    <?php
 }

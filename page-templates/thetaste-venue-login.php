@@ -29,12 +29,33 @@
 		<title><?php _e('Campaign Login'); ?></title>
 	</head>
 	<body>
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link 2</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" >Link 3</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 		<div class="main_wrapper">
 			<div id="left">
 				<div id="thetaste-logo-link" class="text-center">
-					<a href="<?php echo get_site_url() ?>">
-						<img class="img-fluid" src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
-					</a>
+<!--					<a href="--><?php //echo get_site_url() ?><!--">-->
+<!--						<img class="img-fluid" src="--><?php //echo get_site_url() ?><!--/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">-->
+<!--					</a>-->
 					<h1 class="heading">WELCOME TO IRELAND’S AWARD WINNING</h1>
 					<h2 class="heading2">FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</h2>
 				</div>
