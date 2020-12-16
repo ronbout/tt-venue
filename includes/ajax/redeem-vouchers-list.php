@@ -83,10 +83,12 @@ function display_voucher_table($product_id, $multiplier) {
 	$payable = $order_totals['payable'];
 	$redeem_qty = $order_totals['redeem_qty'];
 	$total_sold = $order_totals['total_sold'];
+	$commission = $order_totals['commission'];
+	$vat = $order_totals['vat'];
 	
 	display_terms($termsandconditions);
 
-	$total_paid_to_customer = display_payments_table($product_id, $payable, $admin);
+	$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin);
 	?>
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
@@ -162,7 +164,10 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 				</table>
 			</div>
 			<?php 
-				$payable = display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val)
+				$totals = display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val);
+				$payable = $totals['payable'];
+				$commission = $totals['commission'];
+				$vat = $totals['vat'];
 			?>
 		</div>
 	</div>
@@ -170,6 +175,8 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	// have to return some of th totals calulated 
 	$order_totals = array (
 		'payable' => $payable,
+		'commission' => $commission,
+		'vat' => $vat,
 		'redeem_qty' => $redeem_qty,
 		'total_sold' => $total_sold,
 	);
@@ -320,7 +327,12 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 			</tbody>
 		</table>
 		<?php
-		return $payable;
+		$totals = array(
+			'payable' => $payable,
+			'commission' => $commission,
+			'vat' => $vat,
+		);
+		return $totals;
 }
 
 function display_terms($termsandconditions) {
@@ -331,7 +343,7 @@ function display_terms($termsandconditions) {
 	echo stripslashes($termsandconditions);
 }
 
-function display_payments_table($product_id, $payable, $admin) {
+function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin) {
 	global $wpdb;
 
 	$paymentList = $wpdb->get_results($wpdb->prepare("
@@ -346,45 +358,52 @@ function display_payments_table($product_id, $payable, $admin) {
 	<br><br>
 	<div class="panel panel-default">			
 		<div class="panel-heading"><h2 style="text-align: center">Payment Transactions </h2></div>
-		<div class="panel-body">	
-			<?php
-			if (count($paymentList)) {
-				?>
-				<div class="table-title-action">
-					<div><h3>Payment Items (<?php echo count($paymentList) ?> Rows)</h3></div>
-					<div>&nbsp;</div>
-				</div>
-			<div id="payment-table-container" class="table-fixed-container">		
-			<table id="audit-payment-table" class="table table-striped table-bordered">
-				<thead>
-					<tr>
-						<?php echo $admin ? '<th>Payment ID</th>' : '' ?>
-						<th>Payment Date</th>
-						<th>Payment Amount</th>
-					</tr>
-				</thead>
-				<tbody id="payment-lines">
-					<?php
-					
-					foreach($paymentList as $payment){ 
-						?>
-						<tr>
-							<?php echo $admin ? "<td>{$payment['id']}</td>" : '' ?>
-							<td><?php echo $payment['timestamp'] ?></td>
-							<td><?php echo number_format($payment['amount'], 2)	?></td>
-						</tr>
-						<?php 
-							$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
-					}
-					?>
-				</tbody>
-			</table>
+		<div class="panel-body">
+			<div class="table-title-action">
+				<div><h3>Payment Items (<?php echo count($paymentList) ?> Rows)</h3></div>
+				<div>&nbsp;</div>
 			</div>
-			<?php 
-			} else {
-				echo '<h3>No Payments Found</h3>';
-			}
-			?>
+			<div id="payment-table-container" class="table-fixed-container">		
+				<table id="audit-payment-table" class="table table-striped table-bordered"
+								data-comm="<?php echo $commission ?>" data-vat="<?php echo $vat ?>"
+								data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
+								data-productid="<?php echo $product_id ?>">
+					<thead>
+						<tr>
+							<?php echo $admin ? '<th>Payment ID</th>' : '' ?>
+							<th>Payment Date</th>
+							<th>Payment Amount</th>
+							<?php echo $admin ? '<th>Invoice</th>' : '' ?>
+						</tr>
+					</thead>
+					<tbody id="payment-lines">
+						<?php
+						
+						foreach($paymentList as $payment){ 
+							?>
+							<tr>
+								<?php echo $admin ? "<td>{$payment['id']}</td>" : '' ?>
+								<td><?php echo $payment['timestamp'] ?></td>
+								<td><?php echo number_format($payment['amount'], 2)	?></td>
+								<?php
+									if ( $admin ) {
+										?>
+											<td>
+												<button	data-paymentid="<?php echo $payment['id'] ?>" class="btn btn-info print-invoice-btn">
+													View/Print
+												</button>
+											</td>
+										<?php
+									}
+								?>
+							</tr>
+							<?php 
+								$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
+						}
+						?>
+					</tbody>
+				</table>
+			</div>
 			<br>
 			<div class="text-center">
 				<b>Balance Due : <span id="balance-due-display"> <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable - $total_paid_to_customer, 2) ?></span></b>
