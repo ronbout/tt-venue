@@ -63,13 +63,35 @@
 			<div id="right">
 				<div class="bg-white shadow-lg col-sm-8 login_div text-center">
 				<i class="fas fa-user"></i>
-					<?php 
-						$login_args = array(
-							"label_username" => "Username or Email: ",
-							"label_password" => "Password: ",
-							"remember" => false,
-						);
-							wp_login_form($login_args); 
+					<?php
+//                        $login_args = array(
+//                            "label_username" => "Username or Email: ",
+//                            "label_password" => "Password: ",
+//                            "remember" => false,
+//                        );
+//                        wp_login_form($login_args);
+
+                        function login_venue_form(){
+                            $form = '
+                                    <form name="loginform" id="loginform" action="#" method="post">
+                                        <div class="form-group row">
+                                            <label class="user_login" for="user_login">Username or Email:</label>
+                                            <input type="text" name="log" id="user_login" class="input form-control shadow-lg" value="" size="20" autofocus placeholder="Enter username or email" required/>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label class="user_pass" for="user_pass">Password:</label>
+                                            <input type="password" name="pwd" id="user_pass" class="input form-control shadow-lg" value="" size="20" placeholder="Enter your password" required/>
+                                        </div>
+                                        <div class="form-group row login-submit d-flex justify-content-center">
+                                            <input type="submit" name="wp-submit" id="wp-submit" class="btn button-primary py-2 px-5" value="Log In" />
+                                            <input type="hidden" name="redirect_to" value="" />
+                                        </div>
+                                    </form>';
+
+                           echo $form;
+                        }
+
+                        login_venue_form();
 					?>
 					<?php
 						if (get_query_var('login') === 'failed') {

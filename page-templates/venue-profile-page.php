@@ -82,48 +82,30 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
         </ul>
     </div>
 </nav>
-
-<main>
-		</br>
-		</br>
-		<div class="container">
-		<header>
-<!--			<div class="admin-back-link">-->
-<!--				<a href="--><?php //echo get_site_url(null, '/venue-portal') ?><!--"><== Return to Portal</a>-->
-<!--			</div>-->
-			<div class="text-center">
-				<a href="<?php echo get_site_url() ?>">
-						<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
-				</a>
-			</div>
-			<br><br>
-			<div class="text-center">
-				<b>WELCOME TO IRELAND’S AWARD WINNING FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</b>
-				<br><br>
-				<span style="font-size:12px;">19.6M READERS WORLDWIDE <b>|</b> 10K ARTICLES <b>|</b> €10M GENERATED FOR THE IRISH HOSPITALITY INDUSTRY <b>|</b> 726K REGISTERED MEMBERS <b>|</b> 200K+ TASTE EXPERIENCES SOLD <b>|</b> 300K SOCIAL MEDIA FOLLOWERS <b>|</b> WINNER OF BEST DIGITAL FOOD MAGAZINE IN THE WORLD <b>|</b> WINNER OF OUTSTANDING SMALL BUSINESS IN IRELAND</span>
-			</div>
-		</header>
-		<div class="portal-welcome panel panel-default">
-			<div id="venue-summary-div" class="panel-heading text-center"">
-				<h2><?php echo $venue_name; ?> Profile Page</h2>
-			</div>
-			<div class="panel-body">
-				<?php 
-					if ($user_msg) {
-						?>
-						<div class="alert <?php echo $alert_type ?> alert-dismissible" role="alert">
-							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-							</button>
-							<?php echo $user_msg ?>
-						</div>
-						<?php
-					}
-				?>
-				<?php display_venue_form($venue_info, $venue_name); ?>
-			</div>
-		</div>
-	</main>
+<div class="container-fluid" id="profile_container">
+    <div class="row" id="profile-row">
+        <div class="col-sm-6 animate__animated animate__bounceInLeft" id="profile_photo">
+            <img class="img-fluid profile-photo__img" src="<?php echo get_site_url() ?>/wp-content/plugins/thetaste-venue/assets/img/f51db7407c23a69dfb0ab274a206a759.jpg" alt="business_photo"/>
+        </div>
+        <div class="col-sm-6 animate__animated animate__bounceInRight" id="profile_edit_form">
+            <div id="venue-summary-div" class="panel-heading text-center"">
+                <h2 class="col-heading_profile animate__animated animate__bounceInDown"><?php echo $venue_name; ?></h2>
+            </div>
+            <?php
+                if ($user_msg) {
+                    ?>
+                    <div class="alert <?php echo $alert_type ?> alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                        </button>
+                        <?php echo $user_msg ?>
+                    </div>
+                    <?php
+                }
+            ?>
+            <?php display_venue_form($venue_info, $venue_name); ?>
+    </div>
+</div>
 <script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-profilePage.js"></script>
 </body>
 </html>
@@ -140,83 +122,90 @@ function display_venue_form($venue_info, $name) {
 	$phone = !empty($venue_info['phone']) ? stripslashes($venue_info['phone']) : NULL;
 	?>
 	<form method="post" class="venue-profile-form form-horizontal">
-		<div class="form-group">
-			<label for="name" class="col-sm-2 control-label"><?php esc_html_e('Name'); ?></label>
-			<div class="col-sm-10">
-				<input type="text" id="name" name="name"
-					value="<?php echo esc_attr($name); ?>" maxlength="80"
-					class="form-control" disabled />
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="description" class="col-sm-2 control-label"><?php esc_html_e('Description'); ?></label>
-			<div class="col-sm-10">
-				<input type="text" id="description" name="description"
-					value="<?php echo esc_attr($desc); ?>" maxlength="255"
-					class="form-control"  />
-			</div>
-		</div>
-		<div class="form-group">
-			<label for=address1" class="col-sm-2 control-label"><?php esc_html_e('Address Line 1'); ?></label>
-			<div class="col-sm-10">
-				<input type="text" id="address1" name="address1"
-					value="<?php echo esc_attr($address1); ?>" maxlength="120"
-					class="form-control"  />
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="address2" class="col-sm-2 control-label"><?php esc_html_e('Address Line 2'); ?></label>
-			<div class="col-sm-10">
-				<input type="text" id="address2" name="address2"
-					value="<?php echo esc_attr($address2); ?>" maxlength="120"
-					class="form-control"  />
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="city" class="col-sm-2 control-label"><?php esc_html_e('City'); ?></label>
-			<div class="col-sm-10">
-				<input type="text" id="city" name="city"
-					value="<?php echo esc_attr($city); ?>" maxlength="100"
-					class="form-control"  />
-			</div>
-		</div>
-		<div class="form-group">
-		<label for="postcode" class="col-sm-2 control-label"><?php esc_html_e('Postcode / ZIP'); ?></label>
-			<div class="col-sm-10">
-			<input type="text" id="postcode" name="postcode" maxlength="20"
-				value="<?php echo esc_attr($postcode); ?>"
-					class="form-control"  />
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="country" class="col-sm-2 control-label"><?php esc_html_e('Country / Region'); ?></label>
-			<div class="col-sm-10">
-				<input type="text" id="country" name="country"
-					value="<?php echo esc_attr($country); ?>" maxlength="100"
-					class="form-control"  />
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="state" class="col-sm-2 control-label"><?php esc_html_e('State / County'); ?></label>
-			<div class="col-sm-10">
-				<input type="text" id="state" name="state"
-					value="<?php echo esc_attr($state); ?>" maxlength="100"
-					class="form-control"  />
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="phone" class="col-sm-2 control-label"><?php esc_html_e('Phone'); ?></label>
-  	  <div class="col-sm-10">
-				<input type="text" id="phone" name="phone"
-					value="<?php echo esc_attr($phone); ?>" maxlength="100"
-					class="form-control"  />
-			</div>
-		</div>
+<!--		<div class="form-group">-->
+<!--			<label for="name" class="col-sm-2 control-label">--><?php //esc_html_e('Name'); ?><!--</label>-->
+<!--			<div class="col-sm-10">-->
+<!--				<input type="text" id="name" name="name"-->
+<!--					value="--><?php //echo esc_attr($name); ?><!--" maxlength="80"-->
+<!--					class="form-control" disabled />-->
+<!--			</div>-->
+<!--		</div>-->
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="description" class="col-sm-4 control-label"><?php esc_html_e('Description'); ?></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="description" name="description"
+                            value="<?php echo esc_attr($desc); ?>" maxlength="255"
+                            class="form-control"  />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for=address1" class="col-sm-6 control-label"><?php esc_html_e('Address Line 1'); ?></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="address1" name="address1"
+                            value="<?php echo esc_attr($address1); ?>" maxlength="120"
+                            class="form-control"  />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="address2" class="col-sm-6 control-label"><?php esc_html_e('Address Line 2'); ?></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="address2" name="address2"
+                            value="<?php echo esc_attr($address2); ?>" maxlength="120"
+                            class="form-control"  />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="city" class="col-sm-4 control-label"><?php esc_html_e('City'); ?></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="city" name="city"
+                            value="<?php echo esc_attr($city); ?>" maxlength="100"
+                            class="form-control"  />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <label for="postcode" class="col-sm-6 control-label"><?php esc_html_e('Postcode / ZIP'); ?></label>
+                    <div class="col-sm-8">
+                    <input type="text" id="postcode" name="postcode" maxlength="20"
+                        value="<?php echo esc_attr($postcode); ?>"
+                            class="form-control"  />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="country" class="col-sm-6 control-label"><?php esc_html_e('Country / Region'); ?></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="country" name="country"
+                            value="<?php echo esc_attr($country); ?>" maxlength="100"
+                            class="form-control"  />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="state" class="col-sm-6 control-label"><?php esc_html_e('State / County'); ?></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="state" name="state"
+                            value="<?php echo esc_attr($state); ?>" maxlength="100"
+                            class="form-control"  />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="phone" class="col-sm-4 control-label"><?php esc_html_e('Phone'); ?></label>
+                    <div class="col-sm-8">
+                        <input type="text" id="phone" name="phone"
+                            value="<?php echo esc_attr($phone); ?>" maxlength="100"
+                            class="form-control"  />
+                    </div>
+               </div>
+            </div>
+        </div>
 		<div class="form-group">
     	<div class="col-sm-offset-2 col-sm-10">
-				<button type="submit" name="venue_profile_form_submit" class="btn btn-primary">Update</button>
+				<button type="submit" name="venue_profile_form_submit" class="btn btn-primary" id="campaing_manager">Update details</button>
 			</div>
 		</div>
+    </form>
 	<?php
 }
 

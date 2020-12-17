@@ -81,6 +81,13 @@ h2.col-heading {
 	font-weight: 300;
 }
 
+h2.col-heading_profile {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 700;
+	font-size: 36px;
+	color: white;
+}
+
 button#profile_btn {
 	background-color: #772232;
 	border: none;
@@ -294,7 +301,7 @@ button#voucher_btn:hover, #campaing_manager:hover {
 
 .venue-profile-form {
 	width: 80%;
-	margin: 12px auto;
+	margin-top: 5%;
 }
 
 .highlight-row {
@@ -382,11 +389,77 @@ button#voucher_btn:hover, #campaing_manager:hover {
 	overflow: visible !important;
 }
 
+div#profile_container {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	height: 100%;
+}
+
+div#profile-row {
+	height: 100%;
+}
+
+div#profile_photo {
+	background-color: #e01137;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 25px;
+	transition: all .5s ease;
+}
+
+img.profile-photo__img {
+	width: 70%;
+	transition: all .5s ease;
+	border: 1px solid white;
+	padding: 15px;
+}
+
+div#profile_photo:hover {
+	background-color: #db435f;
+	transition: all .5s ease;
+}
+
+div#profile_photo:hover .profile-photo__img {
+	border-radius: 15px;
+	transition: all .5s ease;
+	transform: scale(1.1);
+}
+
+div#profile_edit_form {
+	background-color: #772232;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 25px;
+}
+
+.venue-profile-form label {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 700;
+	color: white;
+}
+
+.venue-profile-form input, .venue-profile-form input::placeholder {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 300;
+}
+
+.venue-profile-form .form-control:focus {
+	border-color: #e01137 !important;
+	box-shadow: 0 0 0 0.2rem rgba(237, 87, 115,.25) !important;
+}
+
 @media screen and (min-width: 576px) {
 	.col-sm-4 {
 		-ms-flex: 100%;
 		flex: 100%;
 		max-width: 100%;
+	}
+
+	body {
+		overflow-y: hidden;
 	}
 }
 
