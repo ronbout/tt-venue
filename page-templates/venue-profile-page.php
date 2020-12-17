@@ -7,6 +7,9 @@ Template Name: Venue Profile Page
  * 	The profile page for venues to update their info
  *  Date:  9/15/2020
  * 	Author: Ron Boutilier
+ *
+ * Updates Author: Branislav Buna
+ * Date: 17/12/2020
  */
 defined('ABSPATH') or die('Direct script access disallowed.');
 
