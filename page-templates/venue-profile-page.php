@@ -88,7 +88,9 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 <div class="container-fluid" id="profile_container">
     <div class="row" id="profile-row">
         <div class="col-sm-6 animate__animated animate__bounceInLeft" id="profile_photo">
-            <img class="img-fluid profile-photo__img" src="<?php echo get_site_url() ?>/wp-content/plugins/thetaste-venue/assets/img/f51db7407c23a69dfb0ab274a206a759.jpg" alt="business_photo"/>
+            <input type="file" name="prof_photo" id="prof_photo" style="display: none;"/>
+            <button class="btn btn-primary" name="update_photo" id="update_photo">Choose an image</button>
+            <img class="img-fluid profile-photo__img" src="<?php echo get_site_url() ?>/wp-content/plugins/thetaste-venue/assets/img/profile_placeholder.png" alt="business_photo" id="business_photo"/>
         </div>
         <div class="col-sm-6 animate__animated animate__bounceInRight" id="profile_edit_form">
             <div id="venue-summary-div" class="panel-heading text-center"">
@@ -109,6 +111,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
             <?php display_venue_form($venue_info, $venue_name); ?>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-profilePage.js"></script>
 </body>
 </html>

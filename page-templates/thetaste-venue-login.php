@@ -25,6 +25,7 @@
 		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 		<script	script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 		<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue-login.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 		<link rel="stylesheet" href="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/css/thetaste-venue-login.css">
 		<title><?php _e('Campaign Login'); ?></title>
 	</head>
@@ -52,7 +53,7 @@
     </nav>
 		<div class="main_wrapper">
 			<div id="left">
-				<div id="thetaste-logo-link" class="text-center">
+				<div id="thetaste-logo-link" class="text-center animate__animated animate__bounceInDown">
 <!--					<a href="--><?php //echo get_site_url() ?><!--">-->
 <!--						<img class="img-fluid" src="--><?php //echo get_site_url() ?><!--/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">-->
 <!--					</a>-->

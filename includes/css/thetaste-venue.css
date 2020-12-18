@@ -403,9 +403,28 @@ div#profile_photo {
 	background-color: #e01137;
 	display: flex;
 	align-items: center;
+	flex-direction: column;
 	justify-content: center;
 	padding: 25px;
 	transition: all .5s ease;
+}
+
+button#update_photo {
+	margin-bottom: 35px;
+	background-color: #772232 !important;
+	border: none;
+	padding: 15px;
+	margin-top: 30px;
+	transition: all .5s ease;
+	display: none;
+}
+
+button#update_photo:hover {
+	transition: all .5s ease;
+	padding: 20px;
+	margin-top: 15px;
+	border-radius: 25px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 img.profile-photo__img {
