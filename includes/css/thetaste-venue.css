@@ -8,13 +8,13 @@ html {
 	font-size: 16px;
 }
 
-html,body {
+html,
+body {
 	height: 100%;
-
 }
 
 h2.dashboard_heading {
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Open Sans", sans-serif;
 	font-weight: 400;
 }
 
@@ -35,40 +35,40 @@ a#logout:hover {
 div#profile {
 	background-color: #e01137;
 	color: white;
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 
 div#profile:hover {
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	background-color: #db435f;
 }
 
 div#original_redemption {
-	background-color: #A81631;
+	background-color: #a81631;
 	color: white;
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 
 div#original_redemption:hover {
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	background-color: #c93852;
 }
 
 div#coming_soon {
 	background-color: #772232;
 	color: white;
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	position: relative;
 }
 
 div#coming_soon:hover {
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	background-color: #9e3145;
 }
 
@@ -77,12 +77,12 @@ p.info_full {
 }
 
 h2.col-heading {
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
 }
 
 h2.col-heading_profile {
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Open Sans", sans-serif;
 	font-weight: 700;
 	font-size: 36px;
 	color: white;
@@ -93,27 +93,29 @@ button#profile_btn {
 	border: none;
 	padding: 15px;
 	margin-top: 30px;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 
 button#profile_btn:hover {
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	padding: 20px;
 	margin-top: 15px;
 	border-radius: 25px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-button#voucher_btn, #campaing_manager {
+button#voucher_btn,
+#campaing_manager {
 	background-color: #e01137;
 	border: none;
 	padding: 15px;
 	margin-top: 30px;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 
-button#voucher_btn:hover, #campaing_manager:hover {
-	transition: all .5s ease;
+button#voucher_btn:hover,
+#campaing_manager:hover {
+	transition: all 0.5s ease;
 	padding: 20px;
 	margin-top: 25px;
 	border-radius: 15px;
@@ -406,7 +408,7 @@ div#profile_photo {
 	flex-direction: column;
 	justify-content: center;
 	padding: 25px;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 
 button#update_photo {
@@ -415,12 +417,12 @@ button#update_photo {
 	border: none;
 	padding: 15px;
 	margin-top: 30px;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	display: none;
 }
 
 button#update_photo:hover {
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	padding: 20px;
 	margin-top: 15px;
 	border-radius: 25px;
@@ -429,19 +431,19 @@ button#update_photo:hover {
 
 img.profile-photo__img {
 	width: 70%;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	border: 1px solid white;
 	padding: 15px;
 }
 
 div#profile_photo:hover {
 	background-color: #db435f;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 
 div#profile_photo:hover .profile-photo__img {
 	border-radius: 15px;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	transform: scale(1.1);
 }
 
@@ -455,19 +457,20 @@ div#profile_edit_form {
 }
 
 .venue-profile-form label {
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Open Sans", sans-serif;
 	font-weight: 700;
 	color: white;
 }
 
-.venue-profile-form input, .venue-profile-form input::placeholder {
-	font-family: 'Open Sans', sans-serif;
+.venue-profile-form input,
+.venue-profile-form input::placeholder {
+	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
 }
 
 .venue-profile-form .form-control:focus {
 	border-color: #e01137 !important;
-	box-shadow: 0 0 0 0.2rem rgba(237, 87, 115,.25) !important;
+	box-shadow: 0 0 0 0.2rem rgba(237, 87, 115, 0.25) !important;
 }
 
 @media screen and (min-width: 576px) {
@@ -477,13 +480,14 @@ div#profile_edit_form {
 		max-width: 100%;
 	}
 
+	/*
 	body {
 		overflow-y: hidden;
 	}
+	*/
 }
 
 @media screen and (min-width: 1200px) {
-
 	h2.col-heading {
 		font-size: 28px;
 	}
@@ -494,7 +498,9 @@ div#profile_edit_form {
 		max-width: 33.333%;
 	}
 
+	/*
 	body {
 		overflow: hidden;
 	}
+	*/
 }
