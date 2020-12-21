@@ -20,7 +20,7 @@ const tasteLoadVouchers = (prodId, multiplier) => {
 			tasteCloseMsg();
 			//console.log(responseText);
 			jQuery("#voucher-list-div").html(responseText);
-			tasteLoadRedeemButtons();
+			tasteLoadVoucherPaymentButtons();
 			tasteScrollToVouchers();
 		},
 		error: function (xhr, status, errorThrown) {
@@ -81,7 +81,7 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 
 				updateOfferCalcs(respObj, productId);
 				updateVenueCalcs(respObj);
-				tasteLoadRedeemButtons();
+				tasteLoadVoucherPaymentButtons();
 			}
 		},
 		error: function (xhr, status, errorThrown) {
@@ -203,7 +203,7 @@ const tasteGetVenueInfo = () => {
 	return venueInfo;
 };
 
-const tasteLoadRedeemButtons = () => {
+const tasteLoadVoucherPaymentButtons = () => {
 	// this sets up click event for the ajax returned html
 	jQuery(".order-redeem-btn")
 		.unbind("click")
@@ -263,6 +263,26 @@ const tasteLoadRedeemButtons = () => {
 				e.preventDefault();
 				let mapAmount = jQuery("#map-amount").val();
 				tasteMakePayment(mapAmount);
+			});
+
+	jQuery(".print-invoice-btn").length &&
+		jQuery(".print-invoice-btn")
+			.unbind("click")
+			.click(function (e) {
+				e.preventDefault();
+				let $productData = jQuery(this).closest("table");
+				let invoiceURL = $productData.data("invoiceurl");
+				let productId = $productData.data("productid");
+				let venueName = $productData.data("venuename");
+				let commissionAmt = $productData.data("comm");
+				let commissionVal = $productData.data("commval");
+				let vatAmt = $productData.data("vat");
+				let vatVal = $productData.data("vatval");
+				let paymentAmt = jQuery(this).data("paymentamt");
+				let urlGetString = `?product_id=${productId}&payment_amt=${paymentAmt}&commission_amt=${commissionAmt}
+												 &commission_val=${commissionVal}&vat_amt=${vatAmt}&vat_val=${vatVal}
+												 &venue_name=${venueName}`;
+				window.open(`${invoiceURL}${urlGetString}`, "_blank");
 			});
 };
 
