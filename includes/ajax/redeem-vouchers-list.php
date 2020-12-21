@@ -39,6 +39,7 @@ function display_voucher_table($product_id, $multiplier) {
 
 	$product_row = $wpdb->get_results($wpdb->prepare("
 		SELECT  pm.post_id, p.post_title,
+						v.venue_id, v.name AS venue_name,
 						MAX(CASE WHEN pm.meta_key = '_sale_price' then pm.meta_value ELSE NULL END) as price,
 						MAX(CASE WHEN pm.meta_key = 'vat' then pm.meta_value ELSE NULL END) as vat,
 						MAX(CASE WHEN pm.meta_key = 'commission' then pm.meta_value ELSE NULL END) as commission,
@@ -47,6 +48,8 @@ function display_voucher_table($product_id, $multiplier) {
 
 		FROM   {$wpdb->prefix}postmeta pm
 		JOIN {$wpdb->prefix}posts p ON p.id = pm.post_id
+		LEFT JOIN {$wpdb->prefix}taste_venue_products vp ON vp.product_id = pm.post_id
+		LEFT JOIN {$wpdb->prefix}taste_venue v ON v.venue_id = vp.venue_id
 		WHERE pm.post_id = %d                    
 		GROUP BY
 			pm.post_id
@@ -58,6 +61,8 @@ function display_voucher_table($product_id, $multiplier) {
 	$expired_val = $product_row[0]['expired'];
 	$tandc_val = $product_row[0]['purchase_note'];
 	$product_title = $product_row[0]['post_title'];
+	$venue_id = $product_row[0]['venue_id'];
+	$venue_name = $product_row[0]['venue_name'];
 
 	$termsandconditions = str_replace('\r\n','<br>', json_encode($tandc_val));
 	$termsandconditions = str_replace('[{"meta_value":"','', $termsandconditions);
@@ -88,7 +93,7 @@ function display_voucher_table($product_id, $multiplier) {
 	
 	display_terms($termsandconditions);
 
-	$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin);
+	$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_name);
 	?>
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
@@ -343,7 +348,7 @@ function display_terms($termsandconditions) {
 	echo stripslashes($termsandconditions);
 }
 
-function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin) {
+function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_name) {
 	global $wpdb;
 
 	$paymentList = $wpdb->get_results($wpdb->prepare("
@@ -365,9 +370,18 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 			</div>
 			<div id="payment-table-container" class="table-fixed-container">		
 				<table id="audit-payment-table" class="table table-striped table-bordered"
-								data-comm="<?php echo $commission ?>" data-vat="<?php echo $vat ?>"
-								data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
-								data-productid="<?php echo $product_id ?>">
+					<?php
+						if ($admin) {
+							// for admins, add need data for invoice button
+							$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
+							?>
+							data-comm="<?php echo $commission ?>" data-vat="<?php echo $vat ?>"
+							data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
+							data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
+							data-venuename="<?php echo $venue_name ?>">
+							<?php 
+						}
+					?>
 					<thead>
 						<tr>
 							<?php echo $admin ? '<th>Payment ID</th>' : '' ?>
@@ -389,7 +403,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 									if ( $admin ) {
 										?>
 											<td>
-												<button	data-paymentid="<?php echo $payment['id'] ?>" class="btn btn-info print-invoice-btn">
+												<button	data-paymentamt="<?php echo $payment['amount'] ?>" class="btn btn-info print-invoice-btn">
 													View/Print
 												</button>
 											</td>
