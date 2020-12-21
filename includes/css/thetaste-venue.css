@@ -8,9 +8,14 @@ html {
 	font-size: 16px;
 }
 
-html,
 body {
-	height: 100%;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+#main_wrapper, #profile_container {
+	flex-grow: 1;
 }
 
 h2.dashboard_heading {
@@ -399,6 +404,8 @@ div#profile_container {
 
 div#profile-row {
 	height: 100%;
+	margin-right: 0;
+	margin-left: 0;
 }
 
 div#profile_photo {
@@ -479,12 +486,6 @@ div#profile_edit_form {
 		flex: 100%;
 		max-width: 100%;
 	}
-
-	/*
-	body {
-		overflow-y: hidden;
-	}
-	*/
 }
 
 @media screen and (min-width: 1200px) {
@@ -497,10 +498,4 @@ div#profile_edit_form {
 		flex: 33.333%;
 		max-width: 33.333%;
 	}
-
-	/*
-	body {
-		overflow: hidden;
-	}
-	*/
 }

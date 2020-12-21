@@ -54,7 +54,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
                 if ($use_new_campaign) {
                     display_new_portal_link();
                 } else {
-                    display_old_portal_link();
+                    display_old_portal_link($venue_voucher_page);
                 }
             ?>
             <li class="nav-item">
@@ -66,7 +66,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
         </ul>
     </div>
 </nav>
-    <div class="container-fluid h-100">
+    <div class="container-fluid h-100" id="main_wrapper">
 <!--        <div id="venue-summary-div" class="panel-heading text-center"">-->
 <!--            <h2 class="dashboard_heading mt-5">Welcome to Your Dashboard, --><?php //echo $venue_name; ?><!--</h2>-->
 <!--        </div>-->
@@ -114,7 +114,6 @@ function display_old_portal($venue_voucher_page) {
 	<div class="col-sm-4 col-md-4 dashboard_grid_cols animate__animated animate__bounceInRight d-flex justify-content-center align-items-center flex-column" id="coming_soon">
 		<h2 class="col-heading">Coming Soon!</h2>
 		<p class="info_full">A full-service Campaign Manager for all your Offers</p>
-		<?php display_logout() ?>
 	</div>
 	<?php
 }
@@ -132,8 +131,8 @@ function display_new_portal_link() {
     <?php
 }
 
-function display_old_portal_link() {
+function display_old_portal_link($venue_voucher_page) {
     ?>
-        <li class="nav-item"><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Manage Vouchers</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?php echo get_site_url(null, $venue_voucher_page) ?>">Manage Vouchers</a></li>
     <?php
 }

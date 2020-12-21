@@ -85,7 +85,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
         </ul>
     </div>
 </nav>
-<div class="container-fluid" id="profile_container">
+<div class="container-fluid h-100" id="profile_container">
     <div class="row" id="profile-row">
         <div class="col-sm-6 animate__animated animate__bounceInLeft" id="profile_photo">
             <input type="file" name="prof_photo" id="prof_photo" style="display: none;"/>
