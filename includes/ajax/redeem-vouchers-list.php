@@ -111,17 +111,18 @@ function display_voucher_table($product_id, $multiplier) {
 
 function display_campaign_header($expired_val, $product_id, $product_title) {
 	?>
+    <br><br><br>
 	<div class="row">
 		<div class="col-md-12">
-			<p class="pimage">
-			<b>Revenue Campaign : <u><?php echo $product_id ?></u> : </b><?php echo $product_title ?></p>
+			<p class="pimage camp_head">
+			<b class="camp_b">Revenue Campaign : <u><?php echo $product_id ?></u> : </b><?php echo $product_title ?></p>
 
-			<b>Campaign Status : </b><?php echo ('N' === $expired_val) ? 'Active' : 'Expired' ?>
+			<b class="camp_b">Campaign Status : </b><p class="camp_p"><?php echo ('N' === $expired_val) ? 'Active' : 'Expired' ?></p>
 			<hr>
 			<br>
-			<b>Please Note : </b> This management console has 3 unique rules, the first is all payments due to venues are for served customers only, by law TheTaste must be able to complete refunds direct to customers who have not been served. The second change you will notice is as a result of the recent GDPR laws meaning we can only disclose the email addresses of the customers you have served. The final change is due to National Consumer Law meaning we have to allow 14 days after the campaign validity has expired to issue payments.
-			<br><br>
-			<b>Important : </b> By clicking the Redeem button below you are confirming you have fully served that customer and the customer will receive an automatic email thanking them and asking them to share their experience feedback with us. Fraudulently Redeeming Vouchers will expose details of customers below and break GDPR Laws.
+			<b class="camp_b">Please Note : </b><p class="camp_p">This management console has 3 unique rules, the first is all payments due to venues are for served customers only, by law TheTaste must be able to complete refunds direct to customers who have not been served. The second change you will notice is as a result of the recent GDPR laws meaning we can only disclose the email addresses of the customers you have served. The final change is due to National Consumer Law meaning we have to allow 14 days after the campaign validity has expired to issue payments.</p>
+            <br><br>
+            <b class="camp_b">Important : </b><p class="camp_p"> By clicking the Redeem button below you are confirming you have fully served that customer and the customer will receive an automatic email thanking them and asking them to share their experience feedback with us. Fraudulently Redeeming Vouchers will expose details of customers below and break GDPR Laws.</p>
 			<br><br>
 			<b style="color:red;">You must retain all paper vouchers for this campaign!</b>
 			<br><br>
@@ -146,7 +147,7 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	$tproduct = 0;
 	?>
 	<div class="panel panel-default">
-		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
+		<div class="panel-heading panel_head"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
 		<div class="panel-body">
 			<button class="btn btn-success order-redeem-checked-btn" disabled >Redeem Checked</button>
 			<div id="voucher-table-container" class="table-fixed-container">
@@ -442,6 +443,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 			?>
 			<br><br>
 		</div>
+
 	<?php
 	return $total_paid_to_customer;
 }

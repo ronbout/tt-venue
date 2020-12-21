@@ -66,41 +66,31 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 		$venue_id = $user->ID;
 	}
 ?>
-	<main>
-		</br>
-		</br>
-		<div class="container">
-		<header>
-			<?php 
-				// add a back link to either the venue selection (admin)
-				// or the portal page (venues)
-			if ($admin) {
-				?>
-					<div class="admin-back-link">
-						<a href="<?php echo get_page_link() ?>"><== Return to Venue Selection</a>
-					</div>
-				<?php
-			} else {
-				?>
-					<div class="admin-back-link">
-						<a href="<?php echo get_site_url(null, '/venue-portal') ?>"><== Return to Portal</a>
-					</div>
-				<?php
-			}
-			?>
-			<div class="text-center">
-				<a href="<?php echo get_site_url() ?>">
-						<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
-				</a>
-			</div>
-			<br><br>
-			<div class="text-center">
-				<b>WELCOME TO IRELAND’S AWARD WINNING FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</b>
-				<br><br>
-				<span style="font-size:12px;">19.6M READERS WORLDWIDE <b>|</b> 10K ARTICLES <b>|</b> €10M GENERATED FOR THE IRISH HOSPITALITY INDUSTRY <b>|</b> 726K REGISTERED MEMBERS <b>|</b> 200K+ TASTE EXPERIENCES SOLD <b>|</b> 300K SOCIAL MEDIA FOLLOWERS <b>|</b> WINNER OF BEST DIGITAL FOOD MAGAZINE IN THE WORLD <b>|</b> WINNER OF OUTSTANDING SMALL BUSINESS IN IRELAND</span>
-			</div>
-		</header>
-		<br><br>
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo get_site_url(null, '/venue-portal') ?>">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Manage Vouchers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo get_site_url(null, '/venue-profile-page') ?>">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <?php display_logout() ?>
+                </li>
+            </ul>
+        </div>
+    </nav>
+		<div class="container-fluid">
 
 		<?php // get the product listing from db 
 
@@ -201,16 +191,15 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 			$venue_totals = $totals_calcs['totals'];
 
 		?>
-
 		<div class="panel panel-default">
 			<div id="venue-summary-div" class="panel-heading text-center"">
-						<h2>Welcome <?php echo $venue_name; ?></h2>
+						<h2 class="main_head">Welcome <?php echo $venue_name; ?></h2>
 						<?php display_venue_summary($venue_totals, $summ_heading, $venue_type) ?>
 			</div>
 			<div id="product-table-div" class="panel-body">
 				<?php
 				if (count($product_rows)) {
-					echo "<h3>$type_desc Offers</h3>";
+					echo "<br><br><h3 class='main_head1'>$type_desc Offers</h3>";
 					display_products_table($product_calcs, $served_heading, $venue_totals);
 				} else {
 					echo "<h3>No Products Found</h3>";
@@ -218,10 +207,10 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 				?>
 			</div>
 		</div>
+
 		<div id="voucher-list-div" class="container">
 
 		</div>
-	</main>
 	<div id="taste-modal-layer">
 		<div id="taste-msg-box" class="modalContainer">
 			<div>
@@ -235,6 +224,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 		<i class="fas fa-angle-up"></i>
 	</a>
 	</footer>
+    <script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/count-up.min.js"></script>
 	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js"></script>
 </body>
 
@@ -311,56 +301,59 @@ function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights
 function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	$currency =  get_woocommerce_currency_symbol();
 	?>
-	<div class="v-summary-container">
-		<div class="v-summary-section">
-			<h3>Vouchers</br>Sold</h3>
-			<h3>
+	<div class="row">
+		<div class="col-sm-4 stats">
+			<h3 class="stats-heading">Vouchers Sold</h3>
+			<h3 class="stats-count">
 				<span id="vouchers-total">
 					<?php echo $venue_totals['redeemed_qty'] ?>
 				</span>
 			</h3>
 		</div>
-		<div class="v-summary-section">
-			<h3><?php echo $summ_heading ?></h3>
-			<h3>
+		<div class="col-sm-4 stats">
+			<h3 class="stats-heading">Products Sold</h3>
+			<h3 class="stats-count">
 				<span id="served-total">
 					<?php echo $venue_totals['num_served'] ?>
 				</span>
 			</h3>
 		</div>
-		<div class="v-summary-section">
-			<h3>Gross</br>Revenue</h3>
-			<h3>
+		<div class="col-sm-4 stats">
+			<h3 class="stats-heading">Gross Revenue</h3>
+			<h3 class="stats-count">
 				<span id="gr-value-total">
 					<?php echo $currency . ' ' . num_display($venue_totals['revenue']) ?>
 				</span>
-			</h3>
+			</h3 class="stats-count">
 		</div>
-		<div class="v-summary-section">
-			<h3>Net</br>Payable</h3>
-			<h3>
+    </div>
+    <div class="row">
+		<div class="col-sm-4 stats">
+			<h3 class="stats-heading">Net Payable</h3>
+			<h3 class="stats-count">
 				<span id="net-payable-total">
 					<?php echo $currency . ' ' . num_display($venue_totals['net_payable']) ?>
 				</span>
 			</h3>
 		</div>
-		<div class="v-summary-section">
-			<h3>Total</br>Payments</h3>
-			<h3>
+		<div class="col-sm-4 stats">
+			<h3 class="stats-heading">Total Payments</h3>
+			<h3 class="stats-count">
 				<span id="paid-amount-total">
 					<?php echo $currency . ' ' . num_display($venue_totals['paid_amount']) ?>
 				</span>
-			</h3>
+			</h3 class="stats-count">
 		</div>
-		<div class="v-summary-section">
-			<h3>Balance</br>Due</h3>
-			<h3>
+		<div class="col-sm-4 stats">
+			<h3 class="stats-heading">Balance Due</h3>
+			<h3 class="stats-count">
 				<span id="balance-due-total">
 					<?php echo $currency . ' ' . num_display($venue_totals['balance_due']) ?>
 				</span>
 			</h3>
 		</div>
 	</div>
+
 	<div id="summary-hidden-values">
 		<input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
 		<input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">
@@ -372,12 +365,12 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 		<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
 		<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
 	</div>
-
 	<?php
 }
 
 function display_products_table($product_calcs, $served_heading, $venue_totals) {
 	?>
+    <br><br>
 	<div id="product-table-container" class="table-fixed-container">
 		<table class="table table-striped table-bordered table-fixed">
 			<thead>
@@ -409,7 +402,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals) 
 
 function display_table_totals($venue_totals) {
 	?>
-	<table class="table table-striped table-bordered table-fixed" style="width: 1091px;">
+	<table class="table table-striped table-bordered table-fixed">
 		<tbody>
 			<tr>
 				<td style="width: <?php echo ID_TD_WIDTH?>;">&nbsp;</td>
@@ -494,6 +487,13 @@ function display_product_row($id, $title, $status, $revenue, $num_served, $commi
 		<td style="width: <?php echo ACTION_TD_WIDTH?>;"><?php echo $view ?></td>
 	</tr>
  <?php
+}
+
+function display_logout() {
+    ?>
+    <a class="nav-link" href="<?php echo wp_logout_url(get_site_url()) ?>" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
+
+    <?php
 }
 
 function order_product_table($product_rows) {
