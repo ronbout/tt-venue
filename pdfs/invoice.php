@@ -24,6 +24,7 @@ define('EURO', chr(128));
 		 !isset($_GET['commission_amt']) || !isset($_GET['vat_amt'])
 		) {
 			// for testing create dummy values
+/*
 		$venue_name = "**** TEST DATA ONLY ****";
 		$payment_info = array(
 			'product_id' => 203677,
@@ -33,8 +34,8 @@ define('EURO', chr(128));
 			'commission_amt' => 750,
 			'vat_amt' => 157.50,
 		);
-
-	// die("invalid parameters to create invoice");
+*/
+	die("invalid parameters to create invoice");
 } else {
 	$venue_name = $_GET['venue_name'];
 	$payment_info = array(
