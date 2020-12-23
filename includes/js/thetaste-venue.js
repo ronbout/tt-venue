@@ -270,15 +270,16 @@ const tasteLoadVoucherPaymentButtons = () => {
 			.unbind("click")
 			.click(function (e) {
 				e.preventDefault();
-				let $productData = jQuery(this).closest("table");
+				$invBtn = jQuery(this);
+				let $productData = $invBtn.closest("table");
 				let invoiceURL = $productData.data("invoiceurl");
 				let productId = $productData.data("productid");
 				let venueName = $productData.data("venuename");
-				let commissionAmt = $productData.data("comm");
 				let commissionVal = $productData.data("commval");
-				let vatAmt = $productData.data("vat");
 				let vatVal = $productData.data("vatval");
-				let paymentAmt = jQuery(this).data("paymentamt");
+				let paymentAmt = $invBtn.data("paymentamt");
+				let commissionAmt = $invBtn.data("comm");
+				let vatAmt = $invBtn.data("vat");
 				let urlGetString = `?product_id=${productId}&payment_amt=${paymentAmt}&commission_amt=${commissionAmt}
 												 &commission_val=${commissionVal}&vat_amt=${vatAmt}&vat_val=${vatVal}
 												 &venue_name=${venueName}`;

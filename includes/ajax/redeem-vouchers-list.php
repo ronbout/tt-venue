@@ -375,7 +375,6 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							// for admins, add need data for invoice button
 							$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
 							?>
-							data-comm="<?php echo $commission ?>" data-vat="<?php echo $vat ?>"
 							data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
 							data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
 							data-venuename="<?php echo $venue_name ?>">
@@ -401,9 +400,12 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								<td><?php echo number_format($payment['amount'], 2)	?></td>
 								<?php
 									if ( $admin ) {
+										$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $vat_val)
 										?>
 											<td>
-												<button	data-paymentamt="<?php echo $payment['amount'] ?>" class="btn btn-info print-invoice-btn">
+												<button	data-paymentamt="<?php echo $payment['amount'] ?>" 
+																data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
+																class="btn btn-info print-invoice-btn">
 													View/Print
 												</button>
 											</td>
@@ -444,4 +446,17 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 		</div>
 	<?php
 	return $total_paid_to_customer;
+}
+
+function comm_vat_per_payment($payment, $commission_val, $vat_val) {
+	$comm_pct = $commission_val / 100;
+	$vat_pct = $vat_val / 100;
+	$gross = $payment / (1 - $comm_pct - ($comm_pct * $vat_pct));
+	$commission = round($gross * $comm_pct, 2);
+	$vat = round($commission * $vat_pct, 2);
+	return array(
+		'pay_gross' => $gross,
+		'pay_comm' => $commission,
+		'pay_vat' => $vat,
+	);
 }
