@@ -26,7 +26,7 @@
 		<script	script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 		<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue-login.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-		<link rel="stylesheet" href="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/css/thetaste-venue-login.css">
+		<link rel="stylesheet" href="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/style/css/thetaste-venue-login.css">
 		<title><?php _e('Campaign Login'); ?></title>
 	</head>
 	<body>

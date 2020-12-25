@@ -1,0 +1,504 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#main_wrapper, #profile_container {
+  flex-grow: 1;
+}
+
+h2.dashboard_heading {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+}
+
+.dashboard_grid_cols {
+  padding: 20px;
+}
+
+a#logout {
+  color: black;
+  font-size: 16px;
+}
+
+a#logout:hover {
+  color: black;
+  font-size: 16px;
+}
+
+div#profile {
+  background-color: #e01137;
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  transition: all 0.5s ease;
+}
+
+div#profile:hover {
+  transition: all 0.5s ease;
+  background-color: #db435f;
+}
+
+div#original_redemption {
+  background-color: #a81631;
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  transition: all 0.5s ease;
+}
+
+div#original_redemption:hover {
+  transition: all 0.5s ease;
+  background-color: #c93852;
+}
+
+div#coming_soon {
+  background-color: #772232;
+  color: white;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+div#coming_soon:hover {
+  transition: all 0.5s ease;
+  background-color: #9e3145;
+}
+
+p.info_full {
+  margin-top: 30px;
+}
+
+h2.col-heading {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+}
+
+h2.col-heading_profile {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  color: white;
+}
+
+button#profile_btn {
+  background-color: #772232;
+  border: none;
+  padding: 15px;
+  margin-top: 30px;
+  transition: all 0.5s ease;
+}
+
+button#profile_btn:hover {
+  transition: all 0.5s ease;
+  padding: 20px;
+  margin-top: 15px;
+  border-radius: 25px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+button#voucher_btn,
+#campaing_manager {
+  background-color: #e01137;
+  border: none;
+  padding: 15px;
+  margin-top: 30px;
+  transition: all 0.5s ease;
+}
+
+button#voucher_btn:hover,
+#campaing_manager:hover {
+  transition: all 0.5s ease;
+  padding: 20px;
+  margin-top: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.pimage {
+  font-size: 14pt;
+}
+
+.pimage img {
+  vertical-align: text-bottom;
+  margin-right: 15px;
+}
+
+.table-nbr {
+  text-align: right;
+}
+
+#venue-form-container {
+  text-align: center;
+  width: 400px;
+  margin: 100px auto;
+}
+
+#venue-form-container select {
+  margin: 10px auto;
+}
+
+.v-summary-container {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  column-gap: 4px;
+  row-gap: 8px;
+}
+
+.v-summary-section {
+  border: 1px solid lightgray;
+}
+
+.order-redeem-checked-btn,
+.product-view-checked-btn {
+  margin: 10px 0;
+}
+
+.table-fixed {
+  border: none;
+}
+
+.table-fixed tbody {
+  overflow-y: auto;
+}
+
+#product-table-container {
+  max-height: 700px;
+}
+
+#voucher-table-container {
+  max-height: 640px;
+}
+
+#payment-table-container {
+  max-height: 560px;
+}
+
+.table-fixed-container {
+  overflow-y: scroll;
+  border-top: 1px solid #ddd;
+}
+
+.table-fixed-container thead th {
+  background-color: #eee;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.table-total-label {
+  text-align: center;
+  font-weight: bold;
+}
+
+#voucher-summary-table .voucher-summary-header {
+  text-align: right;
+  padding-left: 400px;
+  padding-right: 80px;
+}
+
+#voucher-summary-table .voucher-summary-data {
+  padding-left: 80px;
+}
+
+.order-redeem-btn,
+.order-unredeem-btn {
+  width: 92px;
+}
+
+#make-payment-div {
+  width: 200px;
+  margin: 0 auto;
+}
+
+/* style for scroll up arrow */
+#topbutton {
+  height: 50px;
+  width: 50px;
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+  z-index: 1;
+  display: none;
+}
+
+#topbutton i {
+  font-size: 3em;
+}
+
+/* MODAL STYLES FOR AJAX SPINNER/MSG */
+#taste-msg-box {
+  width: 30%;
+  margin: auto;
+  position: fixed;
+  top: 25%;
+  left: 35%;
+  height: 200px;
+  background-color: #eee;
+  color: #000;
+  line-height: 1.625;
+  border: 2px solid black;
+  padding: 15px;
+  text-align: center;
+  display: none;
+}
+
+#taste-msg-box p {
+  color: #52a5d1;
+  font-weight: bold;
+  font-size: 120%;
+}
+
+#taste-msg-text {
+  margin-bottom: 50px;
+}
+
+#taste-modal-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  z-index: 9999;
+}
+
+.portal-welcome {
+  margin-top: 15px;
+}
+
+.portal-links-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.portal-link {
+  padding: 24px;
+  border-radius: 6px;
+  background-color: #eee;
+  text-align: center;
+  margin: 8px;
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.portal-link p {
+  margin-bottom: 14px;
+  font-size: 1.1em;
+}
+
+.portal-link.coming-soon {
+  background-color: lightgreen;
+}
+
+.venue-profile-form {
+  width: 80%;
+  margin-top: 5%;
+}
+
+.highlight-row {
+  background-color: orange !important;
+}
+
+#audit-filter-container {
+  width: 90%;
+  margin: 12px auto;
+  box-sizing: border-box;
+}
+
+#load-products {
+  margin-top: 16px;
+}
+
+#audit-filter-container #venue-form-container {
+  margin: 12px auto;
+}
+
+.filter-form-row {
+  display: flex;
+  flex-direction: row;
+  padding: 8px 4px;
+  margin-bottom: 6px;
+  border-bottom: 3px inset lightblue;
+}
+
+#product-date-range-container,
+#order-date-range-container,
+#order-year-select-container,
+#venue-select-container {
+  display: none;
+}
+
+.date-range-container span {
+  padding: 0;
+}
+
+.table-title-action {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.custom-columns-toggle-btn {
+  background-color: #f5f5f5;
+  border: 1px solid lightgray;
+  color: black;
+  outline: none;
+}
+
+.custom-columns-list-div {
+  display: none;
+  padding: 8px 4px 4px;
+}
+
+.custom-columns-row {
+  display: block;
+}
+
+.custom-columns-row label {
+  margin: 4px 10px 2px;
+}
+
+#product-id-entry {
+  margin: 14px 0;
+}
+
+#product-id-entry::-webkit-inner-spin-button,
+#product-id-entry::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+#add-product-id-btn,
+#clear-product-list-btn {
+  margin-left: 10px;
+  padding: 4px 6px;
+}
+
+.bodyScroll {
+  overflow: visible !important;
+}
+
+div#profile_container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  height: 100%;
+}
+
+div#profile-row {
+  height: 100%;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+div#profile_photo {
+  background-color: #e01137;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  padding: 25px;
+  transition: all 0.5s ease;
+}
+
+button#update_photo {
+  margin-bottom: 35px;
+  background-color: #772232 !important;
+  border: none;
+  padding: 15px;
+  margin-top: 30px;
+  transition: all 0.5s ease;
+  display: none;
+}
+
+button#update_photo:hover {
+  transition: all 0.5s ease;
+  padding: 20px;
+  margin-top: 15px;
+  border-radius: 25px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+img.profile-photo__img {
+  width: 70%;
+  transition: all 0.5s ease;
+  border: 1px solid white;
+  padding: 15px;
+}
+
+div#profile_photo:hover {
+  background-color: #db435f;
+  transition: all 0.5s ease;
+}
+
+div#profile_photo:hover .profile-photo__img {
+  border-radius: 15px;
+  transition: all 0.5s ease;
+  transform: scale(1.1);
+}
+
+div#profile_edit_form {
+  background-color: #772232;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 25px;
+}
+
+.venue-profile-form label {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 700;
+  color: white;
+}
+
+.venue-profile-form input,
+.venue-profile-form input::placeholder {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300;
+}
+
+.venue-profile-form .form-control:focus {
+  border-color: #e01137 !important;
+  box-shadow: 0 0 0 0.2rem rgba(237, 87, 115, 0.25) !important;
+}
+
+@media screen and (min-width: 576px) {
+  .col-sm-4 {
+    -ms-flex: 100%;
+    flex: 100%;
+    max-width: 100%;
+  }
+}
+@media screen and (min-width: 1200px) {
+  h2.col-heading {
+    font-size: 28px;
+  }
+
+  .col-sm-4 {
+    -ms-flex: 33.333%;
+    flex: 33.333%;
+    max-width: 33.333%;
+  }
+}
+
+/*# sourceMappingURL=thetaste-venue.css.map */
