@@ -45,11 +45,11 @@ require_once TASTE_PLUGIN_INCLUDES.'/functions.php';
 require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/ajax-functions.php';
 
 /**
- * Venue manager set up code
+ * Campaign manager set up code
  */
 // set up page templates
 function taste_add_venue_manager_template ($templates) {
-	$templates['venue-manager.php'] = 'Venue Manager';
+	$templates['campaign-manager.php'] = 'Campaign Manager';
 	$templates['venue-portal.php'] = 'Venue Portal';
 	$templates['venue-profile-page.php'] = 'Venue Profile Page';
 	$templates['audit-by-products.php'] = 'Audit By Products';
@@ -58,8 +58,8 @@ function taste_add_venue_manager_template ($templates) {
 add_filter ('theme_page_templates', 'taste_add_venue_manager_template');
 
 function taste_redirect_page_template ($template) {
-	if (is_page_template('venue-manager.php')) {
-		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-manager.php';
+	if (is_page_template('campaign-manager.php')) {
+		$template = plugin_dir_path( __FILE__ ).'page-templates/campaign-manager.php';
 	}
 	if (is_page_template('venue-portal.php')) {
 		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-portal.php';
@@ -74,7 +74,7 @@ function taste_redirect_page_template ($template) {
 }
 add_filter ('page_template', 'taste_redirect_page_template');
 
-// make sure the venue manager login does not redirect to wp-admin
+// make sure the campaign manager login does not redirect to wp-admin
 add_action( 'wp_login_failed', 'taste_venue_login_fail' );  // hook failed login
 
 function taste_venue_login_fail( $username ) {

@@ -1,6 +1,6 @@
 <?php
 /*
-Template Name: Venue Manager
+Template Name: Campaign Manager
 */
 
 /**
