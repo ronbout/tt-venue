@@ -34,7 +34,7 @@ $start_year = $year - 1;
 $start_date_default =  "$start_year-$month-$day";
 $current_date = date('Y-m-d');
 ?>
-<body>
+<body class="audit-by-products orig-bs3">
 	<?php
 	// phpinfo();
 	/**

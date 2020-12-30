@@ -1,3 +1,5 @@
+@import "../bootstrap/scss/bootstrap";
+
 * {
 	padding: 0;
 	margin: 0;
@@ -14,7 +16,8 @@ body {
 	flex-direction: column;
 }
 
-#main_wrapper, #profile_container {
+#main_wrapper,
+#profile_container {
 	flex-grow: 1;
 }
 
@@ -497,5 +500,80 @@ div#profile_edit_form {
 		-ms-flex: 33.333%;
 		flex: 33.333%;
 		max-width: 33.333%;
+	}
+}
+
+/* the following are temporary changes to make the old bs3 pages look the same on bs4.5 */
+body.orig-bs3 {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	line-height: 1.42857143;
+
+	h1,
+	.h1,
+	h2,
+	.h2,
+	h3,
+	.h3 {
+		margin-top: 20px;
+		margin-bottom: 10px;
+	}
+
+	h4,
+	.h4,
+	h5,
+	.h5,
+	h6,
+	.h6 {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+
+	h1,
+	.h1 {
+		font-size: 36px;
+	}
+	h2,
+	.h2 {
+		font-size: 30px;
+	}
+	h3,
+	.h3 {
+		font-size: 24px;
+	}
+	h4,
+	.h4 {
+		font-size: 18px;
+	}
+	h5,
+	.h5 {
+		font-size: 14px;
+	}
+	h6,
+	.h6 {
+		font-size: 12px;
+	}
+	p {
+		margin: 0 0 10px;
+	}
+
+	.table > thead > tr > th,
+	.table > tbody > tr > th,
+	.table > tfoot > tr > th,
+	.table > thead > tr > td,
+	.table > tbody > tr > td,
+	.table > tfoot > tr > td {
+		padding: 8px;
+		line-height: 1.42857143;
+		vertical-align: top;
+		border-top: 1px solid #ddd;
+	}
+	.table > thead > tr > th {
+		vertical-align: bottom;
+		border-bottom: 2px solid #ddd;
+	}
+
+	.btn {
+		font-size: 14px;
 	}
 }

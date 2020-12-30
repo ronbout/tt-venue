@@ -37,9 +37,9 @@ if ( !is_user_logged_in()) {
 	}
 }
 
-require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head-orig.php';
+require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 ?>
-<body>
+<body class="campaign-manager orig-bs3">
 	<?php
 	/**
 	 * because this is not using the theme styling, I cannot (currently) run wp_head
