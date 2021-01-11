@@ -1,5 +1,3 @@
-@import "../bootstrap/scss/bootstrap";
-
 * {
 	padding: 0;
 	margin: 0;
@@ -40,9 +38,11 @@ a#logout:hover {
 	font-size: 16px;
 }
 
+
+
 div#profile {
-	background-color: #e01137;
-	color: white;
+	background-color: #EEEEEE;
+	color: black;
 	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
 	transition: all 0.5s ease;
@@ -50,15 +50,8 @@ div#profile {
 
 div#profile:hover {
 	transition: all 0.5s ease;
-	background-color: #db435f;
-}
-
-div#original_redemption {
-	background-color: #a81631;
+	background-color: #999999;
 	color: white;
-	font-family: "Open Sans", sans-serif;
-	font-weight: 300;
-	transition: all 0.5s ease;
 }
 
 div#original_redemption:hover {
@@ -67,8 +60,8 @@ div#original_redemption:hover {
 }
 
 div#coming_soon {
-	background-color: #772232;
-	color: white;
+	background-color: #E1E8ED;
+	color: black;
 	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
 	transition: all 0.5s ease;
@@ -77,7 +70,8 @@ div#coming_soon {
 
 div#coming_soon:hover {
 	transition: all 0.5s ease;
-	background-color: #9e3145;
+	background-color: #666666;
+	color: white;
 }
 
 p.info_full {
@@ -89,43 +83,62 @@ h2.col-heading {
 	font-weight: 300;
 }
 
+p.offer {
+	font-family: "Open Sans", sans-serif;
+	font-size: 14px;
+}
+
 h2.col-heading_profile {
 	font-family: "Open Sans", sans-serif;
 	font-weight: 700;
 	font-size: 36px;
-	color: white;
+	color: black;
 }
 
 button#profile_btn {
-	background-color: #772232;
+	background-color: #666666;
+	color: white;
 	border: none;
-	padding: 15px;
-	margin-top: 30px;
+	padding: 10px;
+	margin-left: 15px;
 	transition: all 0.5s ease;
 }
 
 button#profile_btn:hover {
 	transition: all 0.5s ease;
 	padding: 20px;
-	margin-top: 15px;
 	border-radius: 25px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 button#voucher_btn,
 #campaing_manager {
-	background-color: #e01137;
+	background-color: #999999;
 	border: none;
 	padding: 15px;
-	margin-top: 30px;
-	transition: all 0.5s ease;
+	margin-top: -35px;
+	margin-left: 15px;
+	transition: all .5s ease;
+}
+
+button#campaing_manager1 {
+	background-color: #999999;
+	border: none;
+	padding: 15px;
+	transition: all .5s ease;
+}
+
+button#campaing_manager1:hover {
+	transition: all .5s ease;
+	padding: 20px;
+	border-radius: 15px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 button#voucher_btn:hover,
 #campaing_manager:hover {
-	transition: all 0.5s ease;
+	transition: all .5s ease;
 	padding: 20px;
-	margin-top: 25px;
 	border-radius: 15px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
@@ -412,7 +425,7 @@ div#profile-row {
 }
 
 div#profile_photo {
-	background-color: #e01137;
+	background-color: #666666;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
@@ -423,7 +436,7 @@ div#profile_photo {
 
 button#update_photo {
 	margin-bottom: 35px;
-	background-color: #772232 !important;
+	background-color: #666666 !important;
 	border: none;
 	padding: 15px;
 	margin-top: 30px;
@@ -447,7 +460,7 @@ img.profile-photo__img {
 }
 
 div#profile_photo:hover {
-	background-color: #db435f;
+	background-color: #999999;
 	transition: all 0.5s ease;
 }
 
@@ -458,7 +471,7 @@ div#profile_photo:hover .profile-photo__img {
 }
 
 div#profile_edit_form {
-	background-color: #772232;
+	background-color: #EEEEEE;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -469,7 +482,7 @@ div#profile_edit_form {
 .venue-profile-form label {
 	font-family: "Open Sans", sans-serif;
 	font-weight: 700;
-	color: white;
+	color: black;
 }
 
 .venue-profile-form input,
@@ -478,10 +491,10 @@ div#profile_edit_form {
 	font-weight: 300;
 }
 
-.venue-profile-form .form-control:focus {
-	border-color: #e01137 !important;
-	box-shadow: 0 0 0 0.2rem rgba(237, 87, 115, 0.25) !important;
-}
+//.venue-profile-form .form-control:focus {
+//	border-color: #e01137 !important;
+//	box-shadow: 0 0 0 0.2rem rgba(237, 87, 115, 0.25) !important;
+//}
 
 @media screen and (min-width: 576px) {
 	.col-sm-4 {

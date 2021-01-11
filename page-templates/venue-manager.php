@@ -66,41 +66,24 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 		$venue_id = $user->ID;
 	}
 ?>
-	<main>
-		</br>
-		</br>
-		<div class="container">
-		<header>
-			<?php 
-				// add a back link to either the venue selection (admin)
-				// or the portal page (venues)
-			if ($admin) {
-				?>
-					<div class="admin-back-link">
-						<a href="<?php echo get_page_link() ?>"><== Return to Venue Selection</a>
-					</div>
-				<?php
-			} else {
-				?>
-					<div class="admin-back-link">
-						<a href="<?php echo get_site_url(null, '/venue-portal') ?>"><== Return to Portal</a>
-					</div>
-				<?php
-			}
-			?>
-			<div class="text-center">
-				<a href="<?php echo get_site_url() ?>">
-						<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
-				</a>
-			</div>
-			<br><br>
-			<div class="text-center">
-				<b>WELCOME TO IRELAND’S AWARD WINNING FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</b>
-				<br><br>
-				<span style="font-size:12px;">19.6M READERS WORLDWIDE <b>|</b> 10K ARTICLES <b>|</b> €10M GENERATED FOR THE IRISH HOSPITALITY INDUSTRY <b>|</b> 726K REGISTERED MEMBERS <b>|</b> 200K+ TASTE EXPERIENCES SOLD <b>|</b> 300K SOCIAL MEDIA FOLLOWERS <b>|</b> WINNER OF BEST DIGITAL FOOD MAGAZINE IN THE WORLD <b>|</b> WINNER OF OUTSTANDING SMALL BUSINESS IN IRELAND</span>
-			</div>
-		</header>
-		<br><br>
+    <div class="container-fluid" style="width: auto">
+<!--        --><?php
+//            // add a back link to either the venue selection (admin)
+//            // or the portal page (venues)
+//        if ($admin) {
+//            ?>
+<!--                <div class="admin-back-link">-->
+<!--                    <a href="--><?php //echo get_page_link() ?><!--"><== Return to Venue Selection</a>-->
+<!--                </div>-->
+<!--            --><?php
+//        } else {
+//            ?>
+<!--                <div class="admin-back-link">-->
+<!--                    <a href="--><?php //echo get_site_url(null, '/venue-portal') ?><!--"><== Return to Portal</a>-->
+<!--                </div>-->
+<!--            --><?php
+//        }
+//        ?>
 
 		<?php // get the product listing from db 
 
@@ -159,6 +142,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 
 			$venue_name = $venue_row[0]->name;
 			$venue_type = $venue_row[0]->venue_type;
+            $use_new_campaign = $venue_row[0]->use_new_campaign;
 			$type_desc = $venue_type;
 			$bed_nights_flg = array_search(null, array_column($product_rows, 'bed_nights')) === false ? true : false;
 			switch($venue_type) {
@@ -202,6 +186,35 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 
 		?>
 
+            <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="#">
+                    <img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+                    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo get_site_url(null, '/venue-portal') ?>">Home</a>
+                        </li>
+                        <?php
+                        if ($use_new_campaign) {
+                            display_new_portal_link();
+                        } else {
+                            display_old_portal_link();
+                        }
+                        ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo get_site_url(null, '/venue-profile-page') ?>">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <?php display_logout() ?>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
 		<div class="panel panel-default">
 			<div id="venue-summary-div" class="panel-heading text-center"">
 						<h2>Welcome <?php echo $venue_name; ?></h2>
@@ -221,7 +234,6 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 		<div id="voucher-list-div" class="container">
 
 		</div>
-	</main>
 	<div id="taste-modal-layer">
 		<div id="taste-msg-box" class="modalContainer">
 			<div>
@@ -409,7 +421,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals) 
 
 function display_table_totals($venue_totals) {
 	?>
-	<table class="table table-striped table-bordered table-fixed" style="width: 1091px;">
+	<table class="table table-striped table-bordered table-fixed">
 		<tbody>
 			<tr>
 				<td style="width: <?php echo ID_TD_WIDTH?>;">&nbsp;</td>
@@ -521,4 +533,23 @@ function num_display ($num) {
 function num_display_no_decs ($num) {
 	// display number with 2 decimal rounding and formatting
 	return number_format(round($num), 0);
+}
+
+function display_logout() {
+    ?>
+    <a class="nav-link" href="<?php echo wp_logout_url(get_site_url()) ?>" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
+
+    <?php
+}
+
+function display_new_portal_link() {
+    ?>
+    <li class="nav-link active"><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Campaign Manager</a></li>
+    <?php
+}
+
+function display_old_portal_link() {
+    ?>
+    <li class="nav-item active"><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Manage Vouchers</a></li>
+    <?php
 }

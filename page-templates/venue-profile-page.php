@@ -87,12 +87,12 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 </nav>
 <div class="container-fluid h-100" id="profile_container">
     <div class="row" id="profile-row">
-        <div class="col-sm-6 animate__animated animate__bounceInLeft" id="profile_photo">
+        <div class="col-sm-4 animate__animated animate__bounceInLeft" id="profile_photo">
             <input type="file" name="prof_photo" id="prof_photo" style="display: none;"/>
             <button class="btn btn-primary" name="update_photo" id="update_photo">Choose an image</button>
             <img class="img-fluid profile-photo__img" src="<?php echo get_site_url() ?>/wp-content/plugins/thetaste-venue/assets/img/profile_placeholder.png" alt="business_photo" id="business_photo"/>
         </div>
-        <div class="col-sm-6 animate__animated animate__bounceInRight" id="profile_edit_form">
+        <div class="col-sm-8 animate__animated animate__bounceInRight new_port" id="profile_edit_form">
             <div id="venue-summary-div" class="panel-heading text-center"">
                 <h2 class="col-heading_profile animate__animated animate__bounceInDown"><?php echo $venue_name; ?></h2>
             </div>
@@ -140,7 +140,7 @@ function display_venue_form($venue_info, $name) {
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="description" class="col-sm-4 control-label"><?php esc_html_e('Description'); ?></label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <input type="text" id="description" name="description"
                             value="<?php echo esc_attr($desc); ?>" maxlength="255"
                             class="form-control"  />
@@ -148,7 +148,7 @@ function display_venue_form($venue_info, $name) {
                 </div>
                 <div class="form-group">
                     <label for=address1" class="col-sm-6 control-label"><?php esc_html_e('Address Line 1'); ?></label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <input type="text" id="address1" name="address1"
                             value="<?php echo esc_attr($address1); ?>" maxlength="120"
                             class="form-control"  />
@@ -156,7 +156,7 @@ function display_venue_form($venue_info, $name) {
                 </div>
                 <div class="form-group">
                     <label for="address2" class="col-sm-6 control-label"><?php esc_html_e('Address Line 2'); ?></label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <input type="text" id="address2" name="address2"
                             value="<?php echo esc_attr($address2); ?>" maxlength="120"
                             class="form-control"  />
@@ -164,7 +164,7 @@ function display_venue_form($venue_info, $name) {
                 </div>
                 <div class="form-group">
                     <label for="city" class="col-sm-4 control-label"><?php esc_html_e('City'); ?></label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <input type="text" id="city" name="city"
                             value="<?php echo esc_attr($city); ?>" maxlength="100"
                             class="form-control"  />
@@ -174,7 +174,7 @@ function display_venue_form($venue_info, $name) {
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="postcode" class="col-sm-6 control-label"><?php esc_html_e('Postcode / ZIP'); ?></label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                     <input type="text" id="postcode" name="postcode" maxlength="20"
                         value="<?php echo esc_attr($postcode); ?>"
                             class="form-control"  />
@@ -182,7 +182,7 @@ function display_venue_form($venue_info, $name) {
                 </div>
                 <div class="form-group">
                     <label for="country" class="col-sm-6 control-label"><?php esc_html_e('Country / Region'); ?></label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <input type="text" id="country" name="country"
                             value="<?php echo esc_attr($country); ?>" maxlength="100"
                             class="form-control"  />
@@ -190,7 +190,7 @@ function display_venue_form($venue_info, $name) {
                 </div>
                 <div class="form-group">
                     <label for="state" class="col-sm-6 control-label"><?php esc_html_e('State / County'); ?></label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <input type="text" id="state" name="state"
                             value="<?php echo esc_attr($state); ?>" maxlength="100"
                             class="form-control"  />
@@ -198,7 +198,7 @@ function display_venue_form($venue_info, $name) {
                 </div>
                 <div class="form-group">
                     <label for="phone" class="col-sm-4 control-label"><?php esc_html_e('Phone'); ?></label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <input type="text" id="phone" name="phone"
                             value="<?php echo esc_attr($phone); ?>" maxlength="100"
                             class="form-control"  />
@@ -208,7 +208,7 @@ function display_venue_form($venue_info, $name) {
         </div>
 		<div class="form-group">
     	<div class="col-sm-offset-2 col-sm-10">
-				<button type="submit" name="venue_profile_form_submit" class="btn btn-primary" id="campaing_manager">Update details</button>
+				<button type="submit" name="venue_profile_form_submit" class="btn btn-primary" id="campaing_manager1">Update details</button>
 			</div>
 		</div>
     </form>

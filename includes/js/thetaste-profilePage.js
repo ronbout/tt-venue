@@ -3,6 +3,20 @@ let profile_photo = document.getElementById('profile_photo');
 let input_file = document.getElementById('prof_photo');
 let img = document.getElementById('business_photo');
 let url = window.location.protocol + "//" + window.location.host;
+let newPortalDiv = document.querySelector('.new_port');
+const mediaQuery = window.matchMedia('(min-width: 1200px)');
+const mediaQuery2 = window.matchMedia('(max-width: 1024px)');
+
+window.addEventListener('load', (event) => {
+
+    if(mediaQuery.matches){
+        newPortalDiv.setAttribute('class', 'col-sm-8 animate__animated animate__bounceInRight new_port');
+    }
+
+    if(mediaQuery2.matches) {
+        newPortalDiv.setAttribute('class', 'col-sm-12 animate__animated animate__bounceInRight new_port');
+    }
+});
 
 update_profile_photo.addEventListener('click', e => {
     input_file.click();
