@@ -58,8 +58,8 @@ function taste_add_venue_manager_template ($templates) {
 add_filter ('theme_page_templates', 'taste_add_venue_manager_template');
 
 function taste_redirect_page_template ($template) {
-	if (is_page_template('venue-manager.php')) {
-		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-manager.php';
+	if (is_page_template('campaign-manager.php')) {
+		$template = plugin_dir_path( __FILE__ ).'page-templates/campaign-manager.php';
 	}
 	if (is_page_template('venue-portal.php')) {
 		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-portal.php';
