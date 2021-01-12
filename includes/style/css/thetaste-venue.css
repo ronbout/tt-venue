@@ -491,22 +491,9 @@ div#profile_edit_form {
   font-weight: 300;
 }
 
-@media screen and (min-width: 576px) {
-  .col-sm-4 {
-    -ms-flex: 100%;
-    flex: 100%;
-    max-width: 100%;
-  }
-}
 @media screen and (min-width: 1200px) {
   h2.col-heading {
     font-size: 28px;
-  }
-
-  .col-sm-4 {
-    -ms-flex: 33.333%;
-    flex: 33.333%;
-    max-width: 33.333%;
   }
 }
 /* the following are temporary changes to make the old bs3 pages look the same on bs4.5 */

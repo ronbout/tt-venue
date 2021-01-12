@@ -494,23 +494,9 @@ div#profile_edit_form {
 //	box-shadow: 0 0 0 0.2rem rgba(237, 87, 115, 0.25) !important;
 //}
 
-@media screen and (min-width: 576px) {
-	.col-sm-4 {
-		-ms-flex: 100%;
-		flex: 100%;
-		max-width: 100%;
-	}
-}
-
 @media screen and (min-width: 1200px) {
 	h2.col-heading {
 		font-size: 28px;
-	}
-
-	.col-sm-4 {
-		-ms-flex: 33.333%;
-		flex: 33.333%;
-		max-width: 33.333%;
 	}
 }
 
