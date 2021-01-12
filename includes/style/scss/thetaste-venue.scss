@@ -38,10 +38,8 @@ a#logout:hover {
 	font-size: 16px;
 }
 
-
-
 div#profile {
-	background-color: #EEEEEE;
+	background-color: #eeeeee;
 	color: black;
 	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
@@ -60,7 +58,7 @@ div#original_redemption:hover {
 }
 
 div#coming_soon {
-	background-color: #E1E8ED;
+	background-color: #e1e8ed;
 	color: black;
 	font-family: "Open Sans", sans-serif;
 	font-weight: 300;
@@ -118,18 +116,18 @@ button#voucher_btn,
 	padding: 15px;
 	margin-top: -35px;
 	margin-left: 15px;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 
 button#campaing_manager1 {
 	background-color: #999999;
 	border: none;
 	padding: 15px;
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 
 button#campaing_manager1:hover {
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	padding: 20px;
 	border-radius: 15px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -137,7 +135,7 @@ button#campaing_manager1:hover {
 
 button#voucher_btn:hover,
 #campaing_manager:hover {
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 	padding: 20px;
 	border-radius: 15px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
@@ -441,7 +439,7 @@ button#update_photo {
 	padding: 15px;
 	margin-top: 30px;
 	transition: all 0.5s ease;
-	display: none;
+	display: unset;
 }
 
 button#update_photo:hover {
@@ -471,7 +469,7 @@ div#profile_photo:hover .profile-photo__img {
 }
 
 div#profile_edit_form {
-	background-color: #EEEEEE;
+	background-color: #eeeeee;
 	display: flex;
 	align-items: center;
 	justify-content: center;

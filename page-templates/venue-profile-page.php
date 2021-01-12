@@ -87,14 +87,14 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 </nav>
 <div class="container-fluid h-100" id="profile_container">
     <div class="row" id="profile-row">
-        <div class="col-sm-4 animate__animated animate__bounceInLeft" id="profile_photo">
+        <div class="col-sm-4" id="profile_photo">
             <input type="file" name="prof_photo" id="prof_photo" style="display: none;"/>
             <button class="btn btn-primary" name="update_photo" id="update_photo">Choose an image</button>
             <img class="img-fluid profile-photo__img" src="<?php echo get_site_url() ?>/wp-content/plugins/thetaste-venue/assets/img/profile_placeholder.png" alt="business_photo" id="business_photo"/>
         </div>
-        <div class="col-sm-8 animate__animated animate__bounceInRight new_port" id="profile_edit_form">
+        <div class="col-sm-12 col-xl-8 new_port" id="profile_edit_form">
             <div id="venue-summary-div" class="panel-heading text-center"">
-                <h2 class="col-heading_profile animate__animated animate__bounceInDown"><?php echo $venue_name; ?></h2>
+                <h2 class="col-heading_profile "><?php echo $venue_name; ?></h2>
             </div>
             <?php
                 if ($user_msg) {
