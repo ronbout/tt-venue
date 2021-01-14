@@ -1,27 +1,14 @@
-let update_profile_photo = document.getElementById("update_photo");
-let profile_photo = document.getElementById("profile_photo");
-let input_file = document.getElementById("prof_photo");
-let img = document.getElementById("business_photo");
+let update_profile_photo = $('#update_photo');
+let profile_photo = $('#profile_photo');
+let input_file = $('#prof_photo');
+let img = $('#business_photo');
 let url = window.location.protocol + "//" + window.location.host;
 
-update_profile_photo.addEventListener("click", (e) => {
-	input_file.click();
+update_profile_photo.on("click", () => {
+	input_file.trigger('click');
 });
 
-// profile_photo.addEventListener("mouseenter", (e) => {
-// 	update_profile_photo.style.display = "unset";
-// 	update_profile_photo.setAttribute(
-// 		"class",
-// 		"btn btn-primary animate__animated animate__bounceInDown"
-// 	);
-// });
-
-// profile_photo.addEventListener("mouseleave", (e) => {
-// 	update_profile_photo.style.display = "none";
-// 	update_profile_photo.setAttribute("class", "btn btn-primary");
-// });
-
-input_file.addEventListener("change", (e) => {
+input_file.on("change", e => {
 	e.preventDefault();
 	let file = e.target.files;
 
@@ -54,11 +41,11 @@ input_file.addEventListener("change", (e) => {
 							title: "Profile picture updated",
 						});
 
-						img.setAttribute(
+						img.attr(
 							"src",
 							`${url}/taste/wp-content/plugins/thetaste-venue/includes/ajax/photos/${response}`
 						);
-						update_profile_photo.style.display = "none";
+						update_profile_photo.css('display','none');
 					}
 				}
 			};
