@@ -371,22 +371,18 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 			<div id="payment-table-container" class="table-fixed-container">		
 				<table id="audit-payment-table" class="table table-striped table-bordered"
 					<?php
-						if ($admin) {
-							// for admins, add need data for invoice button
+							// need data for invoice button
 							$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
-							?>
-							data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
-							data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
-							data-venuename="<?php echo $venue_name ?>">
-							<?php 
-						}
 					?>
+					data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
+					data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
+					data-venuename="<?php echo $venue_name ?>">
 					<thead>
 						<tr>
 							<?php echo $admin ? '<th>Payment ID</th>' : '' ?>
 							<th>Payment Date</th>
 							<th>Payment Amount</th>
-							<?php echo $admin ? '<th>Invoice</th>' : '' ?>
+							<th>Invoice</th>
 						</tr>
 					</thead>
 					<tbody id="payment-lines">
@@ -399,19 +395,15 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								<td><?php echo $payment['timestamp'] ?></td>
 								<td><?php echo number_format($payment['amount'], 2)	?></td>
 								<?php
-									if ( $admin ) {
-										$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $vat_val)
-										?>
-											<td>
-												<button	data-paymentamt="<?php echo $payment['amount'] ?>" 
-																data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
-																class="btn btn-info print-invoice-btn">
-													View/Print
-												</button>
-											</td>
-										<?php
-									}
+									$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $vat_val)
 								?>
+									<td>
+										<button	data-paymentamt="<?php echo $payment['amount'] ?>" 
+														data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
+														class="btn btn-info print-invoice-btn">
+											View/Print
+										</button>
+									</td>
 							</tr>
 							<?php 
 								$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
