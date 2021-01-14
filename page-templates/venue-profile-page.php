@@ -92,9 +92,9 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
             <button class="btn btn-primary" name="update_photo" id="update_photo">Choose an image</button>
             <img class="img-fluid profile-photo__img" src="<?php echo get_site_url() ?>/wp-content/plugins/thetaste-venue/assets/img/profile_placeholder.png" alt="business_photo" id="business_photo"/>
         </div>
-        <div class="col-xl-8 new_port" id="profile_edit_form">
-            <div id="venue-summary-div" class="panel-heading text-center"">
-                <h2 class="col-heading_profile "><?php echo $venue_name; ?></h2>
+        <div class="col-xl-8 px-sm-5 px-xl-3 new_port" id="profile_edit_form">
+            <div id="venue-summary-div" class="panel-heading text-center mt-5">
+                <h2 class="col-heading_profile"><?php echo $venue_name; ?></h2>
             </div>
             <?php
                 if ($user_msg) {
