@@ -67,25 +67,57 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
     </div>
 </nav>
     <div class="container-fluid h-100" id="main_wrapper">
-<!--        <div id="venue-summary-div" class="panel-heading text-center"">-->
-<!--            <h2 class="dashboard_heading mt-5">Welcome to Your Dashboard, --><?php //echo $venue_name; ?><!--</h2>-->
-<!--        </div>-->
         <div class="row h-100">
-            <div class="col-sm-12 col-md-12 animate__animated animate__bounceInLeft dashboard_grid_cols d-flex justify-content-center align-items-center flex-column" id="profile">
-                <div class="text-center">
-                    <h2 class="col-heading d-inline-block">Edit your company contact info</h2>
-                    <a class="d-inline-block" href="<?php echo get_site_url(null, '/venue-profile-page') ?>">
-                        <button class="btn btn-primary" id="profile_btn">Profile Information Page</button>
-                    </a>
+            <div class="col-sm-12 col-xl-12 dashboard_grid_cols d-flex align-items-center flex-column">
+                <h2 class="dashboard_heading mt-5 font-weight-bold text-left">Welcome to Your Dashboard, <?php echo $venue_name; ?> </h2>
+                <div class="row mt-5">
+                    <div class="col-sm-6">
+                        <p class="text-justify px-xs-5 px-xl-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ultrices nec orci in efficitur.
+                            Suspendisse magna sapien, iaculis eu mauris sit amet, pharetra tempus orci.
+                            Vivamus euismod sed nisi ac bibendum. Aenean dapibus lectus sed volutpat egestas.
+                            Pellentesque sed luctus turpis, et commodo quam. In interdum dolor leo, nec lacinia leo aliquet sit amet.
+                            Vivamus lobortis turpis ac tellus eleifend, a facilisis ipsum condimentum. Quisque vestibulum viverra diam ac efficitur.
+                            Phasellus sollicitudin consequat ante, vitae feugiat justo ullamcorper et.
+                            Vivamus id sagittis odio. Morbi porttitor sapien ac elit aliquet elementum. Nulla facilisi.
+                        </p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p class="text-justify px-xs-5 px-xl-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ultrices nec orci in efficitur.
+                            Suspendisse magna sapien, iaculis eu mauris sit amet, pharetra tempus orci.
+                            Vivamus euismod sed nisi ac bibendum. Aenean dapibus lectus sed volutpat egestas.
+                            Pellentesque sed luctus turpis, et commodo quam. In interdum dolor leo, nec lacinia leo aliquet sit amet.
+                            Vivamus lobortis turpis ac tellus eleifend, a facilisis ipsum condimentum. Quisque vestibulum viverra diam ac efficitur.
+                            Phasellus sollicitudin consequat ante, vitae feugiat justo ullamcorper et.
+                            Vivamus id sagittis odio. Morbi porttitor sapien ac elit aliquet elementum. Nulla facilisi.
+                        </p>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-sm-6">
+                        <hr class="col-9 mt-2 mx-auto"/>
+                        <p class="text-justify px-xs-5 px-xl-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ultrices nec orci in efficitur.
+                            Suspendisse magna sapien, iaculis eu mauris sit amet, pharetra tempus orci.
+                            Vivamus euismod sed nisi ac bibendum. Aenean dapibus lectus sed volutpat egestas.
+                            Pellentesque sed luctus turpis, et commodo quam. In interdum dolor leo, nec lacinia leo aliquet sit amet.
+                        </p>
+                    </div>
+                    <div class="col-sm-6">
+                        <hr class="col-9 mt-2 mx-auto"/>
+                        <p class="text-justify px-xs-5 px-xl-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ultrices nec orci in efficitur.
+                            Suspendisse magna sapien, iaculis eu mauris sit amet, pharetra tempus orci.
+                            Vivamus euismod sed nisi ac bibendum. Aenean dapibus lectus sed volutpat egestas.
+                            Pellentesque sed luctus turpis, et commodo quam. In interdum dolor leo, nec lacinia leo aliquet sit amet.
+                        </p>
+                    </div>
                 </div>
             </div>
-            <?php
-                if ($use_new_campaign) {
-                    display_new_portal();
-                } else {
-                    display_old_portal($venue_voucher_page);
-                }
-            ?>
+<!--            --><?php
+//                if ($use_new_campaign) {
+//                    display_new_portal();
+//                } else {
+//                    display_old_portal($venue_voucher_page);
+//                }
+//            ?>
     </div>
 <script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-dashboard.js"></script>
 </body>
@@ -94,7 +126,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 <?php
 function display_new_portal() {
 	?>
-	<div class="col-sm-12 col-md-12 dashboard_grid_cols d-flex justify-content-center align-items-center flex-column animate__animated animate__bounceInRight new_port" id="coming_soon">
+	<div class="col-sm-12 col-md-12 dashboard_grid_cols d-flex justify-content-center align-items-center flex-column" id="coming_soon">
         <div class="text-center">
             <h2 class="col-heading d-inline-block">Now Available! <p class="offer">Manage all your offers</p> </h2>
             <a class="d-inline-block" href="<?php echo get_site_url(null, '/campaign-manager') ?>">
@@ -107,13 +139,13 @@ function display_new_portal() {
 
 function display_old_portal($venue_voucher_page) {
 	?>
-	<div class="col-sm-12 col-md-12 animate__animated animate__bounceInUp dashboard_grid_cols d-flex justify-content-center align-items-center flex-column" id="original_redemption">
+	<div class="col-sm-12 col-md-12 dashboard_grid_cols d-flex justify-content-center align-items-center flex-column" id="original_redemption">
 		<h2 class="col-heading">Original Voucher Redemption page</h2>
 		<a href="<?php echo get_site_url(null, $venue_voucher_page) ?>" target="_blank">
 			<button class="btn btn-primary" id="voucher_btn">Manage Vouchers</button>
 		</a>
 	</div>
-	<div class="col-sm-12 col-md-12 dashboard_grid_cols animate__animated animate__bounceInRight d-flex justify-content-center align-items-center flex-column" id="coming_soon">
+	<div class="col-sm-12 col-md-12 d-flex justify-content-center align-items-center flex-column" id="coming_soon">
 		<h2 class="col-heading">Coming Soon!</h2>
 		<p class="info_full">A full-service Campaign Manager for all your Offers</p>
 	</div>
