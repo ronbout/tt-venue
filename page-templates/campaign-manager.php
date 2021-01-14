@@ -80,13 +80,17 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 						<a href="<?php echo get_page_link() ?>"><== Return to Venue Selection</a>
 					</div>
 				<?php
-			} else {
+			} 
+			/*
+			else {
 				?>
 					<div class="admin-back-link">
 						<a href="<?php echo get_site_url(null, '/venue-portal') ?>"><== Return to Portal</a>
 					</div>
 				<?php
 			}
+			*/
+
 			?>
 			<div class="text-center">
 				<a href="<?php echo get_site_url() ?>">
