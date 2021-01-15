@@ -66,59 +66,24 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
         </ul>
     </div>
 </nav>
-    <div class="container-fluid h-100" id="main_wrapper">
-        <div class="row h-100">
-            <div class="col-sm-12 col-xl-12 dashboard_grid_cols d-flex align-items-center flex-column">
-                <h2 class="dashboard_heading mt-5 font-weight-bold text-left">Welcome to Your Dashboard, <?php echo $venue_name; ?> </h2>
-                <div class="row mt-5">
-                    <div class="col-sm-6">
-                        <p class="text-justify px-xs-5 px-xl-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ultrices nec orci in efficitur.
-                            Suspendisse magna sapien, iaculis eu mauris sit amet, pharetra tempus orci.
-                            Vivamus euismod sed nisi ac bibendum. Aenean dapibus lectus sed volutpat egestas.
-                            Pellentesque sed luctus turpis, et commodo quam. In interdum dolor leo, nec lacinia leo aliquet sit amet.
-                            Vivamus lobortis turpis ac tellus eleifend, a facilisis ipsum condimentum. Quisque vestibulum viverra diam ac efficitur.
-                            Phasellus sollicitudin consequat ante, vitae feugiat justo ullamcorper et.
-                            Vivamus id sagittis odio. Morbi porttitor sapien ac elit aliquet elementum. Nulla facilisi.
-                        </p>
-                    </div>
-                    <div class="col-sm-6">
-                        <p class="text-justify px-xs-5 px-xl-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ultrices nec orci in efficitur.
-                            Suspendisse magna sapien, iaculis eu mauris sit amet, pharetra tempus orci.
-                            Vivamus euismod sed nisi ac bibendum. Aenean dapibus lectus sed volutpat egestas.
-                            Pellentesque sed luctus turpis, et commodo quam. In interdum dolor leo, nec lacinia leo aliquet sit amet.
-                            Vivamus lobortis turpis ac tellus eleifend, a facilisis ipsum condimentum. Quisque vestibulum viverra diam ac efficitur.
-                            Phasellus sollicitudin consequat ante, vitae feugiat justo ullamcorper et.
-                            Vivamus id sagittis odio. Morbi porttitor sapien ac elit aliquet elementum. Nulla facilisi.
-                        </p>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-sm-6">
-                        <hr class="col-9 mt-2 mx-auto"/>
-                        <p class="text-justify px-xs-5 px-xl-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ultrices nec orci in efficitur.
-                            Suspendisse magna sapien, iaculis eu mauris sit amet, pharetra tempus orci.
-                            Vivamus euismod sed nisi ac bibendum. Aenean dapibus lectus sed volutpat egestas.
-                            Pellentesque sed luctus turpis, et commodo quam. In interdum dolor leo, nec lacinia leo aliquet sit amet.
-                        </p>
-                    </div>
-                    <div class="col-sm-6">
-                        <hr class="col-9 mt-2 mx-auto"/>
-                        <p class="text-justify px-xs-5 px-xl-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ultrices nec orci in efficitur.
-                            Suspendisse magna sapien, iaculis eu mauris sit amet, pharetra tempus orci.
-                            Vivamus euismod sed nisi ac bibendum. Aenean dapibus lectus sed volutpat egestas.
-                            Pellentesque sed luctus turpis, et commodo quam. In interdum dolor leo, nec lacinia leo aliquet sit amet.
-                        </p>
-                    </div>
-                </div>
-            </div>
-<!--            --><?php
-//                if ($use_new_campaign) {
-//                    display_new_portal();
-//                } else {
-//                    display_old_portal($venue_voucher_page);
-//                }
-//            ?>
-    </div>
+<div class="container id="main_wrapper">
+	<div class="row pb-4">
+			<div class="col-sm-12 col-xl-12 dashboard_grid_cols d-flex align-items-center flex-column">
+					<h2 class="dashboard_heading mt-5 font-weight-bold text-left">Welcome to Your Dashboard, <?php echo $venue_name; ?> </h2>
+			</div>
+	</div>
+	<div class="text-center">
+		<a href="<?php echo get_site_url() ?>">
+				<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
+		</a>
+	</div>
+	<br><br>
+	<div class="text-center">
+		<b>IRELAND’S AWARD WINNING FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</b>
+		<br><br>
+		<span style="font-size:12px;">19.6M READERS WORLDWIDE <b>|</b> 10K ARTICLES <b>|</b> €10M GENERATED FOR THE IRISH HOSPITALITY INDUSTRY <b>|</b> 726K REGISTERED MEMBERS <b>|</b> 200K+ TASTE EXPERIENCES SOLD <b>|</b> 300K SOCIAL MEDIA FOLLOWERS <b>|</b> WINNER OF BEST DIGITAL FOOD MAGAZINE IN THE WORLD <b>|</b> WINNER OF OUTSTANDING SMALL BUSINESS IN IRELAND</span>
+	</div>
+</div>
 <script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-dashboard.js"></script>
 </body>
 </html>
