@@ -131,10 +131,10 @@ if ($admin) {
 							LEFT JOIN $post_meta_table pm7 ON vp.product_id = pm7.post_id AND pm7.meta_key = 'total_covers'
 							LEFT JOIN $product_order_table plook ON plook.product_id = pr.product_id
 							LEFT JOIN $posts_table orderp ON orderp.ID = plook.order_id 
-								AND orderp.post_status = 'wc-completed'
-								AND orderp.post_type = 'shop_order'
 							LEFT JOIN $order_items_table wc_oi ON wc_oi.order_item_id = plook.order_item_id
 							WHERE	vp.venue_id = %d
+								AND orderp.post_status = 'wc-completed'
+								AND orderp.post_type = 'shop_order'
 							GROUP BY pr.product_id
 							ORDER BY p.post_date DESC", 
 							$venue_id), ARRAY_A);
@@ -262,8 +262,8 @@ function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights
 		$tmp['order_qty'] = $product_row['order_qty'];
 		$tmp['revenue'] = $product_row['price'] * $tmp['redeemed_qty'];
 		$tmp['view'] = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>View</button>";
-		$tmp['commission'] = ($tmp['revenue'] / 100) * $product_row['commission'];
-		$tmp['vat'] = ($tmp['commission'] / 100) * $product_row['vat'];
+		$tmp['commission'] = round(($tmp['revenue'] / 100) * $product_row['commission'], 2);
+		$tmp['vat'] = round(($tmp['commission'] / 100) * $product_row['vat'], 2);
 		$tmp['net_payable'] = $tmp['revenue'] - ($tmp['commission'] + $tmp['vat']);
 		$tmp['paid_amount'] = empty($payments[$product_id]) ? 0 : $payments[$product_id];
 		$tmp['balance_due'] = $tmp['net_payable'] - $tmp['paid_amount'];
