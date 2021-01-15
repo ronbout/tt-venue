@@ -11,29 +11,10 @@
  * 
  */
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
+require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-navbar.php';
 ?>
 	<body>
-    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">
-            <img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-            <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link 2</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" >Link 3</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <?php venue_navbar([]);  ?>
 		<div class="container-fluid h-100">
             <div class="row h-100">
                 <div class="col-xl-4" id="left">

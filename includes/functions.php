@@ -193,12 +193,12 @@ function get_user_venue_info() {
 		SELECT v.name, v.venue_type, v.use_new_campaign
 		FROM $venue_table v
 		WHERE	v.venue_id = %d", 
-	$venue_id));
-	$venue_name = $venue_row[0]->name;
-	$venue_type = $venue_row[0]->venue_type;
-	$use_new_campaign = $venue_row[0]->use_new_campaign;
+	$venue_id),ARRAY_A);
+	$venue_name = $venue_row[0]['name'];
+	$venue_type = $venue_row[0]['venue_type'];
+	$use_new_campaign = $venue_row[0]['use_new_campaign'];
 	$venue_voucher_page = 'Hotel' === $venue_type ? '/hotelmanager' : '/restaurantmanager';
 	$venue_type_desc = $venue_type;
 
-	return compact('user', 'role', 'venue_id', 'venue_name', 'venue_type', 'use_new_campaign', 'venue_voucher_page', 'venue_type_desc');
+	return compact('user', 'role', 'venue_id', 'venue_name', 'venue_type', 'use_new_campaign', 'venue_voucher_page', 'venue_type_desc', 'venue_row');
 }

@@ -17,26 +17,24 @@ if ( !is_user_logged_in()) {
 	require_once TASTE_PLUGIN_PATH.'page-templates/thetaste-venue-login.php';
 	die();
 } else {
-	$user = wp_get_current_user();
-	$role = $user->roles[0];
-	if ('VENUE' !== strtoupper($role)) {
-		echo "<h2>Role: $role </h2>";
-		die('You must be logged in as a Venue to access this page.');
-	}
+    $user_info = get_user_venue_info();
+    $user =$user_info['user'];
+    $role = $user_info['role'];
+    $admin = ('ADMINISTRATOR' === strtoupper($role));
+
+    if ('VENUE' !== strtoupper($role)) {
+        echo "<h2>Role: $role </h2>";
+        die('You must be logged in as a Venue to access this page.');
+    }
+
+    $venue_table = $wpdb->prefix."taste_venue";
 	$venue_id = $user->ID;
-	// get venue name and other info
-	$venue_table = $wpdb->prefix."taste_venue";
-	$venue_row = $wpdb->get_results($wpdb->prepare("
-		SELECT *
-		FROM $venue_table v
-		WHERE	v.venue_id = %d", 
-	$venue_id), ARRAY_A);
-	$venue_name = $venue_row[0]['name'];
-	$venue_type = $venue_row[0]['venue_type'];
-	$venue_info = $venue_row[0];
-	$use_new_campaign = $venue_row[0]['use_new_campaign'];
-	$venue_voucher_page = 'Hotel' === $venue_type ? '/hotelmanager' : '/restaurantmanager';
-	$type_desc = $venue_type;
+	$venue_name = $user_info['venue_name'];
+	$venue_type = $user_info['venue_type'];
+	$venue_info = $user_info['venue_row'][0];
+	$use_new_campaign = $user_info['use_new_campaign'];
+	$venue_voucher_page = $user_info['venue_voucher_page'];
+	$type_desc = $user_info['venue_type'];
 }
 
 // check for form update 
@@ -51,46 +49,24 @@ if (isset($_POST['venue_profile_form_submit'])) {
 		$user_msg = 'Venue info was successfully updated';
 		$venue_info = $_POST;
 	}
-
 }
 
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
+require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-navbar.php';
+$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
 ?>
 <body>
-<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">
-        <img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-                <a class="nav-link" href="<?php echo get_site_url(null, '/venue-portal') ?>">Home</a>
-            </li>
-            <?php
-            if ($use_new_campaign) {
-                display_new_portal_link();
-            } else {
-                display_old_portal_link();
-            }
-            ?>
-            <li class="nav-item active">
-                <a class="nav-link" href="<?php echo get_site_url(null, '/venue-profile-page') ?>">Profile</a>
-            </li>
-            <li class="nav-item">
-                <?php display_logout() ?>
-            </li>
-        </ul>
-    </div>
-</nav>
+<?php venue_navbar($nav_links);  ?>
 <div class="container-fluid h-100" id="profile_container">
     <div class="row" id="profile-row">
         <div class="col-xl-4" id="profile_photo">
-            <input type="file" name="prof_photo" id="prof_photo" style="display: none;"/>
-            <button class="btn btn-primary" name="update_photo" id="update_photo">Choose an image</button>
-            <img class="img-fluid profile-photo__img" src="<?php echo get_site_url() ?>/wp-content/plugins/thetaste-venue/assets/img/profile_placeholder.png" alt="business_photo" id="business_photo"/>
+<!--            <input type="file" name="prof_photo" id="prof_photo" style="display: none;"/>-->
+<!--            <button class="btn btn-primary" name="update_photo" id="update_photo">Choose an image</button>-->
+<!--            <img class="img-fluid profile-photo__img" src="--><?php //echo get_site_url() ?><!--/wp-content/plugins/thetaste-venue/assets/img/profile_placeholder.png" alt="business_photo" id="business_photo"/>-->
+            <div id="thetaste-logo-link" class="text-center">
+                <h1 class="heading_profile">WELCOME TO IRELAND’S AWARD WINNING</h1>
+                <h2 class="heading2_profile">FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</h2>
+            </div>
         </div>
         <div class="col-xl-8 px-sm-5 px-xl-3 new_port" id="profile_edit_form">
             <div id="venue-summary-div" class="panel-heading text-center mt-5">
