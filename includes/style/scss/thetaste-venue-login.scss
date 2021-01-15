@@ -41,8 +41,6 @@ h2.heading2 {
 }
 
 #left {
-	width: 40%;
-	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -54,16 +52,12 @@ h2.heading2 {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 60%;
-	height: 100%;
 	background-image: linear-gradient(
 		to top,
 		#dad4ec 0%,
 		#dad4ec 1%,
 		#f3e7e9 100%
 	);
-	padding-left: 10px;
-	padding-right: 10px;
 }
 
 .login_div {
@@ -80,6 +74,7 @@ h2.heading2 {
 	border: none;
 	font-family: "Open Sans", sans-serif;
 	margin-top: 25px;
+	color: #ffffff;
 }
 
 .fa-user {
@@ -105,46 +100,4 @@ label.user_pass {
 
 .login-error {
 	color: red;
-}
-
-@media screen and (max-width: 375px) {
-	body {
-		height: auto;
-	}
-
-	#left {
-		width: 100%;
-		padding: 25px;
-	}
-
-	#right {
-		width: 100%;
-		padding: 15px;
-	}
-
-	.main_wrapper {
-		display: flex;
-		flex-direction: column;
-	}
-}
-
-@media screen and (max-width: 425px) {
-	body {
-		height: auto;
-	}
-
-	#left {
-		width: 100%;
-		padding: 25px;
-	}
-
-	#right {
-		width: 100%;
-		padding: 15px;
-	}
-
-	.main_wrapper {
-		display: flex;
-		flex-direction: column;
-	}
 }
