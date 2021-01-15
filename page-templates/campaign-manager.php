@@ -27,8 +27,9 @@ if ( !is_user_logged_in()) {
 	require_once TASTE_PLUGIN_PATH.'page-templates/thetaste-venue-login.php';
 	die();
 } else {
-	$user = wp_get_current_user();
-	$role = $user->roles[0];
+	$user_info = get_user_venue_info();
+	$user =$user_info['user'];
+	$role = $user_info['role'];
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 
 	if ('VENUE' !== strtoupper($role) && !$admin) {
@@ -38,9 +39,39 @@ if ( !is_user_logged_in()) {
 }
 
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
+require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-navbar.php';
+
+$venue_id = '';
+if ($admin) {
+	$nav_links = array(
+		array(
+			'title' => '<i class="fas fa-sign-out-alt"></i>',
+			'url' => wp_logout_url(get_site_url()),
+			'active' => false,
+			'attrs' => ' data-toggle="tooltip" data-placement="left" title="Logout" id="logout" '
+		),
+	);
+	// check if the Venue ID is in POST from form 
+	if (isset($_POST['venue-id'])) {
+		$venue_id = $_POST['venue-id'];
+		// add the link to return to venue selection
+		$venue_select_link = array(
+			'title' => 'Venue Selection',
+			'url' => get_page_link(),
+			'active' => false
+		);
+		array_unshift($nav_links, $venue_select_link);
+	} 
+} else {
+	$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
+	$venue_id = $user->ID;
+}
+
 ?>
 <body class="campaign-manager orig-bs3">
 	<?php
+	
+	venue_navbar($nav_links);
 	/**
 	 * because this is not using the theme styling, I cannot (currently) run wp_head
 	 * as a result, this is my wp_localize_script replacement
@@ -52,59 +83,16 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 				tasteVenue.security = '" . wp_create_nonce('taste-venue-nonce') . "'
 			</script>
 		";
-	if ($admin) {
-		// check if the Venue ID is in POST from form 
-		if (isset($_POST['venue-id'])) {
-			$venue_id = $_POST['venue-id'];
-		} else {
-			// display form to select Venue
-			display_venue_select(true, 0, true, get_page_link());
-			echo '<script type="text/javascript" src= "' . TASTE_PLUGIN_INCLUDES_URL . '/js/thetaste-venue-select.js"></script>';
-			die();
-		}
-	} else {
-		$venue_id = $user->ID;
+	if (!$venue_id) {
+		// display form to select Venue as user is admin w/o a venue selected
+		display_venue_select(true, 0, true, get_page_link());
+		echo '<script type="text/javascript" src= "' . TASTE_PLUGIN_INCLUDES_URL . '/js/thetaste-venue-select.js"></script>';
+		die();
 	}
 ?>
 	<main>
-		</br>
-		</br>
 		<div class="container">
-		<header>
-			<?php 
-				// add a back link to either the venue selection (admin)
-				// or the portal page (venues)
-			if ($admin) {
-				?>
-					<div class="admin-back-link">
-						<a href="<?php echo get_page_link() ?>"><== Return to Venue Selection</a>
-					</div>
-				<?php
-			} 
-			/*
-			else {
-				?>
-					<div class="admin-back-link">
-						<a href="<?php echo get_site_url(null, '/venue-portal') ?>"><== Return to Portal</a>
-					</div>
-				<?php
-			}
-			*/
-
-			?>
-			<div class="text-center">
-				<a href="<?php echo get_site_url() ?>">
-						<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png">
-				</a>
-			</div>
 			<br><br>
-			<div class="text-center">
-				<b>WELCOME TO IRELAND’S AWARD WINNING FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</b>
-				<br><br>
-				<span style="font-size:12px;">19.6M READERS WORLDWIDE <b>|</b> 10K ARTICLES <b>|</b> €10M GENERATED FOR THE IRISH HOSPITALITY INDUSTRY <b>|</b> 726K REGISTERED MEMBERS <b>|</b> 200K+ TASTE EXPERIENCES SOLD <b>|</b> 300K SOCIAL MEDIA FOLLOWERS <b>|</b> WINNER OF BEST DIGITAL FOOD MAGAZINE IN THE WORLD <b>|</b> WINNER OF OUTSTANDING SMALL BUSINESS IN IRELAND</span>
-			</div>
-		</header>
-		<br><br>
 
 		<?php // get the product listing from db 
 
