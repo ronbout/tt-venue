@@ -10406,6 +10406,10 @@ body.orig-bs3 {
   font-size: 14px;
   line-height: 1.42857143;
 }
+body.orig-bs3 nav {
+  font-family: "Segoe UI", "Open Sans", sans-serif;
+  font-size: 16px;
+}
 body.orig-bs3 h1,
 body.orig-bs3 .h1,
 body.orig-bs3 h2,

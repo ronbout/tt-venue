@@ -160,3 +160,45 @@ function display_venue_select($display_submit=true, $venue_id = 0, $add_form=tru
 
 <?php
 }
+
+/**
+ * 	get_user_venue_info
+ *  gets information about the current
+ *  user for the venue pages
+ *  RETURN:  array containing the following:
+ * 						user - entire user object
+ * 						role - of that user
+ * 		if the role is 'venue', it will also return:
+ * 						venue_id
+ * 						venue_name
+ * 						venue_type
+ * 						use_new_campaign
+ * 						venue_voucher_page
+ * 						venue_type_desc
+ * 	NOTE: verify that the role is venue before 	
+ * 				attempting to access the venue array elements
+ */
+function get_user_venue_info() {
+	global $wpdb;
+
+	$user = wp_get_current_user();
+	$role = $user->roles[0];
+	if ('VENUE' !== strtoupper($role)) {
+		return compact('user', 'role');
+	}
+	$venue_id = $user->ID;
+	// get venue name and other info
+	$venue_table = $wpdb->prefix."taste_venue";
+	$venue_row = $wpdb->get_results($wpdb->prepare("
+		SELECT v.name, v.venue_type, v.use_new_campaign
+		FROM $venue_table v
+		WHERE	v.venue_id = %d", 
+	$venue_id));
+	$venue_name = $venue_row[0]->name;
+	$venue_type = $venue_row[0]->venue_type;
+	$use_new_campaign = $venue_row[0]->use_new_campaign;
+	$venue_voucher_page = 'Hotel' === $venue_type ? '/hotelmanager' : '/restaurantmanager';
+	$venue_type_desc = $venue_type;
+
+	return compact('user', 'role', 'venue_id', 'venue_name', 'venue_type', 'use_new_campaign', 'venue_voucher_page', 'venue_type_desc');
+}
