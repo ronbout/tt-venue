@@ -25,7 +25,7 @@ if ( !is_user_logged_in()) {
 	}
 }
 
-require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head-orig.php';
+require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
 $year = date('Y');
 $month = date('m');
