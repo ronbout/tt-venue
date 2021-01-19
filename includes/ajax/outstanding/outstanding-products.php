@@ -46,9 +46,11 @@ function outstanding_display_product_table($filter_data) {
 					SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, 
 						pm2.meta_value AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
 						pm5.meta_value AS 'commission', 
-						COUNT(plook.order_id) AS 'order_cnt', SUM(plook.product_qty) AS 'order_qty', 
-						SUM(plook.coupon_amount) AS 'coupon_amt',
-						SUM(wc_oi.downloaded) AS 'redeemed_cnt', SUM(wc_oi.downloaded * plook.product_qty) AS 'redeemed_qty',
+						SUM(IF(orderp.post_status = 'wc-completed', 1, 0)) AS 'order_cnt', 
+						SUM(IF(orderp.post_status = 'wc-completed',plook.product_qty, 0)) AS 'order_qty', 
+						SUM(IF(orderp.post_status = 'wc-completed',wc_oi.downloaded, 0)) 'redeemed_cnt', 
+						SUM(IF(orderp.post_status = 'wc-completed',wc_oi.downloaded * plook.product_qty, 0)) AS 'redeemed_qty',
+						SUM(IF(orderp.post_status = 'wc-completed',plook.coupon_amount,0)) AS 'coupon_amt',
 						MIN(plook.date_created) AS 'min_order_date', MAX(plook.date_created) AS 'max_order_date',
 						ven.venue_id, ven.name AS 'venue_name'
 					FROM $product_table pr 
