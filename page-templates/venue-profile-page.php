@@ -68,7 +68,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
                 <h2 class="heading2_profile">FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</h2>
             </div>
         </div>
-        <div class="col-xl-8 px-sm-5 px-xl-3 new_port" id="profile_edit_form">
+        <div class="col-xl-8 px-md-7 px-xl-6 new_port" id="profile_edit_form">
             <div id="venue-summary-div" class="panel-heading text-center mt-5">
                 <h2 class="col-heading_profile"><?php echo $venue_name; ?></h2>
             </div>
