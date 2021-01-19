@@ -204,10 +204,10 @@ if ($admin) {
 			<div id="product-table-div" class="panel-body">
 				<?php
 				if (count($product_rows)) {
-					echo "<h3>$type_desc Offers</h3>";
+					echo "<h3>$type_desc Offers (" . number_format(count($product_rows)) . " Rows)</h3>";
 					display_products_table($product_calcs, $served_heading, $venue_totals);
 				} else {
-					echo "<h3>No Products Found</h3>";
+					echo "<h2>*** No Products Found ***</h2>";
 				}
 				?>
 			</div>

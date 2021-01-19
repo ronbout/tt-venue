@@ -148,31 +148,41 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	<div class="panel panel-default">
 		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
 		<div class="panel-body">
-			<button class="btn btn-success order-redeem-checked-btn" disabled >Redeem Checked</button>
-			<div id="voucher-table-container" class="table-fixed-container">
-				<table class="table table-striped table-bordered table-fixed">
-					<?php display_order_table_heading($order_rows, $expired_val) ?>
+			<?php
+			if (count($order_rows)) {
+				?>
+				<h3>Orders (<?php echo number_format(count($order_rows)) ?> Rows)</h3>
+				<button class="btn btn-success order-redeem-checked-btn" disabled >Redeem Checked</button>
+				<div id="voucher-table-container" class="table-fixed-container">
+					<table class="table table-striped table-bordered table-fixed">
+						<?php display_order_table_heading($order_rows, $expired_val) ?>
 
-						<tbody id="voucher-table-body">
+							<tbody id="voucher-table-body">
 
-						<?php 
-						foreach ($order_rows as $order_item_info) {
-							$tproduct = $tproduct + 1;							
-							$total_sold = $total_sold + $order_item_info->quan;
-							if (1 == $order_item_info->downloaded ) {
-								$redeem_qty = $redeem_qty + $order_item_info->quan;
+							<?php 
+							foreach ($order_rows as $order_item_info) {
+								$tproduct = $tproduct + 1;							
+								$total_sold = $total_sold + $order_item_info->quan;
+								if (1 == $order_item_info->downloaded ) {
+									$redeem_qty = $redeem_qty + $order_item_info->quan;
+								}
+								display_order_table_row($order_item_info, $expired_val);
 							}
-							display_order_table_row($order_item_info, $expired_val);
-						}
-						?>
-						</tbody>
-				</table>
-			</div>
-			<?php 
+							?>
+							</tbody>
+					</table>
+				</div>
+				<?php 
 				$totals = display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val);
 				$payable = $totals['payable'];
 				$commission = $totals['commission'];
 				$vat = $totals['vat'];
+			} else  {
+				echo "<h2> *** No Orders Found ***</h2>";
+				$payable = 0;
+				$commission = 0;
+				$vat = 0;
+			}
 			?>
 		</div>
 	</div>
