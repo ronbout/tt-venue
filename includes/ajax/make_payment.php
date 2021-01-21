@@ -13,7 +13,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 		'pid' => $product_id,
 		'amount' => $map_amount
 	);
-	$format = array('%d', '%d');
+	$format = array('%d', '%f');
 
 	$rows_affected = $wpdb->insert($table, $data, $format);
 
