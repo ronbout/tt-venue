@@ -125,6 +125,8 @@ const tasteMakePayment = (mapAmount) => {
 				);
 				jQuery("#payment-lines").append(respObj.paymentLine);
 				jQuery("#hidden-values").html(respObj.hiddenValues);
+
+				tasteLoadInvoiceButtons();
 			}
 		},
 		error: function (xhr, status, errorThrown) {
@@ -265,6 +267,10 @@ const tasteLoadVoucherPaymentButtons = () => {
 				tasteMakePayment(mapAmount);
 			});
 
+	tasteLoadInvoiceButtons();
+};
+
+const tasteLoadInvoiceButtons = () => {
 	jQuery(".print-invoice-btn").length &&
 		jQuery(".print-invoice-btn")
 			.unbind("click")

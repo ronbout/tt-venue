@@ -2,7 +2,7 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function make_payment_update($map_amount, $product_info, $venue_info) {
+function make_payment_update($payment_amount, $product_info, $venue_info) {
 	global $wpdb;
 	
 	$product_id = $product_info['product_id'];
@@ -11,7 +11,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	$table = "{$wpdb->prefix}offer_payments";
 	$data = array(
 		'pid' => $product_id,
-		'amount' => $map_amount
+		'amount' => $payment_amount
 	);
 	$format = array('%d', '%f');
 
@@ -23,24 +23,7 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 		echo wp_json_encode($ret_json);
 		return;
 	}
-	
-	$currency = get_woocommerce_currency_symbol();
-	
-	// create new payment line to display
-	// to be accurate, get timestamp from inserted payment
-	$payment_id = $wpdb->insert_id;
-	$pay_row = $wpdb->get_results($wpdb->prepare("
-		SELECT timestamp FROM $table WHERE id = %d
-	", $payment_id), ARRAY_A);
-	$payment_line = "
-		<tr>
-			<td>$payment_id</td>
-			<td>{$pay_row[0]['timestamp']}</td>
-			<td>$currency " . num_display($map_amount) . "</td>
-			<td><button	class='btn btn-info print-invoice-btn'>View/Print</button></td>
-		</tr>
-	";
-
+		
 	// update calcs.  some calcs are necessary because all 
 	// values must be passed back for hidden section
 	$redeem_qty = $product_info['redeem_qty'];
@@ -48,9 +31,9 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	$commission_value = $product_info['commission_value'];
 	$vat_value = $product_info['vat_value'];
 	$total_sold = $product_info['total_sold'];
-	$total_paid = $product_info['total_paid'] + $map_amount;
+	$total_paid = $product_info['total_paid'] + $payment_amount;
 	$multiplier = $product_info['multiplier'];
-
+	
 	// $redeem_qty += $order_qty;
 	$grevenue = $redeem_qty * $gr_value; 
 	$commission = ($grevenue / 100) * $commission_value;
@@ -64,6 +47,33 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	$vat = round($vat, 2);
 	$payable = round($payable, 2);
 	$balance_due = round($balance_due, 2);
+	
+	$currency = get_woocommerce_currency_symbol();
+	$pay_calcs = comm_vat_per_payment($payment_amount, $commission_value, $vat_value);
+	
+	// create new payment line to display
+	// to be accurate, get timestamp from inserted payment
+	$payment_id = $wpdb->insert_id;
+	$pay_row = $wpdb->get_results($wpdb->prepare("
+		SELECT timestamp FROM $table WHERE id = %d
+	", $payment_id), ARRAY_A);
+	$payment_line = "
+		<tr>
+			<td>$payment_id</td>
+			<td>{$pay_row[0]['timestamp']}</td>
+			<td>$currency " . num_display($payment_amount) . "</td>
+			<td>
+			<button	data-paymentamt='$payment_amount'
+			data-comm='{$pay_calcs['pay_comm']}' data-vat='{$pay_calcs['pay_vat']}'
+			class='btn btn-info print-invoice-btn'>
+				View/Print
+			</button>
+			</td>
+		</tr>
+	";
+
+
+
 
 	$hidden_values = "
 	<input type='hidden' id='taste-product-id' value='$product_id'>
@@ -84,8 +94,8 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 	$sum_redeemed_qty = $venue_info['redeemed_qty'];
 	$sum_num_served = $venue_info['num_served'];
 	$sum_net_payable = $venue_info['net_payable'];
-	$sum_total_paid = $venue_info['paid_amount'] + $map_amount;
-	$sum_balance_due = $venue_info['balance_due'] - $map_amount;
+	$sum_total_paid = $venue_info['paid_amount'] + $payment_amount;
+	$sum_balance_due = $venue_info['balance_due'] - $payment_amount;
 	$multiplier = $venue_info['multiplier'];
 
 	$sum_hidden_values = "
@@ -123,4 +133,17 @@ function make_payment_update($map_amount, $product_info, $venue_info) {
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting
 	return number_format(round($num,2), 2);
+}
+
+function comm_vat_per_payment($payment, $commission_val, $vat_val) {
+	$comm_pct = $commission_val / 100;
+	$vat_pct = $vat_val / 100;
+	$gross = $payment / (1 - $comm_pct - ($comm_pct * $vat_pct));
+	$commission = round($gross * $comm_pct, 2);
+	$vat = round($commission * $vat_pct, 2);
+	return array(
+		'pay_gross' => $gross,
+		'pay_comm' => $commission,
+		'pay_vat' => $vat,
+	);
 }
