@@ -103,15 +103,7 @@ function display_venue_form($venue_info, $name) {
 	$country = !empty($venue_info['country']) ? stripslashes($venue_info['country']) : NULL;
 	$phone = !empty($venue_info['phone']) ? stripslashes($venue_info['phone']) : NULL;
 	?>
-	<form method="post" class="venue-profile-form form-horizontal">
-<!--		<div class="form-group">-->
-<!--			<label for="name" class="col-sm-2 control-label">--><?php //esc_html_e('Name'); ?><!--</label>-->
-<!--			<div class="col-sm-10">-->
-<!--				<input type="text" id="name" name="name"-->
-<!--					value="--><?php //echo esc_attr($name); ?><!--" maxlength="80"-->
-<!--					class="form-control" disabled />-->
-<!--			</div>-->
-<!--		</div>-->
+	<form method="post" class="venue-profile-form form-horizontal px-md-7 px-xl-6">
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">

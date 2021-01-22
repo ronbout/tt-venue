@@ -1,13 +1,9 @@
 /*  place bootstrap overrides here */
-@import "../bootstrap/scss/functions";
-@import "../bootstrap/scss/variables";
-
-$spacer: 0%;
-$spacers: map-merge(
+$spacers:(
 (
-  6: ($spacer + 5), // 90% -> form inputs became 5% shorter on width from each side
-  7: ($spacer + 10) // 80% -> form inputs became 10% shorter on width from each side
-), $spacers);
+  6: (5%), // 90% -> form inputs became 5% shorter on width from each side
+  7: (10%) // 80% -> form inputs became 10% shorter on width from each side
+));
 
 @import "../bootstrap/scss/bootstrap";
 
