@@ -68,7 +68,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
                 <h2 class="heading2_profile">FOOD, DRINK & TRAVEL DIGITAL MAGAZINE</h2>
             </div>
         </div>
-        <div class="col-xl-8 px-md-7 px-xl-6 new_port" id="profile_edit_form">
+        <div class="col-xl-8 px-md-6 px-xl-7 new_port" id="profile_edit_form">
             <div id="venue-summary-div" class="panel-heading text-center mt-5">
                 <h2 class="col-heading_profile"><?php echo $venue_name; ?></h2>
             </div>
@@ -103,7 +103,7 @@ function display_venue_form($venue_info, $name) {
 	$country = !empty($venue_info['country']) ? stripslashes($venue_info['country']) : NULL;
 	$phone = !empty($venue_info['phone']) ? stripslashes($venue_info['phone']) : NULL;
 	?>
-	<form method="post" class="venue-profile-form form-horizontal px-md-7 px-xl-6">
+	<form method="post" class="venue-profile-form form-horizontal">
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
