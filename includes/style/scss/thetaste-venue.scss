@@ -1,4 +1,9 @@
 /*  place bootstrap overrides here */
+$spacers:(
+(
+  6: (5%), // 90% -> form inputs became 5% shorter on width from each side
+  7: (10%) // 80% -> form inputs became 10% shorter on width from each side
+));
 
 @import "../bootstrap/scss/bootstrap";
 
@@ -347,7 +352,7 @@ button#voucher_btn:hover,
 }
 
 .venue-profile-form {
-	width: 80%;
+	//width: 80%;
 	margin-top: 5%;
 }
 
@@ -496,10 +501,10 @@ div#profile_photo:hover .profile-photo__img {
 
 div#profile_edit_form {
 	background-color: #eeeeee;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
+	//display: flex;
+	//align-items: center;
+	//justify-content: center;
+	//flex-direction: column;
 }
 
 .venue-profile-form label {
