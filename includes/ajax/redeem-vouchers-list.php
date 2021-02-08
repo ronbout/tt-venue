@@ -399,16 +399,17 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 						<?php
 						
 						foreach($paymentList as $payment){ 
+							$payment_date = date('Y-m-d', strtotime($payment['timestamp']));
 							?>
 							<tr>
 								<?php echo $admin ? "<td>{$payment['id']}</td>" : '' ?>
-								<td><?php echo $payment['timestamp'] ?></td>
+								<td><?php echo $payment_date ?></td>
 								<td><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
 								<?php
 									$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $vat_val)
 								?>
 									<td>
-										<button	data-paymentamt="<?php echo $payment['amount'] ?>" 
+										<button	data-paymentamt="<?php echo $payment['amount'] ?>" data-paymentdate="<?php echo $payment_date ?>"
 														data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
 														class="btn btn-info print-invoice-btn">
 											View/Print

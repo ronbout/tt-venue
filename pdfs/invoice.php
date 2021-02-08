@@ -19,6 +19,7 @@ define('EURO', chr(128));
 // get POST, otherwise die
  if (!isset($_GET['product_id']) || !$_GET['product_id'] ||
 		 !isset($_GET['payment_amt']) || !$_GET['payment_amt'] ||
+		 !isset($_GET['payment_date']) || !$_GET['payment_date'] ||
 		 !isset($_GET['venue_name']) || !$_GET['venue_name'] ||
 		 !isset($_GET['commission_val']) || !isset($_GET['vat_val']) ||
 		 !isset($_GET['commission_amt']) || !isset($_GET['vat_amt'])
@@ -29,6 +30,7 @@ define('EURO', chr(128));
 		$payment_info = array(
 			'product_id' => 203677,
 			'payment_amt' => 5000,
+			'payment_date' => '2020-10-14',
 			'commission_val' => 15,
 			'vat_val' => 21,
 			'commission_amt' => 750,
@@ -41,24 +43,20 @@ define('EURO', chr(128));
 	$payment_info = array(
 		'product_id' => $_GET['product_id'],
 		'payment_amt' => $_GET['payment_amt'],
+		'payment_date' => $_GET['payment_date'],
 		'commission_val' => $_GET['commission_val'],
 		'vat_val' => $_GET['vat_val'],
 		'commission_amt' => $_GET['commission_amt'],
 		'vat_amt' => $_GET['vat_amt'],
 	);
 
-	// var_dump($payment_info);
-	// echo '</br>', disp_euros($payment_info['payment_amt'], 2);
-	// echo '</br>', disp_euros($payment_info['commission_amt'], 2);
-	// echo '</br>', disp_euros($payment_info['vat_amt'], 2);
-	// die();
 }
 
 $pdf = set_up_pdf();
 $pdf->AddPage();
 $pdf->SetFont(FONT_STYLE,'',FONT_SIZE);
 $cur_y = display_image($pdf);
-display_company_info($pdf, $cur_y);
+display_company_info($pdf, $cur_y, $payment_info);
 
 display_venue_name($pdf, $venue_name);
 
@@ -88,7 +86,7 @@ function display_image($pdf) {
 	return $image_size + $image_y + 10;
 }
 
-function display_company_info($pdf, $y_loc) {
+function display_company_info($pdf, $y_loc, $payment_info) {
 	$company_title = "Digital Food Ltd. T/A TheTaste.ie";
 	$company_addr = array(
 		'The Chq Building,',
@@ -99,7 +97,7 @@ function display_company_info($pdf, $y_loc) {
 	);
 	$company_no = '548735';
 	$company_vat_no = '3312776JH';
-	$date = date('m/d/Y');
+	$date = $payment_info['payment_date'];
 
 	$pdf->setY($y_loc);
 	$pdf->setFont('', 'B');
