@@ -28,10 +28,38 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 
 	// if not success set error array and return
 	if (!$rows_affected) {
-		$ret_json = array('error' => 'Could not update database.');
+		$ret_json = array('error' => 'Could not update order items table.');
 		echo wp_json_encode($ret_json);
 		return;
 	}
+
+	// update the audit table so that a history of the redemptions exist.
+	$redemption_audit_table = $wpdb->prefix ."taste_venue_order_redemption_audit";
+	$user_id = get_current_user_id();
+
+	$insert_values = '';
+	$insert_parms = [];
+
+	foreach($order_item_list as $order_item_id) {
+		$insert_values .= '(%d, %d, %d),';
+		$insert_parms[] = intval($order_item_id);
+		$insert_parms[] = $user_id;
+		$insert_parms[] = $redeem_flg;
+	}
+	$insert_values = rtrim($insert_values, ',');
+
+	$sql = "INSERT into $redemption_audit_table
+						(order_item_id, user_id, redemption_value)
+					VALUES $insert_values";
+
+	$rows_affected = $wpdb->query(
+		$wpdb->prepare($sql, $insert_parms)
+	);
+
+	// var_dump($sql);
+	// var_dump($insert_parms);
+	// var_dump($insert_values);
+	// die();
 
 	$order_id_list = array_column($order_list, 'orderId');
 	$placeholders = array_fill(0, count($order_id_list), '%s');

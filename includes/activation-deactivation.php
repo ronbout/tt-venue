@@ -74,6 +74,25 @@ function taste_add_venues_posts_table() {
 	dbDelta($sql);
 }
 
+function taste_add_venue_order_redemptions_table() {
+	global $wpdb;
+	$venue_order_redemption_table = $wpdb->prefix.'taste_venue_order_redemption_audit';
+
+	$sql = "CREATE TABLE IF NOT EXISTS $venue_order_redemption_table (
+		id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		order_item_id BIGINT(20) NOT NULL,
+		timestamp TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+		user_id BIGINT(20) UNSIGNED NOT NULL,
+		redemption_value TINYINT(1) NOT NULL,
+		PRIMARY KEY  (id),
+		INDEX order_item_id (order_item_id)
+	)";
+
+require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+dbDelta($sql);
+
+}
+
 function taste_venue_activation() {
 
 	taste_add_venue_role();
