@@ -86,20 +86,19 @@ function display_logo($pdf) {
 	
 	$pdf->Image('images/TheTasteLogo.png', IMAGE_START_X, IMAGE_START_Y, IMAGE_SIZE, IMAGE_SIZE);
 
-	$x = IMAGE_START_X + IMAGE_SIZE + 10;
 	$y = IMAGE_START_Y + 5;
 
-	$pdf->setXY($x, $y);
+	$pdf->setXY(0, $y);
 
 	$pdf->setFont('', 'B', 10);
-	$pdf->Cell(190, 5, $company_title, 0, 1);
+	$pdf->Cell(PAGE_WIDTH - 10, 5, $company_title, 0, 1, 'R');
 
-	$pdf->setX($x);
+	$pdf->setX(0);
 
 	$pdf->SetFont('');
 	foreach($company_addr as $addr_ln) {
-		$pdf->setX($x);
-		$pdf->Cell(190, 5, $addr_ln, 0, 1);
+		$pdf->setX(0);
+		$pdf->Cell(PAGE_WIDTH - 10, 5, $addr_ln, 0, 1, 'R');
 	}
 	$pdf->SetFont('', '', FONT_SIZE);
 
