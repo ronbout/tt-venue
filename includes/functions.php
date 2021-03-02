@@ -190,7 +190,7 @@ function get_user_venue_info() {
 	// get venue name and other info
 	$venue_table = $wpdb->prefix."taste_venue";
 	$venue_row = $wpdb->get_results($wpdb->prepare("
-		SELECT v.name, v.venue_type, v.use_new_campaign
+		SELECT *
 		FROM $venue_table v
 		WHERE	v.venue_id = %d", 
 	$venue_id),ARRAY_A);
