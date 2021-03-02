@@ -38,8 +38,8 @@ function display_voucher_table($product_id, $multiplier) {
 			AND wclook.product_id = %d group by o.id", $product_id, $product_id));
 
 	$product_row = $wpdb->get_results($wpdb->prepare("
-		SELECT  pm.post_id, p.post_title,
-						v.venue_id, v.name AS venue_name,
+		SELECT  pm.post_id, p.post_title,	v.venue_id, 
+						v.name AS venue_name, v.address1, v.address2, v.city,	v.postcode,
 						MAX(CASE WHEN pm.meta_key = '_sale_price' then pm.meta_value ELSE NULL END) as price,
 						MAX(CASE WHEN pm.meta_key = 'vat' then pm.meta_value ELSE NULL END) as vat,
 						MAX(CASE WHEN pm.meta_key = 'commission' then pm.meta_value ELSE NULL END) as commission,
@@ -62,7 +62,14 @@ function display_voucher_table($product_id, $multiplier) {
 	$tandc_val = $product_row[0]['purchase_note'];
 	$product_title = $product_row[0]['post_title'];
 	$venue_id = $product_row[0]['venue_id'];
-	$venue_name = $product_row[0]['venue_name'];
+
+	$venue_info = array(
+		'name' => $product_row[0]['venue_name'],
+		'address1' => $product_row[0]['address1'],
+		'address2' => $product_row[0]['address2'],
+		'city' => $product_row[0]['city'],
+		'postcode' => $product_row[0]['postcode'],
+	);
 
 	$termsandconditions = str_replace('\r\n','<br>', json_encode($tandc_val));
 	$termsandconditions = str_replace('[{"meta_value":"','', $termsandconditions);
@@ -93,7 +100,7 @@ function display_voucher_table($product_id, $multiplier) {
 	
 	display_terms($termsandconditions);
 
-	$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_name);
+	$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info);
 	?>
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
@@ -358,7 +365,7 @@ function display_terms($termsandconditions) {
 	echo stripslashes($termsandconditions);
 }
 
-function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_name) {
+function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info) {
 	global $wpdb;
 
 	$paymentList = $wpdb->get_results($wpdb->prepare("
@@ -386,7 +393,9 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 					?>
 					data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
 					data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
-					data-venuename="<?php echo $venue_name ?>">
+					data-venuename="<?php echo $venue_info['name'] ?>" data-venueaddr1="<?php echo $venue_info['address1'] ?>"
+					data-venueaddr2="<?php echo $venue_info['address2'] ?>" data-venuecity="<?php echo $venue_info['city'] ?>"
+					data-venuepostcode="<?php echo $venue_info['postcode'] ?>" >
 					<thead>
 						<tr>
 							<?php echo $admin ? '<th>Payment ID</th>' : '' ?>
@@ -397,7 +406,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 					</thead>
 					<tbody id="payment-lines">
 						<?php
-						
+						$ln = 1;
 						foreach($paymentList as $payment){ 
 							$payment_date = date('Y-m-d', strtotime($payment['timestamp']));
 							?>
@@ -411,13 +420,14 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 									<td>
 										<button	data-paymentamt="<?php echo $payment['amount'] ?>" data-paymentdate="<?php echo $payment_date ?>"
 														data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
-														class="btn btn-info print-invoice-btn">
+														data-paymentln="<?php echo $ln ?>" class="btn btn-info print-invoice-btn">
 											View/Print
 										</button>
 									</td>
 							</tr>
 							<?php 
 								$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
+								$ln++;
 						}
 						?>
 					</tbody>

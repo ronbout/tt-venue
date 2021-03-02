@@ -281,15 +281,21 @@ const tasteLoadInvoiceButtons = () => {
 				let invoiceURL = $productData.data("invoiceurl");
 				let productId = $productData.data("productid");
 				let venueName = $productData.data("venuename");
+				let venueAddr1 = $productData.data("venueaddr1");
+				let venueAddr2 = $productData.data("venueaddr2");
+				let venueCity = $productData.data("venuecity");
+				let venuePostal = $productData.data("venuepostcode");
 				let commissionVal = $productData.data("commval");
 				let vatVal = $productData.data("vatval");
 				let paymentAmt = $invBtn.data("paymentamt");
 				let paymentDate = $invBtn.data("paymentdate");
+				let paymentLn = $invBtn.data("paymentln");
 				let commissionAmt = $invBtn.data("comm");
 				let vatAmt = $invBtn.data("vat");
-				let urlGetString = `?product_id=${productId}&payment_amt=${paymentAmt}&commission_amt=${commissionAmt}
-												 &commission_val=${commissionVal}&vat_amt=${vatAmt}&vat_val=${vatVal}&payment_date=${paymentDate}
-												 &venue_name=${venueName}`;
+				let urlGetString = `?product_id=${productId}&pay_amt=${paymentAmt}&comm_amt=${commissionAmt}
+												 &comm_val=${commissionVal}&vat_amt=${vatAmt}&vat_val=${vatVal}&pay_date=${paymentDate}
+												 &venue_name=${venueName}&venue_addr1=${venueAddr1}&venue_addr2=${venueAddr2}&venue_city=${venueCity}
+												 &venue_postal=${venuePostal}&pay_ln=${paymentLn}`;
 				window.open(`${invoiceURL}${urlGetString}`, "_blank");
 			});
 };

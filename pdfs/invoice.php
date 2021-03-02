@@ -1,52 +1,47 @@
 <?php
 
-// for some reason, incorrectly getting a DEPRECATED error for FPDF construct
-// it CORRECTLY uses __construct, but gets error that it is using function FPDF()
-// error_reporting(~E_DEPRECATED);
-
 set_time_limit(10 * 60);
 
 require('fpdf/fpdf.php');
 
-define('LN_HEIGHT', 5);
-define('IMAGE_SIZE', 80);
-define('IMAGE_START_Y', 15);
+define('LN_HEIGHT', 6);
+define('IMAGE_SIZE', 42);
+define('IMAGE_START_X', 10);
+define('IMAGE_START_Y', 10);
 define('FONT_STYLE', 'Arial');
 define('FONT_SIZE', 12);
 define('PAGE_WIDTH', 210);
+define('BOX_WIDTH', 80);
 define('EURO', chr(128));
 
 // get POST, otherwise die
  if (!isset($_GET['product_id']) || !$_GET['product_id'] ||
-		 !isset($_GET['payment_amt']) || !$_GET['payment_amt'] ||
-		 !isset($_GET['payment_date']) || !$_GET['payment_date'] ||
+		 !isset($_GET['pay_amt']) || !$_GET['pay_amt'] ||
+		 !isset($_GET['pay_date']) || !$_GET['pay_date'] ||
 		 !isset($_GET['venue_name']) || !$_GET['venue_name'] ||
-		 !isset($_GET['commission_val']) || !isset($_GET['vat_val']) ||
-		 !isset($_GET['commission_amt']) || !isset($_GET['vat_amt'])
+		 !isset($_GET['comm_val']) || !isset($_GET['vat_val']) ||
+		 !isset($_GET['comm_amt']) || !isset($_GET['vat_amt'])
 		) {
-			// for testing create dummy values
-/*
-		$venue_name = "**** TEST DATA ONLY ****";
-		$payment_info = array(
-			'product_id' => 203677,
-			'payment_amt' => 5000,
-			'payment_date' => '2020-10-14',
-			'commission_val' => 15,
-			'vat_val' => 21,
-			'commission_amt' => 750,
-			'vat_amt' => 157.50,
-		);
-*/
 	die("invalid parameters to create invoice");
 } else {
-	$venue_name = $_GET['venue_name'];
+	$venue_info = array(
+		'name' => $_GET['venue_name'],
+		'address' => array(
+			$_GET['venue_addr1'],
+			$_GET['venue_addr2'],
+			$_GET['venue_city'],
+			$_GET['venue_postal'],
+		)
+	);
+
 	$payment_info = array(
 		'product_id' => $_GET['product_id'],
-		'payment_amt' => $_GET['payment_amt'],
-		'payment_date' => $_GET['payment_date'],
-		'commission_val' => $_GET['commission_val'],
+		'payment_amt' => $_GET['pay_amt'],
+		'payment_ln' => $_GET['pay_ln'],
+		'payment_date' => $_GET['pay_date'],
+		'commission_val' => $_GET['comm_val'],
 		'vat_val' => $_GET['vat_val'],
-		'commission_amt' => $_GET['commission_amt'],
+		'commission_amt' => $_GET['comm_amt'],
 		'vat_amt' => $_GET['vat_amt'],
 	);
 
@@ -55,10 +50,13 @@ define('EURO', chr(128));
 $pdf = set_up_pdf();
 $pdf->AddPage();
 $pdf->SetFont(FONT_STYLE,'',FONT_SIZE);
-$cur_y = display_image($pdf);
-display_company_info($pdf, $cur_y, $payment_info);
+$cur_y = display_logo($pdf);
 
-display_venue_name($pdf, $venue_name);
+display_venue_info($pdf, $cur_y, $venue_info);
+
+display_company_tax_info($pdf, $payment_info);
+
+display_horizontal_line($pdf);
 
 display_payment_info($pdf, $payment_info);
 
@@ -76,17 +74,7 @@ function set_up_pdf() {
     return new FPDF();
 }
 
-function display_image($pdf) {
-	$page_width = PAGE_WIDTH;
-	$image_size = IMAGE_SIZE;
-	$image_x = ($page_width - $image_size) / 2;
-	$image_y = IMAGE_START_Y;
-	
-	$pdf->Image('images/TheTasteLogo.png', $image_x, $image_y, $image_size, $image_size);
-	return $image_size + $image_y + 10;
-}
-
-function display_company_info($pdf, $y_loc, $payment_info) {
+function display_logo($pdf) {
 	$company_title = "Digital Food Ltd. T/A TheTaste.ie";
 	$company_addr = array(
 		'The Chq Building,',
@@ -95,38 +83,57 @@ function display_company_info($pdf, $y_loc, $payment_info) {
 		'North Wall',
 		'Dublin 1',
 	);
-	$company_no = '548735';
-	$company_vat_no = '3312776JH';
-	$date = $payment_info['payment_date'];
+	
+	$pdf->Image('images/TheTasteLogo.png', IMAGE_START_X, IMAGE_START_Y, IMAGE_SIZE, IMAGE_SIZE);
 
-	$pdf->setY($y_loc);
-	$pdf->setFont('', 'B');
-	center($pdf, $company_title);
-	$pdf->Ln();
+	$x = IMAGE_START_X + IMAGE_SIZE + 10;
+	$y = IMAGE_START_Y + 5;
+
+	$pdf->setXY($x, $y);
+
+	$pdf->setFont('', 'B', 10);
+	$pdf->Cell(190, 5, $company_title, 0, 1);
+
+	$pdf->setX($x);
 
 	$pdf->SetFont('');
 	foreach($company_addr as $addr_ln) {
-		center($pdf, $addr_ln);
+		$pdf->setX($x);
+		$pdf->Cell(190, 5, $addr_ln, 0, 1);
 	}
+	$pdf->SetFont('', '', FONT_SIZE);
+
+	return IMAGE_SIZE + IMAGE_START_Y + 8;
+}
+
+function display_venue_info($pdf,  $y_loc, $venue_info) {
+	$pdf->setY($y_loc);
+	
+	display_title_info($pdf, 'Client:', $venue_info['name']);
+
+	foreach($venue_info['address'] as $addr_line) {
+		if (trim($addr_line)) {
+			center($pdf, $addr_line);
+		}
+	}
+
+}
+
+function display_company_tax_info($pdf, $payment_info) {
+	$company_no = '548735';
+	$company_vat_no = '3312776JH';
+	$date = $payment_info['payment_date'];
+	$product_id = $payment_info['product_id'];
+	$payment_ln = $payment_info['payment_ln'];
+	$invoice_no = $product_id . '-' . $payment_ln;
 	
 	display_title_info($pdf, 'Company No:', $company_no);
+	
+	display_title_info($pdf, 'Invoice No:', $invoice_no);
 	
 	display_title_info($pdf, 'VAT No:', $company_vat_no);
 
 	display_title_info($pdf, 'Date:', $date);
-}
-
-function display_venue_name($pdf, $venue_name) {
-	display_title_info($pdf, 'Client:', $venue_name);
-	$pdf->Ln();
-
-	$page_width = PAGE_WIDTH;
-	$line_size = IMAGE_SIZE;
-	$line_x_start = ($page_width - $line_size) / 2;
-	$line_x_end = $line_x_start + IMAGE_SIZE;
-	$line_y_start = $pdf->getY();
-	$pdf->Line($line_x_start, $line_y_start, $line_x_end, $line_y_start);
-	$pdf->Ln();
 }
 
 function display_payment_info($pdf, $payment_info) {
@@ -139,14 +146,27 @@ function display_payment_info($pdf, $payment_info) {
 
 	$pdf->SetFont('', 'B');
 	center($pdf, 'Invoice for our Marketing Services');
+	$pdf->Ln();
 
-	display_title_info($pdf, 'Campaign ID:', $product_id);
+	center($pdf, 'Campaign ID: ' . $product_id);
+	$pdf->Ln();
 
-	display_title_info($pdf, 'Staged Payment of:', disp_euros($payment_amt));
+	$table_width = BOX_WIDTH;
+	$table_height = LN_HEIGHT + 4;
+	$table_x_start = (PAGE_WIDTH - $table_width) / 2;
 
-	display_title_info($pdf, "Commission @ {$commission_val}%",  disp_euros($commission_amt));
-	
-	display_title_info($pdf, "Vat @ {$vat_val}%", disp_euros($vat_amt));
+	$pdf->setX($table_x_start);
+	$pdf->Cell(50, $table_height, ' Staged Payment of:', 1);
+	$pdf->Cell(30, $table_height, ' ' . disp_euros($payment_amt), 1, 2);
+
+	$pdf->setX($table_x_start);
+	$pdf->Cell(50, $table_height, " Commission @ {$commission_val}%", 1);
+	$pdf->Cell(30, $table_height, ' ' . disp_euros($commission_amt), 1, 2);
+
+	$pdf->setX($table_x_start);
+	$pdf->Cell(50, $table_height, " Vat @ {$vat_val}%", 1);
+	$pdf->Cell(30, $table_height, ' ' . disp_euros($vat_amt), 1, 2);
+
 }
 
 function disp_euros($amt) {
@@ -165,5 +185,17 @@ function display_title_info($pdf, $title, $info) {
 
 function center($pdf, $txt) {
 	$pdf->Cell(190, LN_HEIGHT, $txt, 0, 1, 'C');
+}
+
+function display_horizontal_line($pdf) {
+	$pdf->Ln();
+	$pdf->Ln();
+	$line_size = BOX_WIDTH;
+	$line_x_start = (PAGE_WIDTH - $line_size) / 2;
+	$line_x_end = $line_x_start + BOX_WIDTH;
+	$line_y_start = $pdf->getY();
+	$pdf->Line($line_x_start, $line_y_start, $line_x_end, $line_y_start);
+	$pdf->Ln();
+	$pdf->Ln();
 }
 
