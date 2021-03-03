@@ -91,7 +91,7 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 	});
 };
 
-const tasteMakePayment = (mapAmount) => {
+const tasteMakePayment = (mapAmount, paymentLns) => {
 	let modalMsg = "Making Payment...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	// get info from hidden inputs to pass up for re-calc
@@ -108,6 +108,7 @@ const tasteMakePayment = (mapAmount) => {
 			map_amount: mapAmount,
 			product_info: productInfo,
 			venue_info: venueInfo,
+			paymentLns: paymentLns,
 		},
 		success: function (responseText) {
 			tasteCloseMsg();
@@ -264,7 +265,14 @@ const tasteLoadVoucherPaymentButtons = () => {
 			.click(function (e) {
 				e.preventDefault();
 				let mapAmount = jQuery("#map-amount").val();
-				tasteMakePayment(mapAmount);
+				let paymentLns = jQuery("#audit-payment-table")[0].tBodies[0].rows
+					.length;
+				/**
+				 *  get payment line count
+				 *
+				 *
+				 */
+				tasteMakePayment(mapAmount, paymentLns);
 			});
 
 	tasteLoadInvoiceButtons();
@@ -286,7 +294,7 @@ const tasteLoadInvoiceButtons = () => {
 				let venueCity = $productData.data("venuecity");
 				let venuePostal = $productData.data("venuepostcode");
 				let commissionVal = $productData.data("commval");
-				let vatVal = $productData.data("vatval");
+				let vatVal = $invBtn.data("paymentvatval");
 				let paymentAmt = $invBtn.data("paymentamt");
 				let paymentDate = $invBtn.data("paymentdate");
 				let paymentLn = $invBtn.data("paymentln");

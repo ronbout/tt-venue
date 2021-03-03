@@ -2,6 +2,8 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
+require_once(plugin_dir_path(__FILE__). 'functions.php');
+
 function taste_ajax_load_vouchers() {
 
 	if (!check_ajax_referer('taste-venue-nonce','security', false)) {
@@ -53,7 +55,8 @@ function taste_ajax_make_payment() {
 		wp_die();
 	}
 
-	if (!isset($_POST['map_amount']) || !isset($_POST['product_info']) || !isset($_POST['venue_info'])) {
+	if (!isset($_POST['map_amount']) || !isset($_POST['product_info']) || !isset($_POST['venue_info']) 
+			|| (!isset($_POST['paymentLns']))) {
 		echo 'Missing valid payment amount or product / venue info';
 		wp_die();
 	}
@@ -61,9 +64,10 @@ function taste_ajax_make_payment() {
 	$map_amount = $_POST['map_amount'];
 	$product_info = $_POST['product_info'];
 	$venue_info = $_POST['venue_info'];
+	$payment_lns = $_POST['paymentLns'];
 
 	require_once(plugin_dir_path(__FILE__). 'make_payment.php');
-	make_payment_update($map_amount, $product_info, $venue_info);
+	make_payment_update($map_amount, $product_info, $venue_info, $payment_lns);
 
 	wp_die();
 }

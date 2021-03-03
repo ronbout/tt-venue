@@ -2,8 +2,12 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function make_payment_update($payment_amount, $product_info, $venue_info) {
+function make_payment_update($payment_amount, $product_info, $venue_info, $payment_lns) {
 	global $wpdb;
+
+	$user = wp_get_current_user();
+	$role = $user->roles[0];
+	$admin = ('ADMINISTRATOR' === strtoupper($role));
 	
 	$product_id = $product_info['product_id'];
 
@@ -23,16 +27,37 @@ function make_payment_update($payment_amount, $product_info, $venue_info) {
 		echo wp_json_encode($ret_json);
 		return;
 	}
+
+	
+	$currency = get_woocommerce_currency_symbol();
+	
+	// create new payment line for display
+	// to be accurate, get timestamp from inserted payment
+	$payment_id = $wpdb->insert_id;
+	$pay_row = $wpdb->get_results($wpdb->prepare("
+		SELECT timestamp FROM $table WHERE id = %d
+	", $payment_id), ARRAY_A);
+
+	$payment_ln = $payment_lns++;
+
+	$payment_date = date('Y-m-d', strtotime($pay_row[0]['timestamp']));
 		
 	// update calcs.  some calcs are necessary because all 
 	// values must be passed back for hidden section
 	$redeem_qty = $product_info['redeem_qty'];
 	$gr_value = $product_info['gr_value'];
 	$commission_value = $product_info['commission_value'];
-	$vat_value = $product_info['vat_value'];
 	$total_sold = $product_info['total_sold'];
 	$total_paid = $product_info['total_paid'] + $payment_amount;
 	$multiplier = $product_info['multiplier'];
+		
+	// comm_vat_per_payment is in ajax/functions.php
+	$pay_calcs = comm_vat_per_payment($payment_amount, $commission_value, $payment_date);
+	// var_dump($payment_amount);
+	// var_dump($pay_calcs);
+	// die();
+
+	$vat_value = $pay_calcs['vat_val'];
 	
 	// $redeem_qty += $order_qty;
 	$grevenue = $redeem_qty * $gr_value; 
@@ -48,31 +73,25 @@ function make_payment_update($payment_amount, $product_info, $venue_info) {
 	$payable = round($payable, 2);
 	$balance_due = round($balance_due, 2);
 	
-	$currency = get_woocommerce_currency_symbol();
-	$pay_calcs = comm_vat_per_payment($payment_amount, $commission_value, $vat_value);
-	
-	// create new payment line to display
-	// to be accurate, get timestamp from inserted payment
-	$payment_id = $wpdb->insert_id;
-	$pay_row = $wpdb->get_results($wpdb->prepare("
-		SELECT timestamp FROM $table WHERE id = %d
-	", $payment_id), ARRAY_A);
-	$payment_line = "
+
+	ob_start();
+	?>
 		<tr>
-			<td>$payment_id</td>
-			<td>{$pay_row[0]['timestamp']}</td>
-			<td>$currency " . num_display($payment_amount) . "</td>
+			<?php echo $admin ? "<td>$payment_id</td>" : '' ?>
+			<td><?php echo $payment_date ?></td>
+			<td><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment_amount, 2)	?></td>
 			<td>
-			<button	data-paymentamt='$payment_amount'
-			data-comm='{$pay_calcs['pay_comm']}' data-vat='{$pay_calcs['pay_vat']}'
-			class='btn btn-info print-invoice-btn'>
-				View/Print
-			</button>
+				<button	data-paymentamt="<?php echo $payment_amount ?>" data-paymentdate="<?php echo $payment_date ?>"
+								data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
+								data-paymentln="<?php echo $payment_ln ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
+								class="btn btn-info print-invoice-btn">
+					View/Print
+				</button>
 			</td>
 		</tr>
-	";
+		<?php
 
-
+	$payment_line = ob_get_clean();
 
 
 	$hidden_values = "
@@ -133,17 +152,4 @@ function make_payment_update($payment_amount, $product_info, $venue_info) {
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting
 	return number_format(round($num,2), 2);
-}
-
-function comm_vat_per_payment($payment, $commission_val, $vat_val) {
-	$comm_pct = $commission_val / 100;
-	$vat_pct = $vat_val / 100;
-	$gross = $payment / (1 - $comm_pct - ($comm_pct * $vat_pct));
-	$commission = round($gross * $comm_pct, 2);
-	$vat = round($commission * $vat_pct, 2);
-	return array(
-		'pay_gross' => $gross,
-		'pay_comm' => $commission,
-		'pay_vat' => $vat,
-	);
 }
