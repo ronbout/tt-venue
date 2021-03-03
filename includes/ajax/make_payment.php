@@ -38,7 +38,7 @@ function make_payment_update($payment_amount, $product_info, $venue_info, $payme
 		SELECT timestamp FROM $table WHERE id = %d
 	", $payment_id), ARRAY_A);
 
-	$payment_ln = $payment_lns++;
+	$payment_ln = $payment_lns + 1;
 
 	$payment_date = date('Y-m-d', strtotime($pay_row[0]['timestamp']));
 		
