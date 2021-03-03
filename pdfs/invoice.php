@@ -37,7 +37,7 @@ define('EURO', chr(128));
 	$payment_info = array(
 		'product_id' => $_GET['product_id'],
 		'payment_amt' => $_GET['pay_amt'],
-		'payment_ln' => $_GET['pay_ln'],
+		'payment_id' => $_GET['pay_id'],
 		'payment_date' => $_GET['pay_date'],
 		'commission_val' => $_GET['comm_val'],
 		'vat_val' => $_GET['vat_val'],
@@ -123,8 +123,7 @@ function display_company_tax_info($pdf, $payment_info) {
 	$company_vat_no = '3312776JH';
 	$date = $payment_info['payment_date'];
 	$product_id = $payment_info['product_id'];
-	$payment_ln = $payment_info['payment_ln'];
-	$invoice_no = $product_id . '-' . $payment_ln;
+	$invoice_no = $payment_info['payment_id'];
 	
 	display_title_info($pdf, 'Company No:', $company_no);
 	

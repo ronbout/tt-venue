@@ -2,7 +2,7 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function make_payment_update($payment_amount, $product_info, $venue_info, $payment_lns) {
+function make_payment_update($payment_amount, $product_info, $venue_info, $payment_lns=0) {
 	global $wpdb;
 
 	$user = wp_get_current_user();
@@ -37,8 +37,6 @@ function make_payment_update($payment_amount, $product_info, $venue_info, $payme
 	$pay_row = $wpdb->get_results($wpdb->prepare("
 		SELECT timestamp FROM $table WHERE id = %d
 	", $payment_id), ARRAY_A);
-
-	$payment_ln = $payment_lns + 1;
 
 	$payment_date = date('Y-m-d', strtotime($pay_row[0]['timestamp']));
 		
@@ -83,7 +81,7 @@ function make_payment_update($payment_amount, $product_info, $venue_info, $payme
 			<td>
 				<button	data-paymentamt="<?php echo $payment_amount ?>" data-paymentdate="<?php echo $payment_date ?>"
 								data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
-								data-paymentln="<?php echo $payment_ln ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
+								data-paymentid="<?php echo $payment_id ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
 								class="btn btn-info print-invoice-btn">
 					View/Print
 				</button>

@@ -421,7 +421,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 									<td>
 										<button	data-paymentamt="<?php echo $payment['amount'] ?>" data-paymentdate="<?php echo $payment_date ?>"
 														data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
-														data-paymentln="<?php echo $ln ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
+														data-paymentid="<?php echo $payment['id'] ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
 														class="btn btn-info print-invoice-btn">
 											View/Print
 										</button>

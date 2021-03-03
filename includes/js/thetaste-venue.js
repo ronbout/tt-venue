@@ -297,13 +297,13 @@ const tasteLoadInvoiceButtons = () => {
 				let vatVal = $invBtn.data("paymentvatval");
 				let paymentAmt = $invBtn.data("paymentamt");
 				let paymentDate = $invBtn.data("paymentdate");
-				let paymentLn = $invBtn.data("paymentln");
+				let paymentId = $invBtn.data("paymentid");
 				let commissionAmt = $invBtn.data("comm");
 				let vatAmt = $invBtn.data("vat");
 				let urlGetString = `?product_id=${productId}&pay_amt=${paymentAmt}&comm_amt=${commissionAmt}
 												 &comm_val=${commissionVal}&vat_amt=${vatAmt}&vat_val=${vatVal}&pay_date=${paymentDate}
 												 &venue_name=${venueName}&venue_addr1=${venueAddr1}&venue_addr2=${venueAddr2}&venue_city=${venueCity}
-												 &venue_postal=${venuePostal}&pay_ln=${paymentLn}`;
+												 &venue_postal=${venuePostal}&pay_id=${paymentId}`;
 				window.open(`${invoiceURL}${urlGetString}`, "_blank");
 			});
 };
