@@ -224,7 +224,7 @@ function display_order_table_heading($order_rows, $expired_val) {
 			<th>Customer Name</th>
 			<th>Customer Email</th>
 			<th>Quantity</th>
-			<th>Date</th>
+			<th>Action</th>
 		</thead>
 	<?php
 }
@@ -369,12 +369,14 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 	global $wpdb;
 
 	$paymentList = $wpdb->get_results($wpdb->prepare("
-				SELECT  id, timestamp, pid, amount
+				SELECT  id, timestamp, pid, amount, comment
 				FROM {$wpdb->prefix}offer_payments 
 				WHERE pid = %d
 				ORDER BY timestamp ASC ", $product_id), ARRAY_A);
 
 	$total_paid_to_customer = 0;
+
+	$show_delete = false;
 
 	?>
 	<br><br>
@@ -386,7 +388,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 				<div>&nbsp;</div>
 			</div>
 			<div id="payment-table-container" class="table-fixed-container">		
-				<table id="audit-payment-table" class="table table-striped table-bordered"
+				<table id="audit-payment-table" class="table table-striped table-bordered text-center"
 					<?php
 							// need data for invoice button
 							$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
@@ -398,66 +400,115 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 					data-venuepostcode="<?php echo $venue_info['postcode'] ?>" >
 					<thead>
 						<tr>
-							<?php echo $admin ? '<th>Payment ID</th>' : '' ?>
-							<th>Payment Date</th>
-							<th>Payment Amount</th>
-							<th>Invoice</th>
+							<?php echo $admin ? '<th scope="col">Payment ID</th>' : '' ?>
+							<th scope="col" class="sort-by-date">Payment Date</th>
+							<th scope="col">Payment Amount</th>
+							<th scope="col">Invoice</th>
+							<?php if ($admin) {	?>
+								<th scope="col">Comment</th>
+								<th scope="col">Edit</th>
+								<?php  if ($show_delete) {  echo '<th scope="col">Delete</th>'; } ?>
+								<?php
+							}
+							?>
 						</tr>
 					</thead>
 					<tbody id="payment-lines">
 						<?php
 						$ln = 1;
 						foreach($paymentList as $payment){ 
-							$payment_date = date('Y-m-d', strtotime($payment['timestamp']));
-							?>
-							<tr>
-								<?php echo $admin ? "<td>{$payment['id']}</td>" : '' ?>
-								<td><?php echo $payment_date ?></td>
-								<td><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
-								<?php
-									// comm_vat_per_payment is in ajax/functions.php
-									$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $payment_date)
-								?>
-									<td>
-										<button	data-paymentamt="<?php echo $payment['amount'] ?>" data-paymentdate="<?php echo $payment_date ?>"
-														data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
-														data-paymentid="<?php echo $payment['id'] ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
-														class="btn btn-info print-invoice-btn">
-											View/Print
-										</button>
-									</td>
-							</tr>
-							<?php 
-								$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
-								$ln++;
+							// disp_payment_line is in ajax/functions.php
+							echo disp_payment_line($payment, $admin, $commission_val);
+							$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
+							$ln++;
 						}
 						?>
 					</tbody>
 				</table>
+				<?php if ($admin) {
+					?>
+					<!--  ADD NEW PAYMENT MODAL TRIGGER  -->
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEditPaymentModal"
+						data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment=""
+						>
+						<i class="fas fa-plus-circle"></i> Add new payment
+					</button>
+					<?php
+				}
+				?>
+
 			</div>
 			<br>
 			<div class="text-center">
 				<b>Balance Due : <span id="balance-due-display"> <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable - $total_paid_to_customer, 2) ?></span></b>
 			</div>
 			<br>
-			
-			<?php 
-			if ($admin) {
-				?>
-				<hr>
-				<div class="text-center">
-					<div id="make-payment-div">
-						<b>For Office Use Only:</b><br><br>
-						<b>€</b> <input type="text" id="map-amount" name="MAP_Amount" value="0.00" style="width='100px';">
-						<input type="hidden" name="product_id" value="<?php echo $product_id ?>">
-						<input type="hidden" name="product_pass" value="<?php echo $pass ?>"><br><br>
-						<button type="button" id="make-payment-btn" class="btn btn-primary">Make a Payment</button>
+		</div>
+
+		<!-- Payment Modal -->
+		<div class="modal fade" id="addEditPaymentModal" tabindex="-1" role="dialog" aria-labelledby="addEditPaymentModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addEditPaymentModalLabel"></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form id="modal-payment-form">
+							<input type="hidden" id="modal-payment-id" value="0" name="payment-id">
+							<input type="hidden" id="modal-payment-orig-amt" name="payment-orig-amt">
+							<div class="form-group">
+								<label for="modal-payment-date">Payment date</label>
+								<input class="form-control" type="date" id="modal-payment-date" required name="payment-date">
+							</div>
+							<div class="form-group">
+								<label for="modal-payment-amt">Payment amount</label>
+								<input class="form-control" type="text" id="modal-payment-amt" required name="payment-amt">
+							</div>
+							<div class="form-group">
+								<label for="modal-payment-comment">Comment</label>
+								<textarea class="form-control" id="modal-payment-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+						<button type="submit" form="modal-payment-form" id="modal-payment-submit" class="btn btn-primary payment-save-btn">Save</button>
 					</div>
 				</div>
-				<?php
-			}
-			?>
-			<br><br>
+			</div>
+		</div>
+
+		<!-- Comment Modal -->
+		<div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addCommentModalLabel"><strong>Add / Edit Comment</strong></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<form id="modal-comment-form">
+							<input type="hidden" id="modal-comment-id" name="payment-id">
+							<input type="hidden" id="modal-comment-amt" name="payment-amt">
+							<input type="hidden" id="modal-comment-date" name="payment-date">
+							<input type="hidden" id="modal-comment-orig-amt" name="payment-orig-amt">
+							<div class="form-group">
+								<label for="modal-comment">Comment</label>
+								<textarea class="form-control" id="modal-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+						<button type="submit" form="modal-comment-form" id="modal-comment-submit" class="btn btn-primary payment-save-btn">Save changes</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	<?php
 	return $total_paid_to_customer;

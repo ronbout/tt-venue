@@ -37,6 +37,7 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 
 <link rel="stylesheet" href="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/style/css/thetaste-venue.css">
 <link rel="stylesheet" href="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/style/css/thetaste-venue-login.css">
-<!--<script src="<?php echo TASTE_PLUGIN_INCLUDES_URL?>/js/thetaste-dashboard.js"></script>-->
+<script src="<?php echo TASTE_PLUGIN_INCLUDES_URL?>/js/thetaste-jquery-plugins.js"></script>
+<script src="<?php echo TASTE_PLUGIN_INCLUDES_URL?>/js/thetaste-tablesort.js"></script>
 <title><?php _e(the_title()); ?></title>
 </head>

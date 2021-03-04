@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -613,5 +613,13 @@ body.orig-bs3 {
 
 	.btn {
 		font-size: 14px;
+	}
+
+	.print-invoice-btn {
+		padding: 3px 6px;
+	}
+	#audit-payment-table i {
+		font-size: 18px;
+		cursor: pointer;
 	}
 }

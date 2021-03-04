@@ -91,13 +91,24 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 	});
 };
 
-const tasteMakePayment = (mapAmount, paymentLns) => {
-	let modalMsg = "Making Payment...";
+const tasteMakePayment = (paymentData, $modal) => {
+	// jQuery("#addEditPaymentModal").modal("hide");
+	// jQuery("#addCommentModal").modal("hide");
+	$modal.modal("hide");
+	let modalMsg = "Updating Payment...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	// get info from hidden inputs to pass up for re-calc
 	let productInfo = tasteGetProductInfo();
 	let productId = productInfo.product_id;
 	let venueInfo = tasteGetVenueInfo();
+	let paymentInfo = {
+		id: paymentData.get("payment-id"),
+		pid: productId,
+		amount: paymentData.get("payment-amt"),
+		payment_orig_amt: paymentData.get("payment-orig-amt"),
+		timestamp: paymentData.get("payment-date"),
+		comment: paymentData.get("payment-comment"),
+	};
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
 		type: "POST",
@@ -105,27 +116,30 @@ const tasteMakePayment = (mapAmount, paymentLns) => {
 		data: {
 			action: "make_payment",
 			security: tasteVenue.security,
-			map_amount: mapAmount,
+			payment_info: paymentInfo,
 			product_info: productInfo,
 			venue_info: venueInfo,
-			paymentLns: paymentLns,
 		},
 		success: function (responseText) {
 			tasteCloseMsg();
 			let respObj = JSON.parse(responseText);
 			if (respObj.error) {
-				alert("error in Make Payment ajax code");
+				alert("Error updating payment.\n" + respObj.error);
 			} else {
 				console.log(respObj);
 
 				updateVenueCalcs(respObj);
-				jQuery("#map-amount").val("0.00");
 				jQuery("#balance-due-display").html(respObj.balanceDue);
 				jQuery("#balance-due-display-" + productId).html(
 					respObj.balanceDue.split(" ")[1]
 				);
-				jQuery("#payment-lines").append(respObj.paymentLine);
 				jQuery("#hidden-values").html(respObj.hiddenValues);
+
+				if ("edit" === respObj.editMode) {
+					jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
+				} else {
+					jQuery("#payment-lines").append(respObj.paymentLine);
+				}
 
 				tasteLoadInvoiceButtons();
 			}
@@ -208,8 +222,9 @@ const tasteGetVenueInfo = () => {
 
 const tasteLoadVoucherPaymentButtons = () => {
 	// this sets up click event for the ajax returned html
+	// as well as any other processing required post voucher load
 	jQuery(".order-redeem-btn")
-		.unbind("click")
+		.off("click")
 		.click(function (e) {
 			e.preventDefault();
 			let $rowData = jQuery(this).parent().parent();
@@ -220,7 +235,7 @@ const tasteLoadVoucherPaymentButtons = () => {
 		});
 
 	jQuery(".order-unredeem-btn")
-		.unbind("click")
+		.off("click")
 		.click(function (e) {
 			e.preventDefault();
 			let $rowData = jQuery(this).parent().parent();
@@ -231,7 +246,7 @@ const tasteLoadVoucherPaymentButtons = () => {
 		});
 
 	jQuery("#checkbox-all")
-		.unbind("click")
+		.off("click")
 		.click(function (e) {
 			let checkVal = jQuery(this).prop("checked");
 			jQuery(".order-redeem-check").prop("checked", checkVal);
@@ -239,13 +254,13 @@ const tasteLoadVoucherPaymentButtons = () => {
 		});
 
 	jQuery(".order-redeem-check")
-		.unbind("click")
+		.off("click")
 		.click(function (e) {
 			checkRedeemAllDisable();
 		});
 
 	jQuery(".order-redeem-checked-btn")
-		.unbind("click")
+		.off("click")
 		.click(function (e) {
 			e.preventDefault();
 			let orderInfoList = [];
@@ -259,29 +274,28 @@ const tasteLoadVoucherPaymentButtons = () => {
 			tasteRedeemVoucher(orderInfoList, true);
 		});
 
-	jQuery("#make-payment-btn").length &&
-		jQuery("#make-payment-btn")
-			.unbind("click")
+	jQuery(".payment-save-btn").length &&
+		jQuery(".payment-save-btn")
+			.off("click")
 			.click(function (e) {
 				e.preventDefault();
-				let mapAmount = jQuery("#map-amount").val();
-				let paymentLns = jQuery("#audit-payment-table")[0].tBodies[0].rows
-					.length;
-				/**
-				 *  get payment line count
-				 *
-				 *
-				 */
-				tasteMakePayment(mapAmount, paymentLns);
+				const $submitBtn = jQuery(this);
+				const $modal = $submitBtn.closest(".modal");
+				const formId = $submitBtn.attr("form");
+				const paymentForm = jQuery(`#${formId}`);
+				let paymentData = new FormData(paymentForm[0]);
+				tasteMakePayment(paymentData, $modal);
 			});
 
 	tasteLoadInvoiceButtons();
+	tasteLoadPaymentCommentModal();
+	tasteLoadPaymentAddEditModal();
 };
 
 const tasteLoadInvoiceButtons = () => {
 	jQuery(".print-invoice-btn").length &&
 		jQuery(".print-invoice-btn")
-			.unbind("click")
+			.off("click")
 			.click(function (e) {
 				e.preventDefault();
 				$invBtn = jQuery(this);
@@ -306,11 +320,68 @@ const tasteLoadInvoiceButtons = () => {
 												 &venue_postal=${venuePostal}&pay_id=${paymentId}`;
 				window.open(`${invoiceURL}${urlGetString}`, "_blank");
 			});
+
+	tasteSortPaymentTable();
+};
+
+const tasteLoadPaymentCommentModal = () => {
+	jQuery("#addCommentModal")
+		.off("show.bs.modal")
+		.on("show.bs.modal", function (e) {
+			const button = jQuery(e.relatedTarget);
+			const comment = button.data("comment");
+			const paymentId = button.data("paymentid");
+			const paymentDate = button.data("paymentdate");
+			const paymentAmt = button.data("paymentamt");
+			jQuery("#modal-comment").val(comment);
+			jQuery("#modal-comment-id").val(paymentId);
+			jQuery("#modal-comment-amt").val(paymentAmt);
+			jQuery("#modal-comment-orig-amt").val(paymentAmt);
+			jQuery("#modal-comment-date").val(paymentDate);
+
+			jQuery(this).find("form").initDirty(true);
+		});
+};
+
+/**
+ *  TODO: 	combine these, by using the name attribute
+ * 					rather than the id and jQuery.each()
+ */
+
+const tasteLoadPaymentAddEditModal = () => {
+	jQuery("#addEditPaymentModal")
+		.off("show.bs.modal")
+		.on("show.bs.modal", function (e) {
+			const button = jQuery(e.relatedTarget);
+			const comment = button.data("comment");
+			const paymentId = button.data("paymentid");
+			const paymentDate = button.data("paymentdate");
+			const paymentAmt = button.data("paymentamt");
+			jQuery("#modal-payment-comment").val(comment);
+			jQuery("#modal-payment-id").val(paymentId);
+			jQuery("#modal-payment-amt").val(paymentAmt);
+			jQuery("#modal-payment-orig-amt").val(paymentAmt);
+			jQuery("#modal-payment-date").val(paymentDate);
+			if (paymentId) {
+				// we are in edit mode
+				jQuery("#addEditPaymentModalLabel").html(
+					"<strong>Edit Payment " + paymentId + "</strong>"
+				);
+			} else {
+				jQuery("#addEditPaymentModalLabel").html("<strong>Enter New Payment");
+			}
+
+			jQuery(this).find("form").initDirty(true);
+		});
+};
+
+const tasteSortPaymentTable = () => {
+	tasteSortTableByColumn("audit-payment-table", "sort-by-date", true);
 };
 
 const tasteLoadButtons = () => {
 	jQuery(".product-select-btn")
-		.unbind("click")
+		.off("click")
 		.click(function (e) {
 			e.preventDefault();
 			let prodId = jQuery(this).data("prod-id");
@@ -335,8 +406,8 @@ const checkRedeemAllDisable = () => {
 };
 
 const tasteLoadScrollUp = () => {
-	var offset = $("#voucher-list-div").offset().top;
-	var duration = 500;
+	let offset = $("#voucher-list-div").offset().top;
+	let duration = 500;
 	$(window).scroll(function () {
 		if ($(this).scrollTop() < offset) {
 			$("#topbutton").fadeOut(duration);
@@ -345,7 +416,7 @@ const tasteLoadScrollUp = () => {
 		}
 	});
 	jQuery("#topbutton")
-		.unbind("click")
+		.off("click")
 		.click(function (e) {
 			e.preventDefault();
 			$("html, body").animate(

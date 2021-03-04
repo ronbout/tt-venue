@@ -2,7 +2,7 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function make_payment_update($payment_amount, $product_info, $venue_info, $payment_lns=0) {
+function make_payment_update($payment_info, $product_info, $venue_info, $delete_flag = false) {
 	global $wpdb;
 
 	$user = wp_get_current_user();
@@ -11,15 +11,36 @@ function make_payment_update($payment_amount, $product_info, $venue_info, $payme
 	
 	$product_id = $product_info['product_id'];
 
-	// update the database 
+	$payment_id = $payment_info['id'];
+	$payment_amount = $payment_info['amount'];
+	$payment_orig_amount = $payment_info['payment_orig_amt'];
+	$payment_date = $payment_info['timestamp'];
+	$payment_comment = $payment_info['comment'];
+
+	$payment_diff = $payment_amount - $payment_orig_amount;
+
 	$table = "{$wpdb->prefix}offer_payments";
 	$data = array(
 		'pid' => $product_id,
-		'amount' => $payment_amount
+		'timestamp' => $payment_date,
+		'amount' => $payment_amount,
+		'comment' => $payment_comment
 	);
-	$format = array('%d', '%f');
+	
+	$format = array('%d', '%s', '%f', '%s');
 
-	$rows_affected = $wpdb->insert($table, $data, $format);
+	if ($payment_id) {
+		$where = array('id' => $payment_id);
+		$where_format = array('%d');
+		$rows_affected = $wpdb->update($table, $data, $where, $format, $where_format);
+		$edit_mode = 'edit';
+	} else {
+		$rows_affected = $wpdb->insert($table, $data, $format);	
+		$payment_id = $wpdb->insert_id;
+		// need to add new id to payment_info for display routine below
+		$payment_info['id'] = $payment_id;
+		$edit_mode = 'add';
+	}
 
 	// if not success set error array and return
 	if (!$rows_affected) {
@@ -27,26 +48,16 @@ function make_payment_update($payment_amount, $product_info, $venue_info, $payme
 		echo wp_json_encode($ret_json);
 		return;
 	}
-
 	
 	$currency = get_woocommerce_currency_symbol();
-	
-	// create new payment line for display
-	// to be accurate, get timestamp from inserted payment
-	$payment_id = $wpdb->insert_id;
-	$pay_row = $wpdb->get_results($wpdb->prepare("
-		SELECT timestamp FROM $table WHERE id = %d
-	", $payment_id), ARRAY_A);
 
-	$payment_date = date('Y-m-d', strtotime($pay_row[0]['timestamp']));
-		
 	// update calcs.  some calcs are necessary because all 
 	// values must be passed back for hidden section
 	$redeem_qty = $product_info['redeem_qty'];
 	$gr_value = $product_info['gr_value'];
 	$commission_value = $product_info['commission_value'];
 	$total_sold = $product_info['total_sold'];
-	$total_paid = $product_info['total_paid'] + $payment_amount;
+	$total_paid = $product_info['total_paid'] + $payment_diff;
 	$multiplier = $product_info['multiplier'];
 		
 	// comm_vat_per_payment is in ajax/functions.php
@@ -70,27 +81,8 @@ function make_payment_update($payment_amount, $product_info, $venue_info, $payme
 	$vat = round($vat, 2);
 	$payable = round($payable, 2);
 	$balance_due = round($balance_due, 2);
-	
 
-	ob_start();
-	?>
-		<tr>
-			<?php echo $admin ? "<td>$payment_id</td>" : '' ?>
-			<td><?php echo $payment_date ?></td>
-			<td><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment_amount, 2)	?></td>
-			<td>
-				<button	data-paymentamt="<?php echo $payment_amount ?>" data-paymentdate="<?php echo $payment_date ?>"
-								data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
-								data-paymentid="<?php echo $payment_id ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
-								class="btn btn-info print-invoice-btn">
-					View/Print
-				</button>
-			</td>
-		</tr>
-		<?php
-
-	$payment_line = ob_get_clean();
-
+	$payment_line = disp_payment_line($payment_info, $admin, $commission_value);
 
 	$hidden_values = "
 	<input type='hidden' id='taste-product-id' value='$product_id'>
@@ -111,8 +103,8 @@ function make_payment_update($payment_amount, $product_info, $venue_info, $payme
 	$sum_redeemed_qty = $venue_info['redeemed_qty'];
 	$sum_num_served = $venue_info['num_served'];
 	$sum_net_payable = $venue_info['net_payable'];
-	$sum_total_paid = $venue_info['paid_amount'] + $payment_amount;
-	$sum_balance_due = $venue_info['balance_due'] - $payment_amount;
+	$sum_total_paid = $venue_info['paid_amount'] + $payment_diff;
+	$sum_balance_due = $venue_info['balance_due'] - $payment_diff;
 	$multiplier = $venue_info['multiplier'];
 
 	$sum_hidden_values = "
@@ -139,6 +131,7 @@ function make_payment_update($payment_amount, $product_info, $venue_info, $payme
 		'sumTotalPaid' => $currency . ' ' . num_display($sum_total_paid),
 		'sumBalanceDue' => $currency . ' ' . num_display($sum_balance_due),
 		'paymentLine' => $payment_line,
+		'editMode' => $edit_mode,
 		'hiddenValues' => $hidden_values,
 		'sumHiddenValues' => $sum_hidden_values
 );
