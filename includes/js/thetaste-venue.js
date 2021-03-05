@@ -338,8 +338,11 @@ const tasteLoadPaymentCommentModal = () => {
 			jQuery("#modal-comment-amt").val(paymentAmt);
 			jQuery("#modal-comment-orig-amt").val(paymentAmt);
 			jQuery("#modal-comment-date").val(paymentDate);
-
+			jQuery("#addCommentModalLabel").html(
+				"<strong>Add / Edit Comment for Payment " + paymentId + "</strong>"
+			);
 			jQuery(this).find("form").initDirty(true);
+			jQuery("#modal-comment-form").initDirty(true);
 		});
 };
 

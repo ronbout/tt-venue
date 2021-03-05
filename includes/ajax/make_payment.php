@@ -56,17 +56,10 @@ function make_payment_update($payment_info, $product_info, $venue_info, $delete_
 	$redeem_qty = $product_info['redeem_qty'];
 	$gr_value = $product_info['gr_value'];
 	$commission_value = $product_info['commission_value'];
+	$vat_value = $product_info['vat_value'];
 	$total_sold = $product_info['total_sold'];
 	$total_paid = $product_info['total_paid'] + $payment_diff;
 	$multiplier = $product_info['multiplier'];
-		
-	// comm_vat_per_payment is in ajax/functions.php
-	$pay_calcs = comm_vat_per_payment($payment_amount, $commission_value, $payment_date);
-	// var_dump($payment_amount);
-	// var_dump($pay_calcs);
-	// die();
-
-	$vat_value = $pay_calcs['vat_val'];
 	
 	// $redeem_qty += $order_qty;
 	$grevenue = $redeem_qty * $gr_value; 
