@@ -2,7 +2,7 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function make_payment_update($payment_info, $product_info, $venue_info, $delete_flag = false) {
+function make_payment_update($payment_info, $product_info, $venue_info) {
 	global $wpdb;
 
 	$user = wp_get_current_user();
@@ -17,7 +17,7 @@ function make_payment_update($payment_info, $product_info, $venue_info, $delete_
 	$payment_date = $payment_info['timestamp'];
 	$payment_comment = $payment_info['comment'];
 
-	$payment_diff = $payment_amount - $payment_orig_amount;
+	$delete_mode = 'true' === $payment_info['delete_mode'];
 
 	$table = "{$wpdb->prefix}offer_payments";
 	$data = array(
@@ -29,17 +29,29 @@ function make_payment_update($payment_info, $product_info, $venue_info, $delete_
 	
 	$format = array('%d', '%s', '%f', '%s');
 
-	if ($payment_id) {
+	if ($delete_mode) {
+		$edit_mode = 'delete';
+		$where = array('id' => $payment_id);
+		$where_format = array('%d');
+		$rows_affected = $wpdb->delete($table, $where, $where_format);
+
+		$payment_diff = - $payment_amount;
+	} elseif ($payment_id) {
+		$edit_mode = 'edit';
+
 		$where = array('id' => $payment_id);
 		$where_format = array('%d');
 		$rows_affected = $wpdb->update($table, $data, $where, $format, $where_format);
-		$edit_mode = 'edit';
+
+		$payment_diff = $payment_amount;
 	} else {
+		$edit_mode = 'add';
+
 		$rows_affected = $wpdb->insert($table, $data, $format);	
 		$payment_id = $wpdb->insert_id;
-		// need to add new id to payment_info for display routine below
+		
 		$payment_info['id'] = $payment_id;
-		$edit_mode = 'add';
+		$payment_diff = $payment_amount - $payment_orig_amount;
 	}
 
 	// if not success set error array and return
@@ -75,7 +87,7 @@ function make_payment_update($payment_info, $product_info, $venue_info, $delete_
 	$payable = round($payable, 2);
 	$balance_due = round($balance_due, 2);
 
-	$payment_line = disp_payment_line($payment_info, $admin, $commission_value);
+	$payment_line = 'delete' === $edit_mode ? '' : disp_payment_line($payment_info, $admin, $commission_value);
 
 	$hidden_values = "
 	<input type='hidden' id='taste-product-id' value='$product_id'>

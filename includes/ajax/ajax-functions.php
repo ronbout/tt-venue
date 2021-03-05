@@ -64,10 +64,8 @@ function taste_ajax_make_payment() {
 	$product_info = $_POST['product_info'];
 	$venue_info = $_POST['venue_info'];
 
-	$delete_flag = isset($_POST['delete_flag']) ? true : false;
-
 	require_once(plugin_dir_path(__FILE__). 'make_payment.php');
-	make_payment_update($payment_info, $product_info, $venue_info, $delete_flag);
+	make_payment_update($payment_info, $product_info, $venue_info);
 
 	wp_die();
 }

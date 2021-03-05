@@ -91,11 +91,11 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 	});
 };
 
-const tasteMakePayment = (paymentData, $modal) => {
+const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 	// jQuery("#addEditPaymentModal").modal("hide");
 	// jQuery("#addCommentModal").modal("hide");
 	$modal.modal("hide");
-	let modalMsg = "Updating Payment...";
+	let modalMsg = deleteMode ? "Deleting Payment..." : "Updating Payment...";
 	tasteDispMsg("<br><br>" + modalMsg, false);
 	// get info from hidden inputs to pass up for re-calc
 	let productInfo = tasteGetProductInfo();
@@ -108,6 +108,7 @@ const tasteMakePayment = (paymentData, $modal) => {
 		payment_orig_amt: paymentData.get("payment-orig-amt"),
 		timestamp: paymentData.get("payment-date"),
 		comment: paymentData.get("payment-comment"),
+		delete_mode: deleteMode,
 	};
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
@@ -137,9 +138,9 @@ const tasteMakePayment = (paymentData, $modal) => {
 
 				if ("edit" === respObj.editMode) {
 					jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
-				} else {
+				} else if ("add" === respObj.editMode) {
 					jQuery("#payment-lines").append(respObj.paymentLine);
-				}
+				} else jQuery(`#pay-${paymentInfo.id}`).remove();
 
 				tasteLoadInvoiceButtons();
 			}
@@ -282,9 +283,12 @@ const tasteLoadVoucherPaymentButtons = () => {
 				const $submitBtn = jQuery(this);
 				const $modal = $submitBtn.closest(".modal");
 				const formId = $submitBtn.attr("form");
-				const paymentForm = jQuery(`#${formId}`);
-				let paymentData = new FormData(paymentForm[0]);
-				tasteMakePayment(paymentData, $modal);
+				const $paymentForm = jQuery(`#${formId}`);
+				let paymentData = new FormData($paymentForm[0]);
+				// check if delete button
+				const btnId = $submitBtn.attr("id");
+				const deleteMode = "modal-payment-delete-btn" === btnId;
+				tasteMakePayment(paymentData, $modal, deleteMode);
 			});
 
 	tasteLoadInvoiceButtons();
@@ -329,6 +333,7 @@ const tasteLoadPaymentCommentModal = () => {
 		.off("show.bs.modal")
 		.on("show.bs.modal", function (e) {
 			const button = jQuery(e.relatedTarget);
+			const $form = jQuery(this).find("form");
 			const comment = button.data("comment");
 			const paymentId = button.data("paymentid");
 			const paymentDate = button.data("paymentdate");
@@ -341,8 +346,7 @@ const tasteLoadPaymentCommentModal = () => {
 			jQuery("#addCommentModalLabel").html(
 				"<strong>Add / Edit Comment for Payment " + paymentId + "</strong>"
 			);
-			jQuery(this).find("form").initDirty(true);
-			jQuery("#modal-comment-form").initDirty(true);
+			$form.initDirty(true);
 		});
 };
 
@@ -356,25 +360,41 @@ const tasteLoadPaymentAddEditModal = () => {
 		.off("show.bs.modal")
 		.on("show.bs.modal", function (e) {
 			const button = jQuery(e.relatedTarget);
+			const $form = jQuery(this).find("form");
 			const comment = button.data("comment");
 			const paymentId = button.data("paymentid");
 			const paymentDate = button.data("paymentdate");
 			const paymentAmt = button.data("paymentamt");
+			const deleteMode = button.data("deletemode");
 			jQuery("#modal-payment-comment").val(comment);
 			jQuery("#modal-payment-id").val(paymentId);
 			jQuery("#modal-payment-amt").val(paymentAmt);
 			jQuery("#modal-payment-orig-amt").val(paymentAmt);
 			jQuery("#modal-payment-date").val(paymentDate);
-			if (paymentId) {
+			if (deleteMode) {
+				$form.find(":input").prop("readonly", true);
+				jQuery("#payment-modal-addedit").hide();
+				jQuery("#payment-modal-delete").show();
+				jQuery("#addEditPaymentModalLabel").html(
+					"<strong>Delete Payment " + paymentId + "<br/>Are you sure?</strong>"
+				);
+			} else if (paymentId) {
 				// we are in edit mode
+				$form.find(":input").prop("readonly", false);
+				jQuery("#payment-modal-delete").hide();
+				jQuery("#payment-modal-addedit").show();
 				jQuery("#addEditPaymentModalLabel").html(
 					"<strong>Edit Payment " + paymentId + "</strong>"
 				);
 			} else {
+				// add mode
+				$form.find(":input").prop("readonly", false);
+				jQuery("#payment-modal-delete").hide();
+				jQuery("#payment-modal-addedit").show();
 				jQuery("#addEditPaymentModalLabel").html("<strong>Enter New Payment");
 			}
 
-			jQuery(this).find("form").initDirty(true);
+			$form.initDirty(true);
 		});
 };
 

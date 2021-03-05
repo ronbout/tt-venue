@@ -11126,6 +11126,10 @@ div#profile_edit_form {
   font-weight: 300;
 }
 
+#payment-modal-delete {
+  display: none;
+}
+
 @media screen and (min-width: 1200px) {
   h2.col-heading {
     font-size: 28px;

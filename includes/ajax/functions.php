@@ -54,19 +54,21 @@ function disp_payment_line($payment, $admin, $commission_val) {
 			<td>
 				<button type="button" class="btn btn-primary payment-comment-btn" data-toggle="modal" 
 								data-target="#addCommentModal" 
-								data-paymentid="<?php echo $payment['id'] ?>" data-paymentdate="<?php echo $payment_date ?>" 
-								data-paymentamt="<?php echo $payment['amount'] ?>" data-comment="<?php echo $payment['comment'] ?>" 
+								<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
 								>
 					Comment
 				</button>
 			</td>
 			<td>
 				<i data-toggle="modal" data-target="#addEditPaymentModal"
-						data-paymentid="<?php echo $payment['id'] ?>" data-paymentdate="<?php echo $payment_date ?>" 
-						data-paymentamt="<?php echo $payment['amount'] ?>" data-comment="<?php echo $payment['comment'] ?>"
+						<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
 						class="fas fa-pencil-alt edit-payment-btn"></i>
 			</td>
-			<?php if ($show_delete) { echo '<td><i class="fas fa-trash-alt"></i></td>'; } ?>
+			<td>
+				<i data-toggle="modal" data-target="#addEditPaymentModal"
+						<?php build_editable_payment_data_attrs($payment, $payment_date, true) ?>
+					class="fas fa-trash-alt"></i>
+			</td>
 		<?php
 	}
 	?>
@@ -74,4 +76,12 @@ function disp_payment_line($payment, $admin, $commission_val) {
 	<?php
 	$payment_line = ob_get_clean();
 	return $payment_line;
+}
+
+function build_editable_payment_data_attrs($payment, $payment_date, $delete_flag=false) {
+	?>
+		data-paymentid="<?php echo $payment['id'] ?>" data-paymentdate="<?php echo $payment_date ?>" 
+		data-paymentamt="<?php echo $payment['amount'] ?>" data-comment="<?php echo $payment['comment'] ?>"
+		data-deletemode="<?php echo $delete_flag ? 'true' : 'false' ?>"
+	<?php
 }

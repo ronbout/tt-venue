@@ -407,7 +407,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							<?php if ($admin) {	?>
 								<th scope="col">Comment</th>
 								<th scope="col">Edit</th>
-								<?php  if ($show_delete) {  echo '<th scope="col">Delete</th>'; } ?>
+								<th scope="col">Delete</th>
 								<?php
 							}
 							?>
@@ -446,11 +446,11 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 		</div>
 
 		<!-- Payment Modal -->
-		<div class="modal fade" id="addEditPaymentModal" tabindex="-1" role="dialog" aria-labelledby="addEditPaymentModalLabel" aria-hidden="true">
+		<div class="modal fade" id="addEditPaymentModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="addEditPaymentModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="addEditPaymentModalLabel"></h5>
+						<h4 class="modal-title" id="addEditPaymentModalLabel"></h4>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
@@ -474,19 +474,25 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 						</form>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-						<button type="submit" form="modal-payment-form" id="modal-payment-submit" class="btn btn-primary payment-save-btn">Save</button>
+						<div id="payment-modal-addedit">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+							<button type="submit" form="modal-payment-form" id="modal-payment-submit" class="btn btn-primary payment-save-btn">Save</button>
+						</div>
+						<div id="payment-modal-delete">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+							<button type="button" form="modal-payment-form" id="modal-payment-delete-btn" class="btn btn-danger payment-save-btn">Delete</button>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<!-- Comment Modal -->
-		<div class="modal fade" id="addCommentModal" tabindex="-1" role="dialog" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+		<div class="modal fade" id="addCommentModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="addCommentModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="addCommentModalLabel"><strong>Add / Edit Comment</strong></h5>
+						<h4 class="modal-title" id="addCommentModalLabel"><strong>Add / Edit Comment</strong></h4>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
