@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -584,10 +584,13 @@ body.campaign-manager {
 		font-family: "Roboto", sans-serif;
 	}
 
-	.fixed-table {
+	.table-fixed {
 		font-family: "Roboto", sans-serif;
 		font-size: 14px;
-		vertical-align: middle;
+		th,
+		td {
+			vertical-align: middle;
+		}
 	}
 
 	.table-fixed thead tr th {

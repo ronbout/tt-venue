@@ -11170,9 +11170,12 @@ body.campaign-manager .fa-times-circle {
 body.campaign-manager .camp_summary_table {
   font-family: "Roboto", sans-serif;
 }
-body.campaign-manager .fixed-table {
+body.campaign-manager .table-fixed {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
+}
+body.campaign-manager .table-fixed th,
+body.campaign-manager .table-fixed td {
   vertical-align: middle;
 }
 body.campaign-manager .table-fixed thead tr th {
