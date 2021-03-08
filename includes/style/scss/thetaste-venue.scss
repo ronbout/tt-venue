@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -128,54 +128,6 @@ h2.col-heading_profile {
 	font-weight: 700;
 	font-size: 36px;
 	color: black;
-}
-
-button#profile_btn {
-	background-color: #666666;
-	color: white;
-	border: none;
-	padding: 10px;
-	margin-left: 15px;
-	transition: all 0.5s ease;
-}
-
-button#profile_btn:hover {
-	transition: all 0.5s ease;
-	padding: 20px;
-	border-radius: 25px;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
-button#voucher_btn,
-#campaing_manager {
-	background-color: #999999;
-	border: none;
-	padding: 15px;
-	margin-top: -35px;
-	margin-left: 15px;
-	transition: all 0.5s ease;
-}
-
-button#campaing_manager1 {
-	background-color: #999999;
-	border: none;
-	padding: 15px;
-	transition: all 0.5s ease;
-}
-
-button#campaing_manager1:hover {
-	transition: all 0.5s ease;
-	padding: 20px;
-	border-radius: 15px;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
-button#voucher_btn:hover,
-#campaing_manager:hover {
-	transition: all 0.5s ease;
-	padding: 20px;
-	border-radius: 15px;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .pimage {
@@ -479,30 +431,11 @@ button#update_photo {
 	display: unset;
 }
 
-button#update_photo:hover {
-	transition: all 0.5s ease;
-	padding: 20px;
-	margin-top: 15px;
-	border-radius: 25px;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
 img.profile-photo__img {
 	width: 70%;
 	transition: all 0.5s ease;
 	border: 1px solid white;
 	padding: 15px;
-}
-
-div#profile_photo:hover {
-	background-color: #999999;
-	transition: all 0.5s ease;
-}
-
-div#profile_photo:hover .profile-photo__img {
-	border-radius: 15px;
-	transition: all 0.5s ease;
-	transform: scale(1.1);
 }
 
 div#profile_edit_form {
