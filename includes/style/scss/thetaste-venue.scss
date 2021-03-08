@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -286,6 +286,11 @@ button#voucher_btn:hover,
 }
 
 /* MODAL STYLES FOR AJAX SPINNER/MSG */
+#taste-msg-text {
+	font-size: 22px;
+	font-weigth: bold;
+}
+/*
 #taste-msg-box {
 	width: 30%;
 	margin: auto;
@@ -293,8 +298,7 @@ button#voucher_btn:hover,
 	top: 25%;
 	left: 35%;
 	height: 200px;
-	background-color: #eee;
-	color: #000;
+	color: #212529;
 	line-height: 1.625;
 	border: 2px solid black;
 	padding: 15px;
@@ -302,7 +306,7 @@ button#voucher_btn:hover,
 	display: none;
 }
 #taste-msg-box p {
-	color: #52a5d1;
+	color: #212529;
 	font-weight: bold;
 	font-size: 120%;
 }
@@ -321,7 +325,7 @@ button#voucher_btn:hover,
 	display: none;
 	z-index: 9999;
 }
-
+*/
 .portal-welcome {
 	margin-top: 15px;
 }

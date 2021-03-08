@@ -1,11 +1,12 @@
 jQuery(document).ready(function () {
 	tasteLoadButtons();
 	jQuery("#topbutton").length && tasteLoadScrollUp();
+	// jQuery("#spinner-modal").modal("show");
 });
 
 const tasteLoadVouchers = (prodId, multiplier) => {
 	let modalMsg = "Loading Vouchers...";
-	tasteDispMsg("<br><br>" + modalMsg, false);
+	tasteDispMsg(modalMsg);
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
 		type: "POST",
@@ -34,7 +35,7 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 	let modalMsg = redeemFlg
 		? "Redeeming Voucher(s)..."
 		: "Un Redeeming Voucher...";
-	tasteDispMsg("<br><br>" + modalMsg, false);
+	tasteDispMsg(modalMsg);
 	// get info from hidden inputs to pass up for re-calc
 	let productInfo = tasteGetProductInfo();
 	let productId = productInfo.product_id;
@@ -96,7 +97,7 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 	// jQuery("#addCommentModal").modal("hide");
 	$modal.modal("hide");
 	let modalMsg = deleteMode ? "Deleting Payment..." : "Updating Payment...";
-	tasteDispMsg("<br><br>" + modalMsg, false);
+	tasteDispMsg(modalMsg);
 	// get info from hidden inputs to pass up for re-calc
 	let productInfo = tasteGetProductInfo();
 	let productId = productInfo.product_id;
@@ -488,26 +489,28 @@ const tasteScrollToVouchers = () => {
  * @param {boolean} closeBtn  whether to display the Close button
  * @returns {void}
  */
-function tasteDispMsg(msg, closeBtn) {
+function tasteDispMsg(msg) {
 	// create own modal popup window
 	// closeBtn is true if normal msg box..
 	// false is for ajax temp disp
 
+	/*
 	if (closeBtn) {
 		jQuery("#taste-msg-close").show();
 	} else {
 		jQuery("#taste-msg-close").hide();
 	}
+	*/
 
 	jQuery("#taste-msg-text").html(msg);
-	jQuery("#taste-msg-box").show();
-	jQuery("#taste-modal-layer").show();
+	jQuery("#spinner-modal").modal("show");
+	// jQuery("#taste-modal-layer").show();
 }
 /**
  * Closes the Modal msg box
  * @returns {void}
  */
 function tasteCloseMsg() {
-	jQuery("#taste-modal-layer").hide();
-	jQuery("#taste-msg-box").hide();
+	// jQuery("#taste-modal-layer").hide();
+	jQuery("#spinner-modal").modal("hide");
 }

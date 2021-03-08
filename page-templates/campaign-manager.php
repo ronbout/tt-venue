@@ -199,14 +199,28 @@ if ($admin) {
 
 		</div>
 	</main>
+
+<div id="spinner-modal" class="modal fade" data-backdrop="static" tabindex="-1"
+	aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body d-flex flex-column justify-content-center align-content-center">
+				<p class="py-5 px-3 text-center" id="taste-msg-text">Some sample text</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
 	<div id="taste-modal-layer">
-		<div id="taste-msg-box" class="modalContainer">
+		<div id="taste-msg-box" class="modalContainer modal">
 			<div>
 				<p id="taste-msg-text">Some sample text</p>
 				<div id="taste-msg-close" class="btn btn-close">Close</div>
 			</div>
-		</div><!-- taste-msg-box -->
-	</div><!-- taste-modal-layer -->
+		</div>
+	</div> 
+	-->
 	<footer>
 	<a href="#" id="topbutton">
 		<i class="fas fa-angle-up"></i>

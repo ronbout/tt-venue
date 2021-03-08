@@ -10890,43 +10890,47 @@ button#voucher_btn:hover,
 }
 
 /* MODAL STYLES FOR AJAX SPINNER/MSG */
-#taste-msg-box {
-  width: 30%;
-  margin: auto;
-  position: fixed;
-  top: 25%;
-  left: 35%;
-  height: 200px;
-  background-color: #eee;
-  color: #000;
-  line-height: 1.625;
-  border: 2px solid black;
-  padding: 15px;
-  text-align: center;
-  display: none;
+#taste-msg-text {
+  font-size: 22px;
+  font-weigth: bold;
 }
 
+/*
+#taste-msg-box {
+	width: 30%;
+	margin: auto;
+	position: fixed;
+	top: 25%;
+	left: 35%;
+	height: 200px;
+	color: #212529;
+	line-height: 1.625;
+	border: 2px solid black;
+	padding: 15px;
+	text-align: center;
+	display: none;
+}
 #taste-msg-box p {
-  color: #52a5d1;
-  font-weight: bold;
-  font-size: 120%;
+	color: #212529;
+	font-weight: bold;
+	font-size: 120%;
 }
 
 #taste-msg-text {
-  margin-bottom: 50px;
+	margin-bottom: 50px;
 }
 
 #taste-modal-layer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: none;
-  z-index: 9999;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+	display: none;
+	z-index: 9999;
 }
-
+*/
 .portal-welcome {
   margin-top: 15px;
 }
