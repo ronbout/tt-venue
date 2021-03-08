@@ -199,7 +199,7 @@ if ($admin) {
 		</div>
 	</main>
 
-<div id="spinner-modal" class="modal fade" data-backdrop="static" tabindex="-1"
+<div id="spinner-modal" class="modal" data-backdrop="static" tabindex="-1"
 	aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
