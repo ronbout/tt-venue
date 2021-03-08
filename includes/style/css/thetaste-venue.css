@@ -10892,7 +10892,7 @@ button#voucher_btn:hover,
 /* MODAL STYLES FOR AJAX SPINNER/MSG */
 #taste-msg-text {
   font-size: 22px;
-  font-weigth: bold;
+  font-weight: bold;
 }
 
 /*
@@ -11214,8 +11214,8 @@ body.campaign-manager .fa-coins,
 body.campaign-manager .fa-money-bill-alt {
   font-size: 22px;
 }
-body.campaign-manager .active,
-body.campaign-manager .expired,
+body.campaign-manager .active-prod,
+body.campaign-manager .expired-prod,
 body.campaign-manager .served,
 body.campaign-manager .notserved {
   font-weight: bold;
@@ -11224,18 +11224,15 @@ body.campaign-manager .fa-check-circle,
 body.campaign-manager .fa-times-circle {
   font-size: 20px;
 }
-body.campaign-manager .active,
+body.campaign-manager .active-prod,
 body.campaign-manager .served,
 body.campaign-manager .fa-check-circle {
   color: #44c4a1;
 }
-body.campaign-manager .expired,
+body.campaign-manager .expired-prod,
 body.campaign-manager .notserved,
 body.campaign-manager .fa-times-circle {
   color: #f44336;
-}
-body.campaign-manager td.active {
-  font-family: "Roboto", sans-serif;
 }
 body.campaign-manager .camp_summary_table {
   font-family: "Roboto", sans-serif;

@@ -65,10 +65,9 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page) {
 			'active' => 'venue-profile-page' === $pagename
 		),
 		array(
-			'title' => '<i class="fas fa-sign-out-alt"></i>',
+			'title' => 'Log Out',
 			'url' => wp_logout_url(get_site_url(null, '/venue-portal')),
-			'active' => false,
-			'attrs' => ' data-toggle="tooltip" data-placement="left" title="Logout" id="logout" '
+			'active' => false
 		),
 	);
 	return $links;

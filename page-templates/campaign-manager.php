@@ -33,10 +33,9 @@ $venue_id = '';
 if ($admin) {
 	$nav_links = array(
 		array(
-			'title' => '<i class="fas fa-sign-out-alt"></i>',
+			'title' => 'Log Out',
 			'url' => wp_logout_url(get_site_url()),
-			'active' => false,
-			'attrs' => ' data-toggle="tooltip" data-placement="left" title="Logout" id="logout" '
+			'active' => false
 		),
 	);
 	// check if the Venue ID is in POST from form 
@@ -458,11 +457,11 @@ function display_table_totals($venue_totals) {
 function display_product_row($id, $title, $status, $revenue, $num_served, $commission, 
 														 $vat, $net_payable, $balance_due, $multiplier) {
 	$status_display = 'Active' === $status ?
-			'<td class="active text-center">
+			'<td class="active-prod text-center">
 				<i class="fas fa-check-circle"></i><br/>
 				Active
 			</td>' :
-				'<td class="expired text-center">
+				'<td class="expired-prod text-center">
 				<i class="fas fa-times-circle"></i><br/>
 				Expired
 			</td>

@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -288,7 +288,7 @@ button#voucher_btn:hover,
 /* MODAL STYLES FOR AJAX SPINNER/MSG */
 #taste-msg-text {
 	font-size: 22px;
-	font-weigth: bold;
+	font-weight: bold;
 }
 /*
 #taste-msg-box {
@@ -623,8 +623,8 @@ body.campaign-manager {
 		font-size: 22px;
 	}
 
-	.active,
-	.expired,
+	.active-prod,
+	.expired-prod,
 	.served,
 	.notserved {
 		font-weight: bold;
@@ -635,20 +635,16 @@ body.campaign-manager {
 		font-size: 20px;
 	}
 
-	.active,
+	.active-prod,
 	.served,
 	.fa-check-circle {
 		color: #44c4a1;
 	}
 
-	.expired,
+	.expired-prod,
 	.notserved,
 	.fa-times-circle {
 		color: #f44336;
-	}
-
-	td.active {
-		font-family: "Roboto", sans-serif;
 	}
 
 	.camp_summary_table {
