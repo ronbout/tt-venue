@@ -292,6 +292,7 @@ const tasteLoadVoucherPaymentButtons = () => {
 			});
 
 	tasteLoadInvoiceButtons();
+	tasteLoadCollapseIcons();
 	tasteLoadPaymentCommentModal();
 	tasteLoadPaymentAddEditModal();
 };
@@ -326,6 +327,24 @@ const tasteLoadInvoiceButtons = () => {
 			});
 
 	tasteSortPaymentTable();
+};
+
+const tasteLoadCollapseIcons = () => {
+	jQuery(".collapse")
+		.off("shown.bs.collapse")
+		.on("shown.bs.collapse", function (e) {
+			const collapseId = jQuery(this).attr("id");
+			const $collapseIcon = jQuery("i[data-target='#" + collapseId + "']");
+			$collapseIcon.removeClass("fa-plus-circle").addClass("fa-minus-circle");
+		});
+
+	jQuery(".collapse")
+		.off("hidden.bs.collapse")
+		.on("hidden.bs.collapse", function (e) {
+			const collapseId = jQuery(this).attr("id");
+			const $collapseIcon = jQuery("i[data-target='#" + collapseId + "']");
+			$collapseIcon.removeClass("fa-minus-circle").addClass("fa-plus-circle");
+		});
 };
 
 const tasteLoadPaymentCommentModal = () => {

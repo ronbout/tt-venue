@@ -90,17 +90,77 @@ function display_voucher_table($product_id, $multiplier) {
 	}
 
 	display_campaign_header($expired_val, $product_id, $product_title);
-	// $payable is calc'd inside the table but needs to come out to be used in the payments table
-	$order_totals = display_orders_table($order_rows, $expired_val, $product_price, $vat_val, $commission_val );
-	$payable = $order_totals['payable'];
-	$redeem_qty = $order_totals['redeem_qty'];
-	$total_sold = $order_totals['total_sold'];
-	$commission = $order_totals['commission'];
-	$vat = $order_totals['vat'];
-	
-	display_terms($termsandconditions);
 
-	$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info);
+	?>
+	<!-- CAMPAIGN SUMMARY START -->
+
+	<div class="campaign_summary mt-5">
+		<h3 class="text-center">Campaign Summary</h3>
+		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
+				<i 
+				data-toggle="collapse" 
+				data-target="#campaign_summary_collapse" 
+				aria-expanded="true" 
+				aria-controls="campaign_summary_collapse" 
+				class="collapse-icon fas fa-minus-circle"></i>
+		</span>
+		<h4>
+			<?php 
+				$row_count = count($order_rows);
+				if ($row_count)  {
+					echo "Orders ($row_count Rows)";
+				} else {
+					echo "No Orders Found";
+				}
+			?>				
+		</h4>
+		<div class="collapse show" id="campaign_summary_collapse">
+			<?php 
+			// $payable is calc'd inside the table but needs to come out to be used in the payments table
+			$order_totals = display_orders_table($order_rows, $expired_val, $product_price, $vat_val, $commission_val );
+			$payable = $order_totals['payable'];
+			$redeem_qty = $order_totals['redeem_qty'];
+			$total_sold = $order_totals['total_sold'];
+			$commission = $order_totals['commission'];
+			$vat = $order_totals['vat'];
+			
+			display_terms($termsandconditions);
+			?>
+		</div>
+	</div>
+	<!-- CAMPAIGN SUMMARY END -->
+
+	<?php 
+	$payment_list = $wpdb->get_results($wpdb->prepare("
+				SELECT  id, timestamp, pid, amount, comment
+				FROM {$wpdb->prefix}offer_payments 
+				WHERE pid = %d
+				ORDER BY timestamp ASC ", $product_id), ARRAY_A);
+	?>
+	<div class="payment_transaction mt-5">
+		<h3 class="text-center">Payment Transactions</h3>
+		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
+			<i 
+				data-toggle="collapse" 
+				data-target="#payment_transaction_collapse" 
+				aria-expanded="true" 
+				aria-controls="payment_transaction_collapse" 
+				class="collapse-icon fas fa-minus-circle"></i>
+		</span>
+		<h4>
+			<?php 
+				$row_count = count($payment_list);
+				if ($row_count)  {
+					echo "Payment Items ($row_count Rows)";
+				} else {
+					echo "No Payments Found";
+				}
+			?>				
+		</h4>
+		<div class="collapse show" id="payment_transaction_collapse">
+
+	<?php
+		$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list);
 	?>
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
@@ -117,32 +177,59 @@ function display_voucher_table($product_id, $multiplier) {
 }
 
 function display_campaign_header($expired_val, $product_id, $product_title) {
+	$status_display = ('N' === $expired_val) ?
+		'<i class="fas fa-check-circle ml-2"></i><span class="ml-3 text-danger">Expired</span>' :
+		'<i class="fas fa-times-circle ml-2"></i><span class="ml-3 text-danger">Expired</span>';
 	?>
-	<div class="row">
-		<div class="col-md-12">
-			<p class="pimage">
-			<b>Revenue Campaign : <u><?php echo $product_id ?></u> : </b><?php echo $product_title ?></p>
-
-			<b>Campaign Status : </b><?php echo ('N' === $expired_val) ? 'Active' : 'Expired' ?>
-			<hr>
-			<br>
-			<b>Please Note : </b> This management console has 3 unique rules, the first is all payments due to venues are for served customers only, by law TheTaste must be able to complete refunds direct to customers who have not been served. The second change you will notice is as a result of the recent GDPR laws meaning we can only disclose the email addresses of the customers you have served. The final change is due to National Consumer Law meaning we have to allow 14 days after the campaign validity has expired to issue payments.
-			<br><br>
-			<b>Important : </b> By clicking the Redeem button below you are confirming you have fully served that customer and the customer will receive an automatic email thanking them and asking them to share their experience feedback with us. Fraudulently Redeeming Vouchers will expose details of customers below and break GDPR Laws.
-			<br><br>
-			<b style="color:red;">You must retain all paper vouchers for this campaign!</b>
-			<br><br>
-			<b style="color:red;">Fraudulently Redeeming Vouchers will result in a full paper audit of this campaign and Put Your Payment On Hold!</b>
-			<br><br>
-			<hr>
-			<b>Campaign VAT Statement</b><br>
-			Digital Food Ltd T/A TheTaste.ie<br>
-			5 Main Street, Rathangan, Co. Kildare<br>
-			Company No 548735<br>
-			VAT No 3312776JH<br>
-			<br>
+	<!-- REVENUE CAMPAIGN DETAILS START -->
+	<div class="revenue_camapaign_details">
+		<div class="row">
+				<div class="col-md-4 revenue_campaign_info ml-xs-3 ml-s-0 cols">
+						<h3>Revenue Campaign : <?php echo $product_id ?></h3>
+						<p class="campaign_details"><?php echo $product_title ?></p>
+						<br/>
+						<p class="status">Status: <?php echo $status_display ?></p>
+				</div>
+				<div class="col-md ml-3 please_note cols">
+						<h3>Please Note :</h3>
+						<p>
+								This management console has 3 unique rules, the first is all payments due to venues
+								are for served customers only, by law TheTaste must be able to complete refunds 
+								direct to customers who have not been served. The second change you will notice is 
+								as a result of the recent GDPR laws meaning we can only disclose the email addresses 
+								of the customers you have served. The final change is due to National Consumer Law
+								meaning we have to allow 14 days after the campaign validity has expired
+								to issue payments.
+						</p>
+				</div>
+		</div>
+		<div class="row mt-3">
+				<div class="col-md please_note ml-xs-3 ml-s-0 cols">
+						<h3>Important :</h3>
+						<p>
+								By clicking the Redeem button below you are confirming you have fully served that customer and the 
+								customer will receive an automatic email thanking them and asking them to share their experience 
+								feedback with us. Fraudulently Redeeming Vouchers will expose details of customers 
+								below and break GDPR Laws.
+						</p>
+						<p class="text-danger font-weight-bold">You must retain all paper vouchers for this campaign!</p>
+						<p class="text-danger font-weight-bold">
+								Fraudulently Redeeming Vouchers will result in a full paper 
+								audit of this campaign and Put Your Payment On Hold!
+						</p>
+				</div>
+				<div class="col-md-4 ml-3 revenue_campaign_info cols">
+						<h3>Campaign VAT Statement :</h3>
+						<p class="campaign_details">
+								Digital Food Ltd T/A TheTaste.ie<br/><br/>
+								5 Main Street, Rathangan, Co. Kildare<br/><br/>
+								Company No 548735<br/><br/>
+								VAT No 3312776JH<br/><br/>
+						</p>
+				</div>
 		</div>
 	</div>
+<!-- REVENUE CAMPAIGN DETAILS END -->
 	<?php
 }
 
@@ -151,15 +238,9 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	$total_sold = 0;
 	$redeem_qty = 0;
 	$tproduct = 0;
-	?>
-	<div class="panel panel-default">
-		<div class="panel-heading"><h2 style="text-align: center">CAMPAIGN SUMMARY</h2></div>
-		<div class="panel-body">
-			<?php
-			if (count($order_rows)) {
+	if (count($order_rows)) {
 				?>
-				<h3>Orders (<?php echo number_format(count($order_rows)) ?> Rows)</h3>
-				<button class="btn btn-success order-redeem-checked-btn" disabled >Redeem Checked</button>
+				<button class="btn btn-success order-redeem-checked-btn my-2" disabled >Redeem Checked</button>
 				<div id="voucher-table-container" class="table-fixed-container">
 					<table class="table table-striped table-bordered table-fixed">
 						<?php display_order_table_heading($order_rows, $expired_val) ?>
@@ -185,14 +266,11 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 				$commission = $totals['commission'];
 				$vat = $totals['vat'];
 			} else  {
-				echo "<h2> *** No Orders Found ***</h2>";
 				$payable = 0;
 				$commission = 0;
 				$vat = 0;
 			}
 			?>
-		</div>
-	</div>
 	<?php
 	// have to return some of th totals calulated 
 	$order_totals = array (
@@ -209,7 +287,7 @@ function display_order_table_heading($order_rows, $expired_val) {
 	// just the table headers
 	?>
 		<thead>
-			<th>
+			<th scope="col">
 				<?php 
 					if ($expired_val === 'N' && in_array('0', array_column($order_rows, 'downloaded'))) {
 						?>
@@ -220,11 +298,11 @@ function display_order_table_heading($order_rows, $expired_val) {
 					}
 				?>
 			</th>
-			<th>Order ID</th>
-			<th>Customer Name</th>
-			<th>Customer Email</th>
-			<th>Quantity</th>
-			<th>Action</th>
+			<th scope="col">Order ID</th>
+			<th scope="col">Customer Name</th>
+			<th scope="col">Customer Email</th>
+			<th scope="col">Quantity</th>
+			<th scope="col">Action</th>
 		</thead>
 	<?php
 }
@@ -236,7 +314,7 @@ function display_order_table_row($order_item_info, $expired_val) {
 			data-order-qty="<?php echo $order_item_info->quan ?>" 
 			data-order-item-id="<?php echo $order_item_info->itemid ?>"
 	>
-		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>">
+		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center">
 			<?php 
 				if ($order_item_info->downloaded === '0' && $expired_val === 'N') {
 					?>
@@ -261,21 +339,27 @@ function display_order_table_row($order_item_info, $expired_val) {
 					}
 				?>
 
-		<td><?php echo $order_item_info->quan ?> </td>
-		<td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>" class="text-center">
+		<td class="table-nbr"><?php echo $order_item_info->quan ?> </td>
+		<td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>" >
 				<?php
 				if ($order_item_info->downloaded == '0') {
 						if ($expired_val == 'N') {
 							echo '<button	class="btn btn-success order-redeem-btn">Redeem</button>';
 						}
 						else {
-								echo 'Not Served / Expired';
+							echo '<span class="notserved">
+											<i class="fas fa-times-circle"></i>
+											Not Served / Expired
+										</span>';
 						}
 				}	else {
 					if ($expired_val == 'N') {
 						echo '<button	class="btn btn-info order-unredeem-btn">Unredeem</button>';
 					} else {
-						echo '<b>Served</b>';
+						echo '<span class="served">
+										<i class="fas fa-check-circle"></i>
+										Voucher Served
+									</span>';
 					}
 					$redeem_qty = $redeem_qty + $order_item_info->quan;
 				}
@@ -296,59 +380,69 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 	$payable = $grevenue - ($commission + $vat);
 	$payable = round($payable, 2);
 	?>
-		<table id="voucher-summary-table" class="table table-striped table-bordered">
-			<tbody>
-				<tr>
-						<td></td>
-						<td></td>
-				</tr>
-				<tr>
-						<td class="voucher-summary-header"><b>Gross Revenue</b></td>
+            
+	<div class="row mx-0">
+		<div class="col-md ml-xs-3 ml-s-0 my-2 my-2 p-4 cols">
+				<h3 class="numbers">
+					<span id="redeem-qty-display"><?php echo $redeem_qty ?></span>
+				<h3>
+				<p class="titles">Out of possible 
+					<span id="total-sold-display"><?php echo $total_sold ?></span>
+				</p>
+				<div class="eclipse_icon_bg users_icon">
+						<i class="fas fa-users"></i>
+				</div>
+		</div>
+		<div class="col-md ml-3 my-2 p-4 cols">
+				<h3 class="numbers">
+					<span id="grevenue-display">
+						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($grevenue, 2)  ?>
+					</span>
+				<h3>
+				<p class="titles">Gross Revenue</p>
+				<div class="eclipse_icon_bg money_bill_icon">
+						<i class="far fa-money-bill-alt"></i>
+				</div>
+		</div>
+	</div>
+		
+	<div class="row mx-0">
+		<div class="col-md ml-xs-3 ml-s-0 my-2 p-4 cols">
+			<h3 class="numbers">
+				<span id="commission-display">
+					<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($commission, 2)  ?>
+				</span>
+			<h3>
+			<p class="titles">Commission</p>
+			<div class="eclipse_icon_bg coins_icon">
+					<i class="fas fa-coins"></i>
+			</div>
+		</div>
+		<div class="col-md ml-3 my-2 p-4 cols">
+				<h3 class="numbers">
+					<span id="vat-display">
+						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($vat, 2)  ?>
+					</span>
+				<h3>
+				<p class="titles">VAT</p>
+				<div class="eclipse_icon_bg balance_scale_icon">
+						<i class="fas fa-balance-scale"></i>
+				</div>
+		</div>
+		<div class="col-md ml-3 my-2 p-4 cols">
+				<h3 class="numbers">
+					<span id="payable-display">
+						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
+					</span>
+				<h3>
+				<p class="titles">Net Payable</p>
+				<div class="eclipse_icon_bg cash_register_icon">
+						<i class="fas fa-cash-register"></i>
+				</div>
+		</div>
+	</div>
 
-						<td class="voucher-summary-data">
-							<b>
-							<span id="grevenue-display">
-								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($grevenue, 2)  ?>
-							</span>
-							</b>
-						</td>
-				</tr>
-				<tr>
-						<td class="voucher-summary-header">Commission</td>
-						<td class="voucher-summary-data">
-							<span id="commission-display">
-								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($commission, 2)  ?>
-							</span>
-						</td>
-				</tr>
-				<tr>
-						<td class="voucher-summary-header">Vat</td>
-						<td class="voucher-summary-data">
-							<span id="vat-display">
-								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($vat, 2)  ?>
-							</span>
-						</td>
-				</tr>
-				<tr>
-						<td class="voucher-summary-header"><b>Net Payable </b></td>
-						<td class="voucher-summary-data">
-							<b>
-							<span id="payable-display">
-								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
-							</span>
-							</b>
-						</td>
-				</tr>
-				<tr>
-						<td class="voucher-summary-header"><b>Redeemed</b></td>
-						<td class="voucher-summary-data">Served 
-							<span id="redeem-qty-display"><?php echo $redeem_qty ?></span> customers <br> out of a possible <span id="total-sold-display"><?php echo $total_sold ?>
-							</span>
-						</td>
-				</tr>
-			</tbody>
-		</table>
-		<?php
+	<?php
 		$totals = array(
 			'payable' => $payable,
 			'commission' => $commission,
@@ -359,36 +453,23 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 
 function display_terms($termsandconditions) {
 	?>
-	<p class="pimage">
-	<b>Campaign Terms & Conditions</b> (printed on each voucher)</p>
+	<div class="revenue_camapaign_details mt-5">
+		<div class="revenue_campaign_info p-4 cols">
+			<h3 class="terms">Campaign Terms & Conditions</h3>
+			<p class="text-secondary">(printed on each voucher)</p>
+			<?php	echo stripslashes($termsandconditions) ?>
+		</div>
+	</div>
 	<?php
-	echo stripslashes($termsandconditions);
 }
 
-function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info) {
+function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list) {
 	global $wpdb;
 
-	$paymentList = $wpdb->get_results($wpdb->prepare("
-				SELECT  id, timestamp, pid, amount, comment
-				FROM {$wpdb->prefix}offer_payments 
-				WHERE pid = %d
-				ORDER BY timestamp ASC ", $product_id), ARRAY_A);
-
 	$total_paid_to_customer = 0;
-
-	$show_delete = false;
-
 	?>
-	<br><br>
-	<div class="panel panel-default">			
-		<div class="panel-heading"><h2 style="text-align: center">Payment Transactions </h2></div>
-		<div class="panel-body">
-			<div class="table-title-action">
-				<div><h3>Payment Items (<?php echo count($paymentList) ?> Rows)</h3></div>
-				<div>&nbsp;</div>
-			</div>
 			<div id="payment-table-container" class="table-fixed-container">		
-				<table id="audit-payment-table" class="table table-striped table-bordered text-center"
+				<table id="audit-payment-table" class="table table-striped table-bordered table-fixed"
 					<?php
 							// need data for invoice button
 							$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
@@ -416,7 +497,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 					<tbody id="payment-lines">
 						<?php
 						$ln = 1;
-						foreach($paymentList as $payment){ 
+						foreach($payment_list as $payment){ 
 							// disp_payment_line is in ajax/functions.php
 							echo disp_payment_line($payment, $admin, $commission_val);
 							$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
@@ -425,25 +506,22 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 						?>
 					</tbody>
 				</table>
-				<?php if ($admin) {
-					?>
+			</div>
+			<?php if ($admin) {
+				?>
 					<!--  ADD NEW PAYMENT MODAL TRIGGER  -->
-					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEditPaymentModal"
+					<button type="button" class="btn btn-primary mt-2" data-toggle="modal" data-target="#addEditPaymentModal"
 						data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment=""
 						>
-						<i class="fas fa-plus-circle"></i> Add new payment
+						<i class="fa fa-plus-circle"></i> &nbsp; Add new payment
 					</button>
 					<?php
 				}
 				?>
 
+			<div class="text-center my-3">
+				<h3>Balance Due : <span id="balance-due-display"> <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable - $total_paid_to_customer, 2) ?></span></h3>
 			</div>
-			<br>
-			<div class="text-center">
-				<b>Balance Due : <span id="balance-due-display"> <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable - $total_paid_to_customer, 2) ?></span></b>
-			</div>
-			<br>
-		</div>
 
 		<!-- Payment Modal -->
 		<div class="modal fade" id="addEditPaymentModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="addEditPaymentModalLabel" aria-hidden="true">

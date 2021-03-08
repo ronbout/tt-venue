@@ -10816,7 +10816,6 @@ button#voucher_btn:hover,
   border: 1px solid lightgray;
 }
 
-.order-redeem-checked-btn,
 .product-view-checked-btn {
   margin: 10px 0;
 }
@@ -10853,19 +10852,16 @@ button#voucher_btn:hover,
   z-index: 2;
 }
 
+.table-fixed-container tfoot th {
+  background-color: #eee;
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+
 .table-total-label {
   text-align: center;
   font-weight: bold;
-}
-
-#voucher-summary-table .voucher-summary-header {
-  text-align: right;
-  padding-left: 400px;
-  padding-right: 80px;
-}
-
-#voucher-summary-table .voucher-summary-data {
-  padding-left: 80px;
 }
 
 .order-redeem-btn,
@@ -11136,84 +11132,238 @@ div#profile_edit_form {
   }
 }
 /* the following are temporary changes to make the old bs3 pages look the same on bs4.5 */
-body.orig-bs3 {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  line-height: 1.42857143;
+body.campaign-manager {
+  /* icon circle background */
+  /* icons */
 }
-body.orig-bs3 nav {
-  font-family: "Segoe UI", "Open Sans", sans-serif;
-  font-size: 16px;
+body.campaign-manager div.headings {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
 }
-body.orig-bs3 h1,
-body.orig-bs3 .h1,
-body.orig-bs3 h2,
-body.orig-bs3 .h2,
-body.orig-bs3 h3,
-body.orig-bs3 .h3 {
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-body.orig-bs3 h4,
-body.orig-bs3 .h4,
-body.orig-bs3 h5,
-body.orig-bs3 .h5,
-body.orig-bs3 h6,
-body.orig-bs3 .h6 {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-body.orig-bs3 h1,
-body.orig-bs3 .h1 {
-  font-size: 36px;
-}
-body.orig-bs3 h2,
-body.orig-bs3 .h2 {
+body.campaign-manager h1.overview_heading {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
   font-size: 30px;
 }
-body.orig-bs3 h3,
-body.orig-bs3 .h3 {
-  font-size: 24px;
+body.campaign-manager h2.businness_name {
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: 25px;
 }
-body.orig-bs3 h4,
-body.orig-bs3 .h4 {
-  font-size: 18px;
+body.campaign-manager div.cols {
+  background-color: #f1f1f1;
+  border-radius: 1rem;
+  transition: all 0.5s ease;
 }
-body.orig-bs3 h5,
-body.orig-bs3 .h5 {
+body.campaign-manager div.cols:hover {
+  background-color: #cecece;
+  transition: all 0.5s ease;
+}
+body.campaign-manager h3.numbers {
+  font-family: "Roboto", sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  margin-bottom: 2.5rem;
+}
+body.campaign-manager p.titles {
+  position: absolute;
+  bottom: 0;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  color: #656565;
+}
+body.campaign-manager .eclipse_icon_bg {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+body.campaign-manager .ticket_icon {
+  background-color: #ffd600;
+}
+body.campaign-manager .users_icon {
+  background-color: #00e0ff;
+}
+body.campaign-manager .money_bill_icon {
+  background-color: #52ff00;
+}
+body.campaign-manager .cash_register_icon {
+  background-color: #d8a7ff;
+}
+body.campaign-manager .coins_icon {
+  background-color: #ff7878;
+}
+body.campaign-manager .balance_scale_icon {
+  background-color: #ffaf82;
+}
+body.campaign-manager .fa-ticket-alt,
+body.campaign-manager .fa-users,
+body.campaign-manager .fa-balance-scale,
+body.campaign-manager .fa-cash-register,
+body.campaign-manager .fa-coins,
+body.campaign-manager .fa-money-bill-alt {
+  font-size: 22px;
+}
+body.campaign-manager .active,
+body.campaign-manager .expired,
+body.campaign-manager .served,
+body.campaign-manager .notserved {
+  font-weight: bold;
+}
+body.campaign-manager .fa-check-circle,
+body.campaign-manager .fa-times-circle {
+  font-size: 20px;
+}
+body.campaign-manager .active,
+body.campaign-manager .served,
+body.campaign-manager .fa-check-circle {
+  color: #44c4a1;
+}
+body.campaign-manager .expired,
+body.campaign-manager .notserved,
+body.campaign-manager .fa-times-circle {
+  color: #f44336;
+}
+body.campaign-manager td.active {
+  font-family: "Roboto", sans-serif;
+}
+body.campaign-manager .camp_summary_table {
+  font-family: "Roboto", sans-serif;
+}
+body.campaign-manager .fixed-table {
+  font-family: "Roboto", sans-serif;
   font-size: 14px;
+  vertical-align: middle;
 }
-body.orig-bs3 h6,
-body.orig-bs3 .h6 {
-  font-size: 12px;
+body.campaign-manager .table-fixed thead tr th {
+  text-align: center;
 }
-body.orig-bs3 p {
-  margin: 0 0 10px;
+body.campaign-manager button.view_offer .fa-eye {
+  font-size: 20px;
 }
-body.orig-bs3 .table > thead > tr > th,
-body.orig-bs3 .table > tbody > tr > th,
-body.orig-bs3 .table > tfoot > tr > th,
-body.orig-bs3 .table > thead > tr > td,
-body.orig-bs3 .table > tbody > tr > td,
-body.orig-bs3 .table > tfoot > tr > td {
-  padding: 8px;
-  line-height: 1.42857143;
-  vertical-align: top;
-  border-top: 1px solid #ddd;
+body.campaign-manager button.view_offer {
+  background-color: unset;
+  border: none;
+  color: #4dcfe0;
+  font-weight: bold;
 }
-body.orig-bs3 .table > thead > tr > th {
-  vertical-align: bottom;
-  border-bottom: 2px solid #ddd;
+body.campaign-manager button.view_offer:hover {
+  background-color: unset;
+  color: #4dcfe0;
 }
-body.orig-bs3 .btn {
-  font-size: 14px;
+body.campaign-manager button.view_offer:focus {
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
-body.orig-bs3 .print-invoice-btn {
-  padding: 3px 6px;
+body.campaign-manager .view_offer:not(:disabled):not(.disabled):active {
+  background-color: unset;
+  border-color: unset;
+  color: #4dcfe0;
+  outline: none;
 }
-body.orig-bs3 #audit-payment-table i {
-  font-size: 18px;
+body.campaign-manager .revenue_campaign_info,
+body.campaign-manager .please_note {
+  border-radius: 10px;
+  background-color: #f1f1f1;
+  padding: 1.5rem;
+}
+body.campaign-manager .revenue_campaign_info h3,
+body.campaign-manager .please_note h3 {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 2rem;
+}
+body.campaign-manager .revenue_campaign_info .campaign_details,
+body.campaign-manager .please_note p {
+  font-size: 15px;
+  font-weight: 400;
+  font-family: "Roboto", sans-serif;
+}
+body.campaign-manager .campaign_summary {
+  position: relative;
+}
+body.campaign-manager .circle-span {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+body.campaign-manager .collapse-icon {
+  color: #44c4a1;
+  font-size: 25px;
+  position: absolute;
+  right: 0;
+  top: 0;
   cursor: pointer;
+}
+body.campaign-manager h3.terms {
+  margin-bottom: 0.5rem !important;
+}
+body.campaign-manager .first_terms {
+  margin-left: 1rem;
+}
+body.campaign-manager ul.term_and_cond li {
+  list-style: square;
+  font-size: 13px;
+}
+body.campaign-manager .payment_transaction {
+  position: relative;
+}
+body.campaign-manager .payment_transaction .collapse-icon {
+  color: #44c4a1;
+  font-size: 25px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+}
+body.campaign-manager .payment_table thead tr th {
+  vertical-align: middle;
+}
+body.campaign-manager .payment_table tbody tr td {
+  vertical-align: middle;
+}
+body.campaign-manager .fa-trash-alt,
+body.campaign-manager .fa-pencil-alt,
+body.campaign-manager .fa-long-arrow-alt-down,
+body.campaign-manager .fa-file-pdf {
+  font-size: 20px;
+  cursor: pointer;
+}
+body.campaign-manager .add_comment_payment {
+  background-color: unset;
+  color: #44c4a1;
+  font-weight: 700;
+  border: none;
+}
+body.campaign-manager .add_comment_payment:hover {
+  background-color: unset;
+  color: teal;
+}
+body.campaign-manager .add_comment_payment:not(:disabled):not(.disabled):active {
+  background-color: unset;
+  border-color: unset;
+  color: teal;
+  outline: none;
+}
+body.campaign-manager .table-fixed {
+  margin-bottom: 0;
+}
+body.campaign-manager .table > thead > tr > th,
+body.campaign-manager .table > tbody > tr > th,
+body.campaign-manager .table > tfoot > tr > th,
+body.campaign-manager .table > thead > tr > td,
+body.campaign-manager .table > tbody > tr > td,
+body.campaign-manager .table > tfoot > tr > td {
+  padding: 10px;
+  line-height: 1.42857143;
 }
 
 /*# sourceMappingURL=thetaste-venue.css.map */
