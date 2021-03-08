@@ -43,7 +43,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		$where_format = array('%d');
 		$rows_affected = $wpdb->update($table, $data, $where, $format, $where_format);
 
-		$payment_diff = $payment_amount;
+		$payment_diff = $payment_amount  - $payment_orig_amount;
 	} else {
 		$edit_mode = 'add';
 
@@ -51,7 +51,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		$payment_id = $wpdb->insert_id;
 		
 		$payment_info['id'] = $payment_id;
-		$payment_diff = $payment_amount - $payment_orig_amount;
+		$payment_diff = $payment_amount;
 	}
 
 	// if not success set error array and return
