@@ -95,7 +95,7 @@ function display_voucher_table($product_id, $multiplier) {
 	<!-- CAMPAIGN SUMMARY START -->
 
 	<div class="campaign_summary mt-5">
-		<h3 class="text-center">Campaign Summary</h3>
+		<h3 class="text-center">Summary for Campaign <?php echo $product_id ?></h3>
 		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
 				<i 
 				data-toggle="collapse" 
@@ -138,7 +138,7 @@ function display_voucher_table($product_id, $multiplier) {
 				ORDER BY timestamp ASC ", $product_id), ARRAY_A);
 	?>
 	<div class="payment_transaction mt-5">
-		<h3 class="text-center">Payment Transactions</h3>
+		<h3 class="text-center">Payment Transactions for Campaign <?php echo $product_id ?></h3>
 		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
 			<i 
 				data-toggle="collapse" 
@@ -240,7 +240,11 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	$tproduct = 0;
 	if (count($order_rows)) {
 				?>
-				<button class="btn btn-success order-redeem-checked-btn my-2" disabled >Redeem Checked</button>
+				<?php
+					if ($expired_val === 'N') {
+						echo '<button class="btn btn-success order-redeem-checked-btn my-2" disabled >Redeem Checked</button>';
+					}
+				?>
 				<div id="voucher-table-container" class="table-fixed-container">
 					<table class="table table-striped table-bordered table-fixed">
 						<?php display_order_table_heading($order_rows, $expired_val) ?>

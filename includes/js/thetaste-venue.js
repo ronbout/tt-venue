@@ -448,7 +448,7 @@ const checkRedeemAllDisable = () => {
 };
 
 const tasteLoadScrollUp = () => {
-	let offset = $("#voucher-list-div").offset().top;
+	let offset = $("#voucher-list-div").offset().top - 500;
 	let duration = 500;
 	$(window).scroll(function () {
 		if ($(this).scrollTop() < offset) {

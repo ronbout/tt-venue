@@ -98,7 +98,7 @@ add_filter( 'query_vars', 'taste_venue_query_vars' );
  function google_fake_ad() {
 	 ?>
 	 <div style="width: 100%; height: 200px; background-color: green; color: white; font-size: 96px; display: flex; justify-content: center; align-items: center; position: relative;">
-	 	<span>X</span>
+	 	<span>Google Ad</span>
 	 </div>
 	 <?php
  }
