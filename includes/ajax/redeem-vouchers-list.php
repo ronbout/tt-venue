@@ -469,7 +469,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 	$total_paid_to_customer = 0;
 	?>
 			<div id="payment-table-container" class="table-fixed-container">		
-				<table id="audit-payment-table" class="table table-striped table-bordered table-fixed"
+				<table id="audit-payment-table" class="table table-striped table-bordered table-fixed text-center"
 					<?php
 							// need data for invoice button
 							$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";

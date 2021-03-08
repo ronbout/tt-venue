@@ -39,7 +39,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 		<tr id="pay-<?php echo $payment['id'] ?>">
 		<?php echo $admin ? "<th scope='row'>{$payment['id']}</th>" : '' ?>
 		<td><?php echo $payment_date ?></td>
-		<td><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
+		<td class="table-nbr"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
 		<?php
 			$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $payment_date)
 		?>

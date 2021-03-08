@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -748,15 +748,6 @@ body.campaign-manager {
 		position: relative;
 	}
 
-	.payment_transaction .collapse-icon {
-		color: #44c4a1;
-		font-size: 25px;
-		position: absolute;
-		right: 0;
-		top: 0;
-		cursor: pointer;
-	}
-
 	.payment_table thead tr th {
 		vertical-align: middle;
 	}
@@ -804,5 +795,10 @@ body.campaign-manager {
 	.table > tfoot > tr > td {
 		padding: 10px;
 		line-height: 1.42857143;
+	}
+
+	.table > tbody > tr > td.table-nbr {
+		text-align: right;
+		padding-right: 18px;
 	}
 }

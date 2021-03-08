@@ -11316,14 +11316,6 @@ body.campaign-manager ul.term_and_cond li {
 body.campaign-manager .payment_transaction {
   position: relative;
 }
-body.campaign-manager .payment_transaction .collapse-icon {
-  color: #44c4a1;
-  font-size: 25px;
-  position: absolute;
-  right: 0;
-  top: 0;
-  cursor: pointer;
-}
 body.campaign-manager .payment_table thead tr th {
   vertical-align: middle;
 }
@@ -11364,6 +11356,10 @@ body.campaign-manager .table > tbody > tr > td,
 body.campaign-manager .table > tfoot > tr > td {
   padding: 10px;
   line-height: 1.42857143;
+}
+body.campaign-manager .table > tbody > tr > td.table-nbr {
+  text-align: right;
+  padding-right: 18px;
 }
 
 /*# sourceMappingURL=thetaste-venue.css.map */
