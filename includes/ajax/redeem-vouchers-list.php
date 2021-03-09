@@ -89,8 +89,6 @@ function display_voucher_table($product_id, $multiplier) {
 		$expired_val = 'Y';
 	}
 
-	display_campaign_header($expired_val, $product_id, $product_title);
-
 	?>
 	<!-- CAMPAIGN SUMMARY START -->
 
@@ -104,18 +102,20 @@ function display_voucher_table($product_id, $multiplier) {
 				aria-controls="campaign_summary_collapse" 
 				class="collapse-icon fas fa-minus-circle"></i>
 		</span>
-		<h4>
+		<div class="collapse show" id="campaign_summary_collapse">
 			<?php 
+			
+			display_campaign_header($expired_val, $product_id, $product_title);
+			
+			echo '<h4>';
 				$row_count = count($order_rows);
 				if ($row_count)  {
 					echo "Orders ($row_count Rows)";
 				} else {
 					echo "No Orders Found";
-				}
-			?>				
-		</h4>
-		<div class="collapse show" id="campaign_summary_collapse">
-			<?php 
+				}			
+			echo '</h4>';
+
 			// $payable is calc'd inside the table but needs to come out to be used in the payments table
 			$order_totals = display_orders_table($order_rows, $expired_val, $product_price, $vat_val, $commission_val );
 			$payable = $order_totals['payable'];
@@ -182,7 +182,7 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 		'<i class="fas fa-times-circle ml-2"></i><span class="ml-3 text-danger">Expired</span>';
 	?>
 	<!-- REVENUE CAMPAIGN DETAILS START -->
-	<div class="revenue_camapaign_details">
+	<div class="revenue_camapaign_details mb-4">
 		<div class="row">
 				<div class="col-md-4 revenue_campaign_info ml-xs-3 ml-s-0 cols">
 						<h3>Revenue Campaign : <?php echo $product_id ?></h3>

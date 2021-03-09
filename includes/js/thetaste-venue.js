@@ -478,7 +478,7 @@ const tasteLoadScrollUp = () => {
 const tasteScrollToVouchers = () => {
 	$("html, body").animate(
 		{
-			scrollTop: $("#voucher-list-div").offset().top,
+			scrollTop: $("#voucher-list-div").offset().top - 25,
 		},
 		600
 	);
