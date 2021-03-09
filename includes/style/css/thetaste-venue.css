@@ -10832,13 +10832,20 @@ h2.col-heading_profile {
   width: 50px;
   position: fixed;
   right: 25px;
-  bottom: 25px;
+  bottom: 45px;
   z-index: 1;
   display: none;
 }
-
+#topbutton button {
+  color: #007bff;
+  border-color: blue;
+  border-radius: 4px;
+}
 #topbutton i {
   font-size: 3em;
+}
+#topbutton i span {
+  margin-top: -10px;
 }
 
 /* MODAL STYLES FOR AJAX SPINNER/MSG */

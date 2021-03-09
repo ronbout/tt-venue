@@ -222,7 +222,9 @@ if ($admin) {
 	-->
 	<footer>
 	<a href="#" id="topbutton">
-		<i class="fas fa-angle-up"></i>
+	<button type="button">
+		<i class="fas fa-angle-up"></i><span>Top</span>
+	</button>
 	</a>
 	</footer>
 	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js"></script>

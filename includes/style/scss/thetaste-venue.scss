@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -228,13 +228,23 @@ h2.col-heading_profile {
 	width: 50px;
 	position: fixed;
 	right: 25px;
-	bottom: 25px;
+	bottom: 45px;
 	z-index: 1;
 	display: none;
-}
 
-#topbutton i {
-	font-size: 3em;
+	button {
+		color: #007bff;
+		border-color: blue;
+		border-radius: 4px;
+	}
+
+	i {
+		font-size: 3em;
+
+		span {
+			margin-top: -10px;
+		}
+	}
 }
 
 /* MODAL STYLES FOR AJAX SPINNER/MSG */
