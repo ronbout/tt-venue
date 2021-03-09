@@ -18,10 +18,10 @@ const tasteLoadVouchers = (prodId, multiplier) => {
 			multiplier: multiplier,
 		},
 		success: function (responseText) {
-			tasteCloseMsg();
 			//console.log(responseText);
 			jQuery("#voucher-list-div").html(responseText);
 			tasteLoadVoucherPaymentButtons();
+			tasteCloseMsg();
 			tasteScrollToVouchers();
 		},
 		error: function (xhr, status, errorThrown) {
@@ -53,11 +53,11 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 			redeem_flg: redeemFlg ? 1 : 0,
 		},
 		success: function (responseText) {
-			tasteCloseMsg();
 			// console.log(responseText);
 			let respObj = JSON.parse(responseText);
 			if (respObj.error) {
 				console.log(respObj);
+				tasteCloseMsg();
 				alert("error in redeem Voucher ajax code");
 			} else {
 				orderList.map((orderInfo) => {
@@ -83,6 +83,7 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 				updateOfferCalcs(respObj, productId);
 				updateVenueCalcs(respObj);
 				tasteLoadVoucherPaymentButtons();
+				tasteCloseMsg();
 			}
 		},
 		error: function (xhr, status, errorThrown) {
@@ -123,9 +124,9 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 			venue_info: venueInfo,
 		},
 		success: function (responseText) {
-			tasteCloseMsg();
 			let respObj = JSON.parse(responseText);
 			if (respObj.error) {
+				tasteCloseMsg();
 				alert("Error updating payment.\n" + respObj.error);
 			} else {
 				console.log(respObj);
@@ -145,6 +146,7 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 				} else jQuery(`#pay-${paymentInfo.id}`).remove();
 
 				tasteLoadInvoiceButtons();
+				tasteCloseMsg();
 			}
 		},
 		error: function (xhr, status, errorThrown) {
