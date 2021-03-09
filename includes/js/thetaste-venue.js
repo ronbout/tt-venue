@@ -131,6 +131,7 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 				console.log(respObj);
 
 				updateVenueCalcs(respObj);
+				jQuery(".total-payments-display").html(respObj.totalPaid);
 				jQuery("#balance-due-display").html(respObj.balanceDue);
 				jQuery("#balance-due-display-" + productId).html(
 					respObj.balanceDue.split(" ")[1]
@@ -157,10 +158,11 @@ const updateOfferCalcs = (respObj, productId) => {
 	jQuery("#grevenue-display").html(respObj.grevenue);
 	jQuery("#commission-display").html(respObj.commission);
 	jQuery("#vat-display").html(respObj.vat);
-	jQuery("#payable-display").html(respObj.payable);
+	jQuery(".payable-display").html(respObj.payable);
 	jQuery("#redeem-qty-display").html(respObj.redeemQty);
 	jQuery("#total-sold-display").html(respObj.totalSold);
 	jQuery("#balance-due-display").html(respObj.balanceDue);
+	jQuery(".total-payments-display").html(respObj.totalPaid);
 	// table items per product id  -- must strip currency sign
 	jQuery("#grevenue-display-" + productId).html(respObj.grevenue.split(" ")[1]);
 	jQuery("#commission-display-" + productId).html(

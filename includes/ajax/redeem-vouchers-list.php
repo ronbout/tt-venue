@@ -435,7 +435,7 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 		</div>
 		<div class="col-md ml-3 my-2 p-4 cols">
 				<h3 class="numbers">
-					<span id="payable-display">
+					<span class="payable-display">
 						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
 					</span>
 				<h3>
@@ -521,11 +521,45 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 					</button>
 					<?php
 				}
-				?>
-
-			<div class="text-center my-3">
-				<h3>Balance Due : <span id="balance-due-display"> <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable - $total_paid_to_customer, 2) ?></span></h3>
+				$balance_due = $payable - $total_paid_to_customer;
+			?>
+			<!-- PAYMENTS SUMMARY -->
+			<div class="row mx-0 mb-4 mt-3">
+				<div class="col-md ml-xs-3 ml-s-0 my-2 my-2 p-4 cols">
+						<h3 class="numbers">
+							<span class="payable-display">
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
+							</span>
+						<h3>
+						<p class="titles">Net Payable</p>
+						<div class="eclipse_icon_bg cash_register_icon">
+								<i class="fas fa-cash-register"></i>
+						</div>
+				</div>
+				<div class="col-md ml-3 my-2 p-4 cols">
+						<h3 class="numbers">
+							<span class="total-payments-display">
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($total_paid_to_customer, 2)  ?>
+							</span>
+						<h3>
+						<p class="titles">Campaign Payments</p>
+						<div class="eclipse_icon_bg coins_icon">
+							<i class="fas fa-coins"></i>
+						</div>
+				</div>
+				<div class="col-md ml-3 my-2 p-4 cols">
+						<h3 class="numbers">
+						<span id="balance-due-display">
+						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($balance_due, 2) ?>
+							</span>
+						<h3>
+						<p class="titles">Balance Due</p>
+						<div class="eclipse_icon_bg balance_scale_icon">
+								<i class="fas fa-balance-scale"></i>
+						</div>
+				</div>
 			</div>
+			<!-- END OF PAYMENTS SUMMARY -->
 
 		<!-- Payment Modal -->
 		<div class="modal fade" id="addEditPaymentModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="addEditPaymentModalLabel" aria-hidden="true">

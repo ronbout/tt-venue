@@ -127,6 +127,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 
 	$ret_json = array(
 		'balanceDue' => $currency . ' ' . num_display($balance_due),
+		'totalPaid' => $currency . ' ' . num_display($total_paid),
 		'sumGrValue' => $currency . ' ' . num_display($sum_gr_value),
 		'sumCommission' => $currency . ' ' . num_display($sum_commission),
 		'sumVat'  => $currency . ' ' . num_display($sum_vat),

@@ -163,6 +163,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 		'vat' => $currency . ' ' .number_format($vat, 2),
 		'payable' => $currency . ' ' . number_format($payable, 2),
 		'balanceDue' => $currency . ' ' . number_format($balance_due, 2),
+		'totalPaid' => $currency . ' ' . number_format($total_paid, 2),
 		'emails' => $email_rows,
 		'sumGrValue' => $currency . ' ' . num_display($sum_gr_value),
 		'sumCommission' => $currency . ' ' . num_display($sum_commission),
