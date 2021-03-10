@@ -430,9 +430,12 @@ const tasteLoadPaymentAddEditModal = () => {
 };
 
 const tasteSortPaymentTable = () => {
-	tasteSortTableByColumn("audit-payment-table", "sort-by-date", true);
-	tasteSortTableByColumn("all-payments-table", "sort-by-date", true);
-	tasteSortTableByColumn("all-payments-table", "sort-by-product", false);
+	jQuery("#audit-payment-table").length &&
+		tasteSortTableByColumn("audit-payment-table", "sort-by-date", true);
+	jQuery("#all-payments-table").length &&
+		tasteSortTableByColumn("all-payments-table", "sort-by-date", true);
+	jQuery("#all-payments-table").length &&
+		tasteSortTableByColumn("all-payments-table", "sort-by-product", false);
 };
 
 const tasteLoadButtons = () => {
