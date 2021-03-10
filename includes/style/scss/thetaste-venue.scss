@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -491,7 +491,7 @@ body.campaign-manager {
 		font-size: 30px;
 	}
 
-	h2.businness_name {
+	h2.venue_name {
 		font-family: "Roboto", sans-serif;
 		font-weight: 300;
 		font-size: 25px;
@@ -658,7 +658,7 @@ body.campaign-manager {
 		font-family: "Roboto", sans-serif;
 	}
 
-	.campaign_summary {
+	.collapse-container {
 		position: relative;
 	}
 
@@ -690,10 +690,6 @@ body.campaign-manager {
 		font-size: 13px;
 	}
 
-	.payment_transaction {
-		position: relative;
-	}
-
 	.payment_table thead tr th {
 		vertical-align: middle;
 	}
@@ -702,11 +698,15 @@ body.campaign-manager {
 		vertical-align: middle;
 	}
 
+	.fa-long-arrow-alt-down {
+		font-size: 20px;
+		cursor: pointer;
+	}
+
 	.fa-trash-alt,
 	.fa-pencil-alt,
-	.fa-long-arrow-alt-down,
 	.fa-file-pdf {
-		font-size: 20px;
+		font-size: 24px;
 		cursor: pointer;
 	}
 

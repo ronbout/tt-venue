@@ -92,7 +92,7 @@ function display_voucher_table($product_id, $multiplier) {
 	?>
 	<!-- CAMPAIGN SUMMARY START -->
 
-	<div class="campaign_summary mt-5">
+	<div class="collapse-container campaign_summary mt-5">
 		<h3 class="text-center">Summary for Campaign <?php echo $product_id ?></h3>
 		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
 				<i 
@@ -137,7 +137,7 @@ function display_voucher_table($product_id, $multiplier) {
 				WHERE pid = %d
 				ORDER BY timestamp ASC ", $product_id), ARRAY_A);
 	?>
-	<div class="payment_transaction mt-5">
+	<div class=" collapse-container payment_transaction mt-5">
 		<h3 class="text-center">Payment Transactions for Campaign <?php echo $product_id ?></h3>
 		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
 			<i 
@@ -147,6 +147,7 @@ function display_voucher_table($product_id, $multiplier) {
 				aria-controls="payment_transaction_collapse" 
 				class="collapse-icon fas fa-minus-circle"></i>
 		</span>
+		<div class="collapse show" id="payment_transaction_collapse">
 		<h4>
 			<?php 
 				$row_count = count($payment_list);
@@ -157,7 +158,6 @@ function display_voucher_table($product_id, $multiplier) {
 				}
 			?>				
 		</h4>
-		<div class="collapse show" id="payment_transaction_collapse">
 
 	<?php
 		$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list);
@@ -344,10 +344,11 @@ function display_order_table_row($order_item_info, $expired_val) {
 				?>
 
 		<td class="table-nbr"><?php echo $order_item_info->quan ?> </td>
-		<td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>" >
+		<?php $action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3' ?>
+		<td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>" class="<?php echo $action_class ?>">
 				<?php
-				if ($order_item_info->downloaded == '0') {
-						if ($expired_val == 'N') {
+				if ('0' == $order_item_info->downloaded) {
+						if ('N' == $expired_val) {
 							echo '<button	class="btn btn-success order-redeem-btn">Redeem</button>';
 						}
 						else {
@@ -514,7 +515,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 			<?php if ($admin) {
 				?>
 					<!--  ADD NEW PAYMENT MODAL TRIGGER  -->
-					<button type="button" class="btn btn-primary mt-2" data-toggle="modal" data-target="#addEditPaymentModal"
+					<button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#addEditPaymentModal"
 						data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment=""
 						>
 						<i class="fa fa-plus-circle"></i> &nbsp; Add new payment

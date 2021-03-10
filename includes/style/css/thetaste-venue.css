@@ -11089,7 +11089,7 @@ body.campaign-manager h1.overview_heading {
   font-weight: 400;
   font-size: 30px;
 }
-body.campaign-manager h2.businness_name {
+body.campaign-manager h2.venue_name {
   font-family: "Roboto", sans-serif;
   font-weight: 300;
   font-size: 25px;
@@ -11231,7 +11231,7 @@ body.campaign-manager .please_note p {
   font-weight: 400;
   font-family: "Roboto", sans-serif;
 }
-body.campaign-manager .campaign_summary {
+body.campaign-manager .collapse-container {
   position: relative;
 }
 body.campaign-manager .circle-span {
@@ -11257,20 +11257,20 @@ body.campaign-manager ul.term_and_cond li {
   list-style: square;
   font-size: 13px;
 }
-body.campaign-manager .payment_transaction {
-  position: relative;
-}
 body.campaign-manager .payment_table thead tr th {
   vertical-align: middle;
 }
 body.campaign-manager .payment_table tbody tr td {
   vertical-align: middle;
 }
+body.campaign-manager .fa-long-arrow-alt-down {
+  font-size: 20px;
+  cursor: pointer;
+}
 body.campaign-manager .fa-trash-alt,
 body.campaign-manager .fa-pencil-alt,
-body.campaign-manager .fa-long-arrow-alt-down,
 body.campaign-manager .fa-file-pdf {
-  font-size: 20px;
+  font-size: 24px;
   cursor: pointer;
 }
 body.campaign-manager .add_comment_payment {

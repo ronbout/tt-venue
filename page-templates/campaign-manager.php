@@ -169,8 +169,7 @@ if ($admin) {
 			// but also grouping related products under the group,
 			// using the date of the group for the order
 			// *** GROUPING INFO NOT CURRENTLY RETURNING FROM SQL 
-			// *** TO ADD SQL, CONVERT TO 'LEFT' JOIN on posts p
-			// *** KEEPING LOGIC IN CASE THAT CHANGES
+			/*  TODO:  remove grouping logic */
 			$ordered_products = order_product_table($product_rows);
 
 			// returns array with 'totals' and 'calcs' keys
@@ -182,21 +181,23 @@ if ($admin) {
 		?>
     <section class="headings">
       <h1 class="overview_heading">Overview</h1>
-      <h2 class="businness_name"><?php echo $venue_name; ?></h2>
+      <h2 class="venue_name"><?php echo $venue_name; ?></h2>
     </section>
 
-		<?php
-			display_venue_summary($venue_totals, $summ_heading, $venue_type);
+		<section id="all-campaigns-container" class="container">
+			<?php	
+				display_venue_summary($venue_totals, $summ_heading, $venue_type);
+				if (count($product_rows)) {
+					display_products_table($product_calcs, $served_heading, $venue_totals);
+				} else {
+					echo "<h2>*** No Products Found ***</h2>";
+				}
+			?>
+		</section>
+		<div class="divider"></div>
+		<section id="voucher-list-div" class="container">
 
-			if (count($product_rows)) {
-				display_products_table($product_calcs, $served_heading, $venue_totals);
-			} else {
-				echo "<h2>*** No Products Found ***</h2>";
-			}
-		?>
-		<div id="voucher-list-div" class="container">
-
-		</div>
+		</section>
 	</main>
 
 	<div id="spinner-modal" class="modal" data-backdrop="static" tabindex="-1"
@@ -369,34 +370,46 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 
 function display_products_table($product_calcs, $served_heading, $venue_totals) {
 	?>
-	<h4 class="mt-5"><?php echo $type_desc ?> Offers (<?php echo  number_format(count($product_calcs)) ?> Rows)</h4>
-	<div id="product-table-container" class="table-fixed-container mb-5">
-		<table class="table table-striped table-bordered offers_table table-fixed">
-			<thead>
-				<th scope="col">ID</th>
-				<th scope="col">Offer</th>
-				<th scope="col">Status</th>
-				<th scope="col">Revenue</th>
-				<th scope="col"><?php echo $served_heading ?></th>
-				<th scope="col">Commission</th>
-				<th scope="col">Vat</th>
-				<th scope="col">Net</br>Payable</th>
-				<th scope="col">Balance</br>Due</th>
-				<th scope="col">Action</th>
-			</thead>
-			<tbody>
-				<?php
-					foreach($product_calcs as $product_row) {
-						extract($product_row);
-						display_product_row($product_row['product_id'], $title, $status, $revenue, $num_served, $commission, 
-																$vat, $net_payable, $balance_due, $multiplier);
-					}
-				?>
-			</tbody>
-			<?php display_table_totals($venue_totals) ?>
-		</table>
+	<div class="collapse-container product-listing-container mt-5">
+		<h3 class="text-center">Campaigns</h3>
+		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
+				<i 
+				data-toggle="collapse" 
+				data-target="#campaign_listing_collapse" 
+				aria-expanded="true" 
+				aria-controls="campaign_listing_collapse" 
+				class="collapse-icon fas fa-minus-circle"></i>
+		</span>
+		<div class="collapse show" id="campaign_listing_collapse">
+			<h4 class="mt-1"><?php echo $type_desc ?> Offers (<?php echo  number_format(count($product_calcs)) ?> Rows)</h4>
+			<div id="product-table-container" class="table-fixed-container mb-5">
+				<table class="table table-striped table-bordered offers_table table-fixed">
+					<thead>
+						<th scope="col">ID</th>
+						<th scope="col">Offer</th>
+						<th scope="col">Status</th>
+						<th scope="col">Revenue</th>
+						<th scope="col"><?php echo $served_heading ?></th>
+						<th scope="col">Commission</th>
+						<th scope="col">Vat</th>
+						<th scope="col">Net</br>Payable</th>
+						<th scope="col">Balance</br>Due</th>
+						<th scope="col">Action</th>
+					</thead>
+					<tbody>
+						<?php
+							foreach($product_calcs as $product_row) {
+								extract($product_row);
+								display_product_row($product_row['product_id'], $title, $status, $revenue, $num_served, $commission, 
+																		$vat, $net_payable, $balance_due, $multiplier);
+							}
+						?>
+					</tbody>
+					<?php display_table_totals($venue_totals) ?>
+				</table>
+			</div>
+		</div>
 	</div>
-
 	<?php
 }
 

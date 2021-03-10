@@ -43,7 +43,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 		<?php
 			$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $payment_date)
 		?>
-			<td>
+			<td class="text-success">
 				<i data-paymentamt="<?php echo $payment['amount'] ?>" data-paymentdate="<?php echo $payment_date ?>"
 								data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
 								data-paymentid="<?php echo $payment['id'] ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
@@ -52,19 +52,19 @@ function disp_payment_line($payment, $admin, $commission_val) {
 			</td>
 			<?php if ($admin) {	?>
 			<td>
-				<button type="button" class="btn btn-primary payment-comment-btn" data-toggle="modal" 
+				<button type="button" class="btn btn-info payment-comment-btn" data-toggle="modal" 
 								data-target="#addCommentModal" 
 								<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
 								>
 					Comment
 				</button>
 			</td>
-			<td>
+			<td class="text-primary">
 				<i data-toggle="modal" data-target="#addEditPaymentModal"
 						<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
 						class="fas fa-pencil-alt edit-payment-btn"></i>
 			</td>
-			<td>
+			<td class="text-danger">
 				<i data-toggle="modal" data-target="#addEditPaymentModal"
 						<?php build_editable_payment_data_attrs($payment, $payment_date, true) ?>
 					class="fas fa-trash-alt"></i>
