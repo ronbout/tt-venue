@@ -1,7 +1,6 @@
 jQuery(document).ready(function () {
 	tasteLoadButtons();
 	jQuery("#topbutton").length && tasteLoadScrollUp();
-	// jQuery("#spinner-modal").modal("show");
 });
 
 const tasteLoadVouchers = (prodId, multiplier) => {
@@ -19,10 +18,14 @@ const tasteLoadVouchers = (prodId, multiplier) => {
 		},
 		success: function (responseText) {
 			//console.log(responseText);
+			jQuery("#all-payments-collapse").length &&
+				jQuery("#all-payments-collapse").collapse("hide");
 			jQuery("#voucher-list-div").html(responseText);
 			tasteLoadVoucherPaymentButtons();
 			tasteCloseMsg();
 			tasteScrollToVouchers();
+			jQuery("#all-payments-collapse").length &&
+				jQuery("#all-payments-collapse").collapse("hide");
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
@@ -190,7 +193,7 @@ const updateOfferCalcs = (respObj, productId) => {
 
 const updateVenueCalcs = (respObj) => {
 	jQuery("#gr-value-total").html(respObj.sumGrValue);
-	jQuery("#paid-amount-total").html(respObj.sumTotalPaid);
+	jQuery(".paid-amount-total").html(respObj.sumTotalPaid);
 	jQuery("#vouchers-total").html(respObj.sumRedeemedQty);
 	jQuery("#served-total").html(respObj.sumNumServed);
 	jQuery("#net-payable-total").html(respObj.sumNetPayable);

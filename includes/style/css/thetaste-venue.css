@@ -10784,6 +10784,10 @@ h2.col-heading_profile {
   max-height: 700px;
 }
 
+#all-payments-table-container {
+  max-height: 560px;
+}
+
 #voucher-table-container {
   max-height: 640px;
 }
@@ -10804,7 +10808,8 @@ h2.col-heading_profile {
   z-index: 2;
 }
 
-.table-fixed-container tfoot th {
+.table-fixed-container tfoot th,
+.table-fixed-container tfoot td {
   background-color: #eee;
   position: sticky;
   bottom: 0;

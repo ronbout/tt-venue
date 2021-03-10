@@ -186,7 +186,7 @@ if ($admin) {
 				}
 
 				if ($admin) { 
-					display_all_payments($payment_rows, $venue_name);
+					display_all_payments($payment_rows, $venue_name, $venue_totals['paid_amount']);
 				} 
 			?>
 		</section>
@@ -346,7 +346,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 			</div>
 		</div>
 		<div class="col-md ml-3 my-2 p-4 cols">
-			<h3 class="numbers"id="paid-amount-total">
+			<h3 class="numbers paid-amount-total">
 				<?php echo $currency . ' ' . num_display($venue_totals['paid_amount']) ?>
 			<h3>
 			<p class="titles">Total Payments</p>
@@ -528,7 +528,8 @@ function display_product_row($id, $title, $status, $revenue, $num_served, $commi
  <?php
 }
 
-function display_all_payments($payment_rows, $venue_name) {
+function display_all_payments($payment_rows, $venue_name, $payment_total) {
+	$currency =  get_woocommerce_currency_symbol();
 	?>
 	<div class="collapse-container all-payments-container mt-5">
 		<h3 class="text-center">All Payments for <?php echo $venue_name ?></h3>
@@ -558,6 +559,15 @@ function display_all_payments($payment_rows, $venue_name) {
 							}
 						?>
 					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2">&nbsp;</td>
+							<th>Total:</th>
+							<th class="paid-amount-total table-nbr pr-5">
+							<?php echo $currency . ' ' . num_display($payment_total) ?>
+							</th>
+						</tr>
+					</tfoot>
 				</table>
 			</div>
 		</div>
