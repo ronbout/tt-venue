@@ -99,7 +99,7 @@ if ($admin) {
 
 			$product_rows = $wpdb->get_results($wpdb->prepare("
 							SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, pm.meta_value AS 'children', 
-								pm2.meta_value AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
+								UPPER(pm2.meta_value) AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
 								pm5.meta_value AS 'commission', pm6.meta_value AS 'bed_nights', 
 								COALESCE(pm7.meta_value, 2) AS 'total_covers',
 								SUM(IF(orderp.post_status = 'wc-completed', 1, 0)) AS 'order_cnt', 
@@ -123,7 +123,7 @@ if ($admin) {
 								AND orderp.post_type = 'shop_order'
 							WHERE	vp.venue_id = %d
 							GROUP BY pr.product_id
-							ORDER BY p.post_date DESC", 
+							ORDER BY expired ASC, p.post_date DESC", 
 							$venue_id), ARRAY_A);
 						
 			// more efficient just to grab this a separate statement
@@ -165,15 +165,12 @@ if ($admin) {
 			// create array w product id's as keys and pay totals as values
 			$payments = array_combine(array_column($payment_rows, "product_id"), array_column($payment_rows, "total_amount"));
 
-			// first thing to do is order the rows by most recent
-			// but also grouping related products under the group,
-			// using the date of the group for the order
-			// *** GROUPING INFO NOT CURRENTLY RETURNING FROM SQL 
-			/*  TODO:  remove grouping logic */
-			$ordered_products = order_product_table($product_rows);
+			// the ordering has been simplified from the earlier version
+			// and is being done in the SQL statement
+			// $ordered_products = order_product_table($product_rows);
 
 			// returns array with 'totals' and 'calcs' keys
-			$totals_calcs = get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights_flg);
+			$totals_calcs = get_totals_calcs($product_rows, $payments, $venue_type, $bed_nights_flg);
 
 			$product_calcs = $totals_calcs['calcs'];
 			$venue_totals = $totals_calcs['totals'];
@@ -516,13 +513,14 @@ function display_product_row($id, $title, $status, $revenue, $num_served, $commi
  <?php
 }
 
+/*
 function order_product_table($product_rows) {
 	// filter by active and expired, then merge 
 	// 2nd sort should be by date
 	$active_products = array();
 	$expired_products = array();
 	array_walk($product_rows, function($row, $k) use (&$active_products, &$expired_products) {
-		if ("N" === strtoupper($row['expired'])) {
+		if ("N" === $row['expired']) {
 			$active_products[] = $row;
 		} else {
 			$expired_products[] = $row;
@@ -532,6 +530,7 @@ function order_product_table($product_rows) {
 	$ordered_products = array_merge($active_products, $expired_products);
 	return $ordered_products;
 }
+*/
 
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting
