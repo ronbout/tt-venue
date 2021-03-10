@@ -28,6 +28,7 @@ if ( !is_user_logged_in()) {
 
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-navbar.php';
+require_once TASTE_PLUGIN_INCLUDES.'/ajax/functions.php';
 
 $venue_id = '';
 if ($admin) {
@@ -126,16 +127,6 @@ if ($admin) {
 							ORDER BY expired ASC, p.post_date DESC", 
 							$venue_id), ARRAY_A);
 						
-			// more efficient just to grab this a separate statement
-			$payment_rows = $wpdb->get_results($wpdb->prepare("
-					SELECT  vp.product_id, sum(pmnt.amount) as 'total_amount'
-					FROM $v_p_join_table vp
-					JOIN $payment_table pmnt ON pmnt.pid = vp.product_id
-					WHERE vp.venue_id = %d
-					GROUP BY vp.product_id
-					", $venue_id), ARRAY_A);
-
-
 			$venue_name = $venue_row[0]->name;
 			$venue_type = $venue_row[0]->venue_type;
 			$type_desc = $venue_type;
@@ -162,15 +153,19 @@ if ($admin) {
 					$type_desc = "Venue";
 			}
 
-			// create array w product id's as keys and pay totals as values
-			$payments = array_combine(array_column($payment_rows, "product_id"), array_column($payment_rows, "total_amount"));
+			
+			$payment_rows = $wpdb->get_results($wpdb->prepare("
+						SELECT  vp.product_id, op.id, op.timestamp, op.pid, op.amount, op.comment
+						FROM $payment_table op
+						JOIN $v_p_join_table vp ON vp.product_id = op.pid
+						WHERE vp.venue_id = %d
+						ORDER BY vp.product_id DESC, op.timestamp ASC ", $venue_id), ARRAY_A);
 
-			// the ordering has been simplified from the earlier version
-			// and is being done in the SQL statement
-			// $ordered_products = order_product_table($product_rows);
+			// create array w product id's as keys and pay totals as values
+			$payment_totals_by_product = calc_payments_by_product($payment_rows);
 
 			// returns array with 'totals' and 'calcs' keys
-			$totals_calcs = get_totals_calcs($product_rows, $payments, $venue_type, $bed_nights_flg);
+			$totals_calcs = get_totals_calcs($product_rows, $payment_totals_by_product, $venue_type, $bed_nights_flg);
 
 			$product_calcs = $totals_calcs['calcs'];
 			$venue_totals = $totals_calcs['totals'];
@@ -189,8 +184,13 @@ if ($admin) {
 				} else {
 					echo "<h2>*** No Products Found ***</h2>";
 				}
+
+				if ($admin) { 
+					display_all_payments($payment_rows, $venue_name);
+				} 
 			?>
 		</section>
+
 		<div class="divider"></div>
 		<section id="voucher-list-div" class="container">
 
@@ -220,6 +220,21 @@ if ($admin) {
 </html>
 
 <?php 
+
+/***  START OF FUNCTIONS  ***/
+
+function calc_payments_by_product($payment_rows) {
+	$payment_totals_by_product = array();
+	foreach ($payment_rows as $payment) {
+		$product_id = $payment['product_id'];
+		if (isset($payment_totals_by_product[$product_id])) {
+			$payment_totals_by_product[$product_id] += $payment['amount'];
+		} else {
+			$payment_totals_by_product[$product_id] = $payment['amount'];
+		}
+	}
+	return $payment_totals_by_product;
+}
 
 function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights_flg) {
 	$venue_totals = array(
@@ -513,24 +528,42 @@ function display_product_row($id, $title, $status, $revenue, $num_served, $commi
  <?php
 }
 
-/*
-function order_product_table($product_rows) {
-	// filter by active and expired, then merge 
-	// 2nd sort should be by date
-	$active_products = array();
-	$expired_products = array();
-	array_walk($product_rows, function($row, $k) use (&$active_products, &$expired_products) {
-		if ("N" === $row['expired']) {
-			$active_products[] = $row;
-		} else {
-			$expired_products[] = $row;
-		}
-	});
-	
-	$ordered_products = array_merge($active_products, $expired_products);
-	return $ordered_products;
+function display_all_payments($payment_rows, $venue_name) {
+	?>
+	<div class="collapse-container all-payments-container mt-5">
+		<h3 class="text-center">All Payments for <?php echo $venue_name ?></h3>
+		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
+				<i 
+				data-toggle="collapse" 
+				data-target="#all-payments-collapse" 
+				aria-expanded="true" 
+				aria-controls="all-payments-collapse" 
+				class="collapse-icon fas fa-minus-circle"></i>
+		</span>
+		<div class="collapse show" id="all-payments-collapse">
+			<h4 class="mt-1"><?php echo $type_desc ?> Payments (<?php echo  number_format(count($payment_rows)) ?> Rows)</h4>
+			<div id="all-payments-table-container" class="table-fixed-container mb-5">
+				<table id="all-payments-table" class="table table-striped table-bordered table-fixed">
+					<thead>
+						<th scope="col" class="sort-by-product">Product</th>
+						<th scope="col">Payment ID</th>
+						<th scope="col" class="sort-by-date">Date</th>
+						<th scope="col">Amount</th>
+					</thead>
+					<tbody id="all-payment-lines">
+						<?php
+							foreach($payment_rows as $payment) {
+								// disp_all_payment_line is in ajax/functions.php
+								echo disp_all_payment_line($payment);
+							}
+						?>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<?php 
 }
-*/
 
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting

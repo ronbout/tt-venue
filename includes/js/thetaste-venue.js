@@ -141,9 +141,16 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 
 				if ("edit" === respObj.editMode) {
 					jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
+					jQuery(`#all-pay-${paymentInfo.id}`).replaceWith(
+						respObj.allPaymentLine
+					);
 				} else if ("add" === respObj.editMode) {
 					jQuery("#payment-lines").append(respObj.paymentLine);
-				} else jQuery(`#pay-${paymentInfo.id}`).remove();
+					jQuery("#all-payment-lines").append(respObj.allPaymentLine);
+				} else {
+					jQuery(`#pay-${paymentInfo.id}`).remove();
+					jQuery(`#all-pay-${paymentInfo.id}`).remove();
+				}
 
 				tasteLoadInvoiceButtons();
 				tasteCloseMsg();
@@ -424,6 +431,8 @@ const tasteLoadPaymentAddEditModal = () => {
 
 const tasteSortPaymentTable = () => {
 	tasteSortTableByColumn("audit-payment-table", "sort-by-date", true);
+	tasteSortTableByColumn("all-payments-table", "sort-by-date", true);
+	tasteSortTableByColumn("all-payments-table", "sort-by-product", false);
 };
 
 const tasteLoadButtons = () => {

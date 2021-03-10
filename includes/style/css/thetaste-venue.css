@@ -11075,7 +11075,6 @@ div#profile_edit_form {
     font-size: 28px;
   }
 }
-/* the following are temporary changes to make the old bs3 pages look the same on bs4.5 */
 body.campaign-manager {
   /* icon circle background */
   /* icons */
@@ -11257,11 +11256,8 @@ body.campaign-manager ul.term_and_cond li {
   list-style: square;
   font-size: 13px;
 }
-body.campaign-manager .payment_table thead tr th {
-  vertical-align: middle;
-}
-body.campaign-manager .payment_table tbody tr td {
-  vertical-align: middle;
+body.campaign-manager #all-payments-table {
+  text-align: center;
 }
 body.campaign-manager .fa-long-arrow-alt-down {
   font-size: 20px;

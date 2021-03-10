@@ -87,7 +87,11 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$payable = round($payable, 2);
 	$balance_due = round($balance_due, 2);
 
+	// need to add payment id to payment info as 
+	// All Payments line requires Product ID
+	$payment_info['product_id'] = $product_id;
 	$payment_line = 'delete' === $edit_mode ? '' : disp_payment_line($payment_info, $admin, $commission_value);
+	$all_payment_line = 'delete' === $edit_mode ? '' : disp_all_payment_line($payment_info);
 
 	$hidden_values = "
 	<input type='hidden' id='taste-product-id' value='$product_id'>
@@ -137,6 +141,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		'sumTotalPaid' => $currency . ' ' . num_display($sum_total_paid),
 		'sumBalanceDue' => $currency . ' ' . num_display($sum_balance_due),
 		'paymentLine' => $payment_line,
+		'allPaymentLine' => $all_payment_line,
 		'editMode' => $edit_mode,
 		'hiddenValues' => $hidden_values,
 		'sumHiddenValues' => $sum_hidden_values

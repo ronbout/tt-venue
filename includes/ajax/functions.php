@@ -32,7 +32,6 @@ function comm_vat_per_payment($payment, $commission_val, $payment_date) {
 }
 
 function disp_payment_line($payment, $admin, $commission_val) {
-	$show_delete = false;
 	$payment_date = date('Y-m-d', strtotime($payment['timestamp']));
 	ob_start();
 	?>
@@ -72,6 +71,21 @@ function disp_payment_line($payment, $admin, $commission_val) {
 		<?php
 	}
 	?>
+	</tr>
+	<?php
+	$payment_line = ob_get_clean();
+	return $payment_line;
+}
+
+function disp_all_payment_line($payment) {
+	$payment_date = date('Y-m-d', strtotime($payment['timestamp']));
+	ob_start();
+	?>
+		<tr id="all-pay-<?php echo $payment['id'] ?>">
+		<td><?php echo $payment['product_id'] ?></td>
+		<td><?php echo $payment['id'] ?></td>
+		<td><?php echo $payment_date ?></td>
+		<td class="table-nbr pr-5"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
 	</tr>
 	<?php
 	$payment_line = ob_get_clean();

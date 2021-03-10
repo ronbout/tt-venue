@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -478,7 +478,6 @@ div#profile_edit_form {
 	}
 }
 
-/* the following are temporary changes to make the old bs3 pages look the same on bs4.5 */
 body.campaign-manager {
 	div.headings {
 		margin-top: 2.5rem;
@@ -690,14 +689,9 @@ body.campaign-manager {
 		font-size: 13px;
 	}
 
-	.payment_table thead tr th {
-		vertical-align: middle;
+	#all-payments-table {
+		text-align: center;
 	}
-
-	.payment_table tbody tr td {
-		vertical-align: middle;
-	}
-
 	.fa-long-arrow-alt-down {
 		font-size: 20px;
 		cursor: pointer;
