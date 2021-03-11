@@ -10833,10 +10833,10 @@ h2.col-heading_profile {
 
 /* style for scroll up arrow */
 #topbutton {
-  height: 50px;
-  width: 50px;
+  height: 40px;
+  width: 36px;
   position: fixed;
-  right: 25px;
+  right: 4px;
   bottom: 45px;
   z-index: 1;
   display: none;
@@ -11098,14 +11098,33 @@ body.campaign-manager h2.venue_name {
   font-weight: 300;
   font-size: 25px;
 }
-body.campaign-manager div.cols {
+body.campaign-manager .cols,
+body.campaign-manager .tcard,
+body.campaign-manager .tcard-lg {
   background-color: #f1f1f1;
   border-radius: 1rem;
+  padding: 1.5rem;
   transition: all 0.5s ease;
 }
-body.campaign-manager div.cols:hover {
+body.campaign-manager .cols:hover,
+body.campaign-manager .tcard:hover,
+body.campaign-manager .tcard-lg:hover {
   background-color: #cecece;
   transition: all 0.5s ease;
+}
+body.campaign-manager .cols {
+  margin-left: 1rem;
+}
+body.campaign-manager .tcard,
+body.campaign-manager .tcard-lg {
+  min-width: 278px;
+  margin: 0.5rem;
+}
+@media (min-width: 992px) {
+  body.campaign-manager .tcard-lg {
+    min-width: 430px;
+    margin: 0.5rem;
+  }
 }
 body.campaign-manager h3.numbers {
   font-family: "Roboto", sans-serif;

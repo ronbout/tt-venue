@@ -305,8 +305,8 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 	$currency =  get_woocommerce_currency_symbol();
 	?>
 
-	<div class="row mx-0" id="venue-summary-div">
-		<div class="col-md ml-xs-3 ml-s-0 my-2 p-4 cols">
+	<div class="row" id="venue-summary-div">
+		<div class="col-md tcard">
 			<h3 class="numbers" id="vouchers-total">
 					<?php echo $venue_totals['redeemed_qty'] ?>
 			<h3>
@@ -315,7 +315,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 				<i class="fas fa-ticket-alt"></i>
 			</div>
 		</div>
-		<div class="col-md ml-3 my-2 p-4 cols">
+		<div class="col-md tcard">
 			<h3 class="numbers" id="served-total">
 				<?php echo $venue_totals['num_served'] ?>
 			<h3>
@@ -324,7 +324,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 				<i class="fas fa-users"></i>
 			</div>
 		</div>
-		<div class="col-md ml-3 my-2 p-4 cols">
+		<div class="col-md tcard">
 			<h3 class="numbers" id="gr-value-total">
 				<?php echo $currency . ' ' . num_display($venue_totals['revenue']) ?>
 			<h3>
@@ -333,10 +333,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 				<i class="far fa-money-bill-alt"></i>
 			</div>
 		</div>
-	</div>
-	    
-	<div class="row mx-0">
-		<div class="col-md ml-xs-3 ml-s-0 my-2 p-4 cols">
+		<div class="col-md tcard">
 			<h3 class="numbers" id="net-payable-total">
 				<?php echo $currency . ' ' . num_display($venue_totals['net_payable']) ?>
 			<h3>
@@ -345,7 +342,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 				<i class="fas fa-cash-register"></i>
 			</div>
 		</div>
-		<div class="col-md ml-3 my-2 p-4 cols">
+		<div class="col-md tcard">
 			<h3 class="numbers paid-amount-total">
 				<?php echo $currency . ' ' . num_display($venue_totals['paid_amount']) ?>
 			<h3>
@@ -354,7 +351,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type) {
 				<i class="fas fa-coins"></i>
 			</div>
 		</div>
-		<div class="col-md ml-3 my-2 p-4 cols">
+		<div class="col-md tcard">
 			<h3 class="numbers"id="balance-due-total">
 				<?php echo $currency . ' ' . num_display($venue_totals['balance_due']) ?>
 			<h3>

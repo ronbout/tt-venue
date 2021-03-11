@@ -182,15 +182,15 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 		'<i class="fas fa-times-circle ml-2"></i><span class="ml-3 text-danger">Expired</span>';
 	?>
 	<!-- REVENUE CAMPAIGN DETAILS START -->
-	<div class="revenue_camapaign_details mb-4">
+	<div class="revenue_campaign_details mb-4">
 		<div class="row">
-				<div class="col-md-4 revenue_campaign_info ml-xs-3 ml-s-0 cols">
+				<div class="col-md-4 revenue_campaign_info cols">
 						<h3>Revenue Campaign : <?php echo $product_id ?></h3>
 						<p class="campaign_details"><?php echo $product_title ?></p>
 						<br/>
 						<p class="status">Status: <?php echo $status_display ?></p>
 				</div>
-				<div class="col-md ml-3 please_note cols">
+				<div class="col-md please_note cols">
 						<h3>Please Note :</h3>
 						<p>
 								This management console has 3 unique rules, the first is all payments due to venues
@@ -204,7 +204,7 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 				</div>
 		</div>
 		<div class="row mt-3">
-				<div class="col-md please_note ml-xs-3 ml-s-0 cols">
+				<div class="col-md please_note cols">
 						<h3>Important :</h3>
 						<p>
 								By clicking the Redeem button below you are confirming you have fully served that customer and the 
@@ -218,7 +218,7 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 								audit of this campaign and Put Your Payment On Hold!
 						</p>
 				</div>
-				<div class="col-md-4 ml-3 revenue_campaign_info cols">
+				<div class="col-md-4 revenue_campaign_info cols">
 						<h3>Campaign VAT Statement :</h3>
 						<p class="campaign_details">
 								Digital Food Ltd T/A TheTaste.ie<br/><br/>
@@ -386,8 +386,8 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 	$payable = round($payable, 2);
 	?>
             
-	<div class="row mx-0">
-		<div class="col-md ml-xs-3 ml-s-0 my-2 my-2 p-4 cols">
+	<div class="row mt-3">
+		<div class="col-md tcard-lg">
 				<h3 class="numbers">
 					<span id="redeem-qty-display"><?php echo $redeem_qty ?></span>
 				<h3>
@@ -398,7 +398,7 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 						<i class="fas fa-users"></i>
 				</div>
 		</div>
-		<div class="col-md ml-3 my-2 p-4 cols">
+		<div class="col-md tcard-lg">
 				<h3 class="numbers">
 					<span id="grevenue-display">
 						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($grevenue, 2)  ?>
@@ -409,10 +409,7 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 						<i class="far fa-money-bill-alt"></i>
 				</div>
 		</div>
-	</div>
-		
-	<div class="row mx-0">
-		<div class="col-md ml-xs-3 ml-s-0 my-2 p-4 cols">
+		<div class="col-md tcard">
 			<h3 class="numbers">
 				<span id="commission-display">
 					<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($commission, 2)  ?>
@@ -423,7 +420,7 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 					<i class="fas fa-coins"></i>
 			</div>
 		</div>
-		<div class="col-md ml-3 my-2 p-4 cols">
+		<div class="col-md tcard">
 				<h3 class="numbers">
 					<span id="vat-display">
 						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($vat, 2)  ?>
@@ -434,7 +431,7 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 						<i class="fas fa-balance-scale"></i>
 				</div>
 		</div>
-		<div class="col-md ml-3 my-2 p-4 cols">
+		<div class="col-md tcard">
 				<h3 class="numbers">
 					<span class="payable-display">
 						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
@@ -459,10 +456,12 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 function display_terms($termsandconditions) {
 	?>
 	<div class="revenue_camapaign_details mt-5">
-		<div class="revenue_campaign_info p-4 cols">
-			<h3 class="terms">Campaign Terms & Conditions</h3>
-			<p class="text-secondary">(printed on each voucher)</p>
-			<?php	echo stripslashes($termsandconditions) ?>
+		<div class="row">
+			<div class="revenue_campaign_info p-4 col cols">
+				<h3 class="terms">Campaign Terms & Conditions</h3>
+				<p class="text-secondary">(printed on each voucher)</p>
+				<?php	echo stripslashes($termsandconditions) ?>
+			</div>
 		</div>
 	</div>
 	<?php
@@ -525,8 +524,8 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 				$balance_due = $payable - $total_paid_to_customer;
 			?>
 			<!-- PAYMENTS SUMMARY -->
-			<div class="row mx-0 mb-4 mt-3">
-				<div class="col-md ml-xs-3 ml-s-0 my-2 my-2 p-4 cols">
+			<div class="row">
+				<div class="col-md tcard">
 						<h3 class="numbers">
 							<span class="payable-display">
 								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
@@ -537,7 +536,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								<i class="fas fa-cash-register"></i>
 						</div>
 				</div>
-				<div class="col-md ml-3 my-2 p-4 cols">
+				<div class="col-md tcard">
 						<h3 class="numbers">
 							<span class="total-payments-display">
 								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($total_paid_to_customer, 2)  ?>
@@ -548,7 +547,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							<i class="fas fa-coins"></i>
 						</div>
 				</div>
-				<div class="col-md ml-3 my-2 p-4 cols">
+				<div class="col-md tcard">
 						<h3 class="numbers">
 						<span id="balance-due-display">
 						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($balance_due, 2) ?>
