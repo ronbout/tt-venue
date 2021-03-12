@@ -88,12 +88,15 @@ function display_voucher_table($product_id, $multiplier) {
 	} else{
 		$expired_val = 'Y';
 	}
+	$status_display = ('N' === $expired_val) ?
+		'<i class="fas fa-check-circle fa-lg ml-2"></i><span class="ml-3 text-danger">Active</span>' :
+		'<i class="fas fa-times-circle fa-lg ml-2"></i><span class="ml-3 text-danger">Expired</span>';
 
 	?>
 	<!-- CAMPAIGN SUMMARY START -->
 
 	<div class="collapse-container campaign_summary mt-5">
-		<h3 class="text-center">Summary for Campaign <?php echo $product_id ?></h3>
+		<h3 class="text-center">Summary for Campaign <?php echo $product_id . ' - ' . $status_display?></h3>
 		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
 				<i 
 				data-toggle="collapse" 
@@ -184,24 +187,23 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 	<!-- REVENUE CAMPAIGN DETAILS START -->
 	<div class="revenue_campaign_details mb-4">
 		<div class="row">
-				<div class="col-md-4 revenue_campaign_info cols">
-						<h3>Revenue Campaign : <?php echo $product_id ?></h3>
-						<p class="campaign_details"><?php echo $product_title ?></p>
-						<br/>
-						<p class="status">Status: <?php echo $status_display ?></p>
-				</div>
-				<div class="col-md please_note cols">
-						<h3>Please Note :</h3>
-						<p>
-								This management console has 3 unique rules, the first is all payments due to venues
-								are for served customers only, by law TheTaste must be able to complete refunds 
-								direct to customers who have not been served. The second change you will notice is 
-								as a result of the recent GDPR laws meaning we can only disclose the email addresses 
-								of the customers you have served. The final change is due to National Consumer Law
-								meaning we have to allow 14 days after the campaign validity has expired
-								to issue payments.
-						</p>
-				</div>
+			<div class="col-12 cols">
+					<p class="lead"><strong><?php echo $product_title ?></strong></p>
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col-12 please_note cols">
+					<h3>Please Note :</h3>
+					<p>
+							This management console has 3 unique rules, the first is all payments due to venues
+							are for served customers only, by law TheTaste must be able to complete refunds 
+							direct to customers who have not been served. The second change you will notice is 
+							as a result of the recent GDPR laws meaning we can only disclose the email addresses 
+							of the customers you have served. The final change is due to National Consumer Law
+							meaning we have to allow 14 days after the campaign validity has expired
+							to issue payments.
+					</p>
+			</div>
 		</div>
 		<div class="row mt-3">
 				<div class="col-md please_note cols">
