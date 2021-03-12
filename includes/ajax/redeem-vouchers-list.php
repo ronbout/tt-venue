@@ -245,24 +245,26 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 						echo '<button class="btn btn-success order-redeem-checked-btn my-2" disabled >Redeem Checked</button>';
 					}
 				?>
-				<div id="voucher-table-container" class="table-fixed-container">
-					<table class="table table-striped table-bordered table-fixed">
-						<?php display_order_table_heading($order_rows, $expired_val) ?>
+				<div class="table-fixed-wrapper">
+					<div id="voucher-table-container" class="table-fixed-container">
+						<table class="table table-striped table-bordered table-fixed">
+							<?php display_order_table_heading($order_rows, $expired_val) ?>
 
-							<tbody id="voucher-table-body">
+								<tbody id="voucher-table-body">
 
-							<?php 
-							foreach ($order_rows as $order_item_info) {
-								$tproduct = $tproduct + 1;							
-								$total_sold = $total_sold + $order_item_info->quan;
-								if (1 == $order_item_info->downloaded ) {
-									$redeem_qty = $redeem_qty + $order_item_info->quan;
+								<?php 
+								foreach ($order_rows as $order_item_info) {
+									$tproduct = $tproduct + 1;							
+									$total_sold = $total_sold + $order_item_info->quan;
+									if (1 == $order_item_info->downloaded ) {
+										$redeem_qty = $redeem_qty + $order_item_info->quan;
+									}
+									display_order_table_row($order_item_info, $expired_val);
 								}
-								display_order_table_row($order_item_info, $expired_val);
-							}
-							?>
-							</tbody>
-					</table>
+								?>
+								</tbody>
+						</table>
+					</div>
 				</div>
 				<?php 
 				$totals = display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val);
@@ -472,44 +474,46 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 
 	$total_paid_to_customer = 0;
 	?>
-			<div id="payment-table-container" class="table-fixed-container">		
-				<table id="audit-payment-table" class="table table-striped table-bordered table-fixed text-center"
-					<?php
-							// need data for invoice button
-							$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
-					?>
-					data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
-					data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
-					data-venuename="<?php echo $venue_info['name'] ?>" data-venueaddr1="<?php echo $venue_info['address1'] ?>"
-					data-venueaddr2="<?php echo $venue_info['address2'] ?>" data-venuecity="<?php echo $venue_info['city'] ?>"
-					data-venuepostcode="<?php echo $venue_info['postcode'] ?>" >
-					<thead>
-						<tr>
-							<?php echo $admin ? '<th scope="col">Payment ID</th>' : '' ?>
-							<th scope="col" class="sort-by-date">Payment Date</th>
-							<th scope="col">Payment Amount</th>
-							<th scope="col">Invoice</th>
-							<?php if ($admin) {	?>
-								<th scope="col">Comment</th>
-								<th scope="col">Edit</th>
-								<th scope="col">Delete</th>
-								<?php
+			<div class="table-fixed-wrapper">
+				<div id="payment-table-container" class="table-fixed-container">		
+					<table id="audit-payment-table" class="table table-striped table-bordered table-fixed text-center"
+						<?php
+								// need data for invoice button
+								$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
+						?>
+						data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
+						data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
+						data-venuename="<?php echo $venue_info['name'] ?>" data-venueaddr1="<?php echo $venue_info['address1'] ?>"
+						data-venueaddr2="<?php echo $venue_info['address2'] ?>" data-venuecity="<?php echo $venue_info['city'] ?>"
+						data-venuepostcode="<?php echo $venue_info['postcode'] ?>" >
+						<thead>
+							<tr>
+								<?php echo $admin ? '<th scope="col">Payment ID</th>' : '' ?>
+								<th scope="col" class="sort-by-date">Payment Date</th>
+								<th scope="col">Payment Amount</th>
+								<th scope="col">Invoice</th>
+								<?php if ($admin) {	?>
+									<th scope="col">Comment</th>
+									<th scope="col">Edit</th>
+									<th scope="col">Delete</th>
+									<?php
+								}
+								?>
+							</tr>
+						</thead>
+						<tbody id="payment-lines">
+							<?php
+							$ln = 1;
+							foreach($payment_list as $payment){ 
+								// disp_payment_line is in ajax/functions.php
+								echo disp_payment_line($payment, $admin, $commission_val);
+								$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
+								$ln++;
 							}
 							?>
-						</tr>
-					</thead>
-					<tbody id="payment-lines">
-						<?php
-						$ln = 1;
-						foreach($payment_list as $payment){ 
-							// disp_payment_line is in ajax/functions.php
-							echo disp_payment_line($payment, $admin, $commission_val);
-							$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
-							$ln++;
-						}
-						?>
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<?php if ($admin) {
 				?>

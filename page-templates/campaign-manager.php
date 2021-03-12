@@ -391,32 +391,35 @@ function display_products_table($product_calcs, $served_heading, $venue_totals) 
 		</span>
 		<div class="collapse show" id="campaign_listing_collapse">
 			<h4 class="mt-1"><?php echo $type_desc ?> Offers (<?php echo  number_format(count($product_calcs)) ?> Rows)</h4>
-			<div id="product-table-container" class="table-fixed-container mb-5">
-				<table class="table table-striped table-bordered offers_table table-fixed">
-					<thead>
-						<th scope="col">ID</th>
-						<th scope="col">Offer</th>
-						<th scope="col">Status</th>
-						<th scope="col">Revenue</th>
-						<th scope="col"><?php echo $served_heading ?></th>
-						<th scope="col">Commission</th>
-						<th scope="col">Vat</th>
-						<th scope="col">Net</br>Payable</th>
-						<th scope="col">Balance</br>Due</th>
-						<th scope="col">Action</th>
-					</thead>
-					<tbody>
-						<?php
-							foreach($product_calcs as $product_row) {
-								extract($product_row);
-								display_product_row($product_row['product_id'], $title, $status, $revenue, $num_served, $commission, 
-																		$vat, $net_payable, $balance_due, $multiplier);
-							}
-						?>
-					</tbody>
-					<?php display_table_totals($venue_totals) ?>
-				</table>
+			<div class="table-fixed-wrapper mb-5">
+				<div id="product-table-container" class="table-fixed-container">
+					<table class="table table-striped table-bordered offers_table table-fixed">
+						<thead>
+							<th scope="col">ID</th>
+							<th scope="col">Offer</th>
+							<th scope="col">Status</th>
+							<th scope="col">Revenue</th>
+							<th scope="col"><?php echo $served_heading ?></th>
+							<th scope="col">Commission</th>
+							<th scope="col">Vat</th>
+							<th scope="col">Net</br>Payable</th>
+							<th scope="col">Balance</br>Due</th>
+							<th scope="col">Action</th>
+						</thead>
+						<tbody>
+							<?php
+								foreach($product_calcs as $product_row) {
+									extract($product_row);
+									display_product_row($product_row['product_id'], $title, $status, $revenue, $num_served, $commission, 
+																			$vat, $net_payable, $balance_due, $multiplier);
+								}
+							?>
+						</tbody>
+						<?php display_table_totals($venue_totals) ?>
+					</table>
+				</div>
 			</div>
+
 		</div>
 	</div>
 	<?php
@@ -540,32 +543,34 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 		</span>
 		<div class="collapse show" id="all-payments-collapse">
 			<h4 class="mt-1"><?php echo $type_desc ?> Payments (<?php echo  number_format(count($payment_rows)) ?> Rows)</h4>
-			<div id="all-payments-table-container" class="table-fixed-container mb-5">
-				<table id="all-payments-table" class="table table-striped table-bordered table-fixed">
-					<thead>
-						<th scope="col" class="sort-by-product">Product</th>
-						<th scope="col">Payment ID</th>
-						<th scope="col" class="sort-by-date">Date</th>
-						<th scope="col">Amount</th>
-					</thead>
-					<tbody id="all-payment-lines">
-						<?php
-							foreach($payment_rows as $payment) {
-								// disp_all_payment_line is in ajax/functions.php
-								echo disp_all_payment_line($payment);
-							}
-						?>
-					</tbody>
-					<tfoot>
-						<tr>
-							<td colspan="2">&nbsp;</td>
-							<th>Total:</th>
-							<th class="paid-amount-total table-nbr pr-5">
-							<?php echo $currency . ' ' . num_display($payment_total) ?>
-							</th>
-						</tr>
-					</tfoot>
-				</table>
+			<div class="table-fixed-wrapper mb-5">
+				<div id="all-payments-table-container" class="table-fixed-container">
+					<table id="all-payments-table" class="table table-striped table-bordered table-fixed">
+						<thead>
+							<th scope="col" class="sort-by-product">Product</th>
+							<th scope="col">Payment ID</th>
+							<th scope="col" class="sort-by-date">Date</th>
+							<th scope="col">Amount</th>
+						</thead>
+						<tbody id="all-payment-lines">
+							<?php
+								foreach($payment_rows as $payment) {
+									// disp_all_payment_line is in ajax/functions.php
+									echo disp_all_payment_line($payment);
+								}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="2">&nbsp;</td>
+								<th>Total:</th>
+								<th class="paid-amount-total table-nbr pr-5">
+								<?php echo $currency . ' ' . num_display($payment_total) ?>
+								</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 			</div>
 		</div>
 	</div>

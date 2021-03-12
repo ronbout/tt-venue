@@ -10772,6 +10772,14 @@ h2.col-heading_profile {
   margin: 10px 0;
 }
 
+.table-fixed-wrapper {
+  position: relative;
+  border: 1px solid #000;
+  background: #efefef;
+  overflow: hidden;
+  border-radius: 7px;
+}
+
 .table-fixed {
   border: none;
 }
@@ -10798,7 +10806,8 @@ h2.col-heading_profile {
 
 .table-fixed-container {
   overflow-y: scroll;
-  border-top: 1px solid #ddd;
+  border: none;
+  margin-top: -1px;
 }
 
 .table-fixed-container thead th {
