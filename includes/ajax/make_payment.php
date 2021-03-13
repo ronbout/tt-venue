@@ -7,6 +7,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 
 	$user = wp_get_current_user();
 	$role = $user->roles[0];
+	$user_id = get_current_user_id();
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 	
 	$product_id = $product_info['product_id'];
@@ -15,6 +16,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$payment_amount = $payment_info['amount'];
 	$payment_orig_amount = $payment_info['payment_orig_amt'];
 	$payment_date = $payment_info['timestamp'];
+	$payment_orig_date = $payment_info['payment_orig_date'];
 	$payment_comment = $payment_info['comment'];
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
@@ -30,14 +32,14 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$format = array('%d', '%s', '%f', '%s');
 
 	if ($delete_mode) {
-		$edit_mode = 'delete';
+		$edit_mode = 'DELETE';
 		$where = array('id' => $payment_id);
 		$where_format = array('%d');
 		$rows_affected = $wpdb->delete($table, $where, $where_format);
 
 		$payment_diff = - $payment_amount;
 	} elseif ($payment_id) {
-		$edit_mode = 'edit';
+		$edit_mode = 'UPDATE';
 
 		$where = array('id' => $payment_id);
 		$where_format = array('%d');
@@ -45,7 +47,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 
 		$payment_diff = $payment_amount  - $payment_orig_amount;
 	} else {
-		$edit_mode = 'add';
+		$edit_mode = 'INSERT';
 
 		$rows_affected = $wpdb->insert($table, $data, $format);	
 		$payment_id = $wpdb->insert_id;
@@ -56,11 +58,40 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 
 	// if not success set error array and return
 	if (!$rows_affected) {
-		$ret_json = array('error' => 'Could not update database.');
+		$ret_json = array('error' => 'Could not update database. \n' . $wpdb->last_error);
 		echo wp_json_encode($ret_json);
 		return;
 	}
+
+
+	//   update wp_taste_venue_payment_audit
+
+	$payment_audit_table = $wpdb->prefix ."taste_venue_payment_audit";
+	$user_id = get_current_user_id();
+
+	$data = array(
+		'payment_id' => $payment_id,
+		'prev_payment_timestamp' => "INSERT" === $edit_mode ? NULL : $payment_orig_date,
+		'payment_timestamp' => $payment_date,
+		'user_id' => $user_id,
+		'action' => $edit_mode,
+		'prev_amount' => "INSERT" === $edit_mode ? NULL : $payment_orig_amount,
+		'amount' => "DELETE" === $edit_mode ? NULL : $payment_amount,
+		'comment' => $payment_comment
+	);
 	
+	$format = array('%d', '%s', '%s', '%d', '%s', '%f', '%f', '%s');
+
+	$rows_affected = $wpdb->insert($payment_audit_table, $data, $format);	
+
+
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update payment audit table. \n' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		return;
+	}
+
 	$currency = get_woocommerce_currency_symbol();
 
 	// update calcs.  some calcs are necessary because all 
@@ -90,8 +121,8 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	// need to add payment id to payment info as 
 	// All Payments line requires Product ID
 	$payment_info['product_id'] = $product_id;
-	$payment_line = 'delete' === $edit_mode ? '' : disp_payment_line($payment_info, $admin, $commission_value);
-	$all_payment_line = 'delete' === $edit_mode ? '' : disp_all_payment_line($payment_info);
+	$payment_line = 'DELETE' === $edit_mode ? '' : disp_payment_line($payment_info, $admin, $commission_value);
+	$all_payment_line = 'DELETE' === $edit_mode ? '' : disp_all_payment_line($payment_info);
 
 	$hidden_values = "
 	<input type='hidden' id='taste-product-id' value='$product_id'>

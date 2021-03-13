@@ -581,6 +581,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 						<form id="modal-payment-form">
 							<input type="hidden" id="modal-payment-id" value="0" name="payment-id">
 							<input type="hidden" id="modal-payment-orig-amt" name="payment-orig-amt">
+							<input type="hidden" id="modal-payment-orig-date" name="payment-orig-date">
 							<div class="form-group">
 								<label for="modal-payment-date">Payment date</label>
 								<input class="form-control" type="date" id="modal-payment-date" required name="payment-date">
@@ -625,6 +626,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							<input type="hidden" id="modal-comment-amt" name="payment-amt">
 							<input type="hidden" id="modal-comment-date" name="payment-date">
 							<input type="hidden" id="modal-comment-orig-amt" name="payment-orig-amt">
+							<input type="hidden" id="modal-comment-orig-date" name="payment-orig-date">
 							<div class="form-group">
 								<label for="modal-comment">Comment</label>
 								<textarea class="form-control" id="modal-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>

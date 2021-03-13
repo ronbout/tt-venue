@@ -111,6 +111,7 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 		pid: productId,
 		amount: paymentData.get("payment-amt"),
 		payment_orig_amt: paymentData.get("payment-orig-amt"),
+		payment_orig_date: paymentData.get("payment-orig-date"),
 		timestamp: paymentData.get("payment-date"),
 		comment: paymentData.get("payment-comment"),
 		delete_mode: deleteMode,
@@ -142,12 +143,12 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 				);
 				jQuery("#hidden-values").html(respObj.hiddenValues);
 
-				if ("edit" === respObj.editMode) {
+				if ("UPDATE" === respObj.editMode) {
 					jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
 					jQuery(`#all-pay-${paymentInfo.id}`).replaceWith(
 						respObj.allPaymentLine
 					);
-				} else if ("add" === respObj.editMode) {
+				} else if ("INSERT" === respObj.editMode) {
 					jQuery("#payment-lines").append(respObj.paymentLine);
 					jQuery("#all-payment-lines").append(respObj.allPaymentLine);
 				} else {
@@ -377,6 +378,7 @@ const tasteLoadPaymentCommentModal = () => {
 			jQuery("#modal-comment-amt").val(paymentAmt);
 			jQuery("#modal-comment-orig-amt").val(paymentAmt);
 			jQuery("#modal-comment-date").val(paymentDate);
+			jQuery("#modal-comment-orig-date").val(paymentDate);
 			jQuery("#addCommentModalLabel").html(
 				"<strong>Add / Edit Comment for Payment " + paymentId + "</strong>"
 			);
@@ -405,6 +407,7 @@ const tasteLoadPaymentAddEditModal = () => {
 			jQuery("#modal-payment-amt").val(paymentAmt);
 			jQuery("#modal-payment-orig-amt").val(paymentAmt);
 			jQuery("#modal-payment-date").val(paymentDate);
+			jQuery("#modal-payment-orig-date").val(paymentDate);
 			if (deleteMode) {
 				$form.find(":input").prop("readonly", true);
 				jQuery("#payment-modal-addedit").hide();
