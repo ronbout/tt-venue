@@ -187,12 +187,12 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 	<!-- REVENUE CAMPAIGN DETAILS START -->
 	<div class="revenue_campaign_details mb-4">
 		<div class="row">
-			<div class="col-12 cols">
+			<div class="col cols">
 					<p class="lead"><strong><?php echo $product_title ?></strong></p>
 			</div>
 		</div>
 		<div class="row mt-3">
-			<div class="col-12 please_note cols">
+			<div class="col please_note cols">
 					<h3>Please Note :</h3>
 					<p>
 							This management console has 3 unique rules, the first is all payments due to venues
