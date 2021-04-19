@@ -10,40 +10,6 @@ Template Name: Audit By Products
 defined('ABSPATH') or die('Direct script access disallowed.');
 global $wpdb;
 
-
-/***
- * 
- * steal this to run a test agains the offer payments table
- * 
- * are they multiples of the net payable of one order
- * 
- * 
- * get price for product from db and then calc the commission, vat and net payable
- * look to the redeem vouchers list code for SQL and calcs.  Then just divide that number
- * into the payment amount
- * 
- * Run for both individual payments (oldest first)
- * also try the total payments per product...might have been corrected.
- * 
- */
-
-
-
-	
-require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
-require_once TASTE_PLUGIN_PATH.'page-templates/test-products-net-payable.php';
-
-
-/**
- * 
- * 
- * 
- * end of the temp payment testing
- * 
- * 
- */
-
- if (false) {
 if ( !is_user_logged_in()) {
 	
 	require_once TASTE_PLUGIN_PATH.'page-templates/thetaste-venue-login.php';
@@ -59,7 +25,7 @@ if ( !is_user_logged_in()) {
 	}
 }
 
-// require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
+require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/out-column-data.php';
 $year = date('Y');
 $month = date('m');
@@ -141,7 +107,7 @@ $current_date = date('Y-m-d');
 	</html>
 
 <?php
- }
+
 function filter_product_date($start_date_default, $current_date) {
 	?>
 	<div class="filter-form-row">
