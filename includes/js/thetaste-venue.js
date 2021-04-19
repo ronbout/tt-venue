@@ -29,7 +29,10 @@ const tasteLoadVouchers = (prodId, multiplier) => {
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
-			alert("Error loading vouchers: " + errorThrown);
+			console.log(errorThrown);
+			alert(
+				"Error loading vouchers. Your login may have timed out. Please refresh the page and try again."
+			);
 		},
 	});
 };
@@ -91,7 +94,10 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
-			alert("Error redeeming voucher: " + errorThrown);
+			console.log(errorThrown);
+			alert(
+				"Error updating redemption information.  Your login may have timed out. Please refresh the page and try again."
+			);
 		},
 	});
 };
@@ -162,7 +168,10 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
-			alert("Error making payment: " + errorThrown);
+			console.log(errorThrown);
+			alert(
+				"Error updating payment.  Your login may have timed out. Please refresh the page and try again."
+			);
 		},
 	});
 };
