@@ -95,14 +95,13 @@ add_filter( 'query_vars', 'taste_venue_query_vars' );
  * TEST theme hooks for google ads
  */
 
- /*
- function google_fake_ad() {
-	 ?>
-	 <div style="width: 100%; height: 200px; background-color: green; color: white; font-size: 96px; display: flex; justify-content: center; align-items: center; position: relative;">
-	 	<span>Google Ad</span>
-	 </div>
-	 <?php
- }
- add_action('__before_main', 'google_fake_ad');
- */
+function google_fake_ad() {
+	?>
+	<div>
+		<script data-ad-client="ca-pub-3037261303129508" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
+		</script>
+	</div>
+	<?php
+}
+add_action('__before_main', 'google_fake_ad');
  
