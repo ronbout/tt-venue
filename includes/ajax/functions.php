@@ -23,8 +23,10 @@ function comm_vat_per_payment($payment, $commission_val, $payment_date) {
 	$gross = $payment / (1 - $comm_pct - ($comm_pct * $vat_pct));
 	$commission = round($gross * $comm_pct, 2);
 	$vat = round($commission * $vat_pct, 2);
+	// need to recalc the gross to avoid rounding issues 
+	$gross = $payment + $commission + $vat;
 	return array(
-		'pay_gross' => round($gross, 2),
+		'pay_gross' => $gross,
 		'pay_comm' => $commission,
 		'pay_vat' => $vat,
 		'vat_val' => $vat_val
@@ -46,6 +48,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 				<i data-paymentamt="<?php echo $payment['amount'] ?>" data-paymentdate="<?php echo $payment_date ?>"
 								data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
 								data-paymentid="<?php echo $payment['id'] ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
+								data-paygross=<?php echo $pay_calcs['pay_gross'] ?>"
 								class="fas fa-file-pdf print-invoice-btn"></i>
 				</i>
 			</td>

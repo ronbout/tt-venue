@@ -20,7 +20,8 @@ define('EURO', chr(128));
 		 !isset($_GET['pay_date']) || !$_GET['pay_date'] ||
 		 !isset($_GET['venue_name']) || !$_GET['venue_name'] ||
 		 !isset($_GET['comm_val']) || !isset($_GET['vat_val']) ||
-		 !isset($_GET['comm_amt']) || !isset($_GET['vat_amt'])
+		 !isset($_GET['comm_amt']) || !isset($_GET['vat_amt']) ||
+		 !isset($_GET['pay_gross'])
 		) {
 	die("invalid parameters to create invoice");
 } else {
@@ -37,6 +38,7 @@ define('EURO', chr(128));
 	$payment_info = array(
 		'product_id' => $_GET['product_id'],
 		'payment_amt' => $_GET['pay_amt'],
+		'payment_gross' => $_GET['pay_gross'],
 		'payment_id' => $_GET['pay_id'],
 		'payment_date' => $_GET['pay_date'],
 		'commission_val' => $_GET['comm_val'],
@@ -137,6 +139,7 @@ function display_company_tax_info($pdf, $payment_info) {
 function display_payment_info($pdf, $payment_info) {
 	$product_id = $payment_info['product_id'];
 	$payment_amt = $payment_info['payment_amt'];
+	$payment_gross  = $payment_info['payment_gross'];
 	$commission_val = $payment_info['commission_val'];
 	$commission_amt = $payment_info['commission_amt'];
 	$vat_val = $payment_info['vat_val'];
@@ -154,16 +157,20 @@ function display_payment_info($pdf, $payment_info) {
 	$table_x_start = (PAGE_WIDTH - $table_width) / 2;
 
 	$pdf->setX($table_x_start);
-	$pdf->Cell(50, $table_height, ' Staged Payment of:', 1);
-	$pdf->Cell(30, $table_height, ' ' . disp_euros($payment_amt), 1, 2);
+	$pdf->Cell(50, $table_height, ' Gross Sales:', 1);
+	$pdf->Cell(30, $table_height, disp_euros($payment_gross) . ' ', 1, 2, "R");
 
 	$pdf->setX($table_x_start);
 	$pdf->Cell(50, $table_height, " Commission @ {$commission_val}%", 1);
-	$pdf->Cell(30, $table_height, ' ' . disp_euros($commission_amt), 1, 2);
+	$pdf->Cell(30, $table_height, disp_euros($commission_amt) . ' ', 1, 2, "R");
 
 	$pdf->setX($table_x_start);
 	$pdf->Cell(50, $table_height, " Vat @ {$vat_val}%", 1);
-	$pdf->Cell(30, $table_height, ' ' . disp_euros($vat_amt), 1, 2);
+	$pdf->Cell(30, $table_height, disp_euros($vat_amt) . ' ', 1, 2, "R");
+
+	$pdf->setX($table_x_start);
+	$pdf->Cell(50, $table_height, ' Staged Payment of:', 1);
+	$pdf->Cell(30, $table_height, disp_euros($payment_amt) . ' ', 1, 2, "R");
 
 }
 
