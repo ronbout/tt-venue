@@ -223,7 +223,7 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 				<div class="col-md-4 revenue_campaign_info cols">
 						<h3>Campaign VAT Statement :</h3>
 						<p class="campaign_details">
-								Digital Food Ltd T/A TheTaste.ie<br/><br/>
+								JFG Digital Ltd T/A TheTaste.ie<br/><br/>
 								5 Main Street, Rathangan, Co. Kildare<br/><br/>
 								Company No 548735<br/><br/>
 								VAT No 3312776JH<br/><br/>

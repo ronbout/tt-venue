@@ -77,7 +77,7 @@ function set_up_pdf() {
 }
 
 function display_logo($pdf) {
-	$company_title = "Digital Food Ltd. T/A TheTaste.ie";
+	$company_title = "JFG Digital Ltd T/A TheTaste.ie";
 	$company_addr = array(
 		'The Chq Building,',
 		'DogpatchLabs Office',

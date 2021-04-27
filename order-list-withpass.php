@@ -248,7 +248,7 @@ $termsandconditions = str_replace('\u2019','', $termsandconditions);
 	<hr>
 	
 	<b>Campaign VAT Statement</b><br>
-	Digital Food Ltd T/A TheTaste.ie<br>
+	JFG Digital Ltd T/A TheTaste.ie<br>
 	5 Main Street, Rathangan, Co. Kildare<br>
 	Company No 548735<br>
     VAT No 3312776JH<br>
