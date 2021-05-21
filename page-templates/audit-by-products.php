@@ -69,8 +69,8 @@ $current_date = date('Y-m-d');
 			<div class="panel-heading">
 				<form class="form-horizontal" id="audit-filter-form">
 					<?php 
-						filter_product_date($start_date_default, $current_date); 
-						filter_min_order_date($start_date_default, $current_date);
+						filter_product_date($start_date_default, $current_date, $year); 
+						filter_min_order_date($start_date_default, $current_date, $year);
 						filter_recurring_product_check();
 						filter_venue_selection();
 						filter_product_ids();
@@ -108,7 +108,7 @@ $current_date = date('Y-m-d');
 
 <?php
 
-function filter_product_date($start_date_default, $current_date) {
+function filter_product_date($start_date_default, $current_date, $year) {
 	?>
 	<div class="filter-form-row">
 		<div class="col-sm-6 form-group">
@@ -125,13 +125,7 @@ function filter_product_date($start_date_default, $current_date) {
 			<label for="product-year-select" class="col-sm-4 control-label">Select Year</label>
 			<div class="col-sm-7">
 				<select name="product-year-select" id="product-year-select" class="form-control">
-					<option value="2020" selected>2020</option>
-					<option value="2019">2019</option>
-					<option value="2018">2018</option>
-					<option value="2017">2017</option>
-					<option value="2016">2016</option>
-					<option value="2015">2015</option>
-					<option value="2014">2014</option>
+					<?php year_options($year) ?>
 				</select>
 			</div>
 		</div>
@@ -148,7 +142,7 @@ function filter_product_date($start_date_default, $current_date) {
 	<?php
 }
 
-function filter_min_order_date($start_date_default, $current_date) {
+function filter_min_order_date($start_date_default, $current_date, $year) {
 	?>
 	<div class="filter-form-row">
 		<div class="col-sm-6 form-group">
@@ -165,13 +159,7 @@ function filter_min_order_date($start_date_default, $current_date) {
 			<label for="order-year-select" class="col-sm-4 control-label">Select Year</label>
 			<div class="col-sm-7">
 				<select name="order-year-select" id="order-year-select" class="form-control">
-					<option value="2020" selected>2020</option>
-					<option value="2019">2019</option>
-					<option value="2018">2018</option>
-					<option value="2017">2017</option>
-					<option value="2016">2016</option>
-					<option value="2015">2015</option>
-					<option value="2014">2014</option>
+					<?php year_options($year) ?>
 				</select>
 			</div>
 		</div>
@@ -309,4 +297,11 @@ function filter_customize_order_columns($outstanding_order_columns, $out_default
 		</div>
 	</div>
 	<?php
+}
+
+function year_options ($year) {
+	for ($yr = $year; $yr >= 2014; $yr--) {
+		$sel = $yr === $year ? 'selected' : '';
+		echo "<option value='$yr' $sel>$yr</option>";
+	}
 }
