@@ -1,5 +1,6 @@
 jQuery(document).ready(function () {
 	tasteLoadButtons();
+	tasteLoadCollapseIcons();
 	jQuery("#topbutton").length && tasteLoadScrollUp();
 });
 
