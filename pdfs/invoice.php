@@ -11,7 +11,7 @@ define('IMAGE_START_Y', 10);
 define('FONT_STYLE', 'Arial');
 define('FONT_SIZE', 12);
 define('PAGE_WIDTH', 210);
-define('BOX_WIDTH', 80);
+define('BOX_WIDTH', 100);
 define('EURO', chr(128));
 
 // get POST, otherwise die
@@ -144,6 +144,7 @@ function display_payment_info($pdf, $payment_info) {
 	$commission_amt = $payment_info['commission_amt'];
 	$vat_val = $payment_info['vat_val'];
 	$vat_amt = $payment_info['vat_amt'];
+	$tot_comm_w_vat = floatval($commission_amt) + floatval($vat_amt);
 
 	$pdf->SetFont('', 'B');
 	center($pdf, 'Invoice for our Marketing Services');
@@ -155,21 +156,26 @@ function display_payment_info($pdf, $payment_info) {
 	$table_width = BOX_WIDTH;
 	$table_height = LN_HEIGHT + 4;
 	$table_x_start = (PAGE_WIDTH - $table_width) / 2;
+	$label_width = $table_width - 30;
 
 	$pdf->setX($table_x_start);
-	$pdf->Cell(50, $table_height, ' Gross Sales:', 1);
+	$pdf->Cell($label_width, $table_height, ' Gross Sales:', 1);
 	$pdf->Cell(30, $table_height, disp_euros($payment_gross) . ' ', 1, 2, "R");
 
 	$pdf->setX($table_x_start);
-	$pdf->Cell(50, $table_height, " Commission @ {$commission_val}%", 1);
+	$pdf->Cell($label_width, $table_height, " Commission @ {$commission_val}%", 1);
 	$pdf->Cell(30, $table_height, disp_euros($commission_amt) . ' ', 1, 2, "R");
 
 	$pdf->setX($table_x_start);
-	$pdf->Cell(50, $table_height, " Vat @ {$vat_val}%", 1);
+	$pdf->Cell($label_width, $table_height, " Vat @ {$vat_val}%", 1);
 	$pdf->Cell(30, $table_height, disp_euros($vat_amt) . ' ', 1, 2, "R");
+	
+	$pdf->setX($table_x_start);
+	$pdf->Cell($label_width, $table_height, " Total Commission incl VAT", 1);
+	$pdf->Cell(30, $table_height, disp_euros($tot_comm_w_vat) . ' ', 1, 2, "R");
 
 	$pdf->setX($table_x_start);
-	$pdf->Cell(50, $table_height, ' Staged Payment of:', 1);
+	$pdf->Cell($label_width, $table_height, ' Staged Payment of:', 1);
 	$pdf->Cell(30, $table_height, disp_euros($payment_amt) . ' ', 1, 2, "R");
 
 }
