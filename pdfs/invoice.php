@@ -121,8 +121,8 @@ function display_venue_info($pdf,  $y_loc, $venue_info) {
 }
 
 function display_company_tax_info($pdf, $payment_info) {
-	$company_no = '548735';
-	$company_vat_no = '3312776JH';
+	$company_no = '681166';
+	$company_vat_no = '3738046TH';
 	$date = $payment_info['payment_date'];
 	$product_id = $payment_info['product_id'];
 	$invoice_no = $payment_info['payment_id'];
