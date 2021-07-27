@@ -6,7 +6,7 @@
  */
 
  
-function display_voucher_table($product_id, $multiplier) {
+function display_voucher_table($product_id, $multiplier, $cutoff_date) {
 	global $wpdb;
 
 	$user = wp_get_current_user();
@@ -35,7 +35,8 @@ function display_voucher_table($product_id, $multiplier) {
 			AND be.meta_key = '_billing_email'
 			AND o.post_status = 'wc-completed'
 			AND o.post_type = 'shop_order'
-			AND wclook.product_id = %d group by o.id", $product_id, $product_id));
+			AND o.post_date >= %s
+			AND wclook.product_id = %d group by o.id", $product_id, $cutoff_date, $product_id));
 
 	$product_row = $wpdb->get_results($wpdb->prepare("
 		SELECT  pm.post_id, p.post_title,	v.venue_id, 

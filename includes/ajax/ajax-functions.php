@@ -15,12 +15,19 @@ function taste_ajax_load_vouchers() {
 		echo 'No valid product id';
 		wp_die();
 	}
+	
+	if (!isset($_POST['cutoff_date'])) {
+		echo 'Venue Historical Cutoff Date is required';
+		wp_die();
+	}
+
 	$product_id = $_POST['product_id'];
 	$multiplier = $_POST['multiplier'];
+	$cutoff_date = $_POST['cutoff_date'];
 
 	// require_once(plugin_dir_path(__FILE__). 'display-voucher-table.php');
 	require_once(plugin_dir_path(__FILE__). 'redeem-vouchers-list.php');
-	display_voucher_table($product_id, $multiplier);
+	display_voucher_table($product_id, $multiplier, $cutoff_date);
 
 	wp_die();
 }

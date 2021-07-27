@@ -32,6 +32,8 @@ function taste_add_venue_table() {
 			paid_member TINYINT(1) ZEROFILL NOT NULL DEFAULT 0, 
 			member_renewal_date DATE,
 			membership_cost DECIMAL(10,2),
+			use_new_campaign TINYINT(1) NOT NULL DEFAULT 0,
+			historical_cutoff_date DATE NOT NULL DEFAULT CAST('2020-08-01' AS DATE),
 			PRIMARY KEY (venue_id),
 			UNIQUE KEY (name),
 			KEY (venue_type)
