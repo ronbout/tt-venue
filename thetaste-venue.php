@@ -98,8 +98,7 @@ add_filter( 'query_vars', 'taste_venue_query_vars' );
 function google_fake_ad() {
 	?>
 	<div>
-		<script data-ad-client="ca-pub-3037261303129508" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js">
-		</script>
+		<script data-ad-client="ca-pub-2923196082790686" async src=https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js></script>
 	</div>
 	<?php
 }
