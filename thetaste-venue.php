@@ -96,7 +96,7 @@ add_filter( 'query_vars', 'taste_venue_query_vars' );
  */
 
 // function google_fake_ad() {
-// 	?>
+// 
 // 	<div>
 
 // 	</div>
