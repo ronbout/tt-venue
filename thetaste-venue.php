@@ -95,12 +95,12 @@ add_filter( 'query_vars', 'taste_venue_query_vars' );
  * TEST theme hooks for google ads
  */
 
-function google_fake_ad() {
-	?>
-	<div>
+// function google_fake_ad() {
+// 	?>
+// 	<div>
 
-	</div>
-	<?php
-}
-add_action('__before_main', 'google_fake_ad');
+// 	</div>
+// 	<?php
+// }
+//add_action('__before_main', 'google_fake_ad');
  
