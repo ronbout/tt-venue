@@ -29,7 +29,8 @@ function display_voucher_table($product_ids, $disp_order_cols) {
 				i.order_id, i.order_item_id, i.downloaded,
 				wclook.coupon_amount AS coupon_amt,
 				wclook.product_net_revenue AS paid_amt,
-				o.post_date as order_date
+				o.post_date as order_date,
+				o.post_status as order_status
 			FROM {$wpdb->prefix}wc_order_product_lookup wclook
 			JOIN {$wpdb->prefix}woocommerce_order_itemmeta im ON im.order_item_id = wclook.order_item_id
 			LEFT JOIN {$wpdb->prefix}woocommerce_order_items i ON i.order_item_id = wclook.order_item_id
@@ -41,7 +42,6 @@ function display_voucher_table($product_ids, $disp_order_cols) {
 			AND bf.meta_key = '_billing_first_name'
 			AND bl.meta_key = '_billing_last_name'
 			AND be.meta_key = '_billing_email'
-			AND o.post_status = 'wc-completed'
 			AND o.post_type = 'shop_order'
 			AND wclook.product_id in ($pid_placeholders) 
 			GROUP BY wclook.product_id, o.id
@@ -139,6 +139,7 @@ function calc_order_data($order_item_rows, $product_data) {
 
 		$tmp = array();
 		$tmp['order_id'] = $order_item_row['order_id'];
+		$tmp['order_status'] = $order_item_row['order_status'];
 		$tmp['order_item_id'] = $order_item_row['order_item_id'];
 		$tmp['customer_name'] = $order_item_row['cust_fname'] . ' ' . $order_item_row['cust_lname'];
 		$tmp['customer_email'] = $order_item_row['cust_email'];
