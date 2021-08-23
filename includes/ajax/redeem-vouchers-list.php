@@ -141,7 +141,7 @@ function display_voucher_table($product_id, $multiplier) {
 				ORDER BY timestamp ASC ", $product_id), ARRAY_A);
 	?>
 	<div class=" collapse-container payment_transaction mt-5">
-		<h3 class="text-center">Payment Transactions for Campaign <?php echo $product_id ?></h3>
+		<h3 class="text-center">Transactions for Campaign <?php echo $product_id ?></h3>
 		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
 			<i 
 				data-toggle="collapse" 
@@ -490,9 +490,9 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 						data-venuepostcode="<?php echo $venue_info['postcode'] ?>" >
 						<thead>
 							<tr>
-								<?php echo $admin ? '<th scope="col">Payment ID</th>' : '' ?>
-								<th scope="col" class="sort-by-date">Payment Date</th>
-								<th scope="col">Payment Amount</th>
+								<?php echo $admin ? '<th scope="col">ID</th>' : '' ?>
+								<th scope="col" class="sort-by-date">Date</th>
+								<th scope="col">Amount</th>
 								<th scope="col">Invoice</th>
 								<?php if ($admin) {	?>
 									<th scope="col">Comment</th>
