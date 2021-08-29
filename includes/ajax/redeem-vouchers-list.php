@@ -135,7 +135,7 @@ function display_voucher_table($product_id, $multiplier) {
 
 	<?php 
 	$payment_list = $wpdb->get_results($wpdb->prepare("
-				SELECT  id, timestamp, pid, amount, comment
+				SELECT  id, timestamp, pid, amount, comment, comment_visible_venues, status
 				FROM {$wpdb->prefix}offer_payments 
 				WHERE pid = %d
 				ORDER BY timestamp ASC ", $product_id), ARRAY_A);
@@ -155,7 +155,7 @@ function display_voucher_table($product_id, $multiplier) {
 			<?php 
 				$row_count = count($payment_list);
 				if ($row_count)  {
-					echo "Payment Items ($row_count Rows)";
+					echo "Transaction Items ($row_count Rows)";
 				} else {
 					echo "No Payments Found";
 				}
@@ -494,8 +494,8 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								<th scope="col" class="sort-by-date">Date</th>
 								<th scope="col">Amount</th>
 								<th scope="col">Invoice</th>
+								<th scope="col">Comment</th>
 								<?php if ($admin) {	?>
-									<th scope="col">Comment</th>
 									<th scope="col">Edit</th>
 									<th scope="col">Delete</th>
 									<?php
@@ -521,7 +521,8 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 				?>
 					<!--  ADD NEW PAYMENT MODAL TRIGGER  -->
 					<button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#addEditPaymentModal"
-						data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment=""
+						data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment="" 
+						data-commentvisibility="1"
 						>
 						<i class="fa fa-plus-circle"></i> &nbsp; Add new payment
 					</button>
@@ -594,6 +595,12 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								<label for="modal-payment-comment">Comment</label>
 								<textarea class="form-control" id="modal-payment-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
 							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox" value="" id="payment-comment-visible-checkbox" name="payment-comment-visibility">
+								<label class="form-check-label" for="payment-comment-visible-checkbox">
+									Visible to Venues
+								</label>
+							</div>
 						</form>
 					</div>
 					<div class="modal-footer">
@@ -630,6 +637,12 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							<div class="form-group">
 								<label for="modal-comment">Comment</label>
 								<textarea class="form-control" id="modal-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox" value="" id="modal-comment-visible-checkbox" name="payment-comment-visibility">
+								<label class="form-check-label" for="modal-comment-visible-checkbox" >
+									Visible to Venues
+								</label>
 							</div>
 						</form>
 					</div>

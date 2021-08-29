@@ -35,6 +35,11 @@ function comm_vat_per_payment($payment, $commission_val, $payment_date) {
 
 function disp_payment_line($payment, $admin, $commission_val) {
 	$payment_date = date('Y-m-d', strtotime($payment['timestamp']));
+	//  determine comment to display.  if venue and not visible flag or empty, show "Payment"
+	
+	$comment = $payment['comment'];
+	$show_comment_venue = $payment['comment_visible_venues'];
+	$disp_comment = (empty($comment) || (! $show_comment_venue && ! $admin)) ? "Payment" : $comment;
 	ob_start();
 	?>
 		<tr id="pay-<?php echo $payment['id'] ?>">
@@ -52,15 +57,19 @@ function disp_payment_line($payment, $admin, $commission_val) {
 								class="fas fa-file-pdf print-invoice-btn"></i>
 				</i>
 			</td>
-			<?php if ($admin) {	?>
 			<td>
-				<button type="button" class="btn btn-info payment-comment-btn" data-toggle="modal" 
-								data-target="#addCommentModal" 
-								<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
-								>
-					Comment
-				</button>
+				<?php if ($admin) {	?>
+					<button type="button" class="btn btn-info payment-comment-btn" data-toggle="modal" 
+									data-target="#addCommentModal" 
+									<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
+									>
+						Comment
+					</button>
+				<?php  } else { 
+					echo $disp_comment;
+				} ?>
 			</td>
+			<?php if ($admin) {	?>
 			<td class="text-primary">
 				<i data-toggle="modal" data-target="#addEditPaymentModal"
 						<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
@@ -100,5 +109,6 @@ function build_editable_payment_data_attrs($payment, $payment_date, $delete_flag
 		data-paymentid="<?php echo $payment['id'] ?>" data-paymentdate="<?php echo $payment_date ?>" 
 		data-paymentamt="<?php echo $payment['amount'] ?>" data-comment="<?php echo $payment['comment'] ?>"
 		data-deletemode="<?php echo $delete_flag ? 'true' : 'false' ?>"
+		data-commentvisibility="<?php echo $payment['comment_visible_venues'] ?>"
 	<?php
 }

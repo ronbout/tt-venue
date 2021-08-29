@@ -11282,6 +11282,9 @@ body.campaign-manager .add_comment_payment:not(:disabled):not(.disabled):active 
   color: teal;
   outline: none;
 }
+body.campaign-manager #addCommentModal .modal-dialog {
+  max-width: 600px;
+}
 body.campaign-manager .table-fixed {
   margin-bottom: 0;
 }

@@ -18,6 +18,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$payment_date = $payment_info['timestamp'];
 	$payment_orig_date = $payment_info['payment_orig_date'];
 	$payment_comment = $payment_info['comment'];
+	$comment_visible_venues = $payment_info['comment_visible_venues'];
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
 
@@ -26,10 +27,11 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		'pid' => $product_id,
 		'timestamp' => $payment_date,
 		'amount' => $payment_amount,
-		'comment' => $payment_comment
+		'comment' => $payment_comment,
+		'comment_visible_venues' => $comment_visible_venues,
 	);
 	
-	$format = array('%d', '%s', '%f', '%s');
+	$format = array('%d', '%s', '%f', '%s', '%d');
 
 	if ($delete_mode) {
 		$edit_mode = 'DELETE';

@@ -121,6 +121,9 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 		payment_orig_date: paymentData.get("payment-orig-date"),
 		timestamp: paymentData.get("payment-date"),
 		comment: paymentData.get("payment-comment"),
+		comment_visible_venues: paymentData.has("payment-comment-visibility")
+			? 1
+			: 0,
 		delete_mode: deleteMode,
 	};
 	jQuery.ajax({
@@ -311,6 +314,10 @@ const tasteLoadVoucherPaymentButtons = () => {
 				const formId = $submitBtn.attr("form");
 				const $paymentForm = jQuery(`#${formId}`);
 				let paymentData = new FormData($paymentForm[0]);
+				// console.log(paymentData);
+				// for (let [k, v] of paymentData.entries()) {
+				// 	console.log(k, v);
+				// }
 				// check if delete button
 				const btnId = $submitBtn.attr("id");
 				const deleteMode = "modal-payment-delete-btn" === btnId;
@@ -384,6 +391,7 @@ const tasteLoadPaymentCommentModal = () => {
 			const paymentId = button.data("paymentid");
 			const paymentDate = button.data("paymentdate");
 			const paymentAmt = button.data("paymentamt");
+			const commentVisibility = button.data("commentvisibility");
 			jQuery("#modal-comment").val(comment);
 			jQuery("#modal-comment-id").val(paymentId);
 			jQuery("#modal-comment-amt").val(paymentAmt);
@@ -392,6 +400,10 @@ const tasteLoadPaymentCommentModal = () => {
 			jQuery("#modal-comment-orig-date").val(paymentDate);
 			jQuery("#addCommentModalLabel").html(
 				"<strong>Add / Edit Comment for Payment " + paymentId + "</strong>"
+			);
+			jQuery("#modal-comment-visible-checkbox").prop(
+				"checked",
+				commentVisibility
 			);
 			$form.initDirty(true);
 		});
@@ -412,6 +424,7 @@ const tasteLoadPaymentAddEditModal = () => {
 			const paymentId = button.data("paymentid");
 			const paymentDate = button.data("paymentdate");
 			const paymentAmt = button.data("paymentamt");
+			const commentVisibility = button.data("commentvisibility");
 			const deleteMode = button.data("deletemode");
 			jQuery("#modal-payment-comment").val(comment);
 			jQuery("#modal-payment-id").val(paymentId);
@@ -419,6 +432,10 @@ const tasteLoadPaymentAddEditModal = () => {
 			jQuery("#modal-payment-orig-amt").val(paymentAmt);
 			jQuery("#modal-payment-date").val(paymentDate);
 			jQuery("#modal-payment-orig-date").val(paymentDate);
+			jQuery("#payment-comment-visible-checkbox").prop(
+				"checked",
+				commentVisibility
+			);
 			if (deleteMode) {
 				$form.find(":input").prop("readonly", true);
 				jQuery("#payment-modal-addedit").hide();
