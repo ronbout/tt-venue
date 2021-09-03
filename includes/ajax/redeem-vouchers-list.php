@@ -494,7 +494,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								<th scope="col" class="sort-by-date">Date</th>
 								<th scope="col">Amount</th>
 								<th scope="col">Invoice</th>
-								<th scope="col">Comment</th>
+								<th scope="col">Description</th>
 								<?php if ($admin) {	?>
 									<th scope="col">Edit</th>
 									<th scope="col">Delete</th>
@@ -592,7 +592,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								<input class="form-control" type="text" id="modal-payment-amt" required name="payment-amt">
 							</div>
 							<div class="form-group">
-								<label for="modal-payment-comment">Comment</label>
+								<label for="modal-payment-comment">Description</label>
 								<textarea class="form-control" id="modal-payment-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
 							</div>
 							<div class="form-check">
@@ -622,7 +622,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h4 class="modal-title" id="addCommentModalLabel"><strong>Add / Edit Comment</strong></h4>
+						<h4 class="modal-title" id="addCommentModalLabel"><strong>Add / Edit Description</strong></h4>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
@@ -635,7 +635,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							<input type="hidden" id="modal-comment-orig-amt" name="payment-orig-amt">
 							<input type="hidden" id="modal-comment-orig-date" name="payment-orig-date">
 							<div class="form-group">
-								<label for="modal-comment">Comment</label>
+								<label for="modal-comment">Description</label>
 								<textarea class="form-control" id="modal-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
 							</div>
 							<div class="form-check">

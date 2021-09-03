@@ -63,7 +63,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 									data-target="#addCommentModal" 
 									<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
 									>
-						Comment
+						Edit Desc
 					</button>
 				<?php  } else { 
 					echo $disp_comment;
