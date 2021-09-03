@@ -156,13 +156,17 @@ if ($admin) {
 					$type_desc = "Venue";
 			}
 
-			
+				// pull out all payments for the product id's returned above
+			$product_id_list = array_column($product_rows, 'product_id');
+			$placeholders = array_fill(0, count($product_id_list), '%s');
+			$placeholders = implode(', ', $placeholders);
 			$payment_rows = $wpdb->get_results($wpdb->prepare("
-						SELECT  vp.product_id, op.id, op.timestamp, op.pid, op.amount, op.comment
-						FROM $payment_table op
-						JOIN $v_p_join_table vp ON vp.product_id = op.pid
-						WHERE vp.venue_id = %d
-						ORDER BY vp.product_id DESC, op.timestamp ASC ", $venue_id), ARRAY_A);
+						SELECT  pr.product_id, op.id, op.timestamp, op.pid, op.amount, op.comment
+						FROM $product_table pr
+						JOIN $payment_table op ON op.pid = pr.product_id
+						WHERE pr.product_id IN ($placeholders)
+						ORDER BY pr.product_id DESC, op.timestamp ASC ", 
+						$product_id_list), ARRAY_A);
 
 			// create array w product id's as keys and pay totals as values
 			$payment_totals_by_product = calc_payments_by_product($payment_rows);
