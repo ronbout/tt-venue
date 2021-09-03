@@ -199,6 +199,7 @@ function get_user_venue_info() {
 	$use_new_campaign = $venue_row[0]['use_new_campaign'];
 	$venue_voucher_page = 'Hotel' === $venue_type ? '/hotelmanager' : '/restaurantmanager';
 	$venue_type_desc = $venue_type;
+	$cutoff_date = $venue_row[0]['historical_cutoff_date'];
 
-	return compact('user', 'role', 'venue_id', 'venue_name', 'venue_type', 'use_new_campaign', 'venue_voucher_page', 'venue_type_desc', 'venue_row');
+	return compact('user', 'role', 'venue_id', 'venue_name', 'venue_type', 'use_new_campaign', 'venue_voucher_page', 'venue_type_desc', 'venue_row', 'cutoff_date');
 }

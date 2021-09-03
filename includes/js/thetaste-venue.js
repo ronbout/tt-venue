@@ -4,7 +4,7 @@ jQuery(document).ready(function () {
 	jQuery("#topbutton").length && tasteLoadScrollUp();
 });
 
-const tasteLoadVouchers = (prodId, multiplier) => {
+const tasteLoadVouchers = (prodId, multiplier, cutoffDate) => {
 	let modalMsg = "Loading Vouchers...";
 	tasteDispMsg(modalMsg);
 	jQuery.ajax({
@@ -16,6 +16,7 @@ const tasteLoadVouchers = (prodId, multiplier) => {
 			security: tasteVenue.security,
 			product_id: prodId,
 			multiplier: multiplier,
+			cutoff_date: cutoffDate,
 		},
 		success: function (responseText) {
 			//console.log(responseText);
@@ -485,7 +486,9 @@ const tasteLoadButtons = () => {
 			} else {
 				let $rowData = jQuery(this).parent().parent();
 				let multiplier = $rowData.data("multiplier");
-				tasteLoadVouchers(prodId, multiplier);
+				let cutoffDate = jQuery("#venue_cutoff_date").val();
+				console.log("cutoffDate: ", cutoffDate);
+				tasteLoadVouchers(prodId, multiplier, cutoffDate);
 			}
 		});
 };

@@ -2,7 +2,7 @@
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 function display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																				 $country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new) {
+																				 $country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new, $cutoff) {
 			?>
 			<div id="user-venue-fields" style="display: <?php echo ('venue' === $role) ? 'block' : 'none' ?>">
 				<h3><?php esc_html_e('Venue Information'); ?>
@@ -152,6 +152,15 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 							<input type="checkbox" id="venue-use-new" name="venue_use_new"
 								<?php echo $use_new ? 'checked' : '' ?>
 							 />
+						</td>
+					</tr>
+					<tr>
+						<th><label for="venue-cutoff-date"><?php esc_html_e('Historical Cutoff Date'); ?></label>
+						</th>
+						<td>
+							<input type="date" id="venue-cutoff-date" name="venue_cutoff_date"
+								value="<?php echo ($cutoff); ?>"
+								/>
 						</td>
 					</tr>
 				</table>
