@@ -79,7 +79,7 @@ class VenueUserFields
 			$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
 			$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : '';
 			$use_new = !empty($_POST['venue_use_new']) ? $_POST['venue_use_new'] : 0;
-			$cutoff = !empty($_POST['venue_cutoff_date']) ? $_POST['venue_cutoff_date'] : '2020-08-01';
+			$cutoff = !empty($_POST['venue_cutoff_date']) ? $_POST['venue_cutoff_date'] : '';
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
 			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
 																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new, $cutoff);
@@ -104,14 +104,14 @@ class VenueUserFields
 				/**
 				 * A cutoff date must exist, even if it is prior to the creation of theTaste
 				 */
-				if ( empty( $_POST['venue_cutoff_date'] ))  {
-					$cutoff_test = false;
-				} else {
-					$cutoff_test = strtotime($_POST['venue_cutoff_date']) > 0 ? strtotime($_POST['venue_cutoff_date']) : false;
-				}
-				if (! $cutoff_test) {
-					$errors->add( 'required_venue_cutoff_date_error', __( '<strong>ERROR</strong>: Venue Historical Cutoff Date is a required field.', 'crf' ) );
-				}
+				// if ( empty( $_POST['venue_cutoff_date'] ))  {
+				// 	$cutoff_test = false;
+				// } else {
+				// 	$cutoff_test = strtotime($_POST['venue_cutoff_date']) > 0 ? strtotime($_POST['venue_cutoff_date']) : false;
+				// }
+				// if (! $cutoff_test) {
+				// 	$errors->add( 'required_venue_cutoff_date_error', __( '<strong>ERROR</strong>: Venue Historical Cutoff Date is a required field.', 'crf' ) );
+				// }
 
 				/**
 				 * IF PAID MEMBER, renewal and cost are required
@@ -231,7 +231,7 @@ class VenueUserFields
 			$renewal  = '';
 			$cost  = '';
 			$use_new = 0;
-			$cutoff = '2020-08-01';
+			$cutoff = '';
 
 			// if POST has venue data, it takes precedence as it means the user 
 			// created info but could not save due to error (missing venue name?)
