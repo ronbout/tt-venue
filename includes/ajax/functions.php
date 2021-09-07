@@ -58,16 +58,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 				</i>
 			</td>
 			<td>
-				<?php if ($admin) {	?>
-					<button type="button" class="btn btn-info payment-comment-btn" data-toggle="modal" 
-									data-target="#addCommentModal" 
-									<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
-									>
-						Edit Desc
-					</button>
-				<?php  } else { 
-					echo $disp_comment;
-				} ?>
+				<?php echo $admin ? $comment : $disp_comment	?>
 			</td>
 			<?php if ($admin) {	?>
 			<td class="text-primary">
