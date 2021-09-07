@@ -158,7 +158,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date) {
 				if ($row_count)  {
 					echo "Transaction Items ($row_count Rows)";
 				} else {
-					echo "No Payments Found";
+					echo "No Transactions Found";
 				}
 			?>				
 		</h4>
@@ -520,12 +520,12 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 			</div>
 			<?php if ($admin) {
 				?>
-					<!--  ADD NEW PAYMENT MODAL TRIGGER  -->
+					<!--  ADD NEW TRANSACTION MODAL TRIGGER  -->
 					<button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#addEditPaymentModal"
 						data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment="" 
 						data-commentvisibility="1"
 						>
-						<i class="fa fa-plus-circle"></i> &nbsp; Add new payment
+						<i class="fa fa-plus-circle"></i> &nbsp; Add Transaction
 					</button>
 					<?php
 				}
@@ -585,23 +585,26 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							<input type="hidden" id="modal-payment-orig-amt" name="payment-orig-amt">
 							<input type="hidden" id="modal-payment-orig-date" name="payment-orig-date">
 							<div class="form-group">
-								<label for="modal-payment-date">Payment date</label>
+								<label for="modal-payment-date">Transaction date</label>
 								<input class="form-control" type="date" id="modal-payment-date" required name="payment-date">
 							</div>
 							<div class="form-group">
-								<label for="modal-payment-amt">Payment amount</label>
+								<label for="modal-payment-amt">Transaction amount</label>
 								<input class="form-control" type="text" id="modal-payment-amt" required name="payment-amt">
 							</div>
 							<div class="form-group">
-								<label for="modal-payment-comment">Description</label>
+								<label for="modal-payment-comment">Description							
+									<div class="form-check" id="payment-visibility-checkbox-div">
+										<input class="form-check-input" type="checkbox" value="" id="payment-comment-visible-checkbox"	
+												name="payment-comment-visibility">
+											<label class="form-check-label" for="payment-comment-visible-checkbox">
+												Visible to Venues
+											</label>
+									</div>
+								</label>
 								<textarea class="form-control" id="modal-payment-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
 							</div>
-							<div class="form-check">
-								<input class="form-check-input" type="checkbox" value="" id="payment-comment-visible-checkbox" name="payment-comment-visibility">
-								<label class="form-check-label" for="payment-comment-visible-checkbox">
-									Visible to Venues
-								</label>
-							</div>
+
 						</form>
 					</div>
 					<div class="modal-footer">

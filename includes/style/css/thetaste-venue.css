@@ -11048,6 +11048,14 @@ div#profile_edit_form {
   display: none;
 }
 
+#payment-visibility-checkbox-div {
+  display: inline-block;
+  margin-left: 16px;
+}
+#payment-visibility-checkbox-div label {
+  margin-left: -4px;
+}
+
 @media screen and (min-width: 1200px) {
   h2.col-heading {
     font-size: 28px;

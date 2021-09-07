@@ -457,7 +457,9 @@ const tasteLoadPaymentAddEditModal = () => {
 				$form.find(":input").prop("readonly", false);
 				jQuery("#payment-modal-delete").hide();
 				jQuery("#payment-modal-addedit").show();
-				jQuery("#addEditPaymentModalLabel").html("<strong>Enter New Payment");
+				jQuery("#addEditPaymentModalLabel").html(
+					"<strong>Enter New Transaction"
+				);
 			}
 
 			$form.initDirty(true);
