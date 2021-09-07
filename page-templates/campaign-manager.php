@@ -371,6 +371,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutof
 		</div>
 	</div>
 
+	<input type="hidden" id="venue_cutoff_date" value="<?php echo $cutoff_date_str ?>">
 	<div id="summary-hidden-values">
 		<input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
 		<input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">
@@ -381,7 +382,6 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutof
 		<input type="hidden" id="sum-net-payable" value="<?php echo $venue_totals['net_payable'] ?>">
 		<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
 		<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
-		<input type="hidden" id="venue_cutoff_date" value="<?php echo $cutoff_date_str ?>">
 	</div>
 
 	<?php

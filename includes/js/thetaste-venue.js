@@ -489,7 +489,7 @@ const tasteLoadButtons = () => {
 				let $rowData = jQuery(this).parent().parent();
 				let multiplier = $rowData.data("multiplier");
 				let cutoffDate = jQuery("#venue_cutoff_date").val();
-				console.log("cutoffDate: ", cutoffDate);
+				// console.log("cutoffDate: ", cutoffDate);
 				tasteLoadVouchers(prodId, multiplier, cutoffDate);
 			}
 		});
