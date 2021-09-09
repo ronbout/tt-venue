@@ -61,7 +61,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 			</td>
 		<?php } else { ?>
 			<td class="text-danger">
-				<i class="fas fa-ban print-invoice-ban"></i>
+				
 			</td>
 		<?php } ?>
 			<td>
