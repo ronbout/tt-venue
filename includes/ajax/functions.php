@@ -40,6 +40,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 	$comment = $payment['comment'];
 	$show_comment_venue = $payment['comment_visible_venues'];
 	$disp_comment = (empty($comment) || (! $show_comment_venue && ! $admin)) ? "Payment" : $comment;
+	$disp_invoice = $payment['attach_vat_invoice'];
 	ob_start();
 	?>
 		<tr id="pay-<?php echo $payment['id'] ?>">
@@ -49,6 +50,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 		<?php
 			$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $payment_date)
 		?>
+		<?php if ($disp_invoice) { ?>
 			<td class="text-success">
 				<i data-paymentamt="<?php echo $payment['amount'] ?>" data-paymentdate="<?php echo $payment_date ?>"
 								data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
@@ -57,22 +59,27 @@ function disp_payment_line($payment, $admin, $commission_val) {
 								class="fas fa-file-pdf print-invoice-btn"></i>
 				</i>
 			</td>
+		<?php } else { ?>
+			<td class="text-danger">
+				<i class="fas fa-ban print-invoice-ban"></i>
+			</td>
+		<?php } ?>
 			<td>
 				<?php echo $admin ? $comment : $disp_comment	?>
 			</td>
 			<?php if ($admin) {	?>
-			<td class="text-primary">
-				<i data-toggle="modal" data-target="#addEditPaymentModal"
-						<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
-						class="fas fa-pencil-alt edit-payment-btn"></i>
-			</td>
-			<td class="text-danger">
-				<i data-toggle="modal" data-target="#addEditPaymentModal"
-						<?php build_editable_payment_data_attrs($payment, $payment_date, true) ?>
-					class="fas fa-trash-alt"></i>
-			</td>
-		<?php
-	}
+				<td class="text-primary">
+					<i data-toggle="modal" data-target="#addEditPaymentModal"
+							<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
+							class="fas fa-pencil-alt edit-payment-btn"></i>
+				</td>
+				<td class="text-danger">
+					<i data-toggle="modal" data-target="#addEditPaymentModal"
+							<?php build_editable_payment_data_attrs($payment, $payment_date, true) ?>
+						class="fas fa-trash-alt"></i>
+				</td>
+				<?php
+			}
 	?>
 	</tr>
 	<?php
@@ -101,5 +108,6 @@ function build_editable_payment_data_attrs($payment, $payment_date, $delete_flag
 		data-paymentamt="<?php echo $payment['amount'] ?>" data-comment="<?php echo $payment['comment'] ?>"
 		data-deletemode="<?php echo $delete_flag ? 'true' : 'false' ?>"
 		data-commentvisibility="<?php echo $payment['comment_visible_venues'] ?>"
+		data-invoiceattachment="<?php echo $payment['attach_vat_invoice'] ?>"
 	<?php
 }

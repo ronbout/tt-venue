@@ -11274,6 +11274,9 @@ body.campaign-manager .fa-file-pdf {
   font-size: 24px;
   cursor: pointer;
 }
+body.campaign-manager .print-invoice-ban {
+  font-size: 24px;
+}
 body.campaign-manager .add_comment_payment {
   background-color: unset;
   color: #44c4a1;

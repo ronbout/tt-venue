@@ -19,6 +19,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$payment_orig_date = $payment_info['payment_orig_date'];
 	$payment_comment = $payment_info['comment'];
 	$comment_visible_venues = $payment_info['comment_visible_venues'];
+	$attach_vat_invoice = $payment_info['attach_vat_invoice'];
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
 
@@ -29,9 +30,10 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		'amount' => $payment_amount,
 		'comment' => $payment_comment,
 		'comment_visible_venues' => $comment_visible_venues,
+		'attach_vat_invoice' => $attach_vat_invoice,
 	);
 	
-	$format = array('%d', '%s', '%f', '%s', '%d');
+	$format = array('%d', '%s', '%f', '%s', '%d', '%d');
 
 	if ($delete_mode) {
 		$edit_mode = 'DELETE';

@@ -125,6 +125,7 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 		comment_visible_venues: paymentData.has("payment-comment-visibility")
 			? 1
 			: 0,
+		attach_vat_invoice: paymentData.has("payment-invoice-attachment") ? 1 : 0,
 		delete_mode: deleteMode,
 	};
 	jQuery.ajax({
@@ -426,6 +427,7 @@ const tasteLoadPaymentAddEditModal = () => {
 			const paymentDate = button.data("paymentdate");
 			const paymentAmt = button.data("paymentamt");
 			const commentVisibility = button.data("commentvisibility");
+			const invoiceAttachment = button.data("invoiceattachment");
 			const deleteMode = button.data("deletemode");
 			jQuery("#modal-payment-comment").val(comment);
 			jQuery("#modal-payment-id").val(paymentId);
@@ -436,6 +438,10 @@ const tasteLoadPaymentAddEditModal = () => {
 			jQuery("#payment-comment-visible-checkbox").prop(
 				"checked",
 				commentVisibility
+			);
+			jQuery("#payment-attach-invoice-checkbox").prop(
+				"checked",
+				invoiceAttachment
 			);
 			if (deleteMode) {
 				$form.find(":input").prop("readonly", true);
