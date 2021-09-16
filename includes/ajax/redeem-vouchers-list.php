@@ -226,9 +226,9 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 						<h3>Campaign VAT Statement :</h3>
 						<p class="campaign_details">
 								JFG Digital Ltd T/A TheTaste.ie<br/><br/>
-								5 Main Street, Rathangan, Co. Kildare<br/><br/>
-								Company No 548735<br/><br/>
-								VAT No 3312776JH<br/><br/>
+								Dogpatch Labs, Unit 1 The CHG Building, Dublin<br/><br/>
+								Company No 681166<br/><br/>
+								VAT No 3738046TH<br/><br/>
 						</p>
 				</div>
 		</div>
