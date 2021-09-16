@@ -91,7 +91,11 @@ if ( !is_user_logged_in()) {
 
     if (isset($_POST['product_id'])) {
 
-
+			// need to perform a check on the product to see if it belongs to a venue 
+			// that should be using Campaign Manager and redirect if necessary
+			if (! $admin) {
+				check_venue_redirect($_POST['product_id']);
+			}
 
     $id = 1;
     $pid = $_POST['product_id'];
@@ -573,5 +577,27 @@ function update_redeem_audit_table($order_item_id, $product_id) {
 
 	return $rows_affected;
 
+}
+
+function check_venue_redirect($product_id) {
+	global $wpdb; 
+
+	$sql = "
+		SELECT v.use_new_campaign
+			FROM wp_posts p
+			LEFT JOIN wp_taste_venue_products vp ON vp.product_id = p.ID
+			LEFT JOIN wp_taste_venue v ON v.venue_id = vp.venue_id
+			WHERE p.ID = %d";
+
+	$venue_info = $wpdb->get_results(
+		$wpdb->prepare($sql, $product_id), ARRAY_A
+	);
+
+	if ($venue_info[0]['use_new_campaign']) {
+		$url = home_url('/campaign-manager');
+		if (wp_redirect($url)) {
+			exit;
+		}
+	}
 }
 	
