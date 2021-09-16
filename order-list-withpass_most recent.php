@@ -106,18 +106,15 @@ AND p.id = %d", $pass, $pid));
                 ) // $wpdb->prepare
             ); // $wpdb->query
 
-           /* $wpdb->prepare(
+            $wpdb->prepare(
                 "UPDATE " . $wpdb->prefix . "woocommerce_order_items
                 SET downloaded = '1' where order_item_id = %d ",$oii
-            );*/
+            );
 
-						if ($rows_affected) {
-							update_redeem_audit_table($oii, $prid);
-						}
 
         } 
         
-        
+        /*
         if(isset($_POST['makeapayment']))
         {
             $amounttopay = $_POST['MAP_Amount'];
@@ -126,6 +123,7 @@ AND p.id = %d", $pass, $pid));
             $rows_affected = $wpdb->query($wpdb->prepare($KMSQL));
             $wpdb->prepare($KMSQL);
         } 
+				*/
         
         
 
@@ -251,9 +249,9 @@ $termsandconditions = str_replace('\u2019','', $termsandconditions);
 	
 	<b>Campaign VAT Statement</b><br>
 	JFG Digital Ltd T/A TheTaste.ie<br>
-	Dogpatch Labs, Unit 1 The CHG Building, Dublin<br>
-	Company No 681166<br>
-  VAT No 3738046TH<br>
+	5 Main Street, Rathangan, Co. Kildare<br>
+	Company No 548735<br>
+    VAT No 3312776JH<br>
     <br>
 
     </div>
@@ -478,6 +476,7 @@ $termsandconditions = str_replace('\u2019','', $termsandconditions);
 		<center><b>Balance Due : € <?= number_format($payable - $total_paid_to_customer, 2) ?></b></center>
 		<br>
 		<hr>
+	<!--
 		<center>
 		<div style="width:200px;">
 		<b>For Office Use Only:</b><br><br>
@@ -489,6 +488,7 @@ $termsandconditions = str_replace('\u2019','', $termsandconditions);
         </form>
 		</div>
 		</center>
+	-->
 		
 		
 		
@@ -533,29 +533,3 @@ By using our Management Console, you have agreed to our Terms & Conditions : <a 
 </body>
 
 </html>
-
-<?php 
-function update_redeem_audit_table($order_item_id, $product_id) {
-	global $wpdb;
-
-	$redemption_audit_table = $wpdb->prefix ."taste_venue_order_redemption_audit";
-
-	if ( !is_user_logged_in()) {
-		$user_id = 0;
-	} else {
-		$user_id = get_current_user_id();
-	}
-
-	
-	$sql = "INSERT into $redemption_audit_table
-						(order_item_id, user_id, redemption_value)
-					VALUES (%d, %d, %d)";
-
-	$rows_affected = $wpdb->query(
-		$wpdb->prepare($sql, $order_item_id, $user_id, 1)
-	);
-
-	return $rows_affected;
-
-}
-	
