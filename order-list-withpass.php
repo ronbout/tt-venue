@@ -4,6 +4,21 @@ Template Name: Order List PASSWORD
 */
 ?>
 
+<?php 
+
+// need to find out if an admin level user is accessing this page. 
+// otherwise wil restrict payment ability below
+
+
+if ( !is_user_logged_in()) {
+	$admin - false;
+} else {
+	$user = wp_get_current_user();
+	$role = $user->roles[0];
+	$admin = ('ADMINISTRATOR' === strtoupper($role));
+}
+?>
+
 <!DOCTYPE HTML>
 
 <html>
@@ -478,6 +493,7 @@ $termsandconditions = str_replace('\u2019','', $termsandconditions);
 		<center><b>Balance Due : € <?= number_format($payable - $total_paid_to_customer, 2) ?></b></center>
 		<br>
 		<hr>
+	<?php if ($admin) { ?>
 		<center>
 		<div style="width:200px;">
 		<b>For Office Use Only:</b><br><br>
@@ -489,7 +505,7 @@ $termsandconditions = str_replace('\u2019','', $termsandconditions);
         </form>
 		</div>
 		</center>
-		
+	<?php } ?>
 		
 		
 		
