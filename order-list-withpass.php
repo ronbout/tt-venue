@@ -497,7 +497,7 @@ $termsandconditions = str_replace('\u2019','', $termsandconditions);
 		<center><b>Balance Due : € <?= number_format($payable - $total_paid_to_customer, 2) ?></b></center>
 		<br>
 		<hr>
-	<?php if ($admin) { ?>
+	<?php if ($admin && false) { ?>
 		<center>
 		<div style="width:200px;">
 		<b>For Office Use Only:</b><br><br>
