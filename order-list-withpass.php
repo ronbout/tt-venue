@@ -93,7 +93,7 @@ if ( !is_user_logged_in()) {
 
 			// need to perform a check on the product to see if it belongs to a venue 
 			// that should be using Campaign Manager and redirect if necessary
-			if (! $admin) {
+			if (! $admin && false) {
 				check_venue_redirect($_POST['product_id']);
 			}
 
