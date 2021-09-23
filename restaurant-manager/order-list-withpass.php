@@ -17,6 +17,15 @@ if ( !is_user_logged_in()) {
 	$role = $user->roles[0];
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 }
+
+if (isset($_POST['product_id'])) {
+
+	// need to perform a check on the product to see if it belongs to a venue 
+	// that should be using Campaign Manager and redirect if necessary
+	if (! $admin) {
+		check_venue_redirect($_POST['product_id']);
+	}
+}
 ?>
 
 <!DOCTYPE HTML>
@@ -594,10 +603,8 @@ function check_venue_redirect($product_id) {
 	);
 
 	if ($venue_info[0]['use_new_campaign']) {
-		$url = home_url('/campaign-manager');
-		if (wp_redirect($url)) {
-			exit;
-		}
+		require(get_stylesheet_directory(  ) . "/page-templates/splash-page.php");
+		exit;
 	}
 }
 	
