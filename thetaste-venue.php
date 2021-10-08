@@ -91,3 +91,19 @@ function taste_venue_query_vars( $qvars ) {
 }
 add_filter( 'query_vars', 'taste_venue_query_vars' );
 
+/**
+ * Dingle Banner Ad
+ */
+
+function dingle_banner_ad() {
+	?>
+	<div>
+<a href="https://dingledistillery.ie/" target="_blank">
+<img src="https://www.thetaste.ie/wp-content/uploads/2021/09/dinlge-banner-1400.jpg" alt="">
+</a>
+	</div>
+	<?php
+}
+add_action('__before_main', 'dingle_banner_ad');
+//add_action('__before_content', 'dingle_banner_ad');
+
