@@ -76,7 +76,7 @@ function taste_add_venues_posts_table() {
 	dbDelta($sql);
 }
 
-function taste_add_venue_order_redemptions_table() {
+function taste_add_venue_order_redemption_audit_table() {
 	global $wpdb;
 	$venue_order_redemption_table = $wpdb->prefix.'taste_venue_order_redemption_audit';
 
@@ -95,6 +95,29 @@ dbDelta($sql);
 
 }
 
+function taste_add_venue_payment_audit_table() {
+	global $wpdb;
+	$venue_payment_audit_table = $wpdb->prefix.'taste_venue_payment_audit';
+
+	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_audit_table (
+		id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		payment_id INT(11) NOT NULL,
+		entry_timestamp TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+		prev_payment_timestamp TIMESTAMP NULL DEFAULT '0000-00-00 00:00:00',
+		payment_timestamp TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+		user_id BIGINT(20) UNSIGNED NOT NULL,
+		action ENUM('INSERT','UPDATE','DELETE') NOT NULL,
+		prev_amount DECIMAL(10,2) NULL DEFAULT NULL,
+		amount DECIMAL(10,2) NULL DEFAULT NULL,
+		comment VARCHAR(400) NULL DEFAULT NULL,
+		PRIMARY KEY (id),
+		INDEX payment_id (payment_id)
+	)";
+
+require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+dbDelta($sql);
+}
+
 function taste_venue_activation() {
 
 	taste_add_venue_role();
@@ -104,6 +127,10 @@ function taste_venue_activation() {
 	taste_add_venue_product_table();
 
 	taste_add_venues_posts_table();
+
+	taste_add_venue_order_redemption_audit_table();
+
+	taste_add_venue_payment_audit_table();
 }
 /**** END OF ACTIVATION CODE ****/
 
