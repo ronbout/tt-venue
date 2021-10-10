@@ -25,6 +25,54 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
 
+	
+	$payment_db_parms = array(
+		'payment_table' => $wpdb->prefix."taste_venue_payment",
+		'payment_products_table' => $wpdb->prefix."taste_venue_payment_products",
+		'payment_order_xref_table' => $wpdb->prefix."taste_venue_payment_order_item_xref",
+		'product_id' => $product_id,
+		'data_fields' => array(
+			'payment_date' => $payment_date,
+			'payment_amount' => $payment_amount,
+			'payment_amount_product' => $payment_amount,
+			'comment' => $payment_comment,
+			'comment_visible_venues' => $comment_visible_venues,
+			'attach_vat_invoice' => $attach_vat_invoice,
+			'venue_id' => $venue_info['venue_id'],
+		),
+	);
+
+	if ($delete_mode) {
+		$edit_mode = 'DELETE';
+		$db_status = delete_payment($payment_db_parms, $payment_id);
+		if (!$db_status) {
+			return;
+		}
+
+		$payment_diff = - $payment_amount;
+	} elseif ($payment_id) {
+		$edit_mode = 'UPDATE';
+
+		$db_status = update_payment($payment_db_parms, $payment_id);
+		if (!$db_status) {
+			return;
+		}
+
+		$payment_diff = $payment_amount  - $payment_orig_amount;
+	} else {
+		$edit_mode = 'INSERT';
+
+		$db_insert_result = insert_payment($payment_db_parms);
+		$db_status = $db_insert_result['db_status'];
+		if (!$db_status) {
+			return;
+		}
+		$payment_id =$db_insert_result['payment_id'];
+		
+		$payment_info['id'] = $payment_id;
+		$payment_diff = $payment_amount;
+	}
+/*
 	$table = "{$wpdb->prefix}offer_payments";
 	$data = array(
 		'pid' => $product_id,
@@ -72,9 +120,16 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		echo wp_json_encode($ret_json);
 		return;
 	}
+*/
 
 
 	//   update wp_taste_venue_payment_audit
+	/********
+	 * 
+	 * TODO!!  Decide on what to do with this table due to the new payment by order functionality
+	 * 
+	 */
+
 
 	$payment_audit_table = $wpdb->prefix ."taste_venue_payment_audit";
 	$user_id = get_current_user_id();
@@ -193,6 +248,167 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	echo wp_json_encode($ret_json);
 	return;
 }
+
+function insert_payment ($payment_db_parms) {
+	global $wpdb;
+
+	$payment_table = $payment_db_parms['payment_table'];
+	$payment_products_table = $payment_db_parms['payment_products_table'];
+	$payment_order_xref_table = $payment_db_parms['payment_order_xref_table'];
+	$product_id = $payment_db_parms['product_id'];
+	$payment_date = $payment_db_parms['data_fields']['payment_date'];
+	$payment_amount = $payment_db_parms['data_fields']['payment_amount'];
+	$payment_amount_product = $payment_db_parms['data_fields']['payment_amount_product'];
+	$comment = $payment_db_parms['data_fields']['comment'];
+	$comment_visible_venues = $payment_db_parms['data_fields']['comment_visible_venues'];
+	$attach_vat_invoice = $payment_db_parms['data_fields']['attach_vat_invoice'];
+	$venue_id = $payment_db_parms['data_fields']['venue_id'];
+	
+	$wpdb->query( "START TRANSACTION" );
+
+	// main payment table:  wp_taste_venue_payment
+	$data = array(
+		'payment_date' => $payment_date,
+		'venue_id' => $venue_id,
+		'amount' => $payment_amount,
+		'comment' => $comment,
+		'comment_visible_venues' => $comment_visible_venues,
+		'attach_vat_invoice' => $attach_vat_invoice,
+	);
+
+	$format = array('%s', '%d', '%f', '%s', '%d', '%d');
+	$rows_affected = $wpdb->insert($payment_table, $data, $format);	
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update Payment Table. ' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		$wpdb->query("ROLLBACK");
+		return array('db_status' => false);
+	}
+	$payment_id = $wpdb->insert_id;
+
+	// payment x product_id table: wp_taste_venue_payment_products
+	$data = array(
+		'payment_id' => $payment_id,
+		'product_id' => $product_id,
+		'amount' => $payment_amount_product,
+	);
+
+	$format = array('%d', '%d', '%f');
+	$rows_affected = $wpdb->insert($payment_products_table, $data, $format);	
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update Payment Product Table. ' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		$wpdb->query("ROLLBACK");
+		return array('db_status' => false);
+	}
+	
+	$wpdb->query( "COMMIT" );
+
+	return array(
+		'db_status' => true,
+		'payment_id' => $payment_id,
+	);
+}
+
+function delete_payment ($payment_db_parms, $payment_id) {
+	global $wpdb;
+
+	$payment_table = $payment_db_parms['payment_table'];
+	$payment_products_table = $payment_db_parms['payment_products_table'];
+	$payment_order_xref_table = $payment_db_parms['payment_order_xref_table'];
+	
+	$wpdb->query( "START TRANSACTION" );
+	$where = array('payment_id' => $payment_id);
+	$where_format = array('%d');
+
+	// payment x product_id table: wp_taste_venue_payment_products
+	$rows_affected = $wpdb->delete($payment_products_table, $where, $where_format);
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update Payment Product Table.  ' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		$wpdb->query("ROLLBACK");
+		return false;
+	}
+
+	// main payment table:  wp_taste_venue_payment
+	$where = array('id' => $payment_id);
+	$rows_affected = $wpdb->delete($payment_table, $where, $where_format);
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update Payment Table. ' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		$wpdb->query("ROLLBACK");
+		return false;
+	}
+
+	$wpdb->query( "COMMIT" );
+	return true;
+}
+
+function update_payment ($payment_db_parms, $payment_id) {
+	global $wpdb;
+
+	$payment_table = $payment_db_parms['payment_table'];
+	$payment_products_table = $payment_db_parms['payment_products_table'];
+	$payment_order_xref_table = $payment_db_parms['payment_order_xref_table'];
+	$product_id = $payment_db_parms['product_id'];
+	$payment_date = $payment_db_parms['data_fields']['payment_date'];
+	$payment_amount = $payment_db_parms['data_fields']['payment_amount'];
+	$payment_amount_product = $payment_db_parms['data_fields']['payment_amount_product'];
+	$comment = $payment_db_parms['data_fields']['comment'];
+	$comment_visible_venues = $payment_db_parms['data_fields']['comment_visible_venues'];
+	$attach_vat_invoice = $payment_db_parms['data_fields']['attach_vat_invoice'];
+	$venue_id = $payment_db_parms['data_fields']['venue_id'];
+	
+	$wpdb->query( "START TRANSACTION" );
+	
+	// main payment table:  wp_taste_venue_payment
+	$data = array(
+		'payment_date' => $payment_date,
+		'venue_id' => $venue_id,
+		'amount' => $payment_amount,
+		'comment' => $comment,
+		'comment_visible_venues' => $comment_visible_venues,
+		'attach_vat_invoice' => $attach_vat_invoice,
+	);
+
+	$format = array('%s', '%d', '%f', '%s', '%d', '%d');
+
+	$where = array('id' => $payment_id);
+	$where_format = array('%d');
+	$rows_affected = $wpdb->update($payment_table, $data, $where, $format, $where_format);	
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update Payment Table. ' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		$wpdb->query("ROLLBACK");
+		return false;
+	}
+
+	// payment x product_id table: wp_taste_venue_payment_products
+	$data = array(
+		'product_id' => $product_id,
+		'amount' => $payment_amount_product,
+	);
+
+	$format = array('%d', '%f');
+	$where = array('payment_id' => $payment_id);
+	$rows_affected = $wpdb->update($payment_products_table, $data, $where, $format, $where_format);	
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update Payment Product Table.  ' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		$wpdb->query("ROLLBACK");
+		return false;
+	}
+	
+	$wpdb->query( "COMMIT" );
+	return true;
+}
+
 
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting
