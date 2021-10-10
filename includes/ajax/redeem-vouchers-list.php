@@ -135,12 +135,20 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date) {
 	<!-- CAMPAIGN SUMMARY END -->
 
 	<?php 
+	// $payment_list = $wpdb->get_results($wpdb->prepare("
+	// 			SELECT  id, timestamp, pid, amount, comment, comment_visible_venues, status,
+	// 				attach_vat_invoice
+	// 			FROM {$wpdb->prefix}offer_payments 
+	// 			WHERE pid = %d
+	// 			ORDER BY timestamp ASC ", $product_id), ARRAY_A);
+
 	$payment_list = $wpdb->get_results($wpdb->prepare("
-				SELECT  id, timestamp, pid, amount, comment, comment_visible_venues, status,
-					attach_vat_invoice
-				FROM {$wpdb->prefix}offer_payments 
-				WHERE pid = %d
-				ORDER BY timestamp ASC ", $product_id), ARRAY_A);
+			SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, pprods.amount, pay.comment,
+				pay.comment_visible_venues, pay.status, pay.attach_vat_invoice
+			FROM {$wpdb->prefix}taste_venue_payment pay
+			JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
+			WHERE pprods.product_id = %d
+			ORDER BY pay.payment_date ASC ", $product_id), ARRAY_A);
 	?>
 	<div class=" collapse-container payment_transaction mt-5">
 		<h3 class="text-center">Transactions for Campaign <?php echo $product_id ?></h3>

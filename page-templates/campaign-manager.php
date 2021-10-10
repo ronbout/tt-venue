@@ -89,7 +89,10 @@ if ($admin) {
 			$order_items_table = $wpdb->prefix."woocommerce_order_items";
 			$venue_table = $wpdb->prefix."taste_venue";
 			$v_p_join_table = $wpdb->prefix."taste_venue_products";
-			$payment_table = $wpdb->prefix."offer_payments";
+			$offer_payments_table = $wpdb->prefix."offer_payments";
+			$payment_table = $wpdb->prefix."taste_venue_payment";
+			$payment_products_table = $wpdb->prefix."taste_venue_payment_products";
+			$payment_order_xref_table = $wpdb->prefix."taste_venue_payment_order_item_xref";
 
 			// get venue name and cutoff date
 			$venue_row = $wpdb->get_results($wpdb->prepare("
@@ -165,13 +168,25 @@ if ($admin) {
 			$product_id_list = array_column($product_rows, 'product_id');
 			$placeholders = array_fill(0, count($product_id_list), '%s');
 			$placeholders = implode(', ', $placeholders);
+			// $payment_rows_old = $wpdb->get_results($wpdb->prepare("
+			// 			SELECT  pr.product_id, op.id, op.timestamp, op.pid, op.amount, op.comment
+			// 			FROM $product_table pr
+			// 			JOIN $offer_payments_table op ON op.pid = pr.product_id
+			// 			WHERE pr.product_id IN ($placeholders)
+			// 			ORDER BY pr.product_id DESC, op.timestamp ASC ", 
+			// 			$product_id_list), ARRAY_A);
+
+						
 			$payment_rows = $wpdb->get_results($wpdb->prepare("
-						SELECT  pr.product_id, op.id, op.timestamp, op.pid, op.amount, op.comment
-						FROM $product_table pr
-						JOIN $payment_table op ON op.pid = pr.product_id
-						WHERE pr.product_id IN ($placeholders)
-						ORDER BY pr.product_id DESC, op.timestamp ASC ", 
-						$product_id_list), ARRAY_A);
+				SELECT  pprods.product_id, pay.id, pay.payment_date as timestamp, pprods.product_id as pid, 
+						pprods.amount, pay.comment, pox.order_item_id, pay.status
+				FROM $payment_products_table pprods
+					JOIN  $payment_table pay ON pay.id = pprods.payment_id
+					JOIN $v_p_join_table vp ON vp.product_id = pprods.product_id
+					LEFT JOIN $payment_order_xref_table pox ON pox.payment_id = pay.id
+				WHERE pprods.product_id IN ($placeholders)
+				ORDER BY pprods.product_id DESC, pay.payment_date ASC ", 
+				$product_id_list), ARRAY_A);
 
 			// create array w product id's as keys and pay totals as values
 			$payment_totals_by_product = calc_payments_by_product($payment_rows);
