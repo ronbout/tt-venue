@@ -555,10 +555,12 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 				class="collapse-icon fas fa-minus-circle"></i>
 		</span>
 		<div class="collapse show" id="all-payments-collapse">
-			<h4 class="mt-1"><?php echo $type_desc ?> Payments (<?php echo  number_format(count($payment_rows)) ?> Rows)</h4>
+			<h4 class="mt-1"><?php echo $type_desc ?> 
+					Payments (<span id="all-payments-cnt-disp"><?php echo  number_format(count($payment_rows)) ?></span> Rows)</h4>
 			<div class="table-fixed-wrapper mb-5">
 				<div id="all-payments-table-container" class="table-fixed-container">
-					<table id="all-payments-table" class="table table-striped table-bordered table-fixed">
+					<table id="all-payments-table" class="table table-striped table-bordered table-fixed"
+							data-allpaymentcnt="<?php echo count($payment_rows) ?>">
 						<thead>
 							<th scope="col" class="sort-by-product">Product</th>
 							<th scope="col">Payment ID</th>

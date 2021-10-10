@@ -20,6 +20,8 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$payment_comment = $payment_info['comment'];
 	$comment_visible_venues = $payment_info['comment_visible_venues'];
 	$attach_vat_invoice = $payment_info['attach_vat_invoice'];
+	$all_payment_cnt = $payment_info['all_payment_cnt'];
+	$prod_payment_cnt = $payment_info['prod_payment_cnt'];
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
 
@@ -40,6 +42,8 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		$where = array('id' => $payment_id);
 		$where_format = array('%d');
 		$rows_affected = $wpdb->delete($table, $where, $where_format);
+		$prod_payment_cnt -= 1;
+		$all_payment_cnt -= 1;
 
 		$payment_diff = - $payment_amount;
 	} elseif ($payment_id) {
@@ -52,6 +56,8 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		$payment_diff = $payment_amount  - $payment_orig_amount;
 	} else {
 		$edit_mode = 'INSERT';
+		$prod_payment_cnt += 1;
+		$all_payment_cnt += 1;
 
 		$rows_affected = $wpdb->insert($table, $data, $format);	
 		$payment_id = $wpdb->insert_id;
@@ -179,7 +185,9 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		'allPaymentLine' => $all_payment_line,
 		'editMode' => $edit_mode,
 		'hiddenValues' => $hidden_values,
-		'sumHiddenValues' => $sum_hidden_values
+		'sumHiddenValues' => $sum_hidden_values,
+		'allPaymentCnt' => $all_payment_cnt,
+		'prodPaymentCnt' => $prod_payment_cnt,
 );
 
 	echo wp_json_encode($ret_json);

@@ -153,11 +153,11 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date) {
 				class="collapse-icon fas fa-minus-circle"></i>
 		</span>
 		<div class="collapse show" id="payment_transaction_collapse">
-		<h4>
+		<h4 id="prod-transactions-cnt-display">
 			<?php 
-				$row_count = count($payment_list);
-				if ($row_count)  {
-					echo "Transaction Items ($row_count Rows)";
+				$payment_count = count($payment_list);
+				if ($payment_count)  {
+					echo "Transaction Items ($payment_count Rows)";
 				} else {
 					echo "No Transactions Found";
 				}
@@ -165,7 +165,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date) {
 		</h4>
 
 	<?php
-		$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list);
+		$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count);
 	?>
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
@@ -473,7 +473,7 @@ function display_terms($termsandconditions) {
 	<?php
 }
 
-function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list) {
+function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count) {
 	global $wpdb;
 
 	$total_paid_to_customer = 0;
@@ -489,7 +489,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 						data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
 						data-venuename="<?php echo $venue_info['name'] ?>" data-venueaddr1="<?php echo $venue_info['address1'] ?>"
 						data-venueaddr2="<?php echo $venue_info['address2'] ?>" data-venuecity="<?php echo $venue_info['city'] ?>"
-						data-venuepostcode="<?php echo $venue_info['postcode'] ?>" >
+						data-venuepostcode="<?php echo $venue_info['postcode'] ?>" data-paymentcnt="<?php echo $payment_count ?>">
 						<thead>
 							<tr>
 								<?php echo $admin ? '<th scope="col">ID</th>' : '' ?>

@@ -105,6 +105,9 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 };
 
 const tasteMakePayment = (paymentData, $modal, deleteMode) => {
+	for (let [k, v] of paymentData.entries()) {
+		console.log(k, v);
+	}
 	// jQuery("#addEditPaymentModal").modal("hide");
 	// jQuery("#addCommentModal").modal("hide");
 	$modal.modal("hide");
@@ -127,6 +130,8 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 			: 0,
 		attach_vat_invoice: paymentData.has("payment-invoice-attachment") ? 1 : 0,
 		delete_mode: deleteMode,
+		all_payment_cnt: paymentData.get("allpaymentcnt"),
+		prod_payment_cnt: paymentData.get("prodpaymentcnt"),
 	};
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
@@ -167,6 +172,23 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 					jQuery(`#pay-${paymentInfo.id}`).remove();
 					jQuery(`#all-pay-${paymentInfo.id}`).remove();
 				}
+
+				jQuery("#all-payments-cnt-disp").html(respObj.allPaymentCnt);
+				jQuery("#all-payments-table").length &&
+					jQuery("#all-payments-table").data(
+						"allpaymentcnt",
+						respObj.allPaymentCnt
+					);
+
+				const prodCntDisp = respObj.prodPaymentCnt
+					? `Transaction Items (${respObj.prodPaymentCnt} Rows)`
+					: "No Transactions Found";
+
+				jQuery("#prod-transactions-cnt-display").html(prodCntDisp);
+				jQuery("#audit-payment-table").data(
+					"paymentcnt",
+					respObj.prodPaymentCnt
+				);
 
 				tasteLoadInvoiceButtons();
 				tasteCloseMsg();
@@ -323,6 +345,17 @@ const tasteLoadVoucherPaymentButtons = () => {
 				// check if delete button
 				const btnId = $submitBtn.attr("id");
 				const deleteMode = "modal-payment-delete-btn" === btnId;
+				// get payment counts for both All Payments (if exists) and product Payments
+				const allPayCount = jQuery("#all-payments-table").length
+					? jQuery("#all-payments-table").data("allpaymentcnt")
+					: 0;
+
+				const prodPayCount = jQuery("#audit-payment-table").length
+					? jQuery("#audit-payment-table").data("paymentcnt")
+					: 0;
+
+				paymentData.set("allpaymentcnt", allPayCount);
+				paymentData.set("prodpaymentcnt", prodPayCount);
 				tasteMakePayment(paymentData, $modal, deleteMode);
 			});
 
