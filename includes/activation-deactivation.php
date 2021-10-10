@@ -118,6 +118,48 @@ require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 dbDelta($sql);
 }
 
+function taste_add_payment_tables() {
+	global $wpdb;
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+	$venue_payment_table = $wpdb->prefix.'taste_venue_payment';
+	$venue_payment_products_table = $wpdb->prefix.'taste_venue_payment_products';
+	$venue_payment_order_item_table = $wpdb->prefix.'taste_venue_payment_order_item_xref';
+	
+	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_table (
+		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`payment_date` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+		`venue_id` BIGINT(20) NULL DEFAULT NULL,
+		`amount` DECIMAL(10,2) NOT NULL,
+		`comment` VARCHAR(400) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+		`comment_visible_venues` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1',
+		`attach_vat_invoice` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1',
+		`status` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+		PRIMARY KEY (`payment_id`) USING BTREE,
+		INDEX `venue_id` (`venue_id`) USING BTREE,
+		INDEX `payment_id_venue_id` (`payment_id`, `venue_id`) USING BTREE
+	)";
+	dbDelta($sql);
+	
+	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_products_table (
+		`payment_id` BIGINT(20) UNSIGNED NOT NULL,
+		`product_id` BIGINT(20) UNSIGNED NOT NULL,
+		`amount` DECIMAL(10,2) NOT NULL,
+		PRIMARY KEY (`payment_id`, `product_id`) USING BTREE,
+		INDEX `product_id` (`product_id`) USING BTREE
+	)";
+	dbDelta($sql);
+
+	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_order_item_table (
+		payment_id INT(11) NOT NULL,
+		order_item_id BIGINT(20) UNSIGNED NOT NULL,
+		PRIMARY KEY (payment_id, order_item_id),
+		INDEX order_item_id (order_item_id) USING BTREE
+	)";
+	dbDelta($sql);
+
+}
+
 function taste_venue_activation() {
 
 	taste_add_venue_role();
@@ -131,6 +173,8 @@ function taste_venue_activation() {
 	taste_add_venue_order_redemption_audit_table();
 
 	taste_add_venue_payment_audit_table();
+
+	taste_add_payment_tables();
 }
 /**** END OF ACTIVATION CODE ****/
 
