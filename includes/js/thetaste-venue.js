@@ -193,7 +193,12 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 	});
 };
 
-const tasteMakePayment = (paymentData, $modal, deleteMode) => {
+const tasteMakePayment = (
+	paymentData,
+	$modal,
+	deleteMode,
+	ordersFlag = false
+) => {
 	for (let [k, v] of paymentData.entries()) {
 		console.log(k, v);
 	}
@@ -221,6 +226,8 @@ const tasteMakePayment = (paymentData, $modal, deleteMode) => {
 		delete_mode: deleteMode,
 		all_payment_cnt: paymentData.get("allpaymentcnt"),
 		prod_payment_cnt: paymentData.get("prodpaymentcnt"),
+		orders_flag: ordersFlag,
+		product_order_list: JSON.stringify(tasteVenue.paymentOrders.productList),
 	};
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
@@ -657,8 +664,8 @@ const tasteLoadPaymentByOrdersModal = () => {
 		});
 
 	// load the submit button for this modal
-	jQuery(".orders-payment-submit").length &&
-		jQuery(".orders-payment-submit")
+	jQuery("#orders-payment-submit").length &&
+		jQuery("#orders-payment-submit")
 			.off("click")
 			.click(function (e) {
 				e.preventDefault();
@@ -682,7 +689,7 @@ const buildOrdersPaymentTableRows = () => {
 			<tr>
 				<td>${prodId}</td>
 				<td>${prodInfo.orderQty}</td>
-				<td>${prodInfo.netPayable}</td>
+				<td>${financial(prodInfo.netPayable)}</td>
 			</tr>
 		`;
 	}
@@ -690,7 +697,7 @@ const buildOrdersPaymentTableRows = () => {
 		<tr>
 			<td>Totals:</td>
 			<td>${tasteVenue.paymentOrders.totalQty}</td>
-			<td>${tasteVenue.paymentOrders.totalNetPayable}</td>
+			<td>${financial(tasteVenue.paymentOrders.totalNetPayable)}</td>
 		</tr>
 	`;
 	return {

@@ -9,6 +9,9 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$role = $user->roles[0];
 	$user_id = get_current_user_id();
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
+
+	var_dump($payment_info);
+	die();
 	
 	$product_id = $product_info['product_id'];
 

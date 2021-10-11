@@ -260,16 +260,31 @@ if ($admin) {
 						</div>
 					</div>
 					<form id="orders-payment-add-form">
-						<input type="hidden" id="orders-payment-id" value="0" name="orders-payment-id" value="">
-						<input type="hidden" id="orders-payment-orig-amt" name="orders-payment-orig-amt" value="0">
-						<input type="hidden" id="orders-payment-orig-date" name="orders-payment-orig-date" value="<?php echo date('Y-m-d') ?>">
+						<input type="hidden" id="orders-payment-id" name="payment-id" value="">
+						<input type="hidden" id="orders-payment-orig-amt" name="payment-orig-amt" value="0">
+						<input type="hidden" id="orders-payment-orig-date" name="payment-orig-date" value="<?php echo date('Y-m-d') ?>">
 						<div class="form-group">
-							<label for="orders-payment-date">Payment date</label>
-							<input class="form-control" type="date" id="orders-payment-date" name="orders-payment-date" value="<?php echo date('Y-m-d') ?>">
+							<label for="orders-payment-date">Transaction date</label>
+							<input class="form-control" type="date" id="orders-payment-date" required name="payment-date" value="<?php echo date('Y-m-d') ?>">
 						</div>
 						<div class="form-group">
-							<label for="orders-payment-comment">Comment</label>
-							<textarea class="form-control" id="orders-payment-comment" name="orders-payment-comment" placeholder="Add comment" rows="3"></textarea>
+							<label for="orders-payment-comment">Description
+								<div class="form-check payment-visibility-checkbox-div">
+										<input class="form-check-input" type="checkbox" checked id="orders-payment-comment-visible-checkbox"	
+												name="payment-comment-visibility">
+											<label class="form-check-label" for="orders-payment-comment-visible-checkbox">
+												Visible to Venues
+											</label>
+									</div>
+							</label>
+							<textarea class="form-control" id="orders-payment-comment" name="payment-comment" placeholder="Add description" rows="3"></textarea>
+						</div>
+						<div class="form-check" >
+							<input class="form-check-input" type="checkbox" checked	id="orders-payment-attach-invoice-checkbox"	
+									name="payment-invoice-attachment">
+								<label class="form-check-label" for="orders-payment-attach-invoice-checkbox">
+									Generate Invoice for this Payment
+								</label>
 						</div>
 					</form>
 				</div>

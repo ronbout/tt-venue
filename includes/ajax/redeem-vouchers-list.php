@@ -665,7 +665,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							</div>
 							<div class="form-group">
 								<label for="modal-payment-comment">Description							
-									<div class="form-check" id="payment-visibility-checkbox-div">
+									<div class="form-check" class="payment-visibility-checkbox-div">
 										<input class="form-check-input" type="checkbox" value="" id="payment-comment-visible-checkbox"	
 												name="payment-comment-visibility">
 											<label class="form-check-label" for="payment-comment-visible-checkbox">
@@ -673,7 +673,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 											</label>
 									</div>
 								</label>
-								<textarea class="form-control" id="modal-payment-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
+								<textarea class="form-control" id="modal-payment-comment" name="payment-comment" placeholder="Add description" rows="3"></textarea>
 							</div>
 							<div class="form-check" >
 								<input class="form-check-input" type="checkbox" value="" id="payment-attach-invoice-checkbox"	
