@@ -48,6 +48,8 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		if (!$db_status) {
 			return;
 		}
+		$prod_payment_cnt -= 1;
+		$all_payment_cnt -= 1;
 
 		$payment_diff = - $payment_amount;
 	} elseif ($payment_id) {
@@ -68,6 +70,8 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 			return;
 		}
 		$payment_id =$db_insert_result['payment_id'];
+		$prod_payment_cnt += 1;
+		$all_payment_cnt += 1;
 		
 		$payment_info['id'] = $payment_id;
 		$payment_diff = $payment_amount;

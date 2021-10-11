@@ -179,7 +179,7 @@ if ($admin) {
 						
 			$payment_rows = $wpdb->get_results($wpdb->prepare("
 				SELECT  pprods.product_id, pay.id, pay.payment_date as timestamp, pprods.product_id as pid, 
-						pprods.amount, pay.comment, pox.order_item_id, pay.status
+						pay.amount, pprods.amount as product_amount, pay.comment, pox.order_item_id, pay.status
 				FROM $payment_products_table pprods
 					JOIN  $payment_table pay ON pay.id = pprods.payment_id
 					JOIN $v_p_join_table vp ON vp.product_id = pprods.product_id

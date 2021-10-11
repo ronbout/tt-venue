@@ -143,7 +143,8 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date) {
 	// 			ORDER BY timestamp ASC ", $product_id), ARRAY_A);
 
 	$payment_list = $wpdb->get_results($wpdb->prepare("
-			SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, pprods.amount, pay.comment,
+			SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, 
+				pprods.amount, pay.comment, pay.amount as total_amount,
 				pay.comment_visible_venues, pay.status, pay.attach_vat_invoice
 			FROM {$wpdb->prefix}taste_venue_payment pay
 			JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
