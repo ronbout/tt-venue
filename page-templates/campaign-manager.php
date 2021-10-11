@@ -50,9 +50,11 @@ if ($admin) {
 		);
 		array_unshift($nav_links, $venue_select_link);
 	} 
+	$display_mode = 'payment';
 } else {
 	$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
 	$venue_id = $user->ID;
+	$display_mode = 'redeem';
 }
 
 ?>
@@ -69,6 +71,7 @@ if ($admin) {
 				let tasteVenue = {}
 				tasteVenue.ajaxurl = '". admin_url( 'admin-ajax.php' ) . "'
 				tasteVenue.security = '" . wp_create_nonce('taste-venue-nonce') . "'
+				tasteVenue.displayMode = '" . $display_mode . "'
 			</script>
 		";
 	if (!$venue_id) {
@@ -207,7 +210,10 @@ if ($admin) {
 			<?php	
 				display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str);
 				if (count($product_rows)) {
-					display_products_table($product_calcs, $served_heading, $venue_totals);
+					if ($admin) { 
+						display_mode_toggle($display_mode); 
+					}
+					display_products_table($product_calcs, $served_heading, $venue_totals, $admin);
 				} else {
 					echo "<h2>*** No Products Found ***</h2>";
 				}
@@ -223,6 +229,58 @@ if ($admin) {
 
 		</section>
 	</main>
+
+	<!-- Selected offers payment modal -->
+	<div class="modal fade" id="paySelectedModal" tabindex="-1" data-backdrop="static"  role="dialog" aria-labelledby="paySelectedModalLabel" 					aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="paySelectedModalLabel">Add Payment</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<span for="">Selected offers by ID</span>
+					<div class="table-fixed-wrapper">
+						<div id="orders-payment-table-container" class="table-fixed-container">
+							<table id="orders-payment-table" class="table table-striped table-hover table-bordered table-fixed text-center">
+								<thead>
+									<tr>
+										<th scope="col">Product Id</th>
+										<th scope="col">Qty</th>
+										<th scope="col">Net Payable</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+								<tfoot>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+					<form id="orders-payment-add-form">
+						<input type="hidden" id="orders-payment-id" value="0" name="orders-payment-id" value="">
+						<input type="hidden" id="orders-payment-orig-amt" name="orders-payment-orig-amt" value="0">
+						<input type="hidden" id="orders-payment-orig-date" name="orders-payment-orig-date" value="<?php echo date('Y-m-d') ?>">
+						<div class="form-group">
+							<label for="orders-payment-date">Payment date</label>
+							<input class="form-control" type="date" id="orders-payment-date" name="orders-payment-date" value="<?php echo date('Y-m-d') ?>">
+						</div>
+						<div class="form-group">
+							<label for="orders-payment-comment">Comment</label>
+							<textarea class="form-control" id="orders-payment-comment" name="orders-payment-comment" placeholder="Add comment" rows="3"></textarea>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">	 
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="submit" form="orders-payment-add-form" id="orders-payment-submit" class="btn btn-primary">Make payment</button>
+				</div>
+			</div>
+		</div>
+  </div>
+	<!-- End of selected offers payment modal -->
 
 	<div id="spinner-modal" class="modal" data-backdrop="static" tabindex="-1"
 		aria-hidden="true">
@@ -314,6 +372,10 @@ function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights
 		}
 		$tmp['num_served'] = $tmp['redeemed_qty'] * $multiplier;
 		$tmp['multiplier'] = $multiplier;
+		
+		// check if this product qualifies for making payments against order items
+		$payment_by_order_item_flg = check_payment_by_order_item($tmp, $product_row['post_date'], $payment_rows);
+		$tmp['payment_by_order_item'] = $payment_by_order_item_flg;
 
 		$product_calcs[] = $tmp;
 
@@ -326,6 +388,19 @@ function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights
 		}
 	}
 	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
+}
+
+function check_payment_by_order_item($prod_calcs, $prod_date, $payment_rows) {
+	if (!$prod_calcs['balance_due'] || strtotime($prod_date) < strtotime('2020-01-01')) {
+		return false;
+	}
+
+	$prod_id = $prod_calcs['product_id'];
+	$prod_payments = array_filter($payment_rows, function ($payment_row) use ($prod_id) {
+		return $prod_id === $payment_row['product_id'];
+	});
+
+	return ! in_array(NULL, array_column($prod_payments, 'order_item_id'));
 }
 
 function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str) {
@@ -405,9 +480,10 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutof
 	<?php
 }
 
-function display_products_table($product_calcs, $served_heading, $venue_totals) {
+function display_products_table($product_calcs, $served_heading, $venue_totals, $admin) {
+	$margin_class = $admin ? 'mt-1' : 'mt-5';
 	?>
-	<div class="collapse-container product-listing-container mt-5">
+	<div class="collapse-container product-listing-container <?php echo $margin_class ?>">
 		<h3 class="text-center">Campaigns</h3>
 		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
 				<i 
@@ -418,7 +494,18 @@ function display_products_table($product_calcs, $served_heading, $venue_totals) 
 				class="collapse-icon fas fa-minus-circle"></i>
 		</span>
 		<div class="collapse show" id="campaign_listing_collapse">
-			<h4 class="mt-1"><?php echo $type_desc ?> Offers (<?php echo  number_format(count($product_calcs)) ?> Rows)</h4>
+		<div class="d-flex justify-content-between my-3 pr-4">
+			<span>
+				<h4 class="mt-1">Offers (<?php echo  number_format(count($product_calcs)) ?> Rows)</h4>
+			</span>
+			<span class="payment-mode-only">
+				<button class="btn btn-success mr-2" id="payAllSelected" data-toggle="modal" data-target="#paySelectedModal">
+					Pay selected offers
+				</button>
+				Total Payment for Selected Orders: 
+				<span id="select-orders-pay-total">3,987</span>
+			</span>
+		</div>
 			<div class="table-fixed-wrapper mb-5">
 				<div id="product-table-container" class="table-fixed-container">
 					<table class="table table-striped table-bordered offers_table table-fixed">
@@ -432,6 +519,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals) 
 							<th scope="col">Vat</th>
 							<th scope="col">Net</br>Payable</th>
 							<th scope="col">Balance</br>Due</th>
+							<th scope="col" class="payment-mode-only">Selected</br> Pay Amt</th>
 							<th scope="col">Action</th>
 						</thead>
 						<tbody>
@@ -439,7 +527,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals) 
 								foreach($product_calcs as $product_row) {
 									extract($product_row);
 									display_product_row($product_row['product_id'], $title, $status, $revenue, $num_served, $commission, 
-																			$vat, $net_payable, $balance_due, $multiplier);
+																			$vat, $net_payable, $balance_due, $multiplier, $payment_by_order_item);
 								}
 							?>
 						</tbody>
@@ -499,7 +587,7 @@ function display_table_totals($venue_totals) {
 }
 
 function display_product_row($id, $title, $status, $revenue, $num_served, $commission, 
-														 $vat, $net_payable, $balance_due, $multiplier) {
+														 $vat, $net_payable, $balance_due, $multiplier, $payment_by_order_item) {
 	$status_display = 'Active' === $status ?
 			'<td class="active-prod text-center">
 				<i class="fas fa-check-circle"></i><br/>
@@ -546,11 +634,30 @@ function display_product_row($id, $title, $status, $revenue, $num_served, $commi
 				<?php echo num_display($balance_due) ?>
 			</span>
 		</td>
-		<td class="text-center">
-			<button data-prod-id="<?php echo $id ?>" class="btn btn-primary view_offer product-select-btn">
+		<td class="table-nbr payment-mode-only">
+			<span id="selected-pay-amt-<?php echo $id ?>"><?php echo $payment_by_order_item ? '0.00' : '--' ?></span>
+		</td>
+		<td class="text-center redeem-mode-only">
+			<button data-prod-id="<?php echo $id ?>" data-payments-below="<?php echo $payment_by_order_item ? 'false' : 'true' ?>"
+				class="btn btn-primary view_offer product-select-btn">
 				<i class="far fa-eye"></i><br/>
 				View
 			</button>
+		</td>
+		<td class="text-center payment-mode-only">
+			<?php 
+			if ($payment_by_order_item) {
+				?>
+				<button data-prod-id="<?php echo $id ?>" data-payments-below="false" class="btn btn-primary view_offer product-select-btn
+					product-select-for-payments">
+					<i class="far fa-eye"></i><br/>
+					Select Orders
+				</button>
+				<?php
+			} else {
+				echo 'X';
+			}
+			?>
 		</td>
 	</tr>
  <?php
@@ -560,7 +667,7 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 	$currency =  get_woocommerce_currency_symbol();
 	?>
 	<div class="collapse-container all-payments-container mt-5">
-		<h3 class="text-center">All Payments for <?php echo $venue_name ?></h3>
+		<h3 class="text-center">All Transactions for <?php echo $venue_name ?></h3>
 		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
 				<i 
 				data-toggle="collapse" 
@@ -570,8 +677,7 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 				class="collapse-icon fas fa-minus-circle"></i>
 		</span>
 		<div class="collapse show" id="all-payments-collapse">
-			<h4 class="mt-1"><?php echo $type_desc ?> 
-					Payments (<span id="all-payments-cnt-disp"><?php echo  number_format(count($payment_rows)) ?></span> Rows)</h4>
+			<h4 class="mt-1">Transactions (<span id="all-payments-cnt-disp"><?php echo  number_format(count($payment_rows)) ?></span> Rows)</h4>
 			<div class="table-fixed-wrapper mb-5">
 				<div id="all-payments-table-container" class="table-fixed-container">
 					<table id="all-payments-table" class="table table-striped table-bordered table-fixed"
@@ -605,6 +711,33 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 		</div>
 	</div>
 	<?php 
+}
+
+function display_mode_toggle($display_mode) {
+	if ("redeem" === $display_mode) {
+		$redeem_class = 'toggle-on';
+		$payment_disabled = '';
+		$payment_class = '';
+		$redeem_disabled = 'disabled';
+	} else {
+		$redeem_class = '';
+		$payment_disabled = 'disabled';
+		$payment_class = 'toggle-on';
+		$redeem_disabled = '';
+	}
+	
+	?>
+		<div class="ttoggle-container d-flex align-items-center">
+			<div class="row">
+				<div class="col-6 ttoggle toggle-div-redeem">
+					<button id="toggle-btn-redeem" data-toggle="redeem" <?php echo $redeem_disabled ?> class="toggle-btn <?php echo $redeem_class ?>">Redemptions</button>
+				</div>
+				<div class="col-6 ttoggle toggle-div-payment">
+					<button id="toggle-btn-payment" data-toggle="payment" <?php echo $payment_disabled ?> class="toggle-btn <?php echo $payment_class ?>">Payments</button>
+				</div>
+			</div>
+		</div>
+	<?php
 }
 
 function num_display ($num) {

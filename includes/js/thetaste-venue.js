@@ -1,10 +1,25 @@
+let cmDisplayMode;
 jQuery(document).ready(function () {
+	if ($("body").hasClass("campaign-manager")) {
+		cmDisplayMode = tasteVenue?.displayMode;
+		cmDisplayMode = cmDisplayMode || "redeem";
+		setupToggleButtons();
+		setDisplayForMode();
+		buildPaymentOrders();
+		displayOrderPaymentInfo();
+		tasteLoadPaymentByOrdersModal();
+	}
 	tasteLoadButtons();
 	tasteLoadCollapseIcons();
 	jQuery("#topbutton").length && tasteLoadScrollUp();
 });
 
-const tasteLoadVouchers = (prodId, multiplier, cutoffDate) => {
+const tasteLoadVouchers = (
+	prodId,
+	multiplier,
+	cutoffDate,
+	makePaymentsBelow
+) => {
 	let modalMsg = "Loading Vouchers...";
 	tasteDispMsg(modalMsg);
 	jQuery.ajax({
@@ -17,12 +32,14 @@ const tasteLoadVouchers = (prodId, multiplier, cutoffDate) => {
 			product_id: prodId,
 			multiplier: multiplier,
 			cutoff_date: cutoffDate,
+			make_payments_below: makePaymentsBelow,
 		},
 		success: function (responseText) {
 			//console.log(responseText);
 			jQuery("#all-payments-collapse").length &&
 				jQuery("#all-payments-collapse").collapse("hide");
 			jQuery("#voucher-list-div").html(responseText);
+			setDisplayForMode();
 			tasteLoadVoucherPaymentButtons();
 			tasteCloseMsg();
 			tasteScrollToVouchers();
@@ -37,6 +54,78 @@ const tasteLoadVouchers = (prodId, multiplier, cutoffDate) => {
 			);
 		},
 	});
+};
+
+const setDisplayForMode = () => {
+	if ("redeem" === cmDisplayMode) {
+		jQuery(".payment-mode-only").hide();
+		jQuery(".redeem-mode-only").show();
+	} else {
+		jQuery(".redeem-mode-only").hide();
+		jQuery(".payment-mode-only").show();
+	}
+};
+
+const buildPaymentOrders = () => {
+	// each paymentOrdrs object property will be a product id
+	// containing an array of orders that are selected on the screen
+	tasteVenue.paymentOrders = {
+		totalNetPayable: 0,
+		totalQty: 0,
+		productList: {},
+	};
+	jQuery(".product-select-for-payments").each(function () {
+		const prodId = $(this).data("prod-id");
+		tasteVenue.paymentOrders.productList[prodId] = {
+			netPayable: 0,
+			orderQty: 0,
+			orderItemList: [],
+		};
+	});
+};
+
+const displayOrderPaymentInfo = () => {
+	// re-calcs totals and displays on screen
+	let totalPayments = 0;
+	let totalQty = 0;
+	for (const [prodId, prodInfo] of Object.entries(
+		tasteVenue.paymentOrders.productList
+	)) {
+		let prodTotal = 0;
+		let prodQtyTotal = 0;
+		prodInfo.orderItemList.forEach((orderItem) => {
+			prodTotal += orderItem.orderNetPayable;
+			prodQtyTotal += orderItem.orderQty;
+		});
+		tasteVenue.paymentOrders.productList[prodId].netPayable = prodTotal;
+		tasteVenue.paymentOrders.productList[prodId].orderQty = prodQtyTotal;
+		totalPayments += prodTotal;
+		totalQty += prodQtyTotal;
+		jQuery(`#selected-pay-amt-${prodId}`).text(financial(prodTotal));
+	}
+	tasteVenue.paymentOrders.totalNetPayable = totalPayments;
+	tasteVenue.paymentOrders.totalQty = totalQty;
+	jQuery("#select-orders-pay-total").text(financial(totalPayments));
+	jQuery("#payAllSelected").attr("disabled", !totalPayments);
+};
+
+const setupToggleButtons = () => {
+	jQuery(".toggle-btn")
+		.off("click")
+		.click(function (e) {
+			e.preventDefault();
+			$this = jQuery(this);
+			const mode = $this.data("toggle");
+			const toggleId = $this.attr("id");
+			const $toggleContainer = $this.parent().parent();
+			const $otherToggleBtn = $toggleContainer
+				.find(".toggle-btn")
+				.not(`#${toggleId}`);
+			$this.addClass("toggle-on").attr("disabled", true);
+			$otherToggleBtn.removeClass("toggle-on").attr("disabled", false);
+			cmDisplayMode = mode;
+			setDisplayForMode();
+		});
 };
 
 const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
@@ -328,6 +417,58 @@ const tasteLoadVoucherPaymentButtons = () => {
 			tasteRedeemVoucher(orderInfoList, true);
 		});
 
+	jQuery("#checkbox-payment-all")
+		.off("click")
+		.click(function (e) {
+			const checkVal = jQuery(this).prop("checked");
+			const prodId = jQuery("#taste-product-id").val();
+			tasteVenue.paymentOrders.productList[prodId].orderItemList = [];
+			jQuery(".order-payment-check").each(function () {
+				$this = jQuery(this);
+				const $rowData = $this.parent().parent();
+				$this.prop("checked", checkVal);
+				if (checkVal) {
+					loadOrderPaymentInfo($rowData);
+				}
+				displayOrderPaymentInfo();
+			});
+		});
+
+	jQuery(".order-payment-check")
+		.off("click")
+		.click(function (e) {
+			const $rowData = jQuery(this).parent().parent();
+			const orderItemId = $rowData.data("order-item-id");
+			const checkVal = jQuery(this).prop("checked");
+			const prodId = jQuery("#taste-product-id").val();
+			if (checkVal) {
+				loadOrderPaymentInfo($rowData);
+			} else {
+				tasteVenue.paymentOrders.productList[prodId].orderItemList =
+					tasteVenue.paymentOrders.productList[prodId].orderItemList.filter(
+						function (payItem) {
+							payItem.orderItemId !== orderItemId;
+						}
+					);
+			}
+			displayOrderPaymentInfo();
+		});
+
+	const loadOrderPaymentInfo = ($rowData) => {
+		const orderId = $rowData.data("order-id");
+		const orderItemId = $rowData.data("order-item-id");
+		const orderQty = $rowData.data("order-qty");
+		const orderNetPayable = $rowData.data("order-net-payable");
+		const prodId = jQuery("#taste-product-id").val();
+		const orderInfo = {
+			orderItemId,
+			orderId,
+			orderQty,
+			orderNetPayable,
+		};
+		tasteVenue.paymentOrders.productList[prodId].orderItemList.push(orderInfo);
+	};
+
 	jQuery(".payment-save-btn").length &&
 		jQuery(".payment-save-btn")
 			.off("click")
@@ -505,6 +646,59 @@ const tasteLoadPaymentAddEditModal = () => {
 		});
 };
 
+const tasteLoadPaymentByOrdersModal = () => {
+	jQuery("#paySelectedModal")
+		.off("show.bs.modal")
+		.on("show.bs.modal", function (e) {
+			const tableRows = buildOrdersPaymentTableRows();
+			// console.log(tableRows);
+			jQuery("#orders-payment-table > tbody").html(tableRows.tbodyRows);
+			jQuery("#orders-payment-table > tfoot").html(tableRows.tfootRow);
+		});
+
+	// load the submit button for this modal
+	jQuery(".orders-payment-submit").length &&
+		jQuery(".orders-payment-submit")
+			.off("click")
+			.click(function (e) {
+				e.preventDefault();
+				const $submitBtn = jQuery(this);
+				const $modal = $submitBtn.closest(".modal");
+				const formId = $submitBtn.attr("form");
+				const $paymentForm = jQuery(`#${formId}`);
+				let paymentData = new FormData($paymentForm[0]);
+				const deleteMode = false;
+				tasteMakePayment(paymentData, $modal, deleteMode, true);
+			});
+};
+
+const buildOrdersPaymentTableRows = () => {
+	let tbodyRows = "";
+
+	for (const [prodId, prodInfo] of Object.entries(
+		tasteVenue.paymentOrders.productList
+	)) {
+		tbodyRows += `
+			<tr>
+				<td>${prodId}</td>
+				<td>${prodInfo.orderQty}</td>
+				<td>${prodInfo.netPayable}</td>
+			</tr>
+		`;
+	}
+	tfootRow = `
+		<tr>
+			<td>Totals:</td>
+			<td>${tasteVenue.paymentOrders.totalQty}</td>
+			<td>${tasteVenue.paymentOrders.totalNetPayable}</td>
+		</tr>
+	`;
+	return {
+		tbodyRows,
+		tfootRow,
+	};
+};
+
 const tasteSortPaymentTable = () => {
 	jQuery("#audit-payment-table").length &&
 		tasteSortTableByColumn("audit-payment-table", "sort-by-date", true);
@@ -528,8 +722,9 @@ const tasteLoadButtons = () => {
 				let $rowData = jQuery(this).parent().parent();
 				let multiplier = $rowData.data("multiplier");
 				let cutoffDate = jQuery("#venue_cutoff_date").val();
+				let makePaymentsBelow = jQuery(this).data("payments-below");
 				// console.log("cutoffDate: ", cutoffDate);
-				tasteLoadVouchers(prodId, multiplier, cutoffDate);
+				tasteLoadVouchers(prodId, multiplier, cutoffDate, makePaymentsBelow);
 			}
 		});
 };
@@ -572,6 +767,10 @@ const tasteScrollToVouchers = () => {
 		},
 		600
 	);
+};
+
+const financial = (num) => {
+	return Number.parseFloat(num).toFixed(2);
 };
 
 /***********************************************************

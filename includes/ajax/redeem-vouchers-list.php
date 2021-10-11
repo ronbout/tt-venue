@@ -6,8 +6,10 @@
  */
 
  
-function display_voucher_table($product_id, $multiplier, $cutoff_date) {
+function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_payments_below) {
 	global $wpdb;
+	
+	$make_payments_below = !("false" === $make_payments_below);
 
 	$user = wp_get_current_user();
 	$role = $user->roles[0];
@@ -174,7 +176,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date) {
 		</h4>
 
 	<?php
-		$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count);
+		$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count, $make_payments_below);
 	?>
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
@@ -272,7 +274,7 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 									if (1 == $order_item_info->downloaded ) {
 										$redeem_qty = $redeem_qty + $order_item_info->quan;
 									}
-									display_order_table_row($order_item_info, $expired_val);
+									display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val);
 								}
 								?>
 								</tbody>
@@ -291,7 +293,7 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 			}
 			?>
 	<?php
-	// have to return some of th totals calulated 
+	// have to return some of th totals calculated 
 	$order_totals = array (
 		'payable' => $payable,
 		'commission' => $commission,
@@ -303,37 +305,65 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 }
 
 function display_order_table_heading($order_rows, $expired_val) {
-	// just the table headers
+	$show_payment_check_all = check_for_payments($order_rows);
 	?>
-		<thead>
-			<th scope="col">
-				<?php 
-					if ($expired_val === 'N' && in_array('0', array_column($order_rows, 'downloaded'))) {
-						?>
-							<input type="checkbox" id="checkbox-all">
-						<?php
-					} else {
-						echo '';
-					}
-				?>
-			</th>
-			<th scope="col">Order ID</th>
-			<th scope="col">Customer Name</th>
-			<th scope="col">Customer Email</th>
-			<th scope="col">Quantity</th>
-			<th scope="col">Action</th>
-		</thead>
+	<thead>
+		<th scope="col" class="redeem-mode-only">
+			<?php 
+				if ($expired_val === 'N' && in_array('0', array_column($order_rows, 'downloaded'))) {
+					?>
+						<input type="checkbox" id="checkbox-all">
+					<?php
+				} else {
+					echo '';
+				}
+			?>
+		</th>
+		<th scope="col" class="payment-mode-only">
+			<?php 
+				if ($show_payment_check_all) {
+					?>
+						<input type="checkbox" id="checkbox-payment-all">
+					<?php
+				} else {
+					echo '';
+				}
+			?>
+		</th>
+		<th scope="col" class="payment-mode-only">Order Item Id</th>
+		<th scope="col">Order ID</th>
+		<th scope="col">Customer Name</th>
+		<th scope="col" class="redeem-mode-only">Customer Email</th>
+		<th scope="col">Quantity</th>
+		<th scope="col" class="payment-mode-only">Net Payable</th>
+		<th scope="col" class="redeem-mode-only">Status</th>
+		<th scope="col" class="payment-mode-only">Redeem</br>Status</th>
+	</thead>
 	<?php
 }
 
-function display_order_table_row($order_item_info, $expired_val) {
-	// display the individual  row
+function check_for_payments($order_rows) {
+	$return_status = false;
+	foreach ($order_rows as $order) {
+		if (!$order->payment_id && $order->downloaded) {
+			$return_status = true;
+			break;
+		}
+	}
+	return $return_status;
+}
+
+function display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val) {
+	$action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3';
+	$payment_due = !$order_item_info->payment_id && $order_item_info->downloaded === '1';
+	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan);
 	?>
 	<tr data-order-id="<?php echo $order_item_info->order_id ?>" 
 			data-order-qty="<?php echo $order_item_info->quan ?>" 
 			data-order-item-id="<?php echo $order_item_info->itemid ?>"
+			data-order-net-payable="<?php echo $net_payable_order_item ?>"
 	>
-		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center">
+		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center  redeem-mode-only">
 			<?php 
 				if ($order_item_info->downloaded === '0' && $expired_val === 'N') {
 					?>
@@ -344,23 +374,33 @@ function display_order_table_row($order_item_info, $expired_val) {
 				}
 			?>
 		</td>
+		<td id="td-check-order-payment-id-<?php echo $order_item_info->order_id ?>" class="text-center payment-mode-only">
+			<?php 
+				if ($payment_due) {
+					echo '<input type="checkbox" class="order-payment-check">';
+				} else {
+					echo '';
+				}
+			?>
+		</td>
+		<td class="payment-mode-only"><?php echo $order_item_info->itemid ?></td>
 		<td><?php echo $order_item_info->order_id ?></td>
 		<td><?php echo $order_item_info->b_fname . ' ' . $order_item_info->b_lname ?></td>
-		<?php
-					if ($order_item_info->downloaded == '1') {
-				?>
-					<td><span id="email-display-<?php echo $order_item_info->order_id ?>"><?php echo $order_item_info->b_email ?></span></td>
-				<?php
-					} else {
-				?>
-					<td><span id="email-display-<?php echo $order_item_info->order_id ?>">*** GDPR BLANKED EMAIL ***</span></td>
-				<?php
-					}
-				?>
-
+		<td class="redeem-mode-only">
+			<span id="email-display-<?php echo $order_item_info->order_id ?>">
+			<?php
+				if ($order_item_info->downloaded == '1') {
+						echo $order_item_info->b_email;
+				} else {
+						echo "*** GDPR BLANKED EMAIL ***";
+				}
+			?>
+			</span>
+		</td>
 		<td class="table-nbr"><?php echo $order_item_info->quan ?> </td>
+		<td class="table-nbr payment-mode-only"><?php echo round($net_payable_order_item,2) ?></td>
 		<?php $action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3' ?>
-		<td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>" class="<?php echo $action_class ?>">
+		<td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>" class="<?php echo $action_class ?> redeem-mode-only">
 				<?php
 				if ('0' == $order_item_info->downloaded) {
 						if ('N' == $expired_val) {
@@ -385,6 +425,27 @@ function display_order_table_row($order_item_info, $expired_val) {
 				}
 						?>
 		</td> 
+		<td class="payment-mode-only">
+			<?php
+				if ('0' == $order_item_info->downloaded) {
+							echo '<span class="notserved">
+											<i class="fas fa-times-circle"></i>
+											Not Served 
+										</span>';
+				}	elseif ($payment_due) {
+					echo '<span class="text-primary font-weight-bold payment-due-status" >
+									<i class="fas fa-minus-circle"></i>
+									Payment Due
+								</span>';
+				} else {
+					echo '<span class="served">
+									<i class="fas fa-check-circle"></i>
+									Paid
+								</span>';
+				}
+
+			?>
+		</td>
 	</tr>
 	<?php
 }
@@ -482,7 +543,7 @@ function display_terms($termsandconditions) {
 	<?php
 }
 
-function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count) {
+function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count, $make_payments_below) {
 	global $wpdb;
 
 	$total_paid_to_customer = 0;
@@ -506,7 +567,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								<th scope="col">Amount</th>
 								<th scope="col">Invoice</th>
 								<th scope="col">Description</th>
-								<?php if ($admin) {	?>
+								<?php if ($admin && $make_payments_below) {	?>
 									<th scope="col">Edit</th>
 									<th scope="col">Delete</th>
 									<?php
@@ -528,7 +589,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 					</table>
 				</div>
 			</div>
-			<?php if ($admin) {
+			<?php if ($admin && $make_payments_below) {
 				?>
 					<!--  ADD NEW TRANSACTION MODAL TRIGGER  -->
 					<button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#addEditPaymentModal"

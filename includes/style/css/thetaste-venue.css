@@ -10804,6 +10804,10 @@ h2.col-heading_profile {
   max-height: 560px;
 }
 
+#orders-payment-table-container {
+  max-height: 320px;
+}
+
 .table-fixed-container {
   overflow-y: scroll;
   border: none;
@@ -10823,6 +10827,41 @@ h2.col-heading_profile {
   position: sticky;
   bottom: 0;
   z-index: 2;
+}
+
+.ttoggle-container {
+  justify-content: start;
+  margin-top: 20px;
+}
+
+.ttoggle {
+  width: 240px;
+  height: 80px;
+  padding: 20px;
+}
+
+.ttoggle > .toggle-btn {
+  width: 100%;
+  height: 100%;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  background-color: #ddd;
+  transition: all 0.1s ease;
+}
+
+.toggle-btn.toggle-on,
+.toggle-btn:active,
+.toggle-btn.toggle-on:disabled {
+  background-color: #28a745;
+  box-shadow: inset 1px 1px 10px #333;
+  font-weight: bold;
+  cursor: default;
+  color: initial;
+}
+
+.toggle-btn:not(.toggle-on):hover:not(:active) {
+  border: 3px solid darkgreen;
 }
 
 .table-total-label {
@@ -11165,7 +11204,8 @@ body.campaign-manager .notserved {
   font-weight: bold;
 }
 body.campaign-manager .fa-check-circle,
-body.campaign-manager .fa-times-circle {
+body.campaign-manager .fa-times-circle,
+body.campaign-manager .payment-due-status .fa-minus-circle {
   font-size: 20px;
 }
 body.campaign-manager .active-prod,
@@ -11200,6 +11240,9 @@ body.campaign-manager button.view_offer {
   border: none;
   color: #4dcfe0;
   font-weight: bold;
+}
+body.campaign-manager button.view_offer .fa-eye {
+  font-size: 20px;
 }
 body.campaign-manager button.view_offer:hover {
   background-color: unset;
