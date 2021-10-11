@@ -226,7 +226,7 @@ if ($admin) {
 	</button>
 	</a>
 	</footer>
-	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js"></script>
+	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js?v=2.1"></script>
 </body>
 
 </html>
