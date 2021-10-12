@@ -9,12 +9,8 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$role = $user->roles[0];
 	$user_id = get_current_user_id();
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
-
-	var_dump($payment_info);
-	die();
 	
 	$product_id = $product_info['product_id'];
-
 	$payment_id = $payment_info['id'];
 	$payment_amount = $payment_info['amount'];
 	$payment_orig_amount = $payment_info['payment_orig_amt'];
@@ -25,6 +21,23 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$attach_vat_invoice = $payment_info['attach_vat_invoice'];
 	$all_payment_cnt = $payment_info['all_payment_cnt'];
 	$prod_payment_cnt = $payment_info['prod_payment_cnt'];
+	$orders_flag = $payment_info['orders_flag'];
+
+	if ($orders_flag) {
+		$product_order_list = json_decode(html_entity_decode(stripslashes ($payment_info['product_order_list'])), true);
+		$product_order_info = [];
+		foreach ($product_order_list as $prod_orders) {
+			$product_order_info[$prod_orders[0]] = array(
+				'amount' => $prod_orders[1]['netPayable'],
+				'order_list' => $prod_orders[1]['orderItemList'],
+			);
+		}
+	} else {
+		$product_order_info = array($product_id => array(
+			'amount' => $payment_amount,
+			'order_list' => [],
+		));
+	}
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
 
@@ -42,6 +55,8 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 			'comment_visible_venues' => $comment_visible_venues,
 			'attach_vat_invoice' => $attach_vat_invoice,
 			'venue_id' => $venue_info['venue_id'],
+			'product_order_info' => $product_order_info,
+			'orders_flag' => $orders_flag,
 		),
 	);
 
@@ -270,6 +285,8 @@ function insert_payment ($payment_db_parms) {
 	$comment_visible_venues = $payment_db_parms['data_fields']['comment_visible_venues'];
 	$attach_vat_invoice = $payment_db_parms['data_fields']['attach_vat_invoice'];
 	$venue_id = $payment_db_parms['data_fields']['venue_id'];
+	$orders_flag = $payment_db_parms['data_fields']['orders_flag'];
+	$product_order_info = $payment_db_parms['data_fields']['product_order_info'];
 	
 	$wpdb->query( "START TRANSACTION" );
 
@@ -295,14 +312,24 @@ function insert_payment ($payment_db_parms) {
 	$payment_id = $wpdb->insert_id;
 
 	// payment x product_id table: wp_taste_venue_payment_products
-	$data = array(
-		'payment_id' => $payment_id,
-		'product_id' => $product_id,
-		'amount' => $payment_amount_product,
-	);
+	$insert_values = '';
+	$insert_parms = [];
+	
+	foreach ($product_order_info as $prod_id => $prod_info) {
+		$insert_values .= '(%d, %d, %f),';
+		$insert_parms[] = $payment_id;
+		$insert_parms[] = $prod_id;
+		$insert_parms[] = $prod_info['amount'];
+	}
+	$insert_values = rtrim($insert_values, ',');
 
-	$format = array('%d', '%d', '%f');
-	$rows_affected = $wpdb->insert($payment_products_table, $data, $format);	
+	$sql = "INSERT into $payment_products_table
+						(payment_id, product_id, amount)
+					VALUES $insert_values";
+
+	$rows_affected = $wpdb->query(
+		$wpdb->prepare($sql, $insert_parms)
+	);
 	// if not success set error array and return
 	if (!$rows_affected) {
 		$ret_json = array('error' => 'Could not update Payment Product Table. ' . $wpdb->last_error);
@@ -310,7 +337,36 @@ function insert_payment ($payment_db_parms) {
 		$wpdb->query("ROLLBACK");
 		return array('db_status' => false);
 	}
+
+	// payment x orders table: wp_taste_venue_payment_order_item_xref
+	$insert_values = '';
+	$insert_parms = [];
 	
+	foreach ($product_order_info as $prod_info) {
+		foreach($prod_info['order_list'] as $order_info) {
+			$insert_values .= '(%d, %d),';
+			$insert_parms[] = $payment_id;
+			$insert_parms[] = $order_info['orderItemId'];
+		}
+
+	}
+	$insert_values = rtrim($insert_values, ',');
+	
+	$sql = "INSERT into $payment_order_xref_table
+						(payment_id, order_item_id)
+					VALUES $insert_values";
+
+	$rows_affected = $wpdb->query(
+		$wpdb->prepare($sql, $insert_parms)
+	);
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update Payment Order Xref Table. ' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		$wpdb->query("ROLLBACK");
+		return array('db_status' => false);
+	}
+
 	$wpdb->query( "COMMIT" );
 
 	return array(

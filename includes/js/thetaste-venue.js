@@ -207,6 +207,20 @@ const tasteMakePayment = (
 	$modal.modal("hide");
 	let modalMsg = deleteMode ? "Deleting Payment..." : "Updating Payment...";
 	tasteDispMsg(modalMsg);
+	let postProductList = {};
+	let postTotalAmount = 0;
+
+	if (ordersFlag) {
+		postProductList = Object.entries(
+			tasteVenue.paymentOrders.productList
+		).filter((prod) => {
+			return prod[1].orderQty;
+		});
+		postTotalAmount = tasteVenue.paymentOrders.totalNetPayable;
+	}
+
+	console.log(postProductList);
+
 	// get info from hidden inputs to pass up for re-calc
 	let productInfo = tasteGetProductInfo();
 	let productId = productInfo.product_id;
@@ -214,7 +228,7 @@ const tasteMakePayment = (
 	let paymentInfo = {
 		id: paymentData.get("payment-id"),
 		pid: productId,
-		amount: paymentData.get("payment-amt"),
+		amount: ordersFlag ? postTotalAmount : paymentData.get("payment-amt"),
 		payment_orig_amt: paymentData.get("payment-orig-amt"),
 		payment_orig_date: paymentData.get("payment-orig-date"),
 		timestamp: paymentData.get("payment-date"),
@@ -226,8 +240,8 @@ const tasteMakePayment = (
 		delete_mode: deleteMode,
 		all_payment_cnt: paymentData.get("allpaymentcnt"),
 		prod_payment_cnt: paymentData.get("prodpaymentcnt"),
-		orders_flag: ordersFlag,
-		product_order_list: JSON.stringify(tasteVenue.paymentOrders.productList),
+		orders_flag: ordersFlag ? 1 : 0,
+		product_order_list: JSON.stringify(postProductList),
 	};
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
@@ -241,6 +255,13 @@ const tasteMakePayment = (
 			venue_info: venueInfo,
 		},
 		success: function (responseText) {
+			/****
+			 *
+			 *
+			 * just tmp
+			 */
+
+			tasteCloseMsg();
 			let respObj = JSON.parse(responseText);
 			if (respObj.error) {
 				tasteCloseMsg();
@@ -299,6 +320,8 @@ const tasteMakePayment = (
 		},
 	});
 };
+
+const filterProductList = (productListObj) => {};
 
 const updateOfferCalcs = (respObj, productId) => {
 	jQuery("#grevenue-display").html(respObj.grevenue);

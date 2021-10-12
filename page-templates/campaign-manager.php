@@ -182,12 +182,14 @@ if ($admin) {
 						
 			$payment_rows = $wpdb->get_results($wpdb->prepare("
 				SELECT  pprods.product_id, pay.id, pay.payment_date as timestamp, pprods.product_id as pid, 
-						pay.amount, pprods.amount as product_amount, pay.comment, pox.order_item_id, pay.status
+						pay.amount as total_amount, pprods.amount, pay.comment, pay.status,
+						GROUP_CONCAT(pox.order_item_id) as order_item_ids
 				FROM $payment_products_table pprods
 					JOIN  $payment_table pay ON pay.id = pprods.payment_id
 					JOIN $v_p_join_table vp ON vp.product_id = pprods.product_id
 					LEFT JOIN $payment_order_xref_table pox ON pox.payment_id = pay.id
 				WHERE pprods.product_id IN ($placeholders)
+				GROUP BY pprods.product_id, pay.id
 				ORDER BY pprods.product_id DESC, pay.payment_date ASC ", 
 				$product_id_list), ARRAY_A);
 
