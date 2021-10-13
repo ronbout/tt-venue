@@ -8,6 +8,17 @@ jQuery(document).ready(function () {
 		buildPaymentOrders();
 		displayOrderPaymentInfo();
 		tasteLoadPaymentByOrdersModal();
+		/*
+		if (jQuery(".all-payments-row").length) {
+			console.log("here");
+			const tooltipOptions = {
+				placement: "right",
+				html: true,
+				container: "body",
+			};
+			// jQuery(".all-payments-row").tooltip(tooltipOptions);
+			*/
+		}
 	}
 	tasteLoadButtons();
 	tasteLoadCollapseIcons();

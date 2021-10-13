@@ -89,11 +89,19 @@ function disp_payment_line($payment, $admin, $commission_val) {
 
 function disp_all_payment_line($payment) {
 	$payment_date = date('Y-m-d', strtotime($payment['timestamp']));
+	$total_payment_amount = $payment['total_amount'];
+	$payment_id = $payment['id'];
+	$order_item_list = str_replace(',', ', ', $payment['order_item_ids']);
+
+	$tooltip_title = "Payment ID: $payment_id &#10;";
+	$tooltip_title .= "Total Payment: $total_payment_amount &#10;";
+	$tooltip_title .= $order_item_list ? "Order Items for this Product: &#10; $order_item_list &#10;" : "";
 	ob_start();
 	?>
-		<tr id="all-pay-<?php echo $payment['id'] ?>">
+		<tr id="all-pay-<?php echo $payment_id ?>" class="all-payments-row" data-toggle="tooltip"
+				title="<?php echo $tooltip_title ?>"	>
 		<td><?php echo $payment['product_id'] ?></td>
-		<td><?php echo $payment['id'] ?></td>
+		<td><?php echo $payment_id ?></td>
 		<td><?php echo $payment_date ?></td>
 		<td class="table-nbr pr-5"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
 	</tr>
