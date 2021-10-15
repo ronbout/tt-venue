@@ -10,7 +10,26 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$user_id = get_current_user_id();
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 	
-	$product_id = $product_info['product_id'];
+	$orders_flag = $payment_info['orders_flag'];
+
+	var_dump($product_info);
+	die();
+
+	/**
+	 * may clean this up later, but for now it accounts
+	 * for the fact that we may be making payments 
+	 * both by attaching orders and not
+	 * 
+	 * if by orders, $product_info is an object with the
+	 * product id as the key pointing to object of 
+	 * product data.  
+	 * 
+	 * cleaning it up would require me to also make changes to 
+	 * redeem voucher code as it uses the same javascript call
+	 * that builds the product info
+	 * 
+	 */
+	$product_id = $orders_flag ? null : $product_info['product_id'];
 	$payment_id = $payment_info['id'];
 	$payment_amount = $payment_info['amount'];
 	$payment_orig_amount = $payment_info['payment_orig_amt'];
@@ -21,7 +40,6 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$attach_vat_invoice = $payment_info['attach_vat_invoice'];
 	$all_payment_cnt = $payment_info['all_payment_cnt'];
 	$prod_payment_cnt = $payment_info['prod_payment_cnt'];
-	$orders_flag = $payment_info['orders_flag'];
 
 	if ($orders_flag) {
 		$product_order_list = json_decode(html_entity_decode(stripslashes ($payment_info['product_order_list'])), true);
@@ -207,45 +225,69 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 
 	// need to add payment id to payment info as 
 	// All Payments line requires Product ID
+
+
+/**
+ * 
+ * if $orders flag, need to redo this.  Each product ID gets its own line in t
+ * the All Payments display.  Only the current Product Id should be used for the
+ * regular payment line, if any product is currently open.
+ * 
+ * Will that come through the product ID field
+ * 
+ * oh shit!!!!  all the above calcs need to be redone as it only applies to one product
+ * 
+ * 
+ */
+
 	$payment_info['product_id'] = $product_id;
 	$payment_line = 'DELETE' === $edit_mode ? '' : disp_payment_line($payment_info, $admin, $commission_value);
 	$all_payment_line = 'DELETE' === $edit_mode ? '' : disp_all_payment_line($payment_info);
 
-	$hidden_values = "
-	<input type='hidden' id='taste-product-id' value='$product_id'>
-	<input type='hidden' id='taste-product-multiplier' value='$multiplier'>
-	<input type='hidden' id='taste-gr-value' value='$gr_value'>
-	<input type='hidden' id='taste-commission-value' value='$commission_value'>
-	<input type='hidden' id='taste-vat-value' value='$vat_value'>
-	<input type='hidden' id='taste-redeem-qty' value='$redeem_qty'>
-	<input type='hidden' id='taste-total-sold' value='$total_sold'>
+	// $hidden_values = "
+	// <input type='hidden' id='taste-product-id' value='$product_id'>
+	// <input type='hidden' id='taste-product-multiplier' value='$multiplier'>
+	// <input type='hidden' id='taste-gr-value' value='$gr_value'>
+	// <input type='hidden' id='taste-commission-value' value='$commission_value'>
+	// <input type='hidden' id='taste-vat-value' value='$vat_value'>
+	// <input type='hidden' id='taste-redeem-qty' value='$redeem_qty'>
+	// <input type='hidden' id='taste-total-sold' value='$total_sold'>
+	// <input type='hidden' id='taste-total-paid' value='$total_paid'>
+	// ";
+
+	$hidden_payment_values = "
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
 	";
 	
 	// make adjustments for the totals in the summary section
-	$sum_gr_value = $venue_info['revenue'];
-	$sum_commission = $venue_info['commission'];
-	$sum_vat = $venue_info['vat'];
-	$sum_redeemed_cnt = $venue_info['redeemed_cnt'];
-	$sum_redeemed_qty = $venue_info['redeemed_qty'];
-	$sum_num_served = $venue_info['num_served'];
-	$sum_net_payable = $venue_info['net_payable'];
+	// $sum_gr_value = $venue_info['revenue'];
+	// $sum_commission = $venue_info['commission'];
+	// $sum_vat = $venue_info['vat'];
+	// $sum_redeemed_cnt = $venue_info['redeemed_cnt'];
+	// $sum_redeemed_qty = $venue_info['redeemed_qty'];
+	// $sum_num_served = $venue_info['num_served'];
+	// $sum_net_payable = $venue_info['net_payable'];
+	// $multiplier = $venue_info['multiplier'];
 	$sum_total_paid = $venue_info['paid_amount'] + $payment_diff;
 	$sum_balance_due = $venue_info['balance_due'] - $payment_diff;
-	$multiplier = $venue_info['multiplier'];
-
-	$sum_hidden_values = "
-	<input type='hidden' id='sum-gr-value' value='$sum_gr_value'>
-	<input type='hidden' id='sum-commission' value='$sum_commission'>
-	<input type='hidden' id='sum-vat' value='$sum_vat'>
-	<input type='hidden' id='sum-redeemed-cnt' value='$sum_redeemed_cnt'>
-	<input type='hidden' id='sum-redeemed-qty' value='$sum_redeemed_qty'>
-	<input type='hidden' id='sum-num-served' value='$sum_num_served'>
-	<input type='hidden' id='sum-net-payable' value='$sum_net_payable'>
+	
+	$sum_hidden_payment_values = "
 	<input type='hidden' id='sum-total-paid' value='$sum_total_paid'>
 	<input type='hidden' id='sum-balance-due' value='$sum_balance_due'>
-	<input type='hidden' id='sum-multiplier' value='$multiplier'>
 	";
+
+	// $sum_hidden_values = "
+	// <input type='hidden' id='sum-gr-value' value='$sum_gr_value'>
+	// <input type='hidden' id='sum-commission' value='$sum_commission'>
+	// <input type='hidden' id='sum-vat' value='$sum_vat'>
+	// <input type='hidden' id='sum-redeemed-cnt' value='$sum_redeemed_cnt'>
+	// <input type='hidden' id='sum-redeemed-qty' value='$sum_redeemed_qty'>
+	// <input type='hidden' id='sum-num-served' value='$sum_num_served'>
+	// <input type='hidden' id='sum-net-payable' value='$sum_net_payable'>
+	// <input type='hidden' id='sum-total-paid' value='$sum_total_paid'>
+	// <input type='hidden' id='sum-balance-due' value='$sum_balance_due'>
+	// <input type='hidden' id='sum-multiplier' value='$multiplier'>
+	// ";
 
 	$ret_json = array(
 		'balanceDue' => $currency . ' ' . num_display($balance_due),
@@ -261,8 +303,10 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		'paymentLine' => $payment_line,
 		'allPaymentLine' => $all_payment_line,
 		'editMode' => $edit_mode,
-		'hiddenValues' => $hidden_values,
-		'sumHiddenValues' => $sum_hidden_values,
+		// 'hiddenValues' => $hidden_values,
+		'hiddenPaymentValues' => $hidden_payment_values,
+		// 'sumHiddenValues' => $sum_hidden_values,
+		'sumHiddenPaymentValues' => $sum_hidden_payment_values,
 		'allPaymentCnt' => $all_payment_cnt,
 		'prodPaymentCnt' => $prod_payment_cnt,
 );

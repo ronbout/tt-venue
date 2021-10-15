@@ -176,7 +176,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 		</h4>
 
 	<?php
-		$total_paid_to_customer = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count, $make_payments_below);
+		$total_paid_to_venue = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count, $make_payments_below);
 	?>
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
@@ -187,7 +187,9 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 		<input type="hidden" id="taste-redeem-qty" value="<?php echo $redeem_qty ?>">
 		<input type="hidden" id="taste-num-served" value="<?php echo ($redeem_qty * $multiplier) ?>">
 		<input type="hidden" id="taste-total-sold" value="<?php echo $total_sold ?>">
-		<input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_customer ?>">
+	</div>
+	<div id="hidden-payment-values">
+		<input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_venue ?>">
 	</div>
 	<?php
 }
@@ -546,7 +548,7 @@ function display_terms($termsandconditions) {
 function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count, $make_payments_below) {
 	global $wpdb;
 
-	$total_paid_to_customer = 0;
+	$total_paid_to_venue = 0;
 	?>
 			<div class="table-fixed-wrapper">
 				<div id="payment-table-container" class="table-fixed-container">		
@@ -581,7 +583,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							foreach($payment_list as $payment){ 
 								// disp_payment_line is in ajax/functions.php
 								echo disp_payment_line($payment, $admin, $commission_val);
-								$total_paid_to_customer = $total_paid_to_customer + $payment['amount'];
+								$total_paid_to_venue = $total_paid_to_venue + $payment['amount'];
 								$ln++;
 							}
 							?>
@@ -600,7 +602,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 					</button>
 					<?php
 				}
-				$balance_due = $payable - $total_paid_to_customer;
+				$balance_due = $payable - $total_paid_to_venue;
 			?>
 			<!-- PAYMENTS SUMMARY -->
 			<div class="row">
@@ -618,7 +620,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 				<div class="col-md tcard">
 						<h3 class="numbers">
 							<span class="total-payments-display">
-								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($total_paid_to_customer, 2)  ?>
+								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($total_paid_to_venue, 2)  ?>
 							</span>
 						<h3>
 						<p class="titles">Campaign Payments</p>
@@ -735,6 +737,6 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 			</div>
 		</div>
 	<?php
-	return $total_paid_to_customer;
+	return $total_paid_to_venue;
 }
 

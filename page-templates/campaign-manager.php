@@ -364,6 +364,9 @@ function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights
 		$tmp['redeemed_qty'] = $product_row['redeemed_qty'];
 		$tmp['order_cnt'] = $product_row['order_cnt'];
 		$tmp['order_qty'] = $product_row['order_qty'];
+		$tmp['vat_rate'] = $product_row['vat'];
+		$tmp['commission_rate'] = $product_row['commission'];
+		$tmp['price'] = $product_row['price'];
 		$tmp['revenue'] = $product_row['price'] * $tmp['redeemed_qty'];
 		$tmp['commission'] = round(($tmp['revenue'] / 100) * $product_row['commission'], 2);
 		$tmp['vat'] = round(($tmp['commission'] / 100) * $product_row['vat'], 2);
@@ -490,6 +493,8 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutof
 		<input type="hidden" id="sum-redeemed-qty" value="<?php echo $venue_totals['redeemed_qty'] ?>">
 		<input type="hidden" id="sum-num-served" value="<?php echo $venue_totals['num_served'] ?>">
 		<input type="hidden" id="sum-net-payable" value="<?php echo $venue_totals['net_payable'] ?>">
+	</div>
+	<div id="summary-hidden-payment-values">
 		<input type="hidden" id="sum-total-paid" value="<?php echo $venue_totals['paid_amount'] ?>">
 		<input type="hidden" id="sum-balance-due" value="<?php echo $venue_totals['balance_due'] ?>">
 	</div>
@@ -542,9 +547,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals, 
 						<tbody>
 							<?php
 								foreach($product_calcs as $product_row) {
-									extract($product_row);
-									display_product_row($product_row['product_id'], $title, $status, $revenue, $num_served, $commission, 
-																			$vat, $net_payable, $balance_due, $multiplier, $payment_by_order_item);
+									display_product_row($product_row);
 								}
 							?>
 						</tbody>
@@ -603,8 +606,23 @@ function display_table_totals($venue_totals) {
 <?php
 }
 
-function display_product_row($id, $title, $status, $revenue, $num_served, $commission, 
-														 $vat, $net_payable, $balance_due, $multiplier, $payment_by_order_item) {
+function display_product_row($product_row) {
+	$id = $product_row['product_id'];
+	$title = $product_row['title'];
+	$status = $product_row['status'];
+	$revenue = $product_row['revenue'];
+	$num_served = $product_row['num_served'];
+	$commission = $product_row['commission'];
+	$vat = $product_row['vat'];
+	$net_payable = $product_row['net_payable'];
+	$balance_due = $product_row['balance_due'];
+	$multiplier = $product_row['multiplier'];
+	$payment_by_order_item = $product_row['payment_by_order_item'];
+	$vat_rate = $product_row['vat_rate'];
+	$commission_rate = $product_row['commission_rate'];
+	$price = $product_row['price'];
+	$paid_amount = $product_row['paid_amount'];
+											
 	$status_display = 'Active' === $status ?
 			'<td class="active-prod text-center">
 				<i class="fas fa-check-circle"></i><br/>
@@ -617,7 +635,10 @@ function display_product_row($id, $title, $status, $revenue, $num_served, $commi
 			';
 
  ?>
-	<tr data-multiplier="<?php echo $multiplier ?>">
+	<tr id="product-table-row-<?php echo $id ?>" class="product-info-row" data-multiplier="<?php echo $multiplier ?>" 
+			data-vatrate="<?php echo $vat_rate ?>" data-commissionrate="<?php echo $commission_rate ?>" data-price="<?php echo $price ?>"
+			data-productid="<?php echo $id?>" data-paidamount="<?php echo $paid_amount ?>"
+	>
 		<td><?php echo $id ?></td>
 		<td><?php echo $title ?></td>
 		<?php echo $status_display ?>
