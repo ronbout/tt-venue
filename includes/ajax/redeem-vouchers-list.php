@@ -181,7 +181,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
 		<input type="hidden" id="taste-product-multiplier" value="<?php echo $multiplier ?>">
-		<input type="hidden" id="taste-gr-value" value="<?php echo $product_price ?>">
+		<input type="hidden" id="taste-price" value="<?php echo $product_price ?>">
 		<input type="hidden" id="taste-commission-value" value="<?php echo $commission_val ?>">
 		<input type="hidden" id="taste-vat-value" value="<?php echo $vat_val ?>">
 		<input type="hidden" id="taste-redeem-qty" value="<?php echo $redeem_qty ?>">
@@ -591,18 +591,20 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 					</table>
 				</div>
 			</div>
-			<?php if ($admin && $make_payments_below) {
+			<?php if ($admin) {
 				?>
+			<div class="redeem-mode-only">
 					<!--  ADD NEW TRANSACTION MODAL TRIGGER  -->
 					<button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#addEditPaymentModal"
 						data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment="" 
 						data-commentvisibility="1" data-invoiceattachment="1"
 						>
-						<i class="fa fa-plus-circle"></i> &nbsp; Add Transaction
-					</button>
-					<?php
-				}
-				$balance_due = $payable - $total_paid_to_venue;
+					<i class="fa fa-plus-circle"></i> &nbsp; Add Transaction
+				</button>
+			</div>
+			<?php
+			}
+			$balance_due = $payable - $total_paid_to_venue;
 			?>
 			<!-- PAYMENTS SUMMARY -->
 			<div class="row">

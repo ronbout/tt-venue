@@ -11,25 +11,6 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 	
 	$orders_flag = $payment_info['orders_flag'];
-
-	var_dump($product_info);
-	die();
-
-	/**
-	 * may clean this up later, but for now it accounts
-	 * for the fact that we may be making payments 
-	 * both by attaching orders and not
-	 * 
-	 * if by orders, $product_info is an object with the
-	 * product id as the key pointing to object of 
-	 * product data.  
-	 * 
-	 * cleaning it up would require me to also make changes to 
-	 * redeem voucher code as it uses the same javascript call
-	 * that builds the product info
-	 * 
-	 */
-	$product_id = $orders_flag ? null : $product_info['product_id'];
 	$payment_id = $payment_info['id'];
 	$payment_amount = $payment_info['amount'];
 	$payment_orig_amount = $payment_info['payment_orig_amt'];
@@ -41,20 +22,14 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$all_payment_cnt = $payment_info['all_payment_cnt'];
 	$prod_payment_cnt = $payment_info['prod_payment_cnt'];
 
-	if ($orders_flag) {
-		$product_order_list = json_decode(html_entity_decode(stripslashes ($payment_info['product_order_list'])), true);
-		$product_order_info = [];
-		foreach ($product_order_list as $prod_orders) {
-			$product_order_info[$prod_orders[0]] = array(
-				'amount' => $prod_orders[1]['netPayable'],
-				'order_list' => $prod_orders[1]['orderItemList'],
-			);
-		}
-	} else {
-		$product_order_info = array($product_id => array(
-			'amount' => $payment_amount,
-			'order_list' => [],
-		));
+	$product_order_list = json_decode(html_entity_decode(stripslashes ($payment_info['product_order_list'])), true);
+	$product_order_info = [];
+	foreach ($product_order_list as $prod_orders) {
+		$product_order_info[$prod_orders[0]] = array(
+			'amount' => $prod_orders[1]['netPayable'],
+			'order_qty' => $prod_orders[1]['orderQty'],
+			'order_list' => $prod_orders[1]['orderItemList'],
+		);
 	}
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
@@ -64,11 +39,9 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 		'payment_table' => $wpdb->prefix."taste_venue_payment",
 		'payment_products_table' => $wpdb->prefix."taste_venue_payment_products",
 		'payment_order_xref_table' => $wpdb->prefix."taste_venue_payment_order_item_xref",
-		'product_id' => $product_id,
 		'data_fields' => array(
 			'payment_date' => $payment_date,
 			'payment_amount' => $payment_amount,
-			'payment_amount_product' => $payment_amount,
 			'comment' => $payment_comment,
 			'comment_visible_venues' => $comment_visible_venues,
 			'attach_vat_invoice' => $attach_vat_invoice,
@@ -79,6 +52,9 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	);
 
 	if ($delete_mode) {
+		$ret_json = array('error' => 'Deleting a Payment is currently in development');
+		echo wp_json_encode($ret_json);
+		return;
 		$edit_mode = 'DELETE';
 		$db_status = delete_payment($payment_db_parms, $payment_id);
 		if (!$db_status) {
@@ -89,6 +65,9 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 
 		$payment_diff = - $payment_amount;
 	} elseif ($payment_id) {
+		$ret_json = array('error' => 'Updating a Payment is currently in development');
+		echo wp_json_encode($ret_json);
+		return;
 		$edit_mode = 'UPDATE';
 
 		$db_status = update_payment($payment_db_parms, $payment_id);
@@ -321,10 +300,8 @@ function insert_payment ($payment_db_parms) {
 	$payment_table = $payment_db_parms['payment_table'];
 	$payment_products_table = $payment_db_parms['payment_products_table'];
 	$payment_order_xref_table = $payment_db_parms['payment_order_xref_table'];
-	$product_id = $payment_db_parms['product_id'];
 	$payment_date = $payment_db_parms['data_fields']['payment_date'];
 	$payment_amount = $payment_db_parms['data_fields']['payment_amount'];
-	$payment_amount_product = $payment_db_parms['data_fields']['payment_amount_product'];
 	$comment = $payment_db_parms['data_fields']['comment'];
 	$comment_visible_venues = $payment_db_parms['data_fields']['comment_visible_venues'];
 	$attach_vat_invoice = $payment_db_parms['data_fields']['attach_vat_invoice'];
@@ -382,34 +359,37 @@ function insert_payment ($payment_db_parms) {
 		return array('db_status' => false);
 	}
 
-	// payment x orders table: wp_taste_venue_payment_order_item_xref
-	$insert_values = '';
-	$insert_parms = [];
-	
-	foreach ($product_order_info as $prod_info) {
-		foreach($prod_info['order_list'] as $order_info) {
-			$insert_values .= '(%d, %d),';
-			$insert_parms[] = $payment_id;
-			$insert_parms[] = $order_info['orderItemId'];
+	if ($orders_flag) {
+		// payment x orders table: wp_taste_venue_payment_order_item_xref
+		$insert_values = '';
+		$insert_parms = [];
+		
+		foreach ($product_order_info as $prod_info) {
+			foreach($prod_info['order_list'] as $order_info) {
+				$insert_values .= '(%d, %d),';
+				$insert_parms[] = $payment_id;
+				$insert_parms[] = $order_info['orderItemId'];
+			}
+
 		}
+		$insert_values = rtrim($insert_values, ',');
+		
+		$sql = "INSERT into $payment_order_xref_table
+							(payment_id, order_item_id)
+						VALUES $insert_values";
 
+		$rows_affected = $wpdb->query(
+			$wpdb->prepare($sql, $insert_parms)
+		);
+		// if not success set error array and return
+		if (!$rows_affected) {
+			$ret_json = array('error' => 'Could not update Payment Order Xref Table. ' . $wpdb->last_error);
+			echo wp_json_encode($ret_json);
+			$wpdb->query("ROLLBACK");
+			return array('db_status' => false);
+		}
 	}
-	$insert_values = rtrim($insert_values, ',');
-	
-	$sql = "INSERT into $payment_order_xref_table
-						(payment_id, order_item_id)
-					VALUES $insert_values";
 
-	$rows_affected = $wpdb->query(
-		$wpdb->prepare($sql, $insert_parms)
-	);
-	// if not success set error array and return
-	if (!$rows_affected) {
-		$ret_json = array('error' => 'Could not update Payment Order Xref Table. ' . $wpdb->last_error);
-		echo wp_json_encode($ret_json);
-		$wpdb->query("ROLLBACK");
-		return array('db_status' => false);
-	}
 
 	$wpdb->query( "COMMIT" );
 
@@ -461,10 +441,8 @@ function update_payment ($payment_db_parms, $payment_id) {
 	$payment_table = $payment_db_parms['payment_table'];
 	$payment_products_table = $payment_db_parms['payment_products_table'];
 	$payment_order_xref_table = $payment_db_parms['payment_order_xref_table'];
-	$product_id = $payment_db_parms['product_id'];
 	$payment_date = $payment_db_parms['data_fields']['payment_date'];
 	$payment_amount = $payment_db_parms['data_fields']['payment_amount'];
-	$payment_amount_product = $payment_db_parms['data_fields']['payment_amount_product'];
 	$comment = $payment_db_parms['data_fields']['comment'];
 	$comment_visible_venues = $payment_db_parms['data_fields']['comment_visible_venues'];
 	$attach_vat_invoice = $payment_db_parms['data_fields']['attach_vat_invoice'];

@@ -146,15 +146,21 @@ function taste_add_payment_tables() {
 		`product_id` BIGINT(20) UNSIGNED NOT NULL,
 		`amount` DECIMAL(10,2) NOT NULL,
 		PRIMARY KEY (`payment_id`, `product_id`) USING BTREE,
-		INDEX `product_id` (`product_id`) USING BTREE
+		INDEX `product_id` (`product_id`) USING BTREE,
+		CONSTRAINT `FK_wp_taste_venue_payment_products_wp_taste_venue_payment` 
+					FOREIGN KEY (`payment_id`) REFERENCES `thetaste3`.`wp_taste_venue_payment` (`id`) 
+					ON UPDATE NO ACTION ON DELETE CASCADE
 	)";
 	dbDelta($sql);
 
 	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_order_item_table (
-		payment_id INT(11) NOT NULL,
+		payment_id BIGINT(20) UNSIGNED NOT NULL,
 		order_item_id BIGINT(20) UNSIGNED NOT NULL,
 		PRIMARY KEY (payment_id, order_item_id),
-		INDEX order_item_id (order_item_id) USING BTREE
+		INDEX order_item_id (order_item_id) USING BTREE,
+		CONSTRAINT `FK_wp_taste_venue_payment_order_item_xref_wp_taste_venue_payment` 
+					FOREIGN KEY (`payment_id`) REFERENCES `thetaste3`.`wp_taste_venue_payment` (`id`) 
+					ON UPDATE NO ACTION ON DELETE CASCADE
 	)";
 	dbDelta($sql);
 

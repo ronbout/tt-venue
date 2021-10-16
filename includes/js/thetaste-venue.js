@@ -107,13 +107,14 @@ const displayOrderPaymentInfo = () => {
 			prodTotal += orderItem.orderNetPayable;
 			prodQtyTotal += orderItem.orderQty;
 		});
-		tasteVenue.paymentOrders.productList[prodId].netPayable = prodTotal;
+		tasteVenue.paymentOrders.productList[prodId].netPayable =
+			financial(prodTotal);
 		tasteVenue.paymentOrders.productList[prodId].orderQty = prodQtyTotal;
 		totalPayments += prodTotal;
 		totalQty += prodQtyTotal;
 		jQuery(`#selected-pay-amt-${prodId}`).text(financial(prodTotal));
 	}
-	tasteVenue.paymentOrders.totalNetPayable = totalPayments;
+	tasteVenue.paymentOrders.totalNetPayable = financial(totalPayments);
 	tasteVenue.paymentOrders.totalQty = totalQty;
 	jQuery("#select-orders-pay-total").text(financial(totalPayments));
 	jQuery("#payAllSelected").attr("disabled", !totalPayments);
@@ -209,14 +210,17 @@ const tasteMakePayment = (
 	deleteMode,
 	ordersFlag = false
 ) => {
-	for (let [k, v] of paymentData.entries()) {
-		console.log(k, v);
-	}
-	// jQuery("#addEditPaymentModal").modal("hide");
-	// jQuery("#addCommentModal").modal("hide");
+	// for (let [k, v] of paymentData.entries()) {
+	// 	console.log(k, v);
+	// }
 	$modal.modal("hide");
-	let modalMsg = deleteMode ? "Deleting Payment..." : "Updating Payment...";
+	const modalMsg = deleteMode ? "Deleting Payment..." : "Updating Payment...";
 	tasteDispMsg(modalMsg);
+
+	// get info from hidden inputs and data values to pass up for re-calc
+	const productInfo = ordersFlag
+		? tasteGetAllProductInfo()
+		: tasteGetProductInfo();
 	let postProductList = {};
 	let postTotalAmount = 0;
 
@@ -227,18 +231,25 @@ const tasteMakePayment = (
 			return prod[1].orderQty;
 		});
 		postTotalAmount = tasteVenue.paymentOrders.totalNetPayable;
+	} else {
+		postTotalAmount = paymentData.get("payment-amt");
+		const productId = Object.keys(productInfo)[0];
+		postProductList = [
+			[
+				productId,
+				{
+					netPayable: postTotalAmount,
+					orderQty: 0,
+					orderItemList: [],
+				},
+			],
+		];
 	}
 
-	// get info from hidden inputs and data values to pass up for re-calc
-	let productInfo = ordersFlag
-		? tasteGetAllProductInfo()
-		: tasteGetProductInfo();
-	let productId = Object.keys(productInfo)[0];
 	let venueInfo = tasteGetVenueInfo();
 	let paymentInfo = {
 		id: paymentData.get("payment-id"),
-		pid: productId,
-		amount: ordersFlag ? postTotalAmount : paymentData.get("payment-amt"),
+		amount: financial(postTotalAmount),
 		payment_orig_amt: paymentData.get("payment-orig-amt"),
 		payment_orig_date: paymentData.get("payment-orig-date"),
 		timestamp: paymentData.get("payment-date"),
@@ -386,7 +397,7 @@ const tasteGetProductInfo = () => {
 	let productInfo = {};
 
 	productInfo[jQuery("#taste-product-id").val()] = {
-		gr_value: jQuery("#taste-gr-value").val(),
+		price: jQuery("#taste-price").val(),
 		commission_value: jQuery("#taste-commission-value").val(),
 		vat_value: jQuery("#taste-vat-value").val(),
 		redeem_qty: jQuery("#taste-redeem-qty").val(),
@@ -403,13 +414,13 @@ const tasteGetAllProductInfo = () => {
 	jQuery(".product-info-row").each((ndx, productRow) => {
 		$productRow = jQuery(productRow);
 		productAllProductInfo[$productRow.data("productid")] = {
-			vat_rate: $productRow.data("vatrate"),
-			commisson_rate: $productRow.data("commissionrate"),
+			vat_value: $productRow.data("vatrate"),
+			commisson_value: $productRow.data("commissionrate"),
 			price: $productRow.data("price"),
 			total_paid: $productRow.data("paidamount"),
 		};
 	});
-	console.log(tasteGetAllProductInfo);
+	// console.log(productAllProductInfo);
 	return productAllProductInfo;
 };
 
@@ -732,6 +743,17 @@ const tasteLoadPaymentByOrdersModal = () => {
 				const $paymentForm = jQuery(`#${formId}`);
 				let paymentData = new FormData($paymentForm[0]);
 				const deleteMode = false;
+				// get payment counts for both All Payments (if exists) and product Payments
+				const allPayCount = jQuery("#all-payments-table").length
+					? jQuery("#all-payments-table").data("allpaymentcnt")
+					: 0;
+
+				const prodPayCount = jQuery("#audit-payment-table").length
+					? jQuery("#audit-payment-table").data("paymentcnt")
+					: 0;
+
+				paymentData.set("allpaymentcnt", allPayCount);
+				paymentData.set("prodpaymentcnt", prodPayCount);
 				tasteMakePayment(paymentData, $modal, deleteMode, true);
 			});
 };

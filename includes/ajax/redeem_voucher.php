@@ -89,7 +89,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	$order_cnt = count($order_qty_list);
 	$cnt_increase = $redeem_flg ?  -1 * ($order_cnt)  : $order_cnt;
 	
-	$gr_value = $product_info['gr_value'];
+	$price = $product_info['price'];
 	$commission_value = $product_info['commission_value'];
 	$vat_value = $product_info['vat_value'];
 	$total_sold = $product_info['total_sold'];
@@ -97,14 +97,14 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	$multiplier = $product_info['multiplier'];
 
 	// $redeem_qty += $order_qty;
-	$grevenue = $redeem_qty * $gr_value; 
+	$grevenue = $redeem_qty * $price; 
 	$commission = ($grevenue / 100) * $commission_value;
 	$vat = ($commission / 100) * $vat_value;
 	$payable = $grevenue - ($commission + $vat);
 	$balance_due = $payable - $total_paid;
 	// for summary section, just adjust based on increase/decrease
 	$qty_increase = $redeem_qty - $orig_redeem_qty;
-	$revenue_increase = $qty_increase * $gr_value;
+	$revenue_increase = $qty_increase * $price;
 	$commission_increase = ($revenue_increase / 100) * $commission_value;
 	$vat_increase = ($commission_increase / 100) * $vat_value;
 	$payable_increase = $revenue_increase - ($commission_increase + $vat_increase);
@@ -122,7 +122,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	$hidden_values = "
 	<input type='hidden' id='taste-product-id' value='$product_id'>
 	<input type='hidden' id='taste-product-multiplier' value='$multiplier'>
-	<input type='hidden' id='taste-gr-value' value='$gr_value'>
+	<input type='hidden' id='taste-price' value='$price'>
 	<input type='hidden' id='taste-commission-value' value='$commission_value'>
 	<input type='hidden' id='taste-vat-value' value='$vat_value'>
 	<input type='hidden' id='taste-redeem-qty' value='$redeem_qty'>
