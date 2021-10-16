@@ -2,7 +2,7 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function make_payment_update($payment_info, $product_info, $venue_info) {
+function make_payment_update($payment_info, $product_info, $cur_prod_info, $venue_info) {
 	global $wpdb;
 
 	$user = wp_get_current_user();
@@ -141,15 +141,6 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	}
 */
 
-
-	//   update wp_taste_venue_payment_audit
-	/********
-	 * 
-	 * TODO!!  Decide on what to do with this table due to the new payment by order functionality
-	 * 
-	 */
-
-
 	$payment_audit_table = $wpdb->prefix ."taste_venue_payment_audit";
 	$user_id = get_current_user_id();
 
@@ -178,18 +169,42 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 
 	$currency = get_woocommerce_currency_symbol();
 
-	// update calcs.  some calcs are necessary because all 
+	/***
+	 * 
+	 * this needs to be done for all products in a loop
+	 * multiple data rows will need to be passed back
+	 * 
+	 * 
+	 */
+
+	// update calcs for the currently displayed product.  
+	// some calcs are necessary because all 
 	// values must be passed back for hidden section
-	$redeem_qty = $product_info['redeem_qty'];
-	$gr_value = $product_info['gr_value'];
-	$commission_value = $product_info['commission_value'];
-	$vat_value = $product_info['vat_value'];
-	$total_sold = $product_info['total_sold'];
-	$total_paid = $product_info['total_paid'] + $payment_diff;
-	$multiplier = $product_info['multiplier'];
+
+	/**
+	 * 
+	 * *** REDO JUST BY PASSING IN THE AMOUNT PAID AND AMOUNT DUE
+	 * *** AS THE HIDDEN VALUES IS NO LONGER REQUIRED!!!!!  *****
+	 * 
+	 */
+	
+	$product_id = array_keys($cur_prod_info)[0];
+	$cur_prod_info = $cur_prod_info[$product_id];
+
+	// need to get the payment amount for the displayed product only
+	$cur_payment_diff = $product_order_info[$product_id]['amount'];
+	
+
+	$redeem_qty = $cur_prod_info['redeem_qty'];
+	$price = $cur_prod_info['price'];
+	$commission_value = $cur_prod_info['commission_value'];
+	$vat_value = $cur_prod_info['vat_value'];
+	$total_sold = $cur_prod_info['total_sold'];
+	$total_paid = $cur_prod_info['total_paid'] + $cur_payment_diff;
+	$multiplier = $cur_prod_info['multiplier'];
 	
 	// $redeem_qty += $order_qty;
-	$grevenue = $redeem_qty * $gr_value; 
+	$grevenue = $redeem_qty * $price; 
 	$commission = ($grevenue / 100) * $commission_value;
 	$vat = ($commission / 100) * $vat_value;
 	$payable = $grevenue - ($commission + $vat);
@@ -226,7 +241,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	// $hidden_values = "
 	// <input type='hidden' id='taste-product-id' value='$product_id'>
 	// <input type='hidden' id='taste-product-multiplier' value='$multiplier'>
-	// <input type='hidden' id='taste-gr-value' value='$gr_value'>
+	// <input type='hidden' id='taste-gr-value' value='$price'>
 	// <input type='hidden' id='taste-commission-value' value='$commission_value'>
 	// <input type='hidden' id='taste-vat-value' value='$vat_value'>
 	// <input type='hidden' id='taste-redeem-qty' value='$redeem_qty'>
@@ -239,7 +254,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	";
 	
 	// make adjustments for the totals in the summary section
-	// $sum_gr_value = $venue_info['revenue'];
+	// $sum_price = $venue_info['revenue'];
 	// $sum_commission = $venue_info['commission'];
 	// $sum_vat = $venue_info['vat'];
 	// $sum_redeemed_cnt = $venue_info['redeemed_cnt'];
@@ -256,7 +271,7 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	";
 
 	// $sum_hidden_values = "
-	// <input type='hidden' id='sum-gr-value' value='$sum_gr_value'>
+	// <input type='hidden' id='sum-gr-value' value='$sum_price'>
 	// <input type='hidden' id='sum-commission' value='$sum_commission'>
 	// <input type='hidden' id='sum-vat' value='$sum_vat'>
 	// <input type='hidden' id='sum-redeemed-cnt' value='$sum_redeemed_cnt'>
@@ -271,12 +286,6 @@ function make_payment_update($payment_info, $product_info, $venue_info) {
 	$ret_json = array(
 		'balanceDue' => $currency . ' ' . num_display($balance_due),
 		'totalPaid' => $currency . ' ' . num_display($total_paid),
-		'sumGrValue' => $currency . ' ' . num_display($sum_gr_value),
-		'sumCommission' => $currency . ' ' . num_display($sum_commission),
-		'sumVat'  => $currency . ' ' . num_display($sum_vat),
-		'sumRedeemedQty' => $sum_redeemed_qty,
-		'sumNumServed' => $sum_num_served,
-		'sumNetPayable' => $currency . ' ' . num_display($sum_net_payable),
 		'sumTotalPaid' => $currency . ' ' . num_display($sum_total_paid),
 		'sumBalanceDue' => $currency . ' ' . num_display($sum_balance_due),
 		'paymentLine' => $payment_line,

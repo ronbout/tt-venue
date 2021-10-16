@@ -189,7 +189,7 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 				});
 
 				updateOfferCalcs(respObj, productId);
-				updateVenueCalcs(respObj);
+				updateVenueCalcs(respObj, false);
 				tasteLoadVoucherPaymentButtons();
 				tasteCloseMsg();
 			}
@@ -218,11 +218,18 @@ const tasteMakePayment = (
 	tasteDispMsg(modalMsg);
 
 	// get info from hidden inputs and data values to pass up for re-calc
-	const productInfo = ordersFlag
-		? tasteGetAllProductInfo()
-		: tasteGetProductInfo();
+	let curProdInfo, productInfo;
 	let postProductList = {};
 	let postTotalAmount = 0;
+
+	if (ordersFlag) {
+		productInfo = tasteGetAllProductInfo();
+		curProdInfo = tasteGetProductInfo();
+	} else {
+		productInfo = curProdInfo = tasteGetProductInfo();
+	}
+
+	const productId = Object.keys(curProdInfo)[0];
 
 	if (ordersFlag) {
 		postProductList = Object.entries(
@@ -233,10 +240,10 @@ const tasteMakePayment = (
 		postTotalAmount = tasteVenue.paymentOrders.totalNetPayable;
 	} else {
 		postTotalAmount = paymentData.get("payment-amt");
-		const productId = Object.keys(productInfo)[0];
+		const prodId = Object.keys(productInfo)[0];
 		postProductList = [
 			[
-				productId,
+				prodId,
 				{
 					netPayable: postTotalAmount,
 					orderQty: 0,
@@ -273,6 +280,7 @@ const tasteMakePayment = (
 			security: tasteVenue.security,
 			payment_info: paymentInfo,
 			product_info: productInfo,
+			cur_prod_info: curProdInfo,
 			venue_info: venueInfo,
 		},
 		success: function (responseText) {
@@ -290,7 +298,7 @@ const tasteMakePayment = (
 			} else {
 				console.log(respObj);
 
-				updateVenueCalcs(respObj);
+				updateVenueCalcs(respObj, true);
 				jQuery(".total-payments-display").html(respObj.totalPaid);
 				jQuery("#balance-due-display").html(respObj.balanceDue);
 				jQuery("#balance-due-display-" + productId).html(
@@ -370,13 +378,16 @@ const updateOfferCalcs = (respObj, productId) => {
 	jQuery("#hidden-values").html(respObj.hiddenValues);
 };
 
-const updateVenueCalcs = (respObj) => {
-	jQuery("#gr-value-total").html(respObj.sumGrValue);
+const updateVenueCalcs = (respObj, paymentOnly = false) => {
+	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
 	jQuery(".paid-amount-total").html(respObj.sumTotalPaid);
+	if (paymentOnly) {
+		return;
+	}
+	jQuery("#gr-value-total").html(respObj.sumGrValue);
 	jQuery("#vouchers-total").html(respObj.sumRedeemedQty);
 	jQuery("#served-total").html(respObj.sumNumServed);
 	jQuery("#net-payable-total").html(respObj.sumNetPayable);
-	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
 	respObj.sumHiddenValues &&
 		jQuery("#summary-hidden-values").html(respObj.sumHiddenValues);
 	respObj.sumHiddenPaymentValues &&

@@ -63,17 +63,18 @@ function taste_ajax_make_payment() {
 		wp_die();
 	}
 
-	if (!isset($_POST['payment_info']) || !isset($_POST['product_info']) || !isset($_POST['venue_info'])) {
+	if (!isset($_POST['payment_info']) || !isset($_POST['product_info']) || !isset($_POST['cur_prod_info']) || !isset($_POST['venue_info'])) {
 		echo 'Missing valid payment amount or product / venue info';
 		wp_die();
 	}
 
 	$payment_info = $_POST['payment_info'];
 	$product_info = $_POST['product_info'];
+	$cur_prod_info = $_POST['cur_prod_info'];
 	$venue_info = $_POST['venue_info'];
 
 	require_once(plugin_dir_path(__FILE__). 'make_payment.php');
-	make_payment_update($payment_info, $product_info, $venue_info);
+	make_payment_update($payment_info, $product_info, $cur_prod_info, $venue_info);
 
 	wp_die();
 }
