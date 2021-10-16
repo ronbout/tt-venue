@@ -34,7 +34,6 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
 
-	
 	$payment_db_parms = array(
 		'payment_table' => $wpdb->prefix."taste_venue_payment",
 		'payment_products_table' => $wpdb->prefix."taste_venue_payment_products",
@@ -91,56 +90,8 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		$payment_info['id'] = $payment_id;
 		$payment_diff = $payment_amount;
 	}
-/*
-	$table = "{$wpdb->prefix}offer_payments";
-	$data = array(
-		'pid' => $product_id,
-		'timestamp' => $payment_date,
-		'amount' => $payment_amount,
-		'comment' => $payment_comment,
-		'comment_visible_venues' => $comment_visible_venues,
-		'attach_vat_invoice' => $attach_vat_invoice,
-	);
-	
-	$format = array('%d', '%s', '%f', '%s', '%d', '%d');
 
-	if ($delete_mode) {
-		$edit_mode = 'DELETE';
-		$where = array('id' => $payment_id);
-		$where_format = array('%d');
-		$rows_affected = $wpdb->delete($table, $where, $where_format);
-		$prod_payment_cnt -= 1;
-		$all_payment_cnt -= 1;
-
-		$payment_diff = - $payment_amount;
-	} elseif ($payment_id) {
-		$edit_mode = 'UPDATE';
-
-		$where = array('id' => $payment_id);
-		$where_format = array('%d');
-		$rows_affected = $wpdb->update($table, $data, $where, $format, $where_format);
-
-		$payment_diff = $payment_amount  - $payment_orig_amount;
-	} else {
-		$edit_mode = 'INSERT';
-		$prod_payment_cnt += 1;
-		$all_payment_cnt += 1;
-
-		$rows_affected = $wpdb->insert($table, $data, $format);	
-		$payment_id = $wpdb->insert_id;
-		
-		$payment_info['id'] = $payment_id;
-		$payment_diff = $payment_amount;
-	}
-
-	// if not success set error array and return
-	if (!$rows_affected) {
-		$ret_json = array('error' => 'Could not update database. \n' . $wpdb->last_error);
-		echo wp_json_encode($ret_json);
-		return;
-	}
-*/
-
+	/*****  AUDIT TABLE UPDATE ******/
 	$payment_audit_table = $wpdb->prefix ."taste_venue_payment_audit";
 	$user_id = get_current_user_id();
 
@@ -177,50 +128,34 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	 * 
 	 */
 
-	// update calcs for the currently displayed product.  
-	// some calcs are necessary because all 
-	// values must be passed back for hidden section
 
-	/**
-	 * 
-	 * *** REDO JUST BY PASSING IN THE AMOUNT PAID AND AMOUNT DUE
-	 * *** AS THE HIDDEN VALUES IS NO LONGER REQUIRED!!!!!  *****
-	 * 
-	 */
+	// later code may not have a currently selected product, 
+	// or  it may have a product w/ no selected orders
+	// so test to be sure ("pay all orders" command, for instance)
+	$total_paid = 0;
+	$balance_due = 0;
+	$payment_line = '';
+	$update_cur_prod = 0;
+	if (count($cur_prod_info)) {
+		$product_id = array_keys($cur_prod_info)[0];
+		$cur_prod_info = $cur_prod_info[$product_id];
+		if (in_array($product_id, array_keys($product_order_info))) {
+			$update_cur_prod = 1;
+		// need to get the payment amount for the displayed product only
+		$cur_payment_diff = $product_order_info[$product_id]['amount'];
+		
+		$total_paid = $cur_prod_info['total_paid'] + $cur_payment_diff;
+		$balance_due = $cur_prod_info['balance_due'] - $cur_payment_diff;
+		// for the payment line at the bottom, where 'amount' needs to 
+		// only for that product and total amount is entire payment
+		$disp_payment_info = $payment_info;
+		$disp_payment_info['product_id'] = $product_id;
+		$disp_payment_info['amount'] = $cur_payment_diff;
+		$disp_payment_info['total_amount'] = $payment_info['amount'];
 	
-	$product_id = array_keys($cur_prod_info)[0];
-	$cur_prod_info = $cur_prod_info[$product_id];
-
-	// need to get the payment amount for the displayed product only
-	$cur_payment_diff = $product_order_info[$product_id]['amount'];
-	
-
-	$redeem_qty = $cur_prod_info['redeem_qty'];
-	$price = $cur_prod_info['price'];
-	$commission_value = $cur_prod_info['commission_value'];
-	$vat_value = $cur_prod_info['vat_value'];
-	$total_sold = $cur_prod_info['total_sold'];
-	$total_paid = $cur_prod_info['total_paid'] + $cur_payment_diff;
-	$multiplier = $cur_prod_info['multiplier'];
-	
-	// $redeem_qty += $order_qty;
-	$grevenue = $redeem_qty * $price; 
-	$commission = ($grevenue / 100) * $commission_value;
-	$vat = ($commission / 100) * $vat_value;
-	$payable = $grevenue - ($commission + $vat);
-	$balance_due = $payable - $total_paid;
-	$num_served = $redeem_qty * $multiplier;
-
-	$grevenue = round($grevenue, 2);
-	$commission = round($commission, 2);
-	$vat = round($vat, 2);
-	$payable = round($payable, 2);
-	$balance_due = round($balance_due, 2);
-
-	// need to add payment id to payment info as 
-	// All Payments line requires Product ID
-
-
+		$payment_line = 'DELETE' === $edit_mode ? '' : disp_payment_line($disp_payment_info, $admin, $commission_value);
+		}
+	}
 /**
  * 
  * if $orders flag, need to redo this.  Each product ID gets its own line in t
@@ -234,34 +169,15 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
  * 
  */
 
-	$payment_info['product_id'] = $product_id;
-	$payment_line = 'DELETE' === $edit_mode ? '' : disp_payment_line($payment_info, $admin, $commission_value);
+
 	$all_payment_line = 'DELETE' === $edit_mode ? '' : disp_all_payment_line($payment_info);
 
-	// $hidden_values = "
-	// <input type='hidden' id='taste-product-id' value='$product_id'>
-	// <input type='hidden' id='taste-product-multiplier' value='$multiplier'>
-	// <input type='hidden' id='taste-gr-value' value='$price'>
-	// <input type='hidden' id='taste-commission-value' value='$commission_value'>
-	// <input type='hidden' id='taste-vat-value' value='$vat_value'>
-	// <input type='hidden' id='taste-redeem-qty' value='$redeem_qty'>
-	// <input type='hidden' id='taste-total-sold' value='$total_sold'>
-	// <input type='hidden' id='taste-total-paid' value='$total_paid'>
-	// ";
 
 	$hidden_payment_values = "
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
 	";
 	
 	// make adjustments for the totals in the summary section
-	// $sum_price = $venue_info['revenue'];
-	// $sum_commission = $venue_info['commission'];
-	// $sum_vat = $venue_info['vat'];
-	// $sum_redeemed_cnt = $venue_info['redeemed_cnt'];
-	// $sum_redeemed_qty = $venue_info['redeemed_qty'];
-	// $sum_num_served = $venue_info['num_served'];
-	// $sum_net_payable = $venue_info['net_payable'];
-	// $multiplier = $venue_info['multiplier'];
 	$sum_total_paid = $venue_info['paid_amount'] + $payment_diff;
 	$sum_balance_due = $venue_info['balance_due'] - $payment_diff;
 	
@@ -270,18 +186,6 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	<input type='hidden' id='sum-balance-due' value='$sum_balance_due'>
 	";
 
-	// $sum_hidden_values = "
-	// <input type='hidden' id='sum-gr-value' value='$sum_price'>
-	// <input type='hidden' id='sum-commission' value='$sum_commission'>
-	// <input type='hidden' id='sum-vat' value='$sum_vat'>
-	// <input type='hidden' id='sum-redeemed-cnt' value='$sum_redeemed_cnt'>
-	// <input type='hidden' id='sum-redeemed-qty' value='$sum_redeemed_qty'>
-	// <input type='hidden' id='sum-num-served' value='$sum_num_served'>
-	// <input type='hidden' id='sum-net-payable' value='$sum_net_payable'>
-	// <input type='hidden' id='sum-total-paid' value='$sum_total_paid'>
-	// <input type='hidden' id='sum-balance-due' value='$sum_balance_due'>
-	// <input type='hidden' id='sum-multiplier' value='$multiplier'>
-	// ";
 
 	$ret_json = array(
 		'balanceDue' => $currency . ' ' . num_display($balance_due),
@@ -291,12 +195,11 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		'paymentLine' => $payment_line,
 		'allPaymentLine' => $all_payment_line,
 		'editMode' => $edit_mode,
-		// 'hiddenValues' => $hidden_values,
 		'hiddenPaymentValues' => $hidden_payment_values,
-		// 'sumHiddenValues' => $sum_hidden_values,
 		'sumHiddenPaymentValues' => $sum_hidden_payment_values,
 		'allPaymentCnt' => $all_payment_cnt,
 		'prodPaymentCnt' => $prod_payment_cnt,
+		'updateCurrentProd' => $update_cur_prod,
 );
 
 	echo wp_json_encode($ret_json);

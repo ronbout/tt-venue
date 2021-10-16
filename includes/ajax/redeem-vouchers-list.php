@@ -177,6 +177,8 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 
 	<?php
 		$total_paid_to_venue = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count, $make_payments_below);
+		
+		$balance_due = $payable - $total_paid_to_venue;
 	?>
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
@@ -190,6 +192,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 	</div>
 	<div id="hidden-payment-values">
 		<input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_venue ?>">
+		<input type="hidden" id="taste-balance-due" value="<?php echo $balance_due ?>">
 	</div>
 	<?php
 }

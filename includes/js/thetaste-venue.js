@@ -299,21 +299,30 @@ const tasteMakePayment = (
 				console.log(respObj);
 
 				updateVenueCalcs(respObj, true);
-				jQuery(".total-payments-display").html(respObj.totalPaid);
-				jQuery("#balance-due-display").html(respObj.balanceDue);
-				jQuery("#balance-due-display-" + productId).html(
-					respObj.balanceDue.split(" ")[1]
-				);
-				//jQuery("#hidden-values").html(respObj.hiddenValues);
-				jQuery("#hidden-payment-values").html(respObj.hiddenPaymentValues);
+				if (respObj.updateCurrentProd) {
+					jQuery(".total-payments-display").html(respObj.totalPaid);
+					jQuery("#balance-due-display").html(respObj.balanceDue);
+					jQuery("#balance-due-display-" + productId).html(
+						respObj.balanceDue.split(" ")[1]
+					);
+					//jQuery("#hidden-values").html(respObj.hiddenValues);
+					jQuery("#hidden-payment-values").html(respObj.hiddenPaymentValues);
+					const prodCntDisp = respObj.prodPaymentCnt
+						? `Transaction Items (${respObj.prodPaymentCnt} Rows)`
+						: "No Transactions Found";
+
+					jQuery("#prod-transactions-cnt-display").html(prodCntDisp);
+				}
 
 				if ("UPDATE" === respObj.editMode) {
-					jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
+					respObj.updateCurrentProd &&
+						jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
 					jQuery(`#all-pay-${paymentInfo.id}`).replaceWith(
 						respObj.allPaymentLine
 					);
 				} else if ("INSERT" === respObj.editMode) {
-					jQuery("#payment-lines").append(respObj.paymentLine);
+					respObj.updateCurrentProd &&
+						jQuery("#payment-lines").append(respObj.paymentLine);
 					jQuery("#all-payment-lines").append(respObj.allPaymentLine);
 				} else {
 					jQuery(`#pay-${paymentInfo.id}`).remove();
@@ -327,11 +336,6 @@ const tasteMakePayment = (
 						respObj.allPaymentCnt
 					);
 
-				const prodCntDisp = respObj.prodPaymentCnt
-					? `Transaction Items (${respObj.prodPaymentCnt} Rows)`
-					: "No Transactions Found";
-
-				jQuery("#prod-transactions-cnt-display").html(prodCntDisp);
 				jQuery("#audit-payment-table").data(
 					"paymentcnt",
 					respObj.prodPaymentCnt
@@ -415,6 +419,7 @@ const tasteGetProductInfo = () => {
 		total_sold: jQuery("#taste-total-sold").val(),
 		total_paid: jQuery("#taste-total-paid").val(),
 		multiplier: jQuery("#taste-product-multiplier").val(),
+		balance_due: jQuery("#taste-balance-due").val(),
 	};
 
 	return productInfo;
