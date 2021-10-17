@@ -22,6 +22,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 				bf.meta_value AS b_fname,
 				bl.meta_value AS b_lname,
 				be.meta_value AS b_email,
+				poix.payment_id,
 				i.order_id, i.order_item_id as itemid, i.downloaded as downloaded,i.paid as paid
 			FROM " . $wpdb->prefix . "wc_order_product_lookup wclook
 			JOIN " . $wpdb->prefix . "woocommerce_order_itemmeta im ON im.order_item_id = wclook.order_item_id
@@ -31,6 +32,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 			LEFT JOIN " . $wpdb->prefix . "postmeta bf ON bf.post_id = wclook.order_id
 			LEFT JOIN " . $wpdb->prefix . "postmeta bl ON bl.post_id = wclook.order_id
 			LEFT JOIN " . $wpdb->prefix . "postmeta be ON be.post_id = wclook.order_id
+			LEFT JOIN " . $wpdb->prefix . "taste_venue_payment_order_item_xref poix ON poix.order_item_id = wclook.order_item_id
 			WHERE im.meta_key = '_qty'
 			AND bf.meta_key = '_billing_first_name'
 			AND bl.meta_key = '_billing_last_name'
@@ -38,7 +40,8 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 			AND o.post_status = 'wc-completed'
 			AND o.post_type = 'shop_order'
 			AND o.post_date >= %s
-			AND wclook.product_id = %d group by o.id", $product_id, $cutoff_date, $product_id));
+			AND wclook.product_id = %d 
+			GROUP BY o.id", $product_id, $cutoff_date, $product_id));
 
 	$product_row = $wpdb->get_results($wpdb->prepare("
 		SELECT  pm.post_id, p.post_title,	v.venue_id, 
