@@ -223,22 +223,17 @@ const tasteMakePayment = (
 	let postTotalAmount = 0;
 
 	if (ordersFlag) {
-		productInfo = tasteGetAllProductInfo();
-		curProdInfo = tasteGetProductInfo();
-	} else {
-		productInfo = curProdInfo = tasteGetProductInfo();
-	}
-
-	const productId = Object.keys(curProdInfo)[0];
-
-	if (ordersFlag) {
 		postProductList = Object.entries(
 			tasteVenue.paymentOrders.productList
 		).filter((prod) => {
 			return prod[1].orderQty;
 		});
+
+		productInfo = tasteGetAllProductInfo(postProductList);
+		curProdInfo = tasteGetProductInfo();
 		postTotalAmount = tasteVenue.paymentOrders.totalNetPayable;
 	} else {
+		productInfo = curProdInfo = tasteGetProductInfo();
 		postTotalAmount = paymentData.get("payment-amt");
 		const prodId = Object.keys(productInfo)[0];
 		postProductList = [
@@ -252,6 +247,8 @@ const tasteMakePayment = (
 			],
 		];
 	}
+
+	const productId = Object.keys(curProdInfo)[0];
 
 	let venueInfo = tasteGetVenueInfo();
 	let paymentInfo = {
@@ -302,10 +299,10 @@ const tasteMakePayment = (
 				if (respObj.updateCurrentProd) {
 					jQuery(".total-payments-display").html(respObj.totalPaid);
 					jQuery("#balance-due-display").html(respObj.balanceDue);
-					jQuery("#balance-due-display-" + productId).html(
+					jQuery(`#balance-due-display-${productId}`).html(
 						respObj.balanceDue.split(" ")[1]
 					);
-					//jQuery("#hidden-values").html(respObj.hiddenValues);
+
 					jQuery("#hidden-payment-values").html(respObj.hiddenPaymentValues);
 					const prodCntDisp = respObj.prodPaymentCnt
 						? `Transaction Items (${respObj.prodPaymentCnt} Rows)`
@@ -313,6 +310,8 @@ const tasteMakePayment = (
 
 					jQuery("#prod-transactions-cnt-display").html(prodCntDisp);
 				}
+
+				// update all products in the product display table
 
 				if ("UPDATE" === respObj.editMode) {
 					respObj.updateCurrentProd &&
@@ -341,6 +340,9 @@ const tasteMakePayment = (
 					respObj.prodPaymentCnt
 				);
 
+				buildPaymentOrders();
+				jQuery("#select-orders-pay-total").text("0.00");
+				tasteUpdateProductRows(respObj.productInfo);
 				tasteLoadInvoiceButtons();
 				tasteCloseMsg();
 			}
@@ -425,19 +427,33 @@ const tasteGetProductInfo = () => {
 	return productInfo;
 };
 
-const tasteGetAllProductInfo = () => {
+const tasteGetAllProductInfo = (prodList) => {
 	let productAllProductInfo = {};
-	jQuery(".product-info-row").each((ndx, productRow) => {
-		$productRow = jQuery(productRow);
-		productAllProductInfo[$productRow.data("productid")] = {
+	let productAllProductInfo2 = {};
+
+	prodList.forEach((prodInfo) => {
+		const prodId = prodInfo[0];
+		const $productRow = jQuery(`#product-table-row-${prodId}`);
+		productAllProductInfo[prodId] = {
 			vat_value: $productRow.data("vatrate"),
 			commisson_value: $productRow.data("commissionrate"),
 			price: $productRow.data("price"),
 			total_paid: $productRow.data("paidamount"),
+			balance_due: $productRow.data("balancedue"),
 		};
 	});
-	// console.log(productAllProductInfo);
+
 	return productAllProductInfo;
+};
+
+const tasteUpdateProductRows = (prodList) => {
+	for (const [prodId, prodInfo] of Object.entries(prodList)) {
+		let $productRow = jQuery(`#product-table-row-${prodId}`);
+		$productRow.data("paidamount", prodInfo["total_paid"]);
+		$productRow.data("balancedue", prodInfo["balance_due"]);
+		jQuery(`#balance-due-display-${prodId}`).html(prodInfo["balance_due"]);
+		jQuery(`#selected-pay-amt-${prodId}`).text("0.00");
+	}
 };
 
 const tasteGetVenueInfo = () => {

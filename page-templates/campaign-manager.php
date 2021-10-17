@@ -525,7 +525,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals, 
 					Pay selected offers
 				</button>
 				Total Payment for Selected Orders: 
-				<span id="select-orders-pay-total">3,987</span>
+				<span id="select-orders-pay-total">0.00</span>
 			</span>
 		</div>
 			<div class="table-fixed-wrapper mb-5">
@@ -637,7 +637,7 @@ function display_product_row($product_row) {
  ?>
 	<tr id="product-table-row-<?php echo $id ?>" class="product-info-row" data-multiplier="<?php echo $multiplier ?>" 
 			data-vatrate="<?php echo $vat_rate ?>" data-commissionrate="<?php echo $commission_rate ?>" data-price="<?php echo $price ?>"
-			data-productid="<?php echo $id?>" data-paidamount="<?php echo $paid_amount ?>"
+			data-productid="<?php echo $id?>" data-paidamount="<?php echo $paid_amount ?>" data-balancedue="<?php echo $balance_due ?>"
 	>
 		<td><?php echo $id ?></td>
 		<td><?php echo $title ?></td>

@@ -26,7 +26,6 @@ function taste_ajax_load_vouchers() {
 	$cutoff_date = $_POST['cutoff_date'];
 	$make_payments_below = $_POST['make_payments_below'];
 
-	// require_once(plugin_dir_path(__FILE__). 'display-voucher-table.php');
 	require_once(plugin_dir_path(__FILE__). 'redeem-vouchers-list.php');
 	display_voucher_table($product_id, $multiplier, $cutoff_date, $make_payments_below);
 

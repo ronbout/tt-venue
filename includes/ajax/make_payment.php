@@ -120,15 +120,6 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 
 	$currency = get_woocommerce_currency_symbol();
 
-	/***
-	 * 
-	 * this needs to be done for all products in a loop
-	 * multiple data rows will need to be passed back
-	 * 
-	 * 
-	 */
-
-
 	// later code may not have a currently selected product, 
 	// or  it may have a product w/ no selected orders
 	// so test to be sure ("pay all orders" command, for instance)
@@ -164,14 +155,23 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
  * 
  * Will that come through the product ID field
  * 
- * oh shit!!!!  all the above calcs need to be redone as it only applies to one product
+ * ALL THE PAYMENTS NEED THEIR BALANCE DUE UPDATED SO THAT THE PRODUCT DISPLAY TABLE
+ * CAN BE UPDATED.  PROBABLY NEED TO ADD BALANCE DUE TO THE STANDARD PRODUCT PAYMENT INFO
+ * IN JS, SO IT JUST PASSED UP HERE.  THEN PASS BACK AN ARRAY OF UPDATE INFO THAT JS .each() 's 
+ * IT'S WAY THROUGH.  
+ * 
+ * AT THE SAME TIME, CREATE THE ROWS! FOR THE ALL TRANSACTIONS DISPLAY
  * 
  * 
  */
-
+	
+	foreach ($product_info as $prod_id => &$prod_row_info) {
+		$amount = $product_order_info[$prod_id]['amount'];
+		$prod_row_info['balance_due'] = round($prod_row_info['balance_due'] - $amount, 2);
+		$prod_row_info['total_paid'] = round($prod_row_info['total_paid'] + $amount, 2);
+	}
 
 	$all_payment_line = 'DELETE' === $edit_mode ? '' : disp_all_payment_line($payment_info);
-
 
 	$hidden_payment_values = "
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
@@ -200,6 +200,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		'allPaymentCnt' => $all_payment_cnt,
 		'prodPaymentCnt' => $prod_payment_cnt,
 		'updateCurrentProd' => $update_cur_prod,
+		'productInfo' => $product_info,
 );
 
 	echo wp_json_encode($ret_json);
