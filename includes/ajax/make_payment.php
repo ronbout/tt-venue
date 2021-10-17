@@ -59,8 +59,6 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		if (!$db_status) {
 			return;
 		}
-		$prod_payment_cnt -= 1;
-		$all_payment_cnt -= 1;
 
 		$payment_diff = - $payment_amount;
 	} elseif ($payment_id) {
@@ -84,8 +82,6 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 			return;
 		}
 		$payment_id =$db_insert_result['payment_id'];
-		$prod_payment_cnt += 1;
-		$all_payment_cnt += 1;
 		
 		$payment_info['id'] = $payment_id;
 		$payment_diff = $payment_amount;
@@ -132,6 +128,11 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		$cur_prod_info = $cur_prod_info[$product_id];
 		if (in_array($product_id, array_keys($product_order_info))) {
 			$update_cur_prod = 1;
+			if ($edit_mode === 'INSERT') {
+				$prod_payment_cnt += 1;
+			} elseif ($edit_mode === 'DELETE') {
+				$prod_payment_cnt -= 1;
+			}
 		// need to get the payment amount for the displayed product only
 		$cur_payment_diff = $product_order_info[$product_id]['amount'];
 		
@@ -147,31 +148,31 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		$payment_line = 'DELETE' === $edit_mode ? '' : disp_payment_line($disp_payment_info, $admin, $commission_value);
 		}
 	}
-/**
- * 
- * if $orders flag, need to redo this.  Each product ID gets its own line in t
- * the All Payments display.  Only the current Product Id should be used for the
- * regular payment line, if any product is currently open.
- * 
- * Will that come through the product ID field
- * 
- * ALL THE PAYMENTS NEED THEIR BALANCE DUE UPDATED SO THAT THE PRODUCT DISPLAY TABLE
- * CAN BE UPDATED.  PROBABLY NEED TO ADD BALANCE DUE TO THE STANDARD PRODUCT PAYMENT INFO
- * IN JS, SO IT JUST PASSED UP HERE.  THEN PASS BACK AN ARRAY OF UPDATE INFO THAT JS .each() 's 
- * IT'S WAY THROUGH.  
- * 
- * AT THE SAME TIME, CREATE THE ROWS! FOR THE ALL TRANSACTIONS DISPLAY
- * 
- * 
- */
-	
+	// now similar to above but for all included products and the 
+	// display of the products table and All Transactions
+	$all_payment_lines = '';
 	foreach ($product_info as $prod_id => &$prod_row_info) {
 		$amount = $product_order_info[$prod_id]['amount'];
 		$prod_row_info['balance_due'] = round($prod_row_info['balance_due'] - $amount, 2);
 		$prod_row_info['total_paid'] = round($prod_row_info['total_paid'] + $amount, 2);
-	}
 
-	$all_payment_line = 'DELETE' === $edit_mode ? '' : disp_all_payment_line($payment_info);
+		$disp_payment_info = $payment_info;
+		$disp_payment_info['product_id'] = $prod_id;
+		$disp_payment_info['amount'] = $amount;
+		$disp_payment_info['total_amount'] = $payment_info['amount'];
+		$disp_payment_info['order_item_ids'] = implode(', ', array_column($product_order_info[$prod_id]['order_list'], 'orderItemId'));
+
+		if ($edit_mode !== 'DELETE') {
+			$all_payment_line = disp_all_payment_line($disp_payment_info);
+			$all_payment_lines .= $all_payment_line;
+			if ($edit_mode === 'INSERT') {
+				$all_payment_cnt += 1;
+			}
+		} else {
+			$all_payment_cnt -= 1;
+		}
+
+	}
 
 	$hidden_payment_values = "
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
@@ -193,7 +194,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		'sumTotalPaid' => $currency . ' ' . num_display($sum_total_paid),
 		'sumBalanceDue' => $currency . ' ' . num_display($sum_balance_due),
 		'paymentLine' => $payment_line,
-		'allPaymentLine' => $all_payment_line,
+		'allPaymentLine' => $all_payment_lines,
 		'editMode' => $edit_mode,
 		'hiddenPaymentValues' => $hidden_payment_values,
 		'sumHiddenPaymentValues' => $sum_hidden_payment_values,

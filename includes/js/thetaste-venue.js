@@ -335,10 +335,11 @@ const tasteMakePayment = (
 						respObj.allPaymentCnt
 					);
 
-				jQuery("#audit-payment-table").data(
-					"paymentcnt",
-					respObj.prodPaymentCnt
-				);
+				jQuery("#audit-payment-table").length &&
+					jQuery("#audit-payment-table").data(
+						"paymentcnt",
+						respObj.prodPaymentCnt
+					);
 
 				buildPaymentOrders();
 				jQuery("#select-orders-pay-total").text("0.00");
