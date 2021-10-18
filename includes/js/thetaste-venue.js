@@ -556,7 +556,7 @@ const tasteLoadVoucherPaymentButtons = () => {
 	/****]
 	 *
 	 *
-	 *  SOMETHING IN THE NEXT 2 ROUTINES IS MESSING UP THE TOTALS
+	 *  SOMETHING IN THE NEXT  ROUTINE IS MESSING UP THE TOTALS
 	 *  WHEN i AM USING THE CHECKBOX ALL.
 	 *  Checking the All box works.  Everything is selected and the total
 	 * 	is correct above.  But, if I uncheck an order after that, the display
@@ -572,18 +572,16 @@ const tasteLoadVoucherPaymentButtons = () => {
 			const orderItemId = $rowData.data("order-item-id");
 			const checkVal = jQuery(this).prop("checked");
 			const prodId = jQuery("#taste-product-id").val();
-			console.log(tasteVenue.paymentOrders.productList[prodId]);
 			if (checkVal) {
 				loadOrderPaymentInfo($rowData);
 			} else {
 				tasteVenue.paymentOrders.productList[prodId].orderItemList =
 					tasteVenue.paymentOrders.productList[prodId].orderItemList.filter(
 						function (payItem) {
-							payItem.orderItemId !== orderItemId;
+							return payItem.orderItemId !== orderItemId;
 						}
 					);
 			}
-			console.log(tasteVenue.paymentOrders.productList[prodId]);
 			displayOrderPaymentInfo();
 		});
 
