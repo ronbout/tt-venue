@@ -92,6 +92,10 @@ const buildPaymentOrders = () => {
 			orderItemList: [],
 		};
 	});
+
+	jQuery(".order-payment-check").each(function () {
+		jQuery(this).prop("checked", false);
+	});
 };
 
 const displayOrderPaymentInfo = () => {
@@ -341,6 +345,9 @@ const tasteMakePayment = (
 						respObj.prodPaymentCnt
 					);
 
+				respObj.updateCurrentProd &&
+					tasteUpdatePaidOrderRows(respObj.curProdOrdList, respObj.editMode);
+
 				buildPaymentOrders();
 				jQuery("#select-orders-pay-total").text("0.00");
 				tasteUpdateProductRows(respObj.productInfo);
@@ -357,8 +364,6 @@ const tasteMakePayment = (
 		},
 	});
 };
-
-const filterProductList = (productListObj) => {};
 
 const updateOfferCalcs = (respObj, productId) => {
 	jQuery("#grevenue-display").html(respObj.grevenue);
@@ -455,6 +460,13 @@ const tasteUpdateProductRows = (prodList) => {
 		jQuery(`#balance-due-display-${prodId}`).html(prodInfo["balance_due"]);
 		jQuery(`#selected-pay-amt-${prodId}`).text("0.00");
 	}
+};
+
+const tasteUpdatePaidOrderRows = (curProdOrdList, editMode) => {
+	curProdOrdList.forEach((orderItemId) => {
+		jQuery(`#order-table-row-${orderItemId}`).removeClass("or-display-pay-due");
+		jQuery(`#order-table-row-${orderItemId}`).addClass("or-display-paid");
+	});
 };
 
 const tasteGetVenueInfo = () => {

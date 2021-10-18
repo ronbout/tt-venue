@@ -123,6 +123,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$balance_due = 0;
 	$payment_line = '';
 	$update_cur_prod = 0;
+	$cur_prod_ord_list = [];
 	if (count($cur_prod_info)) {
 		$product_id = array_keys($cur_prod_info)[0];
 		$cur_prod_info = $cur_prod_info[$product_id];
@@ -144,6 +145,8 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		$disp_payment_info['product_id'] = $product_id;
 		$disp_payment_info['amount'] = $cur_payment_diff;
 		$disp_payment_info['total_amount'] = $payment_info['amount'];
+
+		$cur_prod_ord_list = array_column($product_order_info[$product_id]['order_list'], 'orderItemId');
 	
 		$payment_line = 'DELETE' === $edit_mode ? '' : disp_payment_line($disp_payment_info, $admin, $commission_value);
 		}
@@ -202,6 +205,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		'prodPaymentCnt' => $prod_payment_cnt,
 		'updateCurrentProd' => $update_cur_prod,
 		'productInfo' => $product_info,
+		'curProdOrdList' => $cur_prod_ord_list,
 );
 
 	echo wp_json_encode($ret_json);

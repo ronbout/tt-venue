@@ -366,14 +366,15 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 	$payment_due = !$order_item_info->payment_id && $order_item_info->downloaded === '1';
 	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan);
 	if ('0' == $order_item_info->downloaded) {
-		$row_status_class = 'or-status-not-served';
+		$row_status_class = 'or-display-not-served';
 	}	elseif ($payment_due) {
-		$row_status_class = 'or-status-pay-due';
+		$row_status_class = 'or-display-pay-due';
 	} else {
-		$row_status_class = 'or-status-paid';
+		$row_status_class = 'or-display-paid';
 	}
 	?>
-	<tr data-order-id="<?php echo $order_item_info->order_id ?>" 
+	<tr  id="order-table-row-<?php echo $order_item_info->itemid ?>"
+			data-order-id="<?php echo $order_item_info->order_id ?>" 
 			data-order-qty="<?php echo $order_item_info->quan ?>" 
 			data-order-item-id="<?php echo $order_item_info->itemid ?>"
 			data-order-net-payable="<?php echo $net_payable_order_item ?>"
@@ -391,13 +392,7 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 			?>
 		</td>
 		<td id="td-check-order-payment-id-<?php echo $order_item_info->order_id ?>" class="text-center payment-mode-only">
-			<?php 
-				if ($payment_due) {
-					echo '<input type="checkbox" class="order-payment-check">';
-				} else {
-					echo '';
-				}
-			?>
+			<input type="checkbox" class="order-payment-check or-display or-status-display-pay-due">
 		</td>
 		<td class="payment-mode-only"><?php echo $order_item_info->itemid ?></td>
 		<td><?php echo $order_item_info->order_id ?></td>
@@ -442,15 +437,15 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 						?>
 		</td> 
 		<td class="payment-mode-only">
-			<span class="notserved  or-status or-status-display-not-served">
+			<span class="notserved  or-display or-status-display-not-served">
 				<i class="fas fa-times-circle"></i>
 				Not Served 
 			</span>
-			<span class="text-primary font-weight-bold payment-due-status or-status or-status-display-pay-due" >
+			<span class="text-primary font-weight-bold payment-due-status or-display or-status-display-pay-due" >
 				<i class="fas fa-minus-circle"></i>
 				Payment Due
 			</span>
-			<span class="served or-status or-status-display-paid">
+			<span class="served or-display or-status-display-paid">
 				<i class="fas fa-check-circle"></i>
 				Paid
 			</span>
