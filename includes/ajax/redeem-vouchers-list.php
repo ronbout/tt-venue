@@ -345,7 +345,7 @@ function display_order_table_heading($order_rows, $expired_val) {
 		<th scope="col">Quantity</th>
 		<th scope="col" class="payment-mode-only">Net Payable</th>
 		<th scope="col" class="redeem-mode-only">Status</th>
-		<th scope="col" class="payment-mode-only">Redeem</br>Status</th>
+		<th scope="col" class="payment-mode-only">Payment</br>Status</th>
 	</thead>
 	<?php
 }
@@ -365,11 +365,19 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 	$action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3';
 	$payment_due = !$order_item_info->payment_id && $order_item_info->downloaded === '1';
 	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan);
+	if ('0' == $order_item_info->downloaded) {
+		$row_status_class = 'or-status-not-served';
+	}	elseif ($payment_due) {
+		$row_status_class = 'or-status-pay-due';
+	} else {
+		$row_status_class = 'or-status-paid';
+	}
 	?>
 	<tr data-order-id="<?php echo $order_item_info->order_id ?>" 
 			data-order-qty="<?php echo $order_item_info->quan ?>" 
 			data-order-item-id="<?php echo $order_item_info->itemid ?>"
 			data-order-net-payable="<?php echo $net_payable_order_item ?>"
+			class="<?php echo $row_status_class ?>"
 	>
 		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center  redeem-mode-only">
 			<?php 
@@ -434,25 +442,18 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 						?>
 		</td> 
 		<td class="payment-mode-only">
-			<?php
-				if ('0' == $order_item_info->downloaded) {
-							echo '<span class="notserved">
-											<i class="fas fa-times-circle"></i>
-											Not Served 
-										</span>';
-				}	elseif ($payment_due) {
-					echo '<span class="text-primary font-weight-bold payment-due-status" >
-									<i class="fas fa-minus-circle"></i>
-									Payment Due
-								</span>';
-				} else {
-					echo '<span class="served">
-									<i class="fas fa-check-circle"></i>
-									Paid
-								</span>';
-				}
-
-			?>
+			<span class="notserved  or-status or-status-display-not-served">
+				<i class="fas fa-times-circle"></i>
+				Not Served 
+			</span>
+			<span class="text-primary font-weight-bold payment-due-status or-status or-status-display-pay-due" >
+				<i class="fas fa-minus-circle"></i>
+				Payment Due
+			</span>
+			<span class="served or-status or-status-display-paid">
+				<i class="fas fa-check-circle"></i>
+				Paid
+			</span>
 		</td>
 	</tr>
 	<?php

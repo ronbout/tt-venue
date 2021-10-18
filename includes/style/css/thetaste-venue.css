@@ -11103,6 +11103,7 @@ div#profile_edit_form {
 body.campaign-manager {
   /* icon circle background */
   /* icons */
+  /* use class at the tr and td span level to determine what gets displayed */
 }
 body.campaign-manager div.headings {
   margin-top: 2.5rem;
@@ -11217,6 +11218,11 @@ body.campaign-manager .expired-prod,
 body.campaign-manager .notserved,
 body.campaign-manager .fa-times-circle {
   color: #f44336;
+}
+body.campaign-manager tr.or-status-not-served > td > span.or-status:not(.or-status-display-not-served),
+body.campaign-manager tr.or-status-pay-due > td > span.or-status:not(.or-status-display-pay-due),
+body.campaign-manager tr.or-status-paid > td > span.or-status:not(.or-status-display-paid) {
+  display: none;
 }
 body.campaign-manager .camp_summary_table {
   font-family: "Roboto", sans-serif;

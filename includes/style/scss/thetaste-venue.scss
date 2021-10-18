@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -637,6 +637,15 @@ body.campaign-manager {
 	.notserved,
 	.fa-times-circle {
 		color: #f44336;
+	}
+
+	/* use class at the tr and td span level to determine what gets displayed */
+	tr.or-status-not-served
+		> td
+		> span.or-status:not(.or-status-display-not-served),
+	tr.or-status-pay-due > td > span.or-status:not(.or-status-display-pay-due),
+	tr.or-status-paid > td > span.or-status:not(.or-status-display-paid) {
+		display: none;
 	}
 
 	.camp_summary_table {
