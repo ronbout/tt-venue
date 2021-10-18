@@ -543,7 +543,7 @@ const tasteLoadVoucherPaymentButtons = () => {
 			const checkVal = jQuery(this).prop("checked");
 			const prodId = jQuery("#taste-product-id").val();
 			tasteVenue.paymentOrders.productList[prodId].orderItemList = [];
-			jQuery(".order-payment-check").each(function () {
+			jQuery("tr.or-display-pay-due .order-payment-check").each(function () {
 				$this = jQuery(this);
 				const $rowData = $this.parent().parent();
 				$this.prop("checked", checkVal);
@@ -553,7 +553,18 @@ const tasteLoadVoucherPaymentButtons = () => {
 				displayOrderPaymentInfo();
 			});
 		});
-
+	/****]
+	 *
+	 *
+	 *  SOMETHING IN THE NEXT 2 ROUTINES IS MESSING UP THE TOTALS
+	 *  WHEN i AM USING THE CHECKBOX ALL.
+	 *  Checking the All box works.  Everything is selected and the total
+	 * 	is correct above.  But, if I uncheck an order after that, the display
+	 *  looks correct, but the total at the top goes to 0.  Has to be in the
+	 * 	.order-payment-check click event below
+	 *
+	 *
+	 */
 	jQuery(".order-payment-check")
 		.off("click")
 		.click(function (e) {
@@ -561,6 +572,7 @@ const tasteLoadVoucherPaymentButtons = () => {
 			const orderItemId = $rowData.data("order-item-id");
 			const checkVal = jQuery(this).prop("checked");
 			const prodId = jQuery("#taste-product-id").val();
+			console.log(tasteVenue.paymentOrders.productList[prodId]);
 			if (checkVal) {
 				loadOrderPaymentInfo($rowData);
 			} else {
@@ -571,6 +583,7 @@ const tasteLoadVoucherPaymentButtons = () => {
 						}
 					);
 			}
+			console.log(tasteVenue.paymentOrders.productList[prodId]);
 			displayOrderPaymentInfo();
 		});
 
