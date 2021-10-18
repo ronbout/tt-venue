@@ -411,16 +411,20 @@ function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights
 }
 
 function check_payment_by_order_item($prod_calcs, $prod_date, $payment_rows) {
-	if (!$prod_calcs['balance_due'] || strtotime($prod_date) < strtotime('2020-01-01')) {
-		return false;
-	}
+	// All products should be viewable in Payment mode, just like all are viewable in 
+	// Redemption mode
+	return true;
+	
+	// if (!$prod_calcs['balance_due'] || strtotime($prod_date) < strtotime('2020-01-01')) {
+	// 	return false;
+	// }
 
-	$prod_id = $prod_calcs['product_id'];
-	$prod_payments = array_filter($payment_rows, function ($payment_row) use ($prod_id) {
-		return $prod_id === $payment_row['product_id'];
-	});
+	// $prod_id = $prod_calcs['product_id'];
+	// $prod_payments = array_filter($payment_rows, function ($payment_row) use ($prod_id) {
+	// 	return $prod_id === $payment_row['product_id'];
+	// });
 
-	return ! in_array(NULL, array_column($prod_payments, 'order_item_id'));
+	// return ! in_array(NULL, array_column($prod_payments, 'order_item_id'));
 }
 
 function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str) {
@@ -684,6 +688,15 @@ function display_product_row($product_row) {
 		</td>
 		<td class="text-center payment-mode-only">
 			<?php 
+			/****
+			 * 
+			 * 
+			 * expired products should still be allowed to make payments against
+			 * only products w/ no orders should be "X"'d 
+			 * 
+			 * 
+			 * 
+			 */
 			if ($payment_by_order_item) {
 				?>
 				<button data-prod-id="<?php echo $id ?>" data-payments-below="false" class="btn btn-primary view_offer product-select-btn
