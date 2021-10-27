@@ -266,6 +266,7 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 	'credit_refund_sales_amt' => 0,
 	'credit_refund_net_sales' => 0,
 	'total_credit_refund_amt' => 0,
+	'used_credit_refund_amt' => 0,
 	'remaining_credit_refund_amt' => 0,
 	);
 
@@ -320,11 +321,15 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 			$tmp['credit_refund_sales_amt'] = num_display($product_row['price'] * $product_row['credit_refund_order_qty']);
 			$tmp['credit_refund_net_sales'] = num_display($tmp['credit_refund_sales_amt'] - $product_row['credit_refund_coupon_amt']);
 			// need to sum the coupons that have NOT reached their usage limit to get the remaining credit amount
-			$remaining_credit_refund_amount = calc_remaining_credit_refund_amount($credit_coupon_codes);
+			$credit_refund_amounts = calc_remaining_credit_refund_amount($credit_coupon_codes);
+			$remaining_credit_refund_amount = $credit_refund_amounts['remaining_coupon_amount'];
+			$used_credit_refund_amount = $credit_refund_amounts['used_coupon_amount'];
+			$tmp['used_credit_refund_amt'] = $used_credit_refund_amount;
 			$tmp['remaining_credit_refund_amt'] = $remaining_credit_refund_amount;
 		} else {
 			$tmp['credit_refund_sales_amt'] = 0;
 			$tmp['credit_refund_net_sales'] = 0;
+			$tmp['used_credit_refund_amt'] = 0;
 			$tmp['remaining_credit_refund_amt'] = 0;
 		}
 
@@ -366,7 +371,11 @@ function calc_remaining_credit_refund_amount($credit_coupon_codes) {
 
 	$sql = "
 		SELECT 
-			COALESCE( SUM(pm_coupon_amount.meta_value),0) as 'total_coupon_amount' 
+		COALESCE( SUM(
+			IF(pm_usage_count.meta_value = 0 AND 
+				CAST( COALESCE(FROM_UNIXTIME(pm_date_expires.meta_value), pm_expiry_date.meta_value) AS DATE ) > CAST(CURDATE() AS DATE ), 
+				pm_coupon_amount.meta_value, 0)), 0) AS 'remaining_coupon_amount',
+			COALESCE( SUM(IF(pm_usage_count.meta_value > 0, pm_coupon_amount.meta_value, 0)), 0) AS 'used_coupon_amount'
 			FROM $wpdb->posts coup_p
 			JOIN $wpdb->postmeta pm_usage_count ON pm_usage_count.meta_key = 'usage_count' AND pm_usage_count.post_id = coup_p.ID
 			JOIN $wpdb->postmeta pm_coupon_amount ON pm_coupon_amount.meta_key = 'coupon_amount' AND pm_coupon_amount.post_id = coup_p.ID
@@ -374,13 +383,11 @@ function calc_remaining_credit_refund_amount($credit_coupon_codes) {
 			LEFT JOIN $wpdb->postmeta pm_expiry_date ON pm_expiry_date.meta_key = 'expiry_date' AND pm_expiry_date.post_id = coup_p.ID
 			WHERE coup_p.post_type = 'shop_coupon' 
 			AND coup_p.post_status = 'publish'
-			AND pm_usage_count.meta_value = 0
-			AND CAST( COALESCE(FROM_UNIXTIME(pm_date_expires.meta_value), pm_expiry_date.meta_value) AS DATE ) > CAST(CURDATE() AS DATE )
 			AND coup_p.post_title IN ($placeholders)";
 
-	$remaining_credit_refund_amount = $wpdb->get_results($wpdb->prepare($sql, $credit_coupon_list), ARRAY_A);	
+	$credit_refund_amounts = $wpdb->get_results($wpdb->prepare($sql, $credit_coupon_list), ARRAY_A);	
 
-	return $remaining_credit_refund_amount[0]['total_coupon_amount'];
+	return $credit_refund_amounts[0];
 }
 
 function balance_due_filter_ok ($balance_due, $balance_due_filter) {

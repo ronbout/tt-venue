@@ -41,6 +41,7 @@ $outstanding_product_columns = array(
 	'credit_refund_sales_amt' => 'Credit Refund </br>Gross Sales',
 	'credit_refund_net_sales' => 'Credit Refund </br>Net Sales',
 	'total_credit_refund_amt' => 'Total Credit </br>Refund Amt',
+	'used_credit_refund_amt' => 'Applied Credit </br>Refund Amount',
 	'remaining_credit_refund_amt' => 'Remaining Credit </br>Refund Amt',
 );
 
@@ -66,6 +67,7 @@ $out_default_product_columns = array(
 	'credit_refund_sales_amt',
 	'credit_refund_net_sales',
 	'total_credit_refund_amt',
+	'used_credit_refund_amt',
 	'remaining_credit_refund_amt',
 );
 
