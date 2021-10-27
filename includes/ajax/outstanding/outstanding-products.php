@@ -41,8 +41,9 @@ function outstanding_display_product_table($filter_data) {
 	$venue_table = $wpdb->prefix."taste_venue";
 	$v_p_join_table = $wpdb->prefix."taste_venue_products";
 	$payment_table = $wpdb->prefix."offer_payments";
+	$order_trans_table = $wpdb->prefix."taste_order_transactions";
 
-	$product_rows = $wpdb->get_results($wpdb->prepare("
+	$sql = "
 					SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, 
 						pm2.meta_value AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
 						pm5.meta_value AS 'commission', 
@@ -51,6 +52,13 @@ function outstanding_display_product_table($filter_data) {
 						SUM(IF(orderp.post_status = 'wc-completed',wc_oi.downloaded, 0)) 'redeemed_cnt', 
 						SUM(IF(orderp.post_status = 'wc-completed',wc_oi.downloaded * plook.product_qty, 0)) AS 'redeemed_qty',
 						SUM(IF(orderp.post_status = 'wc-completed',plook.coupon_amount,0)) AS 'coupon_amt',
+						SUM(IF(orderp.post_status = 'wc-on-hold', 1, 0)) AS 'credit_refund_order_cnt', 
+						SUM(IF(orderp.post_status = 'wc-on-hold',plook.product_qty, 0)) AS 'credit_refund_order_qty', 
+						SUM(IF(orderp.post_status = 'wc-on-hold',wc_oi.downloaded, 0)) 'credit_refund_redeemed_cnt', 
+						SUM(IF(orderp.post_status = 'wc-on-hold',wc_oi.downloaded * plook.product_qty, 0)) AS 'credit_refund_redeemed_qty',
+						SUM(IF(orderp.post_status = 'wc-on-hold',plook.coupon_amount,0)) AS 'credit_refund_coupon_amt',
+						SUM(otrans.trans_amount) AS 'credit_refund_amount',
+						GROUP_CONCAT(otrans.order_id) AS 'credit_refund_coupon_codes',
 						MIN(plook.date_created) AS 'min_order_date', MAX(plook.date_created) AS 'max_order_date',
 						ven.venue_id, ven.name AS 'venue_name'
 					FROM $product_table pr 
@@ -62,15 +70,15 @@ function outstanding_display_product_table($filter_data) {
 					LEFT JOIN $post_meta_table pm4 ON pr.product_id = pm4.post_id AND pm4.meta_key = 'vat'
 					LEFT JOIN $post_meta_table pm5 ON pr.product_id = pm5.post_id AND pm5.meta_key = 'commission'
 					LEFT JOIN $product_order_table plook ON plook.product_id = pr.product_id
-					LEFT JOIN $posts_table orderp ON orderp.ID = plook.order_id 
-						AND orderp.post_status = 'wc-completed'
-						AND orderp.post_type = 'shop_order'
+					LEFT JOIN $order_trans_table otrans ON otrans.order_item_id = plook.order_item_id AND otrans.trans_type = 'Taste Credit'
+					LEFT JOIN $posts_table orderp ON orderp.ID = plook.order_id AND orderp.post_type = 'shop_order'
 					LEFT JOIN $order_items_table wc_oi ON wc_oi.order_item_id = plook.order_item_id
 					$where_clause
 					GROUP BY pr.product_id
 					$having_clause
-					ORDER BY p.post_date DESC", 
-					$parms), ARRAY_A);
+					ORDER BY p.post_date DESC";
+
+	$product_rows = $wpdb->get_results($wpdb->prepare($sql, $parms), ARRAY_A);
 				
 	// pull out all payments for the product id's returned above
 	$product_id_list = array_column($product_rows, 'product_id');
@@ -148,7 +156,8 @@ function build_payments($payment_rows) {
 }
 
 function build_sql_filters($filter_data) {
-	$where_clause = 'WHERE pr.onsale = 1 ';
+	$where_clause = "WHERE pr.onsale = 1 
+		AND ( orderp.post_status = 'wc-completed' OR (orderp.post_status = 'wc-on-hold' AND otrans.id IS NOT NULL )) ";
 	$having_clause = '';
 	$parms = array();
 
@@ -247,7 +256,17 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 	'paid_amount' => 0,
 	'balance_due' => 0,
 	'unredeemed_income' => 0,
-	'total_income' => 0
+	'total_income' => 0,
+	'pot_redeemed_qty' => 0,
+	'pot_revenue' => 0,
+	'pot_commission' => 0,
+	'pot_vat' => 0,
+	'pot_net_payable' => 0,
+	'pot_balance_due' => 0,
+	'credit_refund_sales_amt' => 0,
+	'credit_refund_net_sales' => 0,
+	'total_credit_refund_amt' => 0,
+	'remaining_credit_refund_amt' => 0,
 	);
 
 	$product_calcs = array();
@@ -262,6 +281,7 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 		$tmp['redeemed_cnt'] = $product_row['redeemed_cnt'] ? $product_row['redeemed_cnt'] : 0;
 		$tmp['redeemed_qty'] = $product_row['redeemed_qty'] ? $product_row['redeemed_qty'] : 0;
 		$tmp['order_cnt'] = $product_row['order_cnt'] ? $product_row['order_cnt'] : 0;
+		
 		$tmp['order_qty'] = $product_row['order_qty'] ? $product_row['order_qty'] : 0;
 		$tmp['sales_amt'] = num_display($product_row['price'] * $tmp['order_qty']);
 		$tmp['coupon_amt'] = num_display($product_row['coupon_amt']);
@@ -274,6 +294,39 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 		$tmp['paid_amount'] = num_display(empty($payments[$product_id]) ? 0 : $payments[$product_id]['total']);
 		$tmp['payment_list'] = empty($payments[$product_id]) ? '' : $payments[$product_id]['listing'];
 		$tmp['balance_due'] = num_display($tmp['net_payable'] - $tmp['paid_amount']);
+
+		// new section to add "POTENTIAL" amounts that would be any potential 
+		// unredeemed orders that could still be redeemed
+		if ("N" === $product_row['expired']) {
+			$tmp['pot_redeemed_qty'] = $tmp['order_qty'];
+			$tmp['pot_revenue'] = num_display($product_row['price'] * $tmp['pot_redeemed_qty']);
+			$tmp['pot_commission'] = num_display(($tmp['pot_revenue'] / 100) * $product_row['commission']);
+			$tmp['pot_vat'] = num_display(($tmp['pot_commission'] / 100) * $product_row['vat']);
+			$tmp['pot_net_payable'] = num_display($tmp['pot_revenue'] - ($tmp['pot_commission'] + $tmp['pot_vat']));
+			$tmp['pot_balance_due'] = num_display($tmp['pot_net_payable'] - $tmp['paid_amount']);
+		} else {
+			$tmp['pot_redeemed_qty'] = $tmp['redeemed_qty'];
+			$tmp['pot_revenue'] = $tmp['revenue'];
+			$tmp['pot_commission'] = $tmp['commission'];
+			$tmp['pot_vat'] = $tmp['vat'];
+			$tmp['pot_net_payable'] = $tmp['net_payable'];
+			$tmp['pot_balance_due'] = $tmp['balance_due'];
+		}
+
+		// new section for dealing with orders that were turned into store credit refunds (coupons)
+		$tmp['total_credit_refund_amt'] = num_display($product_row['credit_refund_amount']);
+		$credit_coupon_codes = $product_row['credit_refund_coupon_codes'];
+		if ($credit_coupon_codes) {
+			$tmp['credit_refund_sales_amt'] = num_display($product_row['price'] * $product_row['credit_refund_order_qty']);
+			$tmp['credit_refund_net_sales'] = num_display($tmp['credit_refund_sales_amt'] - $product_row['credit_refund_coupon_amt']);
+			// need to sum the coupons that have NOT reached their usage limit to get the remaining credit amount
+			$remaining_credit_refund_amount = calc_remaining_credit_refund_amount($credit_coupon_codes);
+			$tmp['remaining_credit_refund_amt'] = $remaining_credit_refund_amount;
+		} else {
+			$tmp['credit_refund_sales_amt'] = 0;
+			$tmp['credit_refund_net_sales'] = 0;
+			$tmp['remaining_credit_refund_amt'] = 0;
+		}
 
 		// check against balance due filter 
 		if (!balance_due_filter_ok($tmp['balance_due'], $balance_due_filter)) {
@@ -290,6 +343,7 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 		$tmp['total_income'] = num_display($tmp['commission'] + $tmp['unredeemed_income']);
 		$tmp['profit_margin'] = $tmp['total_income'] / $tmp['sales_amt'] * 100;
 
+
 		$product_calcs[] = $tmp;
 
 		foreach($venue_totals as $k => &$total) {
@@ -301,6 +355,32 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 		}
 	}
 	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
+}
+
+function calc_remaining_credit_refund_amount($credit_coupon_codes) {
+	global $wpdb;
+
+	$credit_coupon_list = explode(',',$credit_coupon_codes);
+	$placeholders = array_fill(0, count($credit_coupon_list), '%s');
+	$placeholders = implode(', ', $placeholders);
+
+	$sql = "
+		SELECT 
+			COALESCE( SUM(pm_coupon_amount.meta_value),0) as 'total_coupon_amount' 
+			FROM $wpdb->posts coup_p
+			JOIN $wpdb->postmeta pm_usage_count ON pm_usage_count.meta_key = 'usage_count' AND pm_usage_count.post_id = coup_p.ID
+			JOIN $wpdb->postmeta pm_coupon_amount ON pm_coupon_amount.meta_key = 'coupon_amount' AND pm_coupon_amount.post_id = coup_p.ID
+			LEFT JOIN $wpdb->postmeta pm_date_expires ON pm_date_expires.meta_key = 'date_expires' AND pm_date_expires.post_id = coup_p.ID
+			LEFT JOIN $wpdb->postmeta pm_expiry_date ON pm_expiry_date.meta_key = 'expiry_date' AND pm_expiry_date.post_id = coup_p.ID
+			WHERE coup_p.post_type = 'shop_coupon' 
+			AND coup_p.post_status = 'publish'
+			AND pm_usage_count.meta_value = 0
+			AND CAST( COALESCE(FROM_UNIXTIME(pm_date_expires.meta_value), pm_expiry_date.meta_value) AS DATE ) > CAST(CURDATE() AS DATE )
+			AND coup_p.post_title IN ($placeholders)";
+
+	$remaining_credit_refund_amount = $wpdb->get_results($wpdb->prepare($sql, $credit_coupon_list), ARRAY_A);	
+
+	return $remaining_credit_refund_amount[0]['total_coupon_amount'];
 }
 
 function balance_due_filter_ok ($balance_due, $balance_due_filter) {

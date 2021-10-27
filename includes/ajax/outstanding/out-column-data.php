@@ -32,6 +32,16 @@ $outstanding_product_columns = array(
 	'balance_due' => 'Balance</br>Due',
 	'total_income' => 'Total</br>Income',
 	'profit_margin' => 'Income /</br>Sales',
+	'pot_redeemed_qty' => 'Potential </br>Redeemed',
+	'pot_revenue' => 'Potential </br>Venue Revenue',
+	'pot_commission' => 'Potential </br>Commission',
+	'pot_vat' => 'Potential </br>VAT',
+	'pot_net_payable' => 'Potential </br>Net Payable',
+	'pot_balance_due' => 'Potential </br>Balance Due',
+	'credit_refund_sales_amt' => 'Credit Refund </br>Gross Sales',
+	'credit_refund_net_sales' => 'Credit Refund </br>Net Sales',
+	'total_credit_refund_amt' => 'Total Credit </br>Refund Amt',
+	'remaining_credit_refund_amt' => 'Remaining Credit </br>Refund Amt',
 );
 
 $out_default_product_columns = array(
@@ -47,6 +57,16 @@ $out_default_product_columns = array(
 	'product_date',
 	'net_payable',
 	'balance_due',
+	'pot_redeemed_qty',
+	'pot_revenue',
+	'pot_commission',
+	'pot_vat',
+	'pot_net_payable',
+	'pot_balance_due',
+	'credit_refund_sales_amt',
+	'credit_refund_net_sales',
+	'total_credit_refund_amt',
+	'remaining_credit_refund_amt',
 );
 
 $outstanding_order_columns = array(

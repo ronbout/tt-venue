@@ -31,7 +31,8 @@ $year = date('Y');
 $month = date('m');
 $day = date('d');
 $start_year = $year - 1;
-$start_date_default =  "$start_year-$month-$day";
+//$start_date_default =  "$start_year-$month-$day";
+$start_date_default =  "2020-01-01";
 $current_date = date('Y-m-d');
 ?>
 <body class="audit-by-products orig-bs3">
