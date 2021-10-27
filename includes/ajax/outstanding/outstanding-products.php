@@ -59,6 +59,7 @@ function outstanding_display_product_table($filter_data) {
 						SUM(IF(orderp.post_status = 'wc-on-hold',plook.coupon_amount,0)) AS 'credit_refund_coupon_amt',
 						SUM(otrans.trans_amount) AS 'credit_refund_amount',
 						GROUP_CONCAT(otrans.order_id) AS 'credit_refund_coupon_codes',
+						GROUP_CONCAT(otrans.order_item_id) AS 'credit_refund_order_item_ids',
 						MIN(plook.date_created) AS 'min_order_date', MAX(plook.date_created) AS 'max_order_date',
 						ven.venue_id, ven.name AS 'venue_name'
 					FROM $product_table pr 
@@ -316,16 +317,16 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 
 		// new section for dealing with orders that were turned into store credit refunds (coupons)
 		$tmp['total_credit_refund_amt'] = num_display($product_row['credit_refund_amount']);
-		$credit_coupon_codes = $product_row['credit_refund_coupon_codes'];
-		if ($credit_coupon_codes) {
+		$credit_order_item_ids = $product_row['credit_refund_order_item_ids'];
+		if ($credit_order_item_ids) {
 			$tmp['credit_refund_sales_amt'] = num_display($product_row['price'] * $product_row['credit_refund_order_qty']);
 			$tmp['credit_refund_net_sales'] = num_display($tmp['credit_refund_sales_amt'] - $product_row['credit_refund_coupon_amt']);
 			// need to sum the coupons that have NOT reached their usage limit to get the remaining credit amount
-			$credit_refund_amounts = calc_remaining_credit_refund_amount($credit_coupon_codes);
+			$credit_refund_amounts = calc_remaining_credit_refund_amount($credit_order_item_ids);
 			$remaining_credit_refund_amount = $credit_refund_amounts['remaining_coupon_amount'];
 			$used_credit_refund_amount = $credit_refund_amounts['used_coupon_amount'];
-			$tmp['used_credit_refund_amt'] = $used_credit_refund_amount;
-			$tmp['remaining_credit_refund_amt'] = $remaining_credit_refund_amount;
+			$tmp['used_credit_refund_amt'] = num_display_financial($used_credit_refund_amount);
+			$tmp['remaining_credit_refund_amt'] = num_display_financial($remaining_credit_refund_amount);
 		} else {
 			$tmp['credit_refund_sales_amt'] = 0;
 			$tmp['credit_refund_net_sales'] = 0;
@@ -362,11 +363,12 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 	return array('totals' => $venue_totals, 'calcs' => $product_calcs);
 }
 
-function calc_remaining_credit_refund_amount($credit_coupon_codes) {
+function calc_remaining_credit_refund_amount($credit_order_item_ids) {
 	global $wpdb;
 
-	$credit_coupon_list = explode(',',$credit_coupon_codes);
-	$placeholders = array_fill(0, count($credit_coupon_list), '%s');
+	$order_trans_table = $wpdb->prefix."taste_order_transactions";
+	$credit_order_item_list = explode(',',$credit_order_item_ids);
+	$placeholders = array_fill(0, count($credit_order_item_list), '%s');
 	$placeholders = implode(', ', $placeholders);
 
 	$sql = "
@@ -374,18 +376,19 @@ function calc_remaining_credit_refund_amount($credit_coupon_codes) {
 		COALESCE( SUM(
 			IF(pm_usage_count.meta_value = 0 AND 
 				CAST( COALESCE(FROM_UNIXTIME(pm_date_expires.meta_value), pm_expiry_date.meta_value) AS DATE ) > CAST(CURDATE() AS DATE ), 
-				pm_coupon_amount.meta_value, 0)), 0) AS 'remaining_coupon_amount',
-			COALESCE( SUM(IF(pm_usage_count.meta_value > 0, pm_coupon_amount.meta_value, 0)), 0) AS 'used_coupon_amount'
-			FROM $wpdb->posts coup_p
+				otrans.trans_amount, 0)), 0) AS 'remaining_coupon_amount',
+			COALESCE( SUM(IF(pm_usage_count.meta_value > 0, otrans.trans_amount, 0)), 0) AS 'used_coupon_amount'
+			FROM $order_trans_table otrans
+			JOIN $wpdb->posts coup_p ON coup_p.post_title = otrans.order_id
 			JOIN $wpdb->postmeta pm_usage_count ON pm_usage_count.meta_key = 'usage_count' AND pm_usage_count.post_id = coup_p.ID
-			JOIN $wpdb->postmeta pm_coupon_amount ON pm_coupon_amount.meta_key = 'coupon_amount' AND pm_coupon_amount.post_id = coup_p.ID
 			LEFT JOIN $wpdb->postmeta pm_date_expires ON pm_date_expires.meta_key = 'date_expires' AND pm_date_expires.post_id = coup_p.ID
 			LEFT JOIN $wpdb->postmeta pm_expiry_date ON pm_expiry_date.meta_key = 'expiry_date' AND pm_expiry_date.post_id = coup_p.ID
-			WHERE coup_p.post_type = 'shop_coupon' 
-			AND coup_p.post_status = 'publish'
-			AND coup_p.post_title IN ($placeholders)";
+			WHERE otrans.trans_type = 'Taste Credit'
+			AND otrans.order_item_id IN ($placeholders)
+			AND coup_p.post_type = 'shop_coupon' 
+			AND coup_p.post_status = 'publish'";
 
-	$credit_refund_amounts = $wpdb->get_results($wpdb->prepare($sql, $credit_coupon_list), ARRAY_A);	
+	$credit_refund_amounts = $wpdb->get_results($wpdb->prepare($sql, $credit_order_item_list), ARRAY_A);	
 
 	return $credit_refund_amounts[0];
 }
@@ -579,6 +582,10 @@ function num_display ($num) {
 	// display number with 2 decimal rounding -- NO FORMATTING
 	// return number_format(round($num,2), 2);
 	return round($num,2);
+}
+
+function num_display_financial ($num) {
+	return number_format(round($num,2), 2);
 }
 
 function num_display_no_decs ($num) {
