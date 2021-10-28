@@ -192,6 +192,29 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 					}
 				});
 
+				// update payment classes in case Payment Mode is toggled
+				// const orderItemIdList = orderList.map((orderInfo) => {
+				// 	return orderInfo.orderItemId;
+				// });
+
+				// let origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED;
+				// let orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
+
+				// if (!redeemFlg) {
+				// 	origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
+				// 	orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED;
+				// }
+
+				// console.log(orderItemIdList);
+				// console.log("origStatus: ", origOrderItemStatus);
+				// console.log("orderStatus: ", orderItemStatus);
+
+				// tasteUpdatePaidOrderRows(
+				// 	orderItemIdList,
+				// 	origOrderItemStatus,
+				// 	orderItemStatus
+				// );
+
 				respObj.emails.map((emailInfo) => {
 					jQuery("#email-display-" + emailInfo.orderId).html(emailInfo.email);
 				});
@@ -489,17 +512,18 @@ const tasteUpdateProductRows = (prodList) => {
 };
 
 const tasteUpdatePaidOrderRows = (
-	curProdOrdList,
+	curProdOrdItemList,
 	origOrderItemStatus,
 	orderItemStatus
 ) => {
-	const statusClasses = {
-		TASTE_ORDER_STATUS_PAID: "or-display-paid",
-		TASTE_ORDER_STATUS_NOT_PAID_REDEEMED: "or-display-pay-due",
-		TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED: "or-display-not-served",
-		TASTE_ORDER_STATUS_NOT_PAID_EXPIRED: "or-display-not-served",
-	};
-	curProdOrdList.forEach((orderItemId) => {
+	const statusClasses = {};
+	statusClasses[TASTE_ORDER_STATUS_PAID] = "or-display-paid";
+	statusClasses[TASTE_ORDER_STATUS_NOT_PAID_REDEEMED] = "or-display-pay-due";
+	statusClasses[TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED] =
+		"or-display-not-served";
+	statusClasses[TASTE_ORDER_STATUS_NOT_PAID_EXPIRED] = "or-display-not-served";
+
+	curProdOrdItemList.forEach((orderItemId) => {
 		const classToRemove = statusClasses[origOrderItemStatus];
 		const classToAdd = statusClasses[orderItemStatus];
 		tasteUpdateOrderRowStatusClass(orderItemId, classToRemove, classToAdd);
