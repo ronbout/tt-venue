@@ -1,4 +1,8 @@
 let cmDisplayMode;
+const TASTE_ORDER_STATUS_PAID = 0;
+const TASTE_ORDER_STATUS_NOT_PAID_REDEEMED = 1;
+const TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED = 2; // unrdeemed, not expired
+const TASTE_ORDER_STATUS_NOT_PAID_EXPIRED = 3; // unredeemed, expired
 jQuery(document).ready(function () {
 	if ($("body").hasClass("campaign-manager")) {
 		cmDisplayMode = tasteVenue?.displayMode;
@@ -317,17 +321,35 @@ const tasteMakePayment = (
 
 				// update all products in the product display table
 
+				let orderItemStatus, origOrderItemStatus;
+				/**
+				 *  0- paid
+				 * 	1- not paid, redeemed
+				 * 	2- not paid, unredeemed, not expired
+				 * 	3- not paid, unredeemed, expired
+				 *
+				 * NAMED CONSTANTS AT TOP OF FILE
+				 *
+				 *  NOTE: Only 1 and 2 are possible in this routine,
+				 * 				but other routines may use all 4
+				 */
 				if ("UPDATE" === respObj.editMode) {
+					origOrderItemStatus = TASTE_ORDER_STATUS_PAID;
+					orderItemStatus = TASTE_ORDER_STATUS_PAID;
 					respObj.updateCurrentProd &&
 						jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
 					jQuery(`#all-pay-${paymentInfo.id}`).replaceWith(
 						respObj.allPaymentLine
 					);
 				} else if ("INSERT" === respObj.editMode) {
+					origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
+					orderItemStatus = TASTE_ORDER_STATUS_PAID;
 					respObj.updateCurrentProd &&
 						jQuery("#payment-lines").append(respObj.paymentLine);
 					jQuery("#all-payment-lines").append(respObj.allPaymentLine);
 				} else {
+					origOrderItemStatus = TASTE_ORDER_STATUS_PAID;
+					orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
 					jQuery(`#pay-${paymentInfo.id}`).remove();
 					jQuery(`#all-pay-${paymentInfo.id}`).remove();
 				}
@@ -346,7 +368,11 @@ const tasteMakePayment = (
 					);
 
 				respObj.updateCurrentProd &&
-					tasteUpdatePaidOrderRows(respObj.curProdOrdList, respObj.editMode);
+					tasteUpdatePaidOrderRows(
+						respObj.curProdOrdList,
+						origOrderItemStatus,
+						orderItemStatus
+					);
 
 				buildPaymentOrders();
 				jQuery("#select-orders-pay-total").text("0.00");
@@ -462,11 +488,31 @@ const tasteUpdateProductRows = (prodList) => {
 	}
 };
 
-const tasteUpdatePaidOrderRows = (curProdOrdList, editMode) => {
+const tasteUpdatePaidOrderRows = (
+	curProdOrdList,
+	origOrderItemStatus,
+	orderItemStatus
+) => {
+	const statusClasses = {
+		TASTE_ORDER_STATUS_PAID: "or-display-paid",
+		TASTE_ORDER_STATUS_NOT_PAID_REDEEMED: "or-display-pay-due",
+		TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED: "or-display-not-served",
+		TASTE_ORDER_STATUS_NOT_PAID_EXPIRED: "or-display-not-served",
+	};
 	curProdOrdList.forEach((orderItemId) => {
-		jQuery(`#order-table-row-${orderItemId}`).removeClass("or-display-pay-due");
-		jQuery(`#order-table-row-${orderItemId}`).addClass("or-display-paid");
+		const classToRemove = statusClasses[origOrderItemStatus];
+		const classToAdd = statusClasses[orderItemStatus];
+		tasteUpdateOrderRowStatusClass(orderItemId, classToRemove, classToAdd);
 	});
+};
+
+const tasteUpdateOrderRowStatusClass = (
+	orderItemId,
+	classToRemove,
+	classToAdd
+) => {
+	jQuery(`#order-table-row-${orderItemId}`).removeClass(classToRemove);
+	jQuery(`#order-table-row-${orderItemId}`).addClass(classToAdd);
 };
 
 const tasteGetVenueInfo = () => {
