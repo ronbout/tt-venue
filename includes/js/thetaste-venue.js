@@ -193,27 +193,23 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 				});
 
 				// update payment classes in case Payment Mode is toggled
-				// const orderItemIdList = orderList.map((orderInfo) => {
-				// 	return orderInfo.orderItemId;
-				// });
+				const orderItemIdList = orderList.map((orderInfo) => {
+					return orderInfo.orderItemId;
+				});
 
-				// let origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED;
-				// let orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
+				let origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED;
+				let orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
 
-				// if (!redeemFlg) {
-				// 	origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
-				// 	orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED;
-				// }
+				if (!redeemFlg) {
+					origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
+					orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED;
+				}
 
-				// console.log(orderItemIdList);
-				// console.log("origStatus: ", origOrderItemStatus);
-				// console.log("orderStatus: ", orderItemStatus);
-
-				// tasteUpdatePaidOrderRows(
-				// 	orderItemIdList,
-				// 	origOrderItemStatus,
-				// 	orderItemStatus
-				// );
+				tasteUpdatePaidOrderRows(
+					orderItemIdList,
+					origOrderItemStatus,
+					orderItemStatus
+				);
 
 				respObj.emails.map((emailInfo) => {
 					jQuery("#email-display-" + emailInfo.orderId).html(emailInfo.email);
