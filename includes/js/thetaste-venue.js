@@ -549,6 +549,7 @@ const tasteUpdateOrderRowStatusClass = (
 
 const tasteGetVenueInfo = () => {
 	let venueInfo = {};
+	venueInfo.venue_id = jQuery("#hidden_venue_id").val();
 	venueInfo.revenue = jQuery("#sum-gr-value").val();
 	venueInfo.commission = jQuery("#sum-commission").val();
 	venueInfo.vat = jQuery("#sum-vat").val();

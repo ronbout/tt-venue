@@ -210,7 +210,7 @@ if ($admin) {
 
 		<section id="all-campaigns-container" class="container">
 			<?php	
-				display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str);
+				display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str, $venue_id);
 				if (count($product_rows)) {
 					if ($admin) { 
 						display_mode_toggle($display_mode); 
@@ -427,7 +427,7 @@ function check_payment_by_order_item($prod_calcs, $prod_date, $payment_rows) {
 	// return ! in_array(NULL, array_column($prod_payments, 'order_item_id'));
 }
 
-function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str) {
+function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str, $venue_id) {
 	$currency =  get_woocommerce_currency_symbol();
 	?>
 
@@ -489,6 +489,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutof
 	</div>
 
 	<input type="hidden" id="venue_cutoff_date" value="<?php echo $cutoff_date_str ?>">
+	<input type="hidden" id="hidden_venue_id" value="<?php echo $venue_id ?>">
 	<div id="summary-hidden-values">
 		<input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
 		<input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">
