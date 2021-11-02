@@ -1,8 +1,8 @@
 let cmDisplayMode;
-const TASTE_ORDER_STATUS_PAID = 0;
-const TASTE_ORDER_STATUS_NOT_PAID_REDEEMED = 1;
-const TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED = 2; // unrdeemed, not expired
-const TASTE_ORDER_STATUS_NOT_PAID_EXPIRED = 3; // unredeemed, expired
+const TASTE_ORDER_STATUS_PAID = 0; // (or-display-paid)
+const TASTE_ORDER_STATUS_NOT_PAID_REDEEMED = 1; //  (or-display-pay-due)
+const TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED = 2; // unredeemed, not expired  (or-display-unredeemed)
+const TASTE_ORDER_STATUS_NOT_PAID_EXPIRED = 3; // unredeemed, expired  (or-display-expired)
 jQuery(document).ready(function () {
 	if ($("body").hasClass("campaign-manager")) {
 		cmDisplayMode = tasteVenue?.displayMode;
@@ -36,6 +36,8 @@ const tasteLoadVouchers = (
 ) => {
 	let modalMsg = "Loading Vouchers...";
 	tasteDispMsg(modalMsg);
+	orderPaymentChecklist = buildOrderPaymentChecklist(prodId) || [];
+	// console.log(orderPaymentChecklist);
 	jQuery.ajax({
 		url: tasteVenue.ajaxurl,
 		type: "POST",
@@ -47,6 +49,7 @@ const tasteLoadVouchers = (
 			multiplier: multiplier,
 			cutoff_date: cutoffDate,
 			make_payments_below: makePaymentsBelow,
+			order_payments_checklist: orderPaymentChecklist,
 		},
 		success: function (responseText) {
 			//console.log(responseText);
@@ -78,6 +81,15 @@ const setDisplayForMode = () => {
 		jQuery(".redeem-mode-only").hide();
 		jQuery(".payment-mode-only").show();
 	}
+};
+
+const buildOrderPaymentChecklist = (prodId) => {
+	const orderList = tasteVenue.paymentOrders.productList[
+		prodId
+	].orderItemList.map((orderInfo) => {
+		return orderInfo.orderItemId;
+	});
+	return orderList;
 };
 
 const buildPaymentOrders = () => {
@@ -178,14 +190,14 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
 			} else {
 				orderList.map((orderInfo) => {
 					if (redeemFlg) {
-						jQuery("#td-btn-order-id-" + orderInfo.orderId).html(
-							'<button	class="btn btn-info order-unredeem-btn">Unredeem</button>'
-						);
+						// jQuery("#td-btn-order-id-" + orderInfo.orderId).html(
+						// 	'<button	class="btn btn-info order-unredeem-btn">Unredeem</button>'
+						// );
 						jQuery("#td-check-order-id-" + orderInfo.orderId).html("");
 					} else {
-						jQuery("#td-btn-order-id-" + orderInfo.orderId).html(
-							'<button	class="btn btn-success order-redeem-btn">Redeem</button>'
-						);
+						// jQuery("#td-btn-order-id-" + orderInfo.orderId).html(
+						// 	'<button	class="btn btn-success order-redeem-btn">Redeem</button>'
+						// );
 						jQuery("#td-check-order-id-" + orderInfo.orderId).html(
 							'<input type="checkbox" class="order-redeem-check">'
 						);
@@ -516,8 +528,8 @@ const tasteUpdatePaidOrderRows = (
 	statusClasses[TASTE_ORDER_STATUS_PAID] = "or-display-paid";
 	statusClasses[TASTE_ORDER_STATUS_NOT_PAID_REDEEMED] = "or-display-pay-due";
 	statusClasses[TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED] =
-		"or-display-not-served";
-	statusClasses[TASTE_ORDER_STATUS_NOT_PAID_EXPIRED] = "or-display-not-served";
+		"or-display-unredeemed";
+	statusClasses[TASTE_ORDER_STATUS_NOT_PAID_EXPIRED] = "or-display-expired";
 
 	curProdOrdItemList.forEach((orderItemId) => {
 		const classToRemove = statusClasses[origOrderItemStatus];

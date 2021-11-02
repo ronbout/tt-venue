@@ -24,10 +24,10 @@ function taste_ajax_load_vouchers() {
 	$product_id = $_POST['product_id'];
 	$multiplier = $_POST['multiplier'];
 	$cutoff_date = $_POST['cutoff_date'];
-	$make_payments_below = $_POST['make_payments_below'];
+	$order_payments_checklist = isset($_POST['order_payments_checklist']) ? $_POST['order_payments_checklist'] : array();
 
 	require_once(plugin_dir_path(__FILE__). 'redeem-vouchers-list.php');
-	display_voucher_table($product_id, $multiplier, $cutoff_date, $make_payments_below);
+	display_voucher_table($product_id, $multiplier, $cutoff_date, $make_payments_below, $order_payments_checklist);
 
 	wp_die();
 }

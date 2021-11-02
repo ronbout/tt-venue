@@ -11219,9 +11219,10 @@ body.campaign-manager .notserved,
 body.campaign-manager .fa-times-circle {
   color: #f44336;
 }
-body.campaign-manager tr.or-display-not-served > td > .or-display:not(.or-status-display-not-served),
+body.campaign-manager tr.or-display-unredeemed > td > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired),
 body.campaign-manager tr.or-display-pay-due > td > .or-display:not(.or-status-display-pay-due),
-body.campaign-manager tr.or-display-paid > td > .or-display:not(.or-status-display-paid) {
+body.campaign-manager tr.or-display-paid > td > .or-display:not(.or-status-display-paid),
+body.campaign-manager tr.or-display-expired > td > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired) {
   display: none;
 }
 body.campaign-manager .camp_summary_table {
