@@ -891,6 +891,54 @@ const tasteLoadPaymentByOrdersModal = () => {
 				paymentData.set("prodpaymentcnt", prodPayCount);
 				tasteMakePayment(paymentData, $modal, deleteMode, true);
 			});
+
+	// load the Clear button for this modal
+	jQuery("#orders-payment-clear").length &&
+		jQuery("#orders-payment-clear")
+			.off("click")
+			.click(function (e) {
+				e.preventDefault();
+				/*
+			const $submitBtn = jQuery(this);
+			const $modal = $submitBtn.closest(".modal");
+			const formId = $submitBtn.attr("form");
+			const $paymentForm = jQuery(`#${formId}`);
+			let paymentData = new FormData($paymentForm[0]);
+			const deleteMode = false;
+			// get payment counts for both All Payments (if exists) and product Payments
+			const allPayCount = jQuery("#all-payments-table").length
+				? jQuery("#all-payments-table").data("allpaymentcnt")
+				: 0;
+
+			const prodPayCount = jQuery("#audit-payment-table").length
+				? jQuery("#audit-payment-table").data("paymentcnt")
+				: 0;
+
+			paymentData.set("allpaymentcnt", allPayCount);
+			paymentData.set("prodpaymentcnt", prodPayCount);
+			tasteMakePayment(paymentData, $modal, deleteMode, true);
+			*/
+				jQuery("#responseModal").modal();
+				jQuery("#response-modal-submit-yes").length &&
+					jQuery("#response-modal-submit-yes")
+						.off("click")
+						.click(function (ev) {
+							ev.preventDefault();
+							clearOrdersForPayment();
+							jQuery("#paySelectedModal").modal("hide");
+						});
+			});
+};
+
+const clearOrdersForPayment = () => {
+	buildPaymentOrders();
+	displayOrderPaymentInfo();
+	jQuery("tr.or-display-pay-due .order-payment-check").length &&
+		jQuery("tr.or-display-pay-due .order-payment-check").each(function () {
+			jQuery(this).prop("checked", false);
+		});
+	jQuery("#checkbox-payment-all").length &&
+		jQuery("#checkbox-payment-all").prop("checked", false);
 };
 
 const buildOrdersPaymentTableRows = () => {

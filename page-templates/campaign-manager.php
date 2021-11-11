@@ -291,6 +291,7 @@ if ($admin) {
 					</form>
 				</div>
 				<div class="modal-footer">	 
+					<button type="button" class="btn btn-warning" id="orders-payment-clear" >Clear</button>
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 					<button type="submit" form="orders-payment-add-form" id="orders-payment-submit" class="btn btn-primary">Make payment</button>
 				</div>
@@ -298,6 +299,27 @@ if ($admin) {
 		</div>
   </div>
 	<!-- End of selected offers payment modal -->
+
+	<!-- Response Modal (generic for Yes/No questions) -->
+	<div class="modal fade" id="responseModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="responseModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="responseModalLabel"><strong>Are you sure?</strong></h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="response-modal-msg">This will uncheck all Orders currently selected.</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="response-modal-submit-no" class="btn btn-secondary" data-dismiss="modal">No</button>
+					<button type="button" id="response-modal-submit-yes" class="btn btn-primary" data-dismiss="modal">Yes</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<div id="spinner-modal" class="modal" data-backdrop="static" tabindex="-1"
 		aria-hidden="true">
