@@ -23,6 +23,7 @@ function retrieve_payment_orders_info_json($payment_id) {
 	$sql = "
 			SELECT  pprods.product_id, pay.id AS payment_id, pay.payment_date as timestamp, pprods.product_id as pid, 
 				pay.amount as total_amount, pprods.amount as product_amount, pay.comment, pay.status,
+				pay.payment_date,
 				GROUP_CONCAT(plook.order_item_id) as order_item_ids,
 				GROUP_CONCAT(plook.product_qty) as order_item_qty,
 				GROUP_CONCAT(plook.order_id) as order_ids
@@ -47,15 +48,15 @@ function retrieve_payment_orders_info_json($payment_id) {
 }
 
 function process_payment_info($payment_rows, $payment_id) {
-	$total_net_payable = 0;
+	$total_net_payable = $payment_rows[0]['total_amount'];
 	$total_qty = 0;
 	$product_list = array();
+	$orig_payment_date = $payment_rows[0]['payment_date'];
 
 	foreach($payment_rows as $payment_row) {
 		$product_id = $payment_row['product_id'];
 		$tmp_order_array = array();
 		$net_payable = $payment_row['product_amount'];
-		$total_net_payable += $net_payable;
 		$order_item_id_list = $payment_row['order_item_ids'];
 		$order_item_id_array = explode(',', $order_item_id_list);
 		$order_id_list = $payment_row['order_ids'];
@@ -86,6 +87,7 @@ function process_payment_info($payment_rows, $payment_id) {
 	return array(
 		'totalNetPayable' => $total_net_payable,
 		'editPaymentId' => $payment_id,
+		'editOrigPayDate' => $orig_payment_date,
 		'totalQty' => $total_qty,
 		'productList' => $product_list,
 	);

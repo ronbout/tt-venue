@@ -102,6 +102,7 @@ const buildPaymentOrders = () => {
 	tasteVenue.paymentOrders = {
 		totalNetPayable: 0,
 		editPaymentId: 0,
+		editOrigPayDate: "",
 		totalQty: 0,
 		productList: {},
 	};
@@ -415,8 +416,10 @@ const tasteMakePayment = (
 					jQuery("#paySelectedModal").modal("hide");
 					jQuery("#payAllSelected").html("Pay selected offers");
 					jQuery("#orders-payment-submit").html("Make payment");
+					jQuery("#orders-payment-orig-amt").val(0);
+					jQuery("#orders-payment-orig-date").val("");
 					tasteCloseMsg();
-					if (editId && jQuery("#taste-product-id").length) {
+					if (jQuery("#taste-product-id").length) {
 						// need to rerun the load vouchers routine as easiest approach to
 						// reset the order statuses of the currently displayed product
 						const prodId = jQuery("#taste-product-id").val();
@@ -462,6 +465,8 @@ const tasteEditPBO = (paymentId) => {
 			const paymentOrderInfo = JSON.parse(responseJson);
 
 			tasteVenue.paymentOrders.editPaymentId = paymentOrderInfo.editPaymentId;
+			tasteVenue.paymentOrders.editOrigPayDate =
+				paymentOrderInfo.editOrigPayDate;
 			tasteVenue.paymentOrders.totalNetPayable =
 				paymentOrderInfo.totalNetPayable;
 			tasteVenue.paymentOrders.totalQty = paymentOrderInfo.totalQty;
@@ -476,6 +481,8 @@ const tasteEditPBO = (paymentId) => {
 
 			displayOrderPaymentInfo();
 			jQuery("#payAllSelected").html(`Edit Pay #${paymentId}`);
+			jQuery("#orders-payment-orig-amt").val(paymentOrderInfo.totalNetPayable);
+			jQuery("#orders-payment-orig-date").val(paymentOrderInfo.editOrigPayDate);
 			jQuery("#orders-payment-submit").html("Update payment");
 			if (jQuery("#taste-product-id").length) {
 				// need to rerun the load vouchers routine as easiest approach to
