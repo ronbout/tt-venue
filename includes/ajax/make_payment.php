@@ -9,7 +9,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$role = $user->roles[0];
 	$user_id = get_current_user_id();
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
-	
+
 	$orders_flag = $payment_info['orders_flag'];
 	$payment_id = $payment_info['id'];
 	$payment_amount = $payment_info['amount'];
@@ -62,9 +62,9 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 
 		$payment_diff = - $payment_amount;
 	} elseif ($payment_id) {
-		$ret_json = array('error' => 'Updating a Payment is currently in development');
-		echo wp_json_encode($ret_json);
-		return;
+		// $ret_json = array('error' => 'Updating a Payment is currently in development');
+		// echo wp_json_encode($ret_json);
+		// return;
 		$edit_mode = 'UPDATE';
 
 		$db_status = update_payment($payment_db_parms, $payment_id);
@@ -317,6 +317,7 @@ function insert_payment ($payment_db_parms) {
 	);
 }
 
+/*
 function delete_payment ($payment_db_parms, $payment_id) {
 	global $wpdb;
 
@@ -352,6 +353,7 @@ function delete_payment ($payment_db_parms, $payment_id) {
 	$wpdb->query( "COMMIT" );
 	return true;
 }
+*/
 
 function update_payment ($payment_db_parms, $payment_id) {
 	global $wpdb;
@@ -365,11 +367,28 @@ function update_payment ($payment_db_parms, $payment_id) {
 	$comment_visible_venues = $payment_db_parms['data_fields']['comment_visible_venues'];
 	$attach_vat_invoice = $payment_db_parms['data_fields']['attach_vat_invoice'];
 	$venue_id = $payment_db_parms['data_fields']['venue_id'];
+	$orders_flag = $payment_db_parms['data_fields']['orders_flag'];
+	$product_order_info = $payment_db_parms['data_fields']['product_order_info'];
 	
 	$wpdb->query( "START TRANSACTION" );
+
+	// first delete original, which will cascade to lower tables,
+	// then just use the insert code
+	$where = array('id' => $payment_id);
+	$where_format = array('%d');
+
+	$rows_affected = $wpdb->delete($payment_table, $where, $where_format);
+	// if not success set error array and return
+	if (!$rows_affected) {
+		$ret_json = array('error' => 'Could not update Payment Table. ' . $wpdb->last_error);
+		echo wp_json_encode($ret_json);
+		$wpdb->query("ROLLBACK");
+		return false;
+	}
 	
 	// main payment table:  wp_taste_venue_payment
 	$data = array(
+		'id' => $payment_id,
 		'payment_date' => $payment_date,
 		'venue_id' => $venue_id,
 		'amount' => $payment_amount,
@@ -378,37 +397,77 @@ function update_payment ($payment_db_parms, $payment_id) {
 		'attach_vat_invoice' => $attach_vat_invoice,
 	);
 
-	$format = array('%s', '%d', '%f', '%s', '%d', '%d');
-
-	$where = array('id' => $payment_id);
-	$where_format = array('%d');
-	$rows_affected = $wpdb->update($payment_table, $data, $where, $format, $where_format);	
+	$format = array('%d', '%s', '%d', '%f', '%s', '%d', '%d');
+	$rows_affected = $wpdb->insert($payment_table, $data, $format);	
 	// if not success set error array and return
 	if (!$rows_affected) {
 		$ret_json = array('error' => 'Could not update Payment Table. ' . $wpdb->last_error);
 		echo wp_json_encode($ret_json);
 		$wpdb->query("ROLLBACK");
-		return false;
+		return array('db_status' => false);
 	}
 
 	// payment x product_id table: wp_taste_venue_payment_products
-	$data = array(
-		'product_id' => $product_id,
-		'amount' => $payment_amount_product,
-	);
+	$insert_values = '';
+	$insert_parms = [];
+	
+	foreach ($product_order_info as $prod_id => $prod_info) {
+		$insert_values .= '(%d, %d, %f),';
+		$insert_parms[] = $payment_id;
+		$insert_parms[] = $prod_id;
+		$insert_parms[] = $prod_info['amount'];
+	}
+	$insert_values = rtrim($insert_values, ',');
 
-	$format = array('%d', '%f');
-	$where = array('payment_id' => $payment_id);
-	$rows_affected = $wpdb->update($payment_products_table, $data, $where, $format, $where_format);	
+	$sql = "INSERT into $payment_products_table
+						(payment_id, product_id, amount)
+					VALUES $insert_values";
+
+	$rows_affected = $wpdb->query(
+		$wpdb->prepare($sql, $insert_parms)
+	);
 	// if not success set error array and return
 	if (!$rows_affected) {
-		$ret_json = array('error' => 'Could not update Payment Product Table.  ' . $wpdb->last_error);
+		$ret_json = array('error' => 'Could not update Payment Product Table. ' . $wpdb->last_error);
 		echo wp_json_encode($ret_json);
 		$wpdb->query("ROLLBACK");
-		return false;
+		return array('db_status' => false);
 	}
-	
+
+	if ($orders_flag) {
+		// payment x orders table: wp_taste_venue_payment_order_item_xref
+		$insert_values = '';
+		$insert_parms = [];
+		
+		foreach ($product_order_info as $prod_info) {
+			foreach($prod_info['order_list'] as $order_info) {
+				$insert_values .= '(%d, %d),';
+				$insert_parms[] = $payment_id;
+				$insert_parms[] = $order_info['orderItemId'];
+			}
+
+		}
+		$insert_values = rtrim($insert_values, ',');
+		
+		$sql = "INSERT into $payment_order_xref_table
+							(payment_id, order_item_id)
+						VALUES $insert_values";
+
+		$rows_affected = $wpdb->query(
+			$wpdb->prepare($sql, $insert_parms)
+		);
+		// if not success set error array and return
+		if (!$rows_affected) {
+			$ret_json = array('error' => 'Could not update Payment Order Xref Table. ' . $wpdb->last_error);
+			echo wp_json_encode($ret_json);
+			$wpdb->query("ROLLBACK");
+			return array('db_status' => false);
+		}
+	}
+
+
 	$wpdb->query( "COMMIT" );
+
 	return true;
 }
 

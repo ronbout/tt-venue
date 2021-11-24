@@ -311,7 +311,7 @@ if ($admin) {
 					</button>
 				</div>
 				<div class="modal-body">
-					<div class="response-modal-msg">This will uncheck all Orders currently selected.</div>
+					<div id="response-modal-msg">This will uncheck all Orders currently selected.</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" id="response-modal-submit-no" class="btn btn-secondary" data-dismiss="modal">No</button>
@@ -761,6 +761,8 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 							<th scope="col">Payment ID</th>
 							<th scope="col" class="sort-by-date">Date</th>
 							<th scope="col">Amount</th>
+							<th scope="col">PBO Edit</th>
+							<th scope="col">PBO Delete</th>
 						</thead>
 						<tbody id="all-payment-lines">
 							<?php
@@ -777,6 +779,7 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 								<th class="paid-amount-total table-nbr pr-5">
 								<?php echo $currency . ' ' . num_display($payment_total) ?>
 								</th>
+								<td colspan="2">&nbsp;</td>
 							</tr>
 						</tfoot>
 					</table>

@@ -6,7 +6,7 @@
  */
 
  
-function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_payments_below, $order_payments_checklist) {
+function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_payments_below, $order_payments_checklist, $edit_payment_id) {
 	global $wpdb;
 	
 	$make_payments_below = !("false" === $make_payments_below);
@@ -126,7 +126,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 			echo '</h4>';
 
 			// $payable is calc'd inside the table but needs to come out to be used in the payments table
-			$order_totals = display_orders_table($order_rows, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist);
+			$order_totals = display_orders_table($order_rows, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id);
 			$payable = $order_totals['payable'];
 			$redeem_qty = $order_totals['redeem_qty'];
 			$total_sold = $order_totals['total_sold'];
@@ -256,7 +256,7 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 	<?php
 }
 
-function display_orders_table($order_rows, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist ) {
+function display_orders_table($order_rows, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id ) {
 	// display the orders table 
 	$total_sold = 0;
 	$redeem_qty = 0;
@@ -282,7 +282,7 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 									if (1 == $order_item_info->downloaded ) {
 										$redeem_qty = $redeem_qty + $order_item_info->quan;
 									}
-									display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist);
+									display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id);
 								}
 								?>
 								</tbody>
@@ -361,7 +361,7 @@ function check_for_payments($order_rows) {
 	return $return_status;
 }
 
-function display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist) {
+function display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id) {
 	$action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3';
 	$payment_due = !$order_item_info->payment_id && $order_item_info->downloaded === '1';
 	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan);
@@ -374,7 +374,11 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 	}	elseif ($payment_due) {
 		$row_status_class = ' or-display-pay-due';
 	} else {
-		$row_status_class = ' or-display-paid';
+		if ($order_item_info->payment_id !== $edit_payment_id) {
+			$row_status_class = ' or-display-paid';
+		} else {
+			$row_status_class = ' or-edit-mode-display-paid';
+		}
 	}
 	?>
 	<tr  id="order-table-row-<?php echo $order_item_info->itemid ?>"
@@ -399,9 +403,13 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 		<?php
 			// determine if this order needs to be checked, either due to having been checked but not 
 			// yet processed through the MakePayment routine, OR because it is a previous payment being edited
-			$checked_status = in_array($order_item_info->itemid, $order_payments_checklist) ? "checked" : "";
+			$checked_status = in_array($order_item_info->itemid, $order_payments_checklist) || 
+												$order_item_info->payment_id == $edit_payment_id ? "checked" : "";
+
+			$edit_mode_chk_class = $order_item_info->payment_id == $edit_payment_id ? " or-status-display-paid" : "";
 		?>
-			<input type="checkbox" class="order-payment-check or-display or-status-display-pay-due" <?php echo $checked_status ?>>
+			<input type="checkbox" class="order-payment-check or-display 
+																		or-status-display-pay-due <?php echo $edit_mode_chk_class ?>" <?php echo $checked_status ?>>
 		</td>
 		<td class="payment-mode-only"><?php echo $order_item_info->itemid ?></td>
 		<td><?php echo $order_item_info->order_id ?></td>

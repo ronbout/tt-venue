@@ -50,6 +50,7 @@ const tasteLoadVouchers = (
 			cutoff_date: cutoffDate,
 			make_payments_below: makePaymentsBelow,
 			order_payments_checklist: orderPaymentChecklist,
+			edit_payment_id: tasteVenue.paymentOrders.editPaymentId,
 		},
 		success: function (responseText) {
 			//console.log(responseText);
@@ -84,6 +85,9 @@ const setDisplayForMode = () => {
 };
 
 const buildOrderPaymentChecklist = (prodId) => {
+	if (!tasteVenue.paymentOrders.productList[prodId]) {
+		return [];
+	}
 	const orderList = tasteVenue.paymentOrders.productList[
 		prodId
 	].orderItemList.map((orderInfo) => {
@@ -97,6 +101,7 @@ const buildPaymentOrders = () => {
 	// containing an array of orders that are selected on the screen
 	tasteVenue.paymentOrders = {
 		totalNetPayable: 0,
+		editPaymentId: 0,
 		totalQty: 0,
 		productList: {},
 	};
@@ -288,7 +293,7 @@ const tasteMakePayment = (
 	}
 
 	const productId = Object.keys(curProdInfo)[0];
-
+	const editMode = tasteVenue.paymentOrders.editPaymentId;
 	let venueInfo = tasteGetVenueInfo();
 	let paymentInfo = {
 		id: paymentData.get("payment-id"),
@@ -405,11 +410,28 @@ const tasteMakePayment = (
 						orderItemStatus
 					);
 
-				buildPaymentOrders();
-				jQuery("#select-orders-pay-total").text("0.00");
-				tasteUpdateProductRows(respObj.productInfo);
-				tasteLoadInvoiceButtons();
-				tasteCloseMsg();
+				if (editMode) {
+					clearOrdersForPayment();
+					jQuery("#paySelectedModal").modal("hide");
+					jQuery("#payAllSelected").html("Pay selected offers");
+					jQuery("#orders-payment-submit").html("Make payment");
+					tasteCloseMsg();
+					if (editId && jQuery("#taste-product-id").length) {
+						// need to rerun the load vouchers routine as easiest approach to
+						// reset the order statuses of the currently displayed product
+						const prodId = jQuery("#taste-product-id").val();
+						const multiplier = jQuery("#taste-product-multiplier").val();
+						const cutoffDate = jQuery("#venue_cutoff_date").val();
+						tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
+					}
+				} else {
+					buildPaymentOrders();
+					jQuery("#select-orders-pay-total").text("0.00");
+					tasteUpdateProductRows(respObj.productInfo);
+					tasteLoadInvoiceButtons();
+					tasteLoadButtons();
+					tasteCloseMsg();
+				}
 			}
 		},
 		error: function (xhr, status, errorThrown) {
@@ -417,6 +439,58 @@ const tasteMakePayment = (
 			console.log(errorThrown);
 			alert(
 				"Error updating payment.  Your login may have timed out. Please refresh the page and try again."
+			);
+		},
+	});
+};
+
+const tasteEditPBO = (paymentId) => {
+	let modalMsg = "Setting Up Edit Mode...";
+	tasteDispMsg(modalMsg);
+	jQuery.ajax({
+		url: tasteVenue.ajaxurl,
+		type: "POST",
+		datatype: "json",
+		data: {
+			action: "retrieve_payment_json",
+			security: tasteVenue.security,
+			payment_id: paymentId,
+		},
+		success: function (responseJson) {
+			tasteCloseMsg();
+			console.log(responseJson);
+			const paymentOrderInfo = JSON.parse(responseJson);
+
+			tasteVenue.paymentOrders.editPaymentId = paymentOrderInfo.editPaymentId;
+			tasteVenue.paymentOrders.totalNetPayable =
+				paymentOrderInfo.totalNetPayable;
+			tasteVenue.paymentOrders.totalQty = paymentOrderInfo.totalQty;
+			const editProdIds = Object.keys(paymentOrderInfo.productList);
+			const venueProdIds = Object.keys(tasteVenue.paymentOrders.productList);
+			venueProdIds.forEach((venueProdId) => {
+				if (editProdIds.includes(venueProdId)) {
+					tasteVenue.paymentOrders.productList[venueProdId] =
+						paymentOrderInfo.productList[venueProdId];
+				}
+			});
+
+			displayOrderPaymentInfo();
+			jQuery("#payAllSelected").html(`Edit Pay #${paymentId}`);
+			jQuery("#orders-payment-submit").html("Update payment");
+			if (jQuery("#taste-product-id").length) {
+				// need to rerun the load vouchers routine as easiest approach to
+				// reset the order statuses of the currently displayed product
+				const prodId = jQuery("#taste-product-id").val();
+				const multiplier = jQuery("#taste-product-multiplier").val();
+				const cutoffDate = jQuery("#venue_cutoff_date").val();
+				tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
+			}
+		},
+		error: function (xhr, status, errorThrown) {
+			tasteCloseMsg();
+			console.log(errorThrown);
+			alert(
+				"Error setting up Payment Edit Mode. Your login may have timed out. Please refresh the page and try again."
 			);
 		},
 	});
@@ -492,7 +566,6 @@ const tasteGetProductInfo = () => {
 
 const tasteGetAllProductInfo = (prodList) => {
 	let productAllProductInfo = {};
-	let productAllProductInfo2 = {};
 
 	prodList.forEach((prodInfo) => {
 		const prodId = prodInfo[0];
@@ -632,18 +705,7 @@ const tasteLoadVoucherPaymentButtons = () => {
 				displayOrderPaymentInfo();
 			});
 		});
-	/****]
-	 *
-	 *
-	 *  SOMETHING IN THE NEXT  ROUTINE IS MESSING UP THE TOTALS
-	 *  WHEN i AM USING THE CHECKBOX ALL.
-	 *  Checking the All box works.  Everything is selected and the total
-	 * 	is correct above.  But, if I uncheck an order after that, the display
-	 *  looks correct, but the total at the top goes to 0.  Has to be in the
-	 * 	.order-payment-check click event below
-	 *
-	 *
-	 */
+
 	jQuery(".order-payment-check")
 		.off("click")
 		.click(function (e) {
@@ -889,6 +951,7 @@ const tasteLoadPaymentByOrdersModal = () => {
 
 				paymentData.set("allpaymentcnt", allPayCount);
 				paymentData.set("prodpaymentcnt", prodPayCount);
+				paymentData.set("payment-id", tasteVenue.paymentOrders.editPaymentId);
 				tasteMakePayment(paymentData, $modal, deleteMode, true);
 			});
 
@@ -898,26 +961,16 @@ const tasteLoadPaymentByOrdersModal = () => {
 			.off("click")
 			.click(function (e) {
 				e.preventDefault();
-				/*
-			const $submitBtn = jQuery(this);
-			const $modal = $submitBtn.closest(".modal");
-			const formId = $submitBtn.attr("form");
-			const $paymentForm = jQuery(`#${formId}`);
-			let paymentData = new FormData($paymentForm[0]);
-			const deleteMode = false;
-			// get payment counts for both All Payments (if exists) and product Payments
-			const allPayCount = jQuery("#all-payments-table").length
-				? jQuery("#all-payments-table").data("allpaymentcnt")
-				: 0;
-
-			const prodPayCount = jQuery("#audit-payment-table").length
-				? jQuery("#audit-payment-table").data("paymentcnt")
-				: 0;
-
-			paymentData.set("allpaymentcnt", allPayCount);
-			paymentData.set("prodpaymentcnt", prodPayCount);
-			tasteMakePayment(paymentData, $modal, deleteMode, true);
-			*/
+				const editId = tasteVenue.paymentOrders.editPaymentId;
+				if (editId) {
+					jQuery("#response-modal-msg").html(
+						"This will exit you out of Edit Mode."
+					);
+				} else {
+					jQuery("#response-modal-msg").html(
+						"This will uncheck all Orders currently selected."
+					);
+				}
 				jQuery("#responseModal").modal();
 				jQuery("#response-modal-submit-yes").length &&
 					jQuery("#response-modal-submit-yes")
@@ -926,6 +979,16 @@ const tasteLoadPaymentByOrdersModal = () => {
 							ev.preventDefault();
 							clearOrdersForPayment();
 							jQuery("#paySelectedModal").modal("hide");
+							jQuery("#payAllSelected").html("Pay selected offers");
+							jQuery("#orders-payment-submit").html("Make payment");
+							if (editId && jQuery("#taste-product-id").length) {
+								// need to rerun the load vouchers routine as easiest approach to
+								// reset the order statuses of the currently displayed product
+								const prodId = jQuery("#taste-product-id").val();
+								const multiplier = jQuery("#taste-product-multiplier").val();
+								const cutoffDate = jQuery("#venue_cutoff_date").val();
+								tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
+							}
 						});
 			});
 };
@@ -995,6 +1058,14 @@ const tasteLoadButtons = () => {
 				// console.log("cutoffDate: ", cutoffDate);
 				tasteLoadVouchers(prodId, multiplier, cutoffDate, makePaymentsBelow);
 			}
+		});
+
+	jQuery(".edit-pbo-btn")
+		.off("click")
+		.click(function (e) {
+			e.preventDefault();
+			let paymentId = jQuery(this).data("payment-id");
+			tasteEditPBO(paymentId);
 		});
 };
 

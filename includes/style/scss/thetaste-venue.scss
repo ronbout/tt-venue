@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -648,6 +648,10 @@ body.campaign-manager {
 	tr.or-display-expired
 		> td
 		> .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired) {
+		display: none;
+	}
+
+	tr.or-edit-mode-display-paid > td > .or-display:not(.or-status-display-paid) {
 		display: none;
 	}
 

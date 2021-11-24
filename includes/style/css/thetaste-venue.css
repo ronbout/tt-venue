@@ -11225,6 +11225,9 @@ body.campaign-manager tr.or-display-paid > td > .or-display:not(.or-status-displ
 body.campaign-manager tr.or-display-expired > td > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired) {
   display: none;
 }
+body.campaign-manager tr.or-edit-mode-display-paid > td > .or-display:not(.or-status-display-paid) {
+  display: none;
+}
 body.campaign-manager .camp_summary_table {
   font-family: "Roboto", sans-serif;
 }

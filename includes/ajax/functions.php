@@ -104,6 +104,28 @@ function disp_all_payment_line($payment) {
 		<td><?php echo $payment_id ?></td>
 		<td><?php echo $payment_date ?></td>
 		<td class="table-nbr pr-5"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
+		<?php 
+			if ($order_item_list) {
+				?>
+				<td class="text-primary">
+					<i id="edit-pbo-<?php echo $payment_id ?>"
+							class="fas fa-pencil-alt edit-pbo-btn"
+							data-payment-id="<?php echo $payment_id ?>"></i>
+				</td>
+				<td class="text-danger">
+					<i 
+					<?php /* data-toggle="modal" data-target="#deletePBOModal" */ ?>
+							id="edit-pbo-<?php echo $payment_id ?>"
+							data-payment-id="<?php echo $payment_id ?>"
+						class="fas fa-trash-alt"></i>
+				</td>
+				<?php
+			} else {
+				?>
+				<td colspan="2">&nbsp;</td>
+				<?php
+			}
+			?>
 	</tr>
 	<?php
 	$payment_line = ob_get_clean();
