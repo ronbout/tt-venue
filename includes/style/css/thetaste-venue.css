@@ -11219,6 +11219,11 @@ body.campaign-manager .notserved,
 body.campaign-manager .fa-times-circle {
   color: #f44336;
 }
+body.campaign-manager .fa-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 body.campaign-manager tr.or-display-unredeemed > td > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired),
 body.campaign-manager tr.or-display-pay-due > td > .or-display:not(.or-status-display-pay-due),
 body.campaign-manager tr.or-display-paid > td > .or-display:not(.or-status-display-paid),

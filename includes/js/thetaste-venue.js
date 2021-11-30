@@ -487,6 +487,10 @@ const tasteEditPBO = (paymentId) => {
 			jQuery("#orders-payment-orig-amt").val(paymentOrderInfo.totalNetPayable);
 			jQuery("#orders-payment-orig-date").val(paymentOrderInfo.editOrigPayDate);
 			jQuery("#orders-payment-submit").html("Update payment");
+			if (jQuery(".edit-pbo-btn").length) {
+				jQuery(".edit-pbo-btn").addClass("fa-disabled");
+				jQuery(".delete-pbo-btn").addClass("fa-disabled");
+			}
 			if (jQuery("#taste-product-id").length) {
 				// need to rerun the load vouchers routine as easiest approach to
 				// reset the order statuses of the currently displayed product
@@ -991,6 +995,10 @@ const tasteLoadPaymentByOrdersModal = () => {
 							jQuery("#paySelectedModal").modal("hide");
 							jQuery("#payAllSelected").html("Pay selected offers");
 							jQuery("#orders-payment-submit").html("Make payment");
+							if (jQuery(".edit-pbo-btn").length) {
+								jQuery(".edit-pbo-btn").removeClass("fa-disabled");
+								jQuery(".delete-pbo-btn").removeClass("fa-disabled");
+							}
 							if (editId && jQuery("#taste-product-id").length) {
 								// need to rerun the load vouchers routine as easiest approach to
 								// reset the order statuses of the currently displayed product
@@ -1012,6 +1020,11 @@ const clearOrdersForPayment = () => {
 		});
 	jQuery("#checkbox-payment-all").length &&
 		jQuery("#checkbox-payment-all").prop("checked", false);
+
+	if (jQuery(".edit-pbo-btn").length) {
+		jQuery(".edit-pbo-btn").addClass("fa-disabled");
+		jQuery(".delete-pbo-btn").addClass("fa-disabled");
+	}
 };
 
 const buildOrdersPaymentTableRows = () => {

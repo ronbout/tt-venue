@@ -117,7 +117,7 @@ function disp_all_payment_line($payment) {
 					<?php /* data-toggle="modal" data-target="#deletePBOModal" */ ?>
 							id="edit-pbo-<?php echo $payment_id ?>"
 							data-payment-id="<?php echo $payment_id ?>"
-						class="fas fa-trash-alt"></i>
+						class="fas fa-trash-alt delete-pbo-btn"></i>
 				</td>
 				<?php
 			} else {
