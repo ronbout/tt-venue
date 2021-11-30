@@ -538,6 +538,10 @@ const updateOfferCalcs = (respObj, productId) => {
 const updateVenueCalcs = (respObj, paymentOnly = false) => {
 	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
 	jQuery(".paid-amount-total").html(respObj.sumTotalPaid);
+	respObj.sumHiddenPaymentValues &&
+		jQuery("#summary-hidden-payment-values").html(
+			respObj.sumHiddenPaymentValues
+		);
 	if (paymentOnly) {
 		return;
 	}
@@ -547,10 +551,6 @@ const updateVenueCalcs = (respObj, paymentOnly = false) => {
 	jQuery("#net-payable-total").html(respObj.sumNetPayable);
 	respObj.sumHiddenValues &&
 		jQuery("#summary-hidden-values").html(respObj.sumHiddenValues);
-	respObj.sumHiddenPaymentValues &&
-		jQuery("#summary-hidden-payment-values").html(
-			respObj.sumHiddenPaymentValues
-		);
 	jQuery("#gr-value-table-total").html(respObj.sumGrValue.split(" ")[1]);
 	jQuery("#net-payable-table-total").html(respObj.sumNetPayable.split(" ")[1]);
 	jQuery("#balance-due-table-total").html(respObj.sumBalanceDue.split(" ")[1]);
