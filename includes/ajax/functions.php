@@ -108,14 +108,14 @@ function disp_all_payment_line($payment) {
 			if ($order_item_list) {
 				?>
 				<td class="text-primary">
-					<i id="edit-pbo-<?php echo $payment_id ?>"
+					<i id="edit-pbo-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
 							class="fas fa-pencil-alt edit-pbo-btn"
 							data-payment-id="<?php echo $payment_id ?>"></i>
 				</td>
 				<td class="text-danger">
 					<i 
 					<?php /* data-toggle="modal" data-target="#deletePBOModal" */ ?>
-							id="edit-pbo-<?php echo $payment_id ?>"
+							id="delete-pbo-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
 							data-payment-id="<?php echo $payment_id ?>"
 						class="fas fa-trash-alt delete-pbo-btn"></i>
 				</td>
