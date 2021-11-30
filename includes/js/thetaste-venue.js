@@ -415,6 +415,7 @@ const tasteMakePayment = (
 						orderItemStatus
 					);
 
+				tasteUpdateProductRows(respObj.productInfo);
 				if (editMode) {
 					clearOrdersForPayment();
 					jQuery("#paySelectedModal").modal("hide");
@@ -425,7 +426,6 @@ const tasteMakePayment = (
 				} else {
 					buildPaymentOrders();
 					jQuery("#select-orders-pay-total").text("0.00");
-					tasteUpdateProductRows(respObj.productInfo);
 					//tasteLoadInvoiceButtons();
 					tasteLoadButtons();
 				}

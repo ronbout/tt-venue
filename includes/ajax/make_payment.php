@@ -156,8 +156,8 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$all_payment_lines = '';
 	foreach ($product_info as $prod_id => &$prod_row_info) {
 		$amount = $product_order_info[$prod_id]['amount'];
-		$prod_row_info['balance_due'] = round($prod_row_info['balance_due'] - $amount, 2);
-		$prod_row_info['total_paid'] = round($prod_row_info['total_paid'] + $amount, 2);
+		$prod_row_info['balance_due'] = round($prod_row_info['balance_due'] - $payment_diff, 2);
+		$prod_row_info['total_paid'] = round($prod_row_info['total_paid'] + $payment_diff, 2);
 
 		$disp_payment_info = $payment_info;
 		$disp_payment_info['product_id'] = $prod_id;
