@@ -124,7 +124,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$payment_line = '';
 	$update_cur_prod = 0;
 	$cur_prod_ord_list = [];
-	if (count($cur_prod_info)) {
+	if (count($cur_prod_info) && false) {
 		$product_id = array_keys($cur_prod_info)[0];
 		$cur_prod_info = $cur_prod_info[$product_id];
 		if (in_array($product_id, array_keys($product_order_info))) {

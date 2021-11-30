@@ -374,6 +374,7 @@ const tasteMakePayment = (
 					origOrderItemStatus = TASTE_ORDER_STATUS_PAID;
 					orderItemStatus = TASTE_ORDER_STATUS_PAID;
 					respObj.updateCurrentProd &&
+						false &&
 						jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
 					jQuery(`#all-pay-${paymentInfo.id}`).replaceWith(
 						respObj.allPaymentLine
@@ -382,12 +383,13 @@ const tasteMakePayment = (
 					origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
 					orderItemStatus = TASTE_ORDER_STATUS_PAID;
 					respObj.updateCurrentProd &&
+						false &&
 						jQuery("#payment-lines").append(respObj.paymentLine);
 					jQuery("#all-payment-lines").append(respObj.allPaymentLine);
 				} else {
 					origOrderItemStatus = TASTE_ORDER_STATUS_PAID;
 					orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
-					jQuery(`#pay-${paymentInfo.id}`).remove();
+					//jQuery(`#pay-${paymentInfo.id}`).remove();
 					jQuery(`#all-pay-${paymentInfo.id}`).remove();
 				}
 
@@ -399,12 +401,14 @@ const tasteMakePayment = (
 					);
 
 				jQuery("#audit-payment-table").length &&
+					false &&
 					jQuery("#audit-payment-table").data(
 						"paymentcnt",
 						respObj.prodPaymentCnt
 					);
 
 				respObj.updateCurrentProd &&
+					false &&
 					tasteUpdatePaidOrderRows(
 						respObj.curProdOrdList,
 						origOrderItemStatus,
@@ -418,22 +422,21 @@ const tasteMakePayment = (
 					jQuery("#orders-payment-submit").html("Make payment");
 					jQuery("#orders-payment-orig-amt").val(0);
 					jQuery("#orders-payment-orig-date").val("");
-					tasteCloseMsg();
-					if (jQuery("#taste-product-id").length) {
-						// need to rerun the load vouchers routine as easiest approach to
-						// reset the order statuses of the currently displayed product
-						const prodId = jQuery("#taste-product-id").val();
-						const multiplier = jQuery("#taste-product-multiplier").val();
-						const cutoffDate = jQuery("#venue_cutoff_date").val();
-						tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
-					}
 				} else {
 					buildPaymentOrders();
 					jQuery("#select-orders-pay-total").text("0.00");
 					tasteUpdateProductRows(respObj.productInfo);
-					tasteLoadInvoiceButtons();
+					//tasteLoadInvoiceButtons();
 					tasteLoadButtons();
-					tasteCloseMsg();
+				}
+				tasteCloseMsg();
+				if (jQuery("#taste-product-id").length) {
+					// need to rerun the load vouchers routine as easiest approach to
+					// reset the order statuses of the currently displayed product
+					const prodId = jQuery("#taste-product-id").val();
+					const multiplier = jQuery("#taste-product-multiplier").val();
+					const cutoffDate = jQuery("#venue_cutoff_date").val();
+					tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
 				}
 			}
 		},
