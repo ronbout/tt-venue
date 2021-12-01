@@ -293,14 +293,42 @@ const tasteMakePayment = (
 		];
 	}
 
+	const paymentId = paymentData.get("payment-id");
+	let allPaymentCntForPayId,
+		paymentOrigProdAmts = {};
+
+	if (paymentId) {
+		allPaymentCntForPayId = jQuery(`.all-pay-${paymentId}`).length;
+		jQuery(`.all-pay-${paymentId}`).each((ndx, row) => {
+			const $payRow = jQuery(row);
+			const rowProdId = $payRow.data("prodid");
+			const rowProdAmt = $payRow.data("prodamount");
+			// get the balance due for that product
+			const balanceDue = jQuery(`#product-table-row-${rowProdId}`).data(
+				"balancedue"
+			);
+			const totalPaid = jQuery(`#product-table-row-${rowProdId}`).data(
+				"paidamount"
+			);
+			paymentOrigProdAmts[rowProdId] = {
+				amount: rowProdAmt,
+				balancedue: balanceDue,
+				totalpaid: totalPaid,
+			};
+		});
+	} else {
+		allPaymentCntForPayId = 0;
+	}
+
 	const productId = Object.keys(curProdInfo)[0];
 	const editMode = tasteVenue.paymentOrders.editPaymentId;
 	let venueInfo = tasteGetVenueInfo();
 	let paymentInfo = {
-		id: paymentData.get("payment-id"),
+		id: paymentId,
 		amount: financial(postTotalAmount),
 		payment_orig_amt: paymentData.get("payment-orig-amt"),
 		payment_orig_date: paymentData.get("payment-orig-date"),
+		payment_orig_prods: JSON.stringify(paymentOrigProdAmts),
 		timestamp: paymentData.get("payment-date"),
 		comment: paymentData.get("payment-comment"),
 		comment_visible_venues: paymentData.has("payment-comment-visibility")
@@ -309,6 +337,7 @@ const tasteMakePayment = (
 		attach_vat_invoice: paymentData.has("payment-invoice-attachment") ? 1 : 0,
 		delete_mode: deleteMode,
 		all_payment_cnt: paymentData.get("allpaymentcnt"),
+		all_payment_id_cnt: allPaymentCntForPayId,
 		prod_payment_cnt: paymentData.get("prodpaymentcnt"),
 		orders_flag: ordersFlag ? 1 : 0,
 		product_order_list: JSON.stringify(postProductList),
@@ -370,15 +399,15 @@ const tasteMakePayment = (
 				 *  NOTE: Only 1 and 2 are possible in this routine,
 				 * 				but other routines may use all 4
 				 */
+				jQuery(`.all-pay-${paymentInfo.id}`).length &&
+					jQuery(`.all-pay-${paymentInfo.id}`).remove();
 				if ("UPDATE" === respObj.editMode) {
 					origOrderItemStatus = TASTE_ORDER_STATUS_PAID;
 					orderItemStatus = TASTE_ORDER_STATUS_PAID;
 					respObj.updateCurrentProd &&
 						false &&
 						jQuery(`#pay-${paymentInfo.id}`).replaceWith(respObj.paymentLine);
-					jQuery(`#all-pay-${paymentInfo.id}`).replaceWith(
-						respObj.allPaymentLine
-					);
+					jQuery("#all-payment-lines").append(respObj.allPaymentLine);
 				} else if ("INSERT" === respObj.editMode) {
 					origOrderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
 					orderItemStatus = TASTE_ORDER_STATUS_PAID;
@@ -390,7 +419,6 @@ const tasteMakePayment = (
 					origOrderItemStatus = TASTE_ORDER_STATUS_PAID;
 					orderItemStatus = TASTE_ORDER_STATUS_NOT_PAID_REDEEMED;
 					//jQuery(`#pay-${paymentInfo.id}`).remove();
-					jQuery(`#all-pay-${paymentInfo.id}`).remove();
 				}
 
 				jQuery("#all-payments-cnt-disp").html(respObj.allPaymentCnt);
@@ -416,6 +444,7 @@ const tasteMakePayment = (
 					);
 
 				tasteUpdateProductRows(respObj.productInfo);
+				tasteLoadPBOButtons();
 				if (editMode) {
 					clearOrdersForPayment();
 					jQuery("#paySelectedModal").modal("hide");
@@ -427,7 +456,6 @@ const tasteMakePayment = (
 					buildPaymentOrders();
 					jQuery("#select-orders-pay-total").text("0.00");
 					//tasteLoadInvoiceButtons();
-					tasteLoadButtons();
 				}
 				tasteCloseMsg();
 				if (jQuery("#taste-product-id").length) {
@@ -537,6 +565,7 @@ const updateOfferCalcs = (respObj, productId) => {
 
 const updateVenueCalcs = (respObj, paymentOnly = false) => {
 	jQuery("#balance-due-total").html(respObj.sumBalanceDue);
+	jQuery("#balance-due-table-total").html(respObj.sumBalanceDue.split(" ")[1]);
 	jQuery(".paid-amount-total").html(respObj.sumTotalPaid);
 	respObj.sumHiddenPaymentValues &&
 		jQuery("#summary-hidden-payment-values").html(
@@ -553,7 +582,6 @@ const updateVenueCalcs = (respObj, paymentOnly = false) => {
 		jQuery("#summary-hidden-values").html(respObj.sumHiddenValues);
 	jQuery("#gr-value-table-total").html(respObj.sumGrValue.split(" ")[1]);
 	jQuery("#net-payable-table-total").html(respObj.sumNetPayable.split(" ")[1]);
-	jQuery("#balance-due-table-total").html(respObj.sumBalanceDue.split(" ")[1]);
 	jQuery("#redeem-qty-display-table-total").html(respObj.sumNumServed);
 	jQuery("#commission-display-table-total").html(
 		respObj.sumCommission.split(" ")[1]
@@ -1022,8 +1050,8 @@ const clearOrdersForPayment = () => {
 		jQuery("#checkbox-payment-all").prop("checked", false);
 
 	if (jQuery(".edit-pbo-btn").length) {
-		jQuery(".edit-pbo-btn").addClass("fa-disabled");
-		jQuery(".delete-pbo-btn").addClass("fa-disabled");
+		jQuery(".edit-pbo-btn").removeClass("fa-disabled");
+		jQuery(".delete-pbo-btn").removeClass("fa-disabled");
 	}
 };
 
@@ -1083,6 +1111,10 @@ const tasteLoadButtons = () => {
 			}
 		});
 
+	tasteLoadPBOButtons();
+};
+
+const tasteLoadPBOButtons = () => {
 	jQuery(".edit-pbo-btn")
 		.off("click")
 		.click(function (e) {

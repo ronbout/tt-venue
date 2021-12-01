@@ -98,7 +98,10 @@ function disp_all_payment_line($payment) {
 	$tooltip_title .= $order_item_list ? "Order Items for this Product: &#10; $order_item_list &#10;" : "";
 	ob_start();
 	?>
-		<tr id="all-pay-<?php echo $payment_id ?>" class="all-payments-row" data-toggle="tooltip"
+		<tr id="all-pay-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>" 
+				class="all-payments-row all-pay-<?php echo $payment_id ?>" data-toggle="tooltip"
+				data-prodamount="<?php echo $payment['amount'] ?>"
+				data-prodid="<?php echo $payment['product_id'] ?>"
 				title="<?php echo $tooltip_title ?>"	>
 		<td><?php echo $payment['product_id'] ?></td>
 		<td><?php echo $payment_id ?></td>
@@ -108,8 +111,8 @@ function disp_all_payment_line($payment) {
 			if ($order_item_list) {
 				?>
 				<td class="text-primary">
-					<i id="edit-pbo-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
-							class="fas fa-pencil-alt edit-pbo-btn"
+					<i id="edit-pbo-<?php echo $payment_id ?>"
+							class="fas fa-pencil-alt edit-pbo-btn"-<?php echo $payment['product_id']?>
 							data-payment-id="<?php echo $payment_id ?>"></i>
 				</td>
 				<td class="text-danger">

@@ -10,6 +10,10 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$user_id = get_current_user_id();
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 
+	// var_dump($payment_info);
+	// var_dump(json_decode(html_entity_decode(stripslashes ($payment_info['payment_orig_prods'])), true));
+	// die();
+
 	$orders_flag = $payment_info['orders_flag'];
 	$payment_id = $payment_info['id'];
 	$payment_amount = $payment_info['amount'];
@@ -21,8 +25,10 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$attach_vat_invoice = $payment_info['attach_vat_invoice'];
 	$all_payment_cnt = $payment_info['all_payment_cnt'];
 	$prod_payment_cnt = $payment_info['prod_payment_cnt'];
-
+	$all_payment_id_cnt = $payment_info['all_payment_id_cnt'];
+	$payment_orig_prods = json_decode(html_entity_decode(stripslashes ($payment_info['payment_orig_prods'])), true);
 	$product_order_list = json_decode(html_entity_decode(stripslashes ($payment_info['product_order_list'])), true);
+	
 	$product_order_info = [];
 	foreach ($product_order_list as $prod_orders) {
 		$product_order_info[$prod_orders[0]] = array(
@@ -154,27 +160,60 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	// now similar to above but for all included products and the 
 	// display of the products table and All Transactions
 	$all_payment_lines = '';
+	$tmp_cnt = 0;
 	foreach ($product_info as $prod_id => &$prod_row_info) {
 		$amount = $product_order_info[$prod_id]['amount'];
-		$prod_row_info['balance_due'] = round($prod_row_info['balance_due'] - $payment_diff, 2);
-		$prod_row_info['total_paid'] = round($prod_row_info['total_paid'] + $payment_diff, 2);
+		
+		if ('INSERT' == $edit_mode) {
+			$prod_payment_diff = $amount;
+		} elseif ('UPDATE' == $edit_mode) {
+			$orig_prod_amount = isset($payment_orig_prods[$prod_id]) ? $payment_orig_prods[$prod_id][amount] : 0;
+			$prod_payment_diff = $amount - $orig_prod_amount;
+		} else {
+			$prod_payment_diff = - $amount;
+		}
+		$orig_amount = $payment_orig_prods[$prod_id];
+		$prod_pay_diff = 
+		$prod_row_info['balance_due'] = round($prod_row_info['balance_due'] - $prod_payment_diff, 2);
+		$prod_row_info['total_paid'] = round($prod_row_info['total_paid'] + $prod_payment_diff, 2);
 
 		$disp_payment_info = $payment_info;
 		$disp_payment_info['product_id'] = $prod_id;
 		$disp_payment_info['amount'] = $amount;
 		$disp_payment_info['total_amount'] = $payment_info['amount'];
 		$disp_payment_info['order_item_ids'] = implode(', ', array_column($product_order_info[$prod_id]['order_list'], 'orderItemId'));
+		$tmp_cnt += 1;
 
 		if ($edit_mode !== 'DELETE') {
 			$all_payment_line = disp_all_payment_line($disp_payment_info);
 			$all_payment_lines .= $all_payment_line;
-			if ($edit_mode === 'INSERT') {
-				$all_payment_cnt += 1;
-			}
-		} else {
-			$all_payment_cnt -= 1;
 		}
+	}
+	if ('INSERT' == $edit_mode) {
+		$all_payment_cnt += $tmp_cnt;
+	} elseif ('UPDATE' == $edit_mode) {
+		$all_payment_cnt += $tmp_cnt - $all_payment_id_cnt;
+	} else {
+		$all_payment_cnt -= $tmp_cnt;
+	}
 
+	// if update, check to see if any products are in the orig list, 
+	// but not in the payment prod list.  If so, determine the balance
+	// due and add to the return prod list.
+	if ('UPDATE' == $edit_mode) {
+		foreach ($payment_orig_prods as $orig_prod_id => $orig_prod_info) {
+			if (isset($product_info[$orig_prod_id])) {
+				continue;
+			}
+			$orig_amount = $orig_prod_info['amount'];
+			$balance_due = $orig_prod_info['balancedue'] + $orig_amount;
+			$total_paid = $orig_prod_info['totalpaid'] - $orig_amount;
+			$tmp_prod_array = array(
+				total_paid => $total_paid,
+				balance_due => $balance_due,
+			);
+			$product_info[$orig_prod_id] = $tmp_prod_array;
+		}
 	}
 
 	$hidden_payment_values = "
