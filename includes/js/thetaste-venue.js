@@ -118,6 +118,11 @@ const buildPaymentOrders = () => {
 	jQuery(".order-payment-check").each(function () {
 		jQuery(this).prop("checked", false);
 	});
+
+	jQuery("#payAllSelected").attr("disabled", true);
+	jQuery("#orders-payment-id").val("");
+	jQuery("#orders-payment-orig-amt").val("");
+	jQuery("#orders-payment-orig-date").val("");
 };
 
 const displayOrderPaymentInfo = () => {
@@ -321,7 +326,7 @@ const tasteMakePayment = (
 	}
 
 	const productId = Object.keys(curProdInfo)[0];
-	const editMode = tasteVenue.paymentOrders.editPaymentId;
+	const editMode = paymentId;
 	let venueInfo = tasteGetVenueInfo();
 	let paymentInfo = {
 		id: paymentId,
@@ -447,16 +452,16 @@ const tasteMakePayment = (
 				tasteLoadPBOButtons();
 				if (editMode) {
 					clearOrdersForPayment();
-					jQuery("#paySelectedModal").modal("hide");
-					jQuery("#payAllSelected").html("Pay selected offers");
-					jQuery("#orders-payment-submit").html("Make payment");
-					jQuery("#orders-payment-orig-amt").val(0);
-					jQuery("#orders-payment-orig-date").val("");
 				} else {
 					buildPaymentOrders();
-					jQuery("#select-orders-pay-total").text("0.00");
 					//tasteLoadInvoiceButtons();
 				}
+				jQuery("#paySelectedModal").modal("hide");
+				jQuery("#payAllSelected").html("Pay selected offers");
+				jQuery("#orders-payment-submit").html("Make payment");
+				jQuery("#orders-payment-orig-amt").val(0);
+				jQuery("#orders-payment-orig-date").val("");
+				jQuery("#select-orders-pay-total").text("0.00");
 				tasteCloseMsg();
 				if (jQuery("#taste-product-id").length) {
 					// need to rerun the load vouchers routine as easiest approach to
@@ -467,6 +472,9 @@ const tasteMakePayment = (
 					tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
 				}
 			}
+
+			jQuery(".delete-pbo-mode").hide();
+			jQuery(".add-edit-pbo-mode").show();
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
@@ -512,6 +520,7 @@ const tasteEditPBO = (paymentId) => {
 
 			displayOrderPaymentInfo();
 			jQuery("#payAllSelected").html(`Edit Pay #${paymentId}`);
+			jQuery("#orders-payment-id").val(paymentId);
 			jQuery("#orders-payment-orig-amt").val(paymentOrderInfo.totalNetPayable);
 			jQuery("#orders-payment-orig-date").val(paymentOrderInfo.editOrigPayDate);
 			jQuery("#orders-payment-submit").html("Update payment");
@@ -527,6 +536,82 @@ const tasteEditPBO = (paymentId) => {
 				const cutoffDate = jQuery("#venue_cutoff_date").val();
 				tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
 			}
+			jQuery(".delete-pbo-mode").hide();
+			jQuery(".add-edit-pbo-mode").show();
+		},
+		error: function (xhr, status, errorThrown) {
+			tasteCloseMsg();
+			console.log(errorThrown);
+			alert(
+				"Error setting up Payment Edit Mode. Your login may have timed out. Please refresh the page and try again."
+			);
+		},
+	});
+};
+
+const tasteDeletePBO = (paymentId) => {
+	let modalMsg = "Setting Up Delete Mode...";
+	tasteDispMsg(modalMsg);
+	jQuery.ajax({
+		url: tasteVenue.ajaxurl,
+		type: "POST",
+		datatype: "json",
+		data: {
+			action: "retrieve_payment_json",
+			security: tasteVenue.security,
+			payment_id: paymentId,
+		},
+		success: function (responseJson) {
+			tasteCloseMsg();
+			console.log(responseJson);
+			const paymentOrderInfo = JSON.parse(responseJson);
+
+			tasteVenue.paymentOrders.editPaymentId = paymentOrderInfo.editPaymentId;
+			tasteVenue.paymentOrders.editOrigPayDate =
+				paymentOrderInfo.editOrigPayDate;
+			tasteVenue.paymentOrders.totalNetPayable =
+				paymentOrderInfo.totalNetPayable;
+			tasteVenue.paymentOrders.totalQty = paymentOrderInfo.totalQty;
+			const delProdIds = Object.keys(paymentOrderInfo.productList);
+			const venueProdIds = Object.keys(tasteVenue.paymentOrders.productList);
+			venueProdIds.forEach((venueProdId) => {
+				if (delProdIds.includes(venueProdId)) {
+					tasteVenue.paymentOrders.productList[venueProdId] =
+						paymentOrderInfo.productList[venueProdId];
+				}
+			});
+
+			displayOrderPaymentInfo();
+			jQuery("#payAllSelected").html(`Delete Pay #${paymentId}`);
+			jQuery("#orders-payment-id").val(paymentId);
+			jQuery("#orders-payment-orig-amt").val(paymentOrderInfo.totalNetPayable);
+			jQuery("#orders-payment-orig-date").val(paymentOrderInfo.editOrigPayDate);
+			jQuery("#orders-payment-submit").html("Update payment");
+			if (jQuery(".edit-pbo-btn").length) {
+				jQuery(".edit-pbo-btn").addClass("fa-disabled");
+				jQuery(".delete-pbo-btn").addClass("fa-disabled");
+			}
+			if (jQuery("#taste-product-id").length) {
+				// need to rerun the load vouchers routine as easiest approach to
+				// reset the order statuses of the currently displayed product
+				const prodId = jQuery("#taste-product-id").val();
+				const multiplier = jQuery("#taste-product-multiplier").val();
+				const cutoffDate = jQuery("#venue_cutoff_date").val();
+				tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
+				/**
+				 *
+				 * TURN OFF ALL CHECKBOXES
+				 *
+				 * OPEN THE paySelectedModal MODAL IN DELETE MODE.  Make sure
+				 * it can only be closed with the buttons
+				 *
+				 *
+				 */
+			}
+
+			jQuery(".add-edit-pbo-mode").hide();
+			jQuery(".delete-pbo-mode").show();
+			jQuery("#paySelectedModal").modal();
 		},
 		error: function (xhr, status, errorThrown) {
 			tasteCloseMsg();
@@ -993,7 +1078,6 @@ const tasteLoadPaymentByOrdersModal = () => {
 
 				paymentData.set("allpaymentcnt", allPayCount);
 				paymentData.set("prodpaymentcnt", prodPayCount);
-				paymentData.set("payment-id", tasteVenue.paymentOrders.editPaymentId);
 				tasteMakePayment(paymentData, $modal, deleteMode, true);
 			});
 
@@ -1036,6 +1120,56 @@ const tasteLoadPaymentByOrdersModal = () => {
 								tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
 							}
 						});
+			});
+
+	// load the Delete button for this modal
+	jQuery("#delete-pbo-btn").length &&
+		jQuery("#delete-pbo-btn")
+			.off("click")
+			.click(function (e) {
+				e.preventDefault();
+				const $deleteBtn = jQuery(this);
+				const $modal = $deleteBtn.closest(".modal");
+				const formId = $deleteBtn.attr("form");
+				const $paymentForm = jQuery(`#${formId}`);
+				let paymentData = new FormData($paymentForm[0]);
+				const deleteMode = true;
+				// get payment counts for both All Payments (if exists) and product Payments
+				const allPayCount = jQuery("#all-payments-table").length
+					? jQuery("#all-payments-table").data("allpaymentcnt")
+					: 0;
+
+				const prodPayCount = jQuery("#audit-payment-table").length
+					? jQuery("#audit-payment-table").data("paymentcnt")
+					: 0;
+
+				paymentData.set("allpaymentcnt", allPayCount);
+				paymentData.set("prodpaymentcnt", prodPayCount);
+				tasteMakePayment(paymentData, $modal, deleteMode, true);
+			});
+
+	// load the Delete Cancel button for this modal
+	jQuery("#delete-pbo-cancel-btn").length &&
+		jQuery("#delete-pbo-cancel-btn")
+			.off("click")
+			.click(function (e) {
+				e.preventDefault();
+				clearOrdersForPayment();
+				jQuery("#paySelectedModal").modal("hide");
+				jQuery("#payAllSelected").html("Pay selected offers");
+				jQuery("#orders-payment-submit").html("Make payment");
+				if (jQuery(".edit-pbo-btn").length) {
+					jQuery(".edit-pbo-btn").removeClass("fa-disabled");
+					jQuery(".delete-pbo-btn").removeClass("fa-disabled");
+				}
+				if (jQuery("#taste-product-id").length) {
+					// need to rerun the load vouchers routine as easiest approach to
+					// reset the order statuses of the currently displayed product
+					const prodId = jQuery("#taste-product-id").val();
+					const multiplier = jQuery("#taste-product-multiplier").val();
+					const cutoffDate = jQuery("#venue_cutoff_date").val();
+					tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
+				}
 			});
 };
 
@@ -1121,6 +1255,14 @@ const tasteLoadPBOButtons = () => {
 			e.preventDefault();
 			let paymentId = jQuery(this).data("payment-id");
 			tasteEditPBO(paymentId);
+		});
+
+	jQuery(".delete-pbo-btn")
+		.off("click")
+		.click(function (e) {
+			e.preventDefault();
+			let paymentId = jQuery(this).data("payment-id");
+			tasteDeletePBO(paymentId);
 		});
 };
 

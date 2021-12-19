@@ -11,7 +11,8 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 
 	// var_dump($payment_info);
-	// var_dump(json_decode(html_entity_decode(stripslashes ($payment_info['payment_orig_prods'])), true));
+	// var_dump($product_info);
+	// var_dump($venue_info);
 	// die();
 
 	$orders_flag = $payment_info['orders_flag'];
@@ -57,9 +58,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	);
 
 	if ($delete_mode) {
-		$ret_json = array('error' => 'Deleting a Payment is currently in development');
-		echo wp_json_encode($ret_json);
-		return;
+
 		$edit_mode = 'DELETE';
 		$db_status = delete_payment($payment_db_parms, $payment_id);
 		if (!$db_status) {
@@ -356,27 +355,15 @@ function insert_payment ($payment_db_parms) {
 	);
 }
 
-/*
+
 function delete_payment ($payment_db_parms, $payment_id) {
 	global $wpdb;
 
 	$payment_table = $payment_db_parms['payment_table'];
-	$payment_products_table = $payment_db_parms['payment_products_table'];
-	$payment_order_xref_table = $payment_db_parms['payment_order_xref_table'];
 	
 	$wpdb->query( "START TRANSACTION" );
-	$where = array('payment_id' => $payment_id);
+	$where = array('id' => $payment_id);
 	$where_format = array('%d');
-
-	// payment x product_id table: wp_taste_venue_payment_products
-	$rows_affected = $wpdb->delete($payment_products_table, $where, $where_format);
-	// if not success set error array and return
-	if (!$rows_affected) {
-		$ret_json = array('error' => 'Could not update Payment Product Table.  ' . $wpdb->last_error);
-		echo wp_json_encode($ret_json);
-		$wpdb->query("ROLLBACK");
-		return false;
-	}
 
 	// main payment table:  wp_taste_venue_payment
 	$where = array('id' => $payment_id);
@@ -392,7 +379,7 @@ function delete_payment ($payment_db_parms, $payment_id) {
 	$wpdb->query( "COMMIT" );
 	return true;
 }
-*/
+
 
 function update_payment ($payment_db_parms, $payment_id) {
 	global $wpdb;

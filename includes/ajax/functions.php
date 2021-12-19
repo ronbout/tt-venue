@@ -111,8 +111,8 @@ function disp_all_payment_line($payment) {
 			if ($order_item_list) {
 				?>
 				<td class="text-primary">
-					<i id="edit-pbo-<?php echo $payment_id ?>"
-							class="fas fa-pencil-alt edit-pbo-btn"-<?php echo $payment['product_id']?>
+					<i id="edit-pbo-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
+							class="fas fa-pencil-alt edit-pbo-btn"
 							data-payment-id="<?php echo $payment_id ?>"></i>
 				</td>
 				<td class="text-danger">

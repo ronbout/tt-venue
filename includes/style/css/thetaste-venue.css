@@ -10808,6 +10808,10 @@ h2.col-heading_profile {
   max-height: 320px;
 }
 
+#paySelectedModal .delete-pbo-mode {
+  display: none;
+}
+
 .table-fixed-container {
   overflow-y: scroll;
   border: none;

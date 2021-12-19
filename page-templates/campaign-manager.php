@@ -290,10 +290,14 @@ if ($admin) {
 						</div>
 					</form>
 				</div>
-				<div class="modal-footer">	 
+				<div class="modal-footer add-edit-pbo-mode">	 
 					<button type="button" class="btn btn-warning" id="orders-payment-clear" >Clear</button>
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 					<button type="submit" form="orders-payment-add-form" id="orders-payment-submit" class="btn btn-primary">Make payment</button>
+				</div>
+				<div class="modal-footer delete-pbo-mode">	 
+					<button type="button" class="btn btn-secondary" id="delete-pbo-cancel-btn" >Cancel</button>
+					<button type="button" form="orders-payment-add-form" id="delete-pbo-btn" class="btn btn-danger">Delete payment</button>
 				</div>
 			</div>
 		</div>
