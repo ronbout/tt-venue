@@ -264,7 +264,26 @@ if ($admin) {
 					<form id="orders-payment-add-form">
 						<input type="hidden" id="orders-payment-id" name="payment-id" value="">
 						<input type="hidden" id="orders-payment-orig-amt" name="payment-orig-amt" value="0">
+						<input type="hidden" id="orders-payment-orig-status" name="payment-orig-status" value="0">
 						<input type="hidden" id="orders-payment-orig-date" name="payment-orig-date" value="<?php echo date('Y-m-d') ?>">
+						<div class="form-group">
+							<h5>Payment Status/Type:</h5>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input payment-status-radio" type="radio" name="payment-status" id="orders-pay-status-paid" 
+										value="<?php echo TASTE_PAYMENT_STATUS_PAID ?>" checked>
+								<label class="form-check-label" for="orders-pay-status-paid">Paid</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input payment-status-radio" type="radio" name="payment-status" id="orders-pay-status-adj" 
+								value="<?php echo TASTE_PAYMENT_STATUS_ADJ ?>">
+								<label class="form-check-label" for="orders-pay-status-adj">Adjustment</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input payment-status-radio" type="radio" name="payment-status" id="orders-pay-status-pend" 
+								value="<?php echo TASTE_PAYMENT_STATUS_PENDING ?>" disabled>
+								<label class="form-check-label" for="orders-pay-status-pend">Pending (disabled)</label>
+							</div>
+						</div>
 						<div class="form-group">
 							<label for="orders-payment-date">Transaction date</label>
 							<input class="form-control" type="date" id="orders-payment-date" required name="payment-date" value="<?php echo date('Y-m-d') ?>">

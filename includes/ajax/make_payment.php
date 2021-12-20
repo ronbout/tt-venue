@@ -20,6 +20,8 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$payment_amount = $payment_info['amount'];
 	$payment_orig_amount = $payment_info['payment_orig_amt'];
 	$payment_date = $payment_info['timestamp'];
+	$payment_date = $payment_info['timestamp'];
+	$payment_status = $payment_info['payment_status'];
 	$payment_orig_date = $payment_info['payment_orig_date'];
 	$payment_comment = $payment_info['comment'];
 	$comment_visible_venues = $payment_info['comment_visible_venues'];
@@ -48,6 +50,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		'data_fields' => array(
 			'payment_date' => $payment_date,
 			'payment_amount' => $payment_amount,
+			'payment_status' => $payment_status,
 			'comment' => $payment_comment,
 			'comment_visible_venues' => $comment_visible_venues,
 			'attach_vat_invoice' => $attach_vat_invoice,
@@ -257,6 +260,7 @@ function insert_payment ($payment_db_parms) {
 	$payment_products_table = $payment_db_parms['payment_products_table'];
 	$payment_order_xref_table = $payment_db_parms['payment_order_xref_table'];
 	$payment_date = $payment_db_parms['data_fields']['payment_date'];
+	$payment_status = $payment_db_parms['data_fields']['payment_status'];
 	$payment_amount = $payment_db_parms['data_fields']['payment_amount'];
 	$comment = $payment_db_parms['data_fields']['comment'];
 	$comment_visible_venues = $payment_db_parms['data_fields']['comment_visible_venues'];
@@ -275,9 +279,10 @@ function insert_payment ($payment_db_parms) {
 		'comment' => $comment,
 		'comment_visible_venues' => $comment_visible_venues,
 		'attach_vat_invoice' => $attach_vat_invoice,
+		'status' => $payment_status,
 	);
 
-	$format = array('%s', '%d', '%f', '%s', '%d', '%d');
+	$format = array('%s', '%d', '%f', '%s', '%d', '%d', '%d');
 	$rows_affected = $wpdb->insert($payment_table, $data, $format);	
 	// if not success set error array and return
 	if (!$rows_affected) {
@@ -388,6 +393,7 @@ function update_payment ($payment_db_parms, $payment_id) {
 	$payment_products_table = $payment_db_parms['payment_products_table'];
 	$payment_order_xref_table = $payment_db_parms['payment_order_xref_table'];
 	$payment_date = $payment_db_parms['data_fields']['payment_date'];
+	$payment_status = $payment_db_parms['data_fields']['payment_status'];
 	$payment_amount = $payment_db_parms['data_fields']['payment_amount'];
 	$comment = $payment_db_parms['data_fields']['comment'];
 	$comment_visible_venues = $payment_db_parms['data_fields']['comment_visible_venues'];
@@ -421,9 +427,10 @@ function update_payment ($payment_db_parms, $payment_id) {
 		'comment' => $comment,
 		'comment_visible_venues' => $comment_visible_venues,
 		'attach_vat_invoice' => $attach_vat_invoice,
+		'status' => $payment_status,
 	);
 
-	$format = array('%d', '%s', '%d', '%f', '%s', '%d', '%d');
+	$format = array('%d', '%s', '%d', '%f', '%s', '%d', '%d', '%d');
 	$rows_affected = $wpdb->insert($payment_table, $data, $format);	
 	// if not success set error array and return
 	if (!$rows_affected) {

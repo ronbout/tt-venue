@@ -51,7 +51,8 @@ function process_payment_info($payment_rows, $payment_id) {
 	$total_net_payable = $payment_rows[0]['total_amount'];
 	$total_qty = 0;
 	$product_list = array();
-	$orig_payment_date = $payment_rows[0]['payment_date'];
+	$orig_payment_date = date('Y-m-d', strtotime($payment_rows[0]['payment_date']));
+	$orig_payment_status = $payment_rows[0]['status'];
 
 	foreach($payment_rows as $payment_row) {
 		$product_id = $payment_row['product_id'];
@@ -88,6 +89,7 @@ function process_payment_info($payment_rows, $payment_id) {
 		'totalNetPayable' => $total_net_payable,
 		'editPaymentId' => $payment_id,
 		'editOrigPayDate' => $orig_payment_date,
+		'editOrigPayStatus' => $orig_payment_status,
 		'totalQty' => $total_qty,
 		'productList' => $product_list,
 	);

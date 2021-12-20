@@ -103,6 +103,8 @@ const buildPaymentOrders = () => {
 		totalNetPayable: 0,
 		editPaymentId: 0,
 		editOrigPayDate: "",
+		editOrigPayStatus: "",
+		paymentStatus: 0,
 		totalQty: 0,
 		productList: {},
 	};
@@ -123,6 +125,7 @@ const buildPaymentOrders = () => {
 	jQuery("#orders-payment-id").val("");
 	jQuery("#orders-payment-orig-amt").val("");
 	jQuery("#orders-payment-orig-date").val("");
+	setOrdersPaymentStatusRadio(0);
 };
 
 const displayOrderPaymentInfo = () => {
@@ -334,6 +337,7 @@ const tasteMakePayment = (
 		payment_orig_amt: paymentData.get("payment-orig-amt"),
 		payment_orig_date: paymentData.get("payment-orig-date"),
 		payment_orig_prods: JSON.stringify(paymentOrigProdAmts),
+		payment_status: paymentData.get("payment-status"),
 		timestamp: paymentData.get("payment-date"),
 		comment: paymentData.get("payment-comment"),
 		comment_visible_venues: paymentData.has("payment-comment-visibility")
@@ -462,6 +466,7 @@ const tasteMakePayment = (
 				jQuery("#orders-payment-orig-amt").val(0);
 				jQuery("#orders-payment-orig-date").val("");
 				jQuery("#select-orders-pay-total").text("0.00");
+				setOrdersPaymentStatusRadio(0);
 				tasteCloseMsg();
 				if (jQuery("#taste-product-id").length) {
 					// need to rerun the load vouchers routine as easiest approach to
@@ -509,6 +514,10 @@ const tasteEditPBO = (paymentId) => {
 			tasteVenue.paymentOrders.totalNetPayable =
 				paymentOrderInfo.totalNetPayable;
 			tasteVenue.paymentOrders.totalQty = paymentOrderInfo.totalQty;
+			tasteVenue.paymentOrders.editOrigPayStatus =
+				paymentOrderInfo.editOrigPayStatus;
+			tasteVenue.paymentOrders.paymentStatus =
+				paymentOrderInfo.editOrigPayStatus;
 			const editProdIds = Object.keys(paymentOrderInfo.productList);
 			const venueProdIds = Object.keys(tasteVenue.paymentOrders.productList);
 			venueProdIds.forEach((venueProdId) => {
@@ -523,6 +532,11 @@ const tasteEditPBO = (paymentId) => {
 			jQuery("#orders-payment-id").val(paymentId);
 			jQuery("#orders-payment-orig-amt").val(paymentOrderInfo.totalNetPayable);
 			jQuery("#orders-payment-orig-date").val(paymentOrderInfo.editOrigPayDate);
+			jQuery("#orders-payment-orig-status").val(
+				paymentOrderInfo.editOrigPayStatus
+			);
+			jQuery("#orders-payment-date").val(paymentOrderInfo.editOrigPayDate);
+			setOrdersPaymentStatusRadio(paymentOrderInfo.editOrigPayStatus);
 			jQuery("#orders-payment-submit").html("Update payment");
 			if (jQuery(".edit-pbo-btn").length) {
 				jQuery(".edit-pbo-btn").addClass("fa-disabled");
@@ -586,6 +600,11 @@ const tasteDeletePBO = (paymentId) => {
 			jQuery("#orders-payment-id").val(paymentId);
 			jQuery("#orders-payment-orig-amt").val(paymentOrderInfo.totalNetPayable);
 			jQuery("#orders-payment-orig-date").val(paymentOrderInfo.editOrigPayDate);
+			jQuery("#orders-payment-orig-status").val(
+				paymentOrderInfo.editOrigPayStatus
+			);
+			jQuery("#orders-payment-date").val(paymentOrderInfo.editOrigPayDate);
+			setOrdersPaymentStatusRadio(paymentOrderInfo.editOrigPayStatus);
 			jQuery("#orders-payment-submit").html("Update payment");
 			if (jQuery(".edit-pbo-btn").length) {
 				jQuery(".edit-pbo-btn").addClass("fa-disabled");
@@ -621,6 +640,26 @@ const tasteDeletePBO = (paymentId) => {
 			);
 		},
 	});
+};
+
+const setOrdersPaymentStatusRadio = (payStatus) => {
+	jQuery(".payment-status-radio").prop("checked", false);
+	let radioId;
+	switch (payStatus) {
+		case 0:
+			radioId = "#orders-pay-status-paid";
+			break;
+		case 1:
+			radioId = "#orders-pay-status-adj";
+			break;
+		case 2:
+			radioId = "#orders-pay-status-pend";
+			break;
+		default:
+			radioId = "#orders-pay-status-paid";
+	}
+
+	jQuery(radioId).prop("checked", true);
 };
 
 const updateOfferCalcs = (respObj, productId) => {

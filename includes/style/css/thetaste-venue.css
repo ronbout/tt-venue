@@ -10812,6 +10812,10 @@ h2.col-heading_profile {
   display: none;
 }
 
+#orders-payment-add-form {
+  margin: 12px 0 8px;
+}
+
 .table-fixed-container {
   overflow-y: scroll;
   border: none;

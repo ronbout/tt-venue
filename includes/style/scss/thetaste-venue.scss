@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -206,6 +206,10 @@ h2.col-heading_profile {
 
 #paySelectedModal .delete-pbo-mode {
 	display: none;
+}
+
+#orders-payment-add-form {
+	margin: 12px 0 8px;
 }
 
 .table-fixed-container {
