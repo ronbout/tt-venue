@@ -96,6 +96,15 @@ function disp_all_payment_line($payment) {
 	$tooltip_title = "Payment ID: $payment_id &#10;";
 	$tooltip_title .= "Total Payment: $total_payment_amount &#10;";
 	$tooltip_title .= $order_item_list ? "Order Items for this Product: &#10; $order_item_list &#10;" : "";
+	/**
+	 * 
+	 *  Need to indication ADJUSTMENT type payment, 
+	 *  for now,just add "ADJ" to the payment id display
+	 *  This is somewhat experimental for now, so keep the
+	 * 	potential re-write to a minimum
+	 * 
+	 */
+	$status_ind = (TASTE_PAYMENT_STATUS_ADJ == $payment['status']) ? ' - ADJ': '';
 	ob_start();
 	?>
 		<tr id="all-pay-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>" 
@@ -104,7 +113,7 @@ function disp_all_payment_line($payment) {
 				data-prodid="<?php echo $payment['product_id'] ?>"
 				title="<?php echo $tooltip_title ?>"	>
 		<td><?php echo $payment['product_id'] ?></td>
-		<td><?php echo $payment_id ?></td>
+		<td><?php echo $payment_id, $status_ind ?></td>
 		<td><?php echo $payment_date ?></td>
 		<td class="table-nbr pr-5"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
 		<?php 

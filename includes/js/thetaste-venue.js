@@ -104,7 +104,7 @@ const buildPaymentOrders = () => {
 		editPaymentId: 0,
 		editOrigPayDate: "",
 		editOrigPayStatus: "",
-		paymentStatus: 0,
+		paymentStatus: 1,
 		totalQty: 0,
 		productList: {},
 	};
@@ -337,7 +337,7 @@ const tasteMakePayment = (
 		payment_orig_amt: paymentData.get("payment-orig-amt"),
 		payment_orig_date: paymentData.get("payment-orig-date"),
 		payment_orig_prods: JSON.stringify(paymentOrigProdAmts),
-		payment_status: paymentData.get("payment-status"),
+		status: paymentData.get("payment-status"),
 		timestamp: paymentData.get("payment-date"),
 		comment: paymentData.get("payment-comment"),
 		comment_visible_venues: paymentData.has("payment-comment-visibility")
@@ -466,7 +466,7 @@ const tasteMakePayment = (
 				jQuery("#orders-payment-orig-amt").val(0);
 				jQuery("#orders-payment-orig-date").val("");
 				jQuery("#select-orders-pay-total").text("0.00");
-				setOrdersPaymentStatusRadio(0);
+				setOrdersPaymentStatusRadio(1);
 				tasteCloseMsg();
 				if (jQuery("#taste-product-id").length) {
 					// need to rerun the load vouchers routine as easiest approach to
@@ -646,13 +646,13 @@ const setOrdersPaymentStatusRadio = (payStatus) => {
 	jQuery(".payment-status-radio").prop("checked", false);
 	let radioId;
 	switch (payStatus) {
-		case 0:
+		case 1:
 			radioId = "#orders-pay-status-paid";
 			break;
-		case 1:
+		case 2:
 			radioId = "#orders-pay-status-adj";
 			break;
-		case 2:
+		case 3:
 			radioId = "#orders-pay-status-pend";
 			break;
 		default:

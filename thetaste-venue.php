@@ -18,9 +18,9 @@ define('TASTE_PLUGIN_INCLUDES', TASTE_PLUGIN_PATH.'includes');
 define('TASTE_PLUGIN_INCLUDES_URL', TASTE_PLUGIN_URL.'includes');
 
 /* some helpful CONSTANTS */
-define('TASTE_PAYMENT_STATUS_PAID', 0);
-define('TASTE_PAYMENT_STATUS_ADJ', 1);
-define('TASTE_PAYMENT_STATUS_PENDING', 2);
+define('TASTE_PAYMENT_STATUS_PAID', 1);
+define('TASTE_PAYMENT_STATUS_ADJ', 2);
+define('TASTE_PAYMENT_STATUS_PENDING', 3);
 
 
 require_once TASTE_PLUGIN_INCLUDES.'/activation-deactivation.php';

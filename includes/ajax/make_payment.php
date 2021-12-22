@@ -21,7 +21,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$payment_orig_amount = $payment_info['payment_orig_amt'];
 	$payment_date = $payment_info['timestamp'];
 	$payment_date = $payment_info['timestamp'];
-	$payment_status = $payment_info['payment_status'];
+	$payment_status = $payment_info['status'];
 	$payment_orig_date = $payment_info['payment_orig_date'];
 	$payment_comment = $payment_info['comment'];
 	$comment_visible_venues = $payment_info['comment_visible_venues'];

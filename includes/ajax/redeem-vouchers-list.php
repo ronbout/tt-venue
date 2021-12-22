@@ -140,12 +140,6 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 	<!-- CAMPAIGN SUMMARY END -->
 
 	<?php 
-	// $payment_list = $wpdb->get_results($wpdb->prepare("
-	// 			SELECT  id, timestamp, pid, amount, comment, comment_visible_venues, status,
-	// 				attach_vat_invoice
-	// 			FROM {$wpdb->prefix}offer_payments 
-	// 			WHERE pid = %d
-	// 			ORDER BY timestamp ASC ", $product_id), ARRAY_A);
 
 	$payment_list = $wpdb->get_results($wpdb->prepare("
 			SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, 
@@ -154,6 +148,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 			FROM {$wpdb->prefix}taste_venue_payment pay
 			JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
 			WHERE pprods.product_id = %d
+				AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
 			ORDER BY pay.payment_date ASC ", $product_id), ARRAY_A);
 	?>
 	<div class=" collapse-container payment_transaction mt-5">
@@ -691,7 +686,8 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							<input type="hidden" id="modal-payment-id" value="0" name="payment-id">
 							<input type="hidden" id="modal-payment-orig-amt" name="payment-orig-amt">
 							<input type="hidden" id="modal-payment-orig-date" name="payment-orig-date">
-							<input type="hidden" id="modal-payment-status" name="payment-status" value="0">
+							<input type="hidden" id="modal-payment-status" name="payment-status" 
+											value="<?php echo TASTE_PAYMENT_STATUS_PAID ?>">
 							<div class="form-group">
 								<label for="modal-payment-date">Transaction date</label>
 								<input class="form-control" type="date" id="modal-payment-date" required name="payment-date">

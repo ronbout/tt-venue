@@ -373,6 +373,10 @@ if ($admin) {
 function calc_payments_by_product($payment_rows) {
 	$payment_totals_by_product = array();
 	foreach ($payment_rows as $payment) {
+		// do not process new "adjustment" status
+		if (TASTE_PAYMENT_STATUS_ADJ == $payment['status']) {
+			continue;
+		}
 		$product_id = $payment['product_id'];
 		if (isset($payment_totals_by_product[$product_id])) {
 			$payment_totals_by_product[$product_id] += $payment['amount'];
