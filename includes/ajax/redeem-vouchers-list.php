@@ -691,6 +691,7 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 							<input type="hidden" id="modal-payment-id" value="0" name="payment-id">
 							<input type="hidden" id="modal-payment-orig-amt" name="payment-orig-amt">
 							<input type="hidden" id="modal-payment-orig-date" name="payment-orig-date">
+							<input type="hidden" id="modal-payment-status" name="payment-status" value="0">
 							<div class="form-group">
 								<label for="modal-payment-date">Transaction date</label>
 								<input class="form-control" type="date" id="modal-payment-date" required name="payment-date">
