@@ -109,7 +109,7 @@ if ($admin) {
 			$cutoff_date_str = $cutoff_date_str ? $cutoff_date_str : "2001-01-01";
 
 			/**  temp effective removal of cutoff date by setting to 2001 */
-			$cutoff_date_str =  "2001-01-01'";
+			$cutoff_date_str =  "2001-01-01";
 
 			$product_rows = $wpdb->get_results($wpdb->prepare("
 							SELECT pr.product_id, pr.sku, p.post_title, pr.onsale, p.post_date, pm.meta_value AS 'children', 
