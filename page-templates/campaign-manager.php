@@ -106,7 +106,7 @@ if ($admin) {
 
 			$cutoff_date_str = $venue_row[0]->historical_cutoff_date;
 
-			$cutoff_date_str = $cutoff_date_str ? $cutoff_date_str : "2001-01-01'";
+			$cutoff_date_str = $cutoff_date_str ? $cutoff_date_str : "2001-01-01";
 
 			/**  temp effective removal of cutoff date by setting to 2001 */
 			$cutoff_date_str =  "2001-01-01'";
