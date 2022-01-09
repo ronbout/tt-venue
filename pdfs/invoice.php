@@ -142,7 +142,7 @@ function display_company_tax_info($pdf, $payment_info) {
 }
 
 function display_payment_info($pdf, $payment_info) {
-	$vat_val = $payment_info[0]['vat_val'];
+	$vat_val = $payment_info['product_list'][0]['vat_val'];
 
 	$pdf->SetFont('', 'B');
 	center($pdf, 'Invoice for our Marketing Services');
@@ -323,9 +323,8 @@ function get_payment_info($payment_id) {
 	$postmeta_table = $wpdb->prefix."postmeta";
 
 	$sql = "
-			SELECT  pprods.product_id, pay.id AS payment_id, pay.payment_date as timestamp, pprods.product_id as pid, 
-				pay.amount as total_amount, pprods.amount as product_amount, pay.comment, pay.status,
-				pay.payment_date, pm1.meta_value AS 'comm_val',
+			SELECT  pprods.product_id, pay.amount as total_amount, pprods.amount as product_amount, 
+				pay.comment, pay.payment_date, pm1.meta_value AS 'comm_val',
 				GROUP_CONCAT(plook.order_item_id) as order_item_ids,
 				GROUP_CONCAT(plook.product_qty) as order_item_qty,
 				GROUP_CONCAT(plook.order_id) as order_ids
