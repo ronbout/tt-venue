@@ -141,15 +141,32 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 
 	<?php 
 
-	$payment_list = $wpdb->get_results($wpdb->prepare("
+	// $payment_list = $wpdb->get_results($wpdb->prepare("
+	// 		SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, 
+	// 			pprods.amount, pay.comment, pay.amount as total_amount,
+	// 			pay.comment_visible_venues, pay.status, pay.attach_vat_invoice
+	// 		FROM {$wpdb->prefix}taste_venue_payment pay
+	// 		JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
+	// 		WHERE pprods.product_id = %d
+	// 			AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
+	// 		ORDER BY pay.payment_date ASC ", $product_id), ARRAY_A);
+
+	$venue_payment_list = $wpdb->get_results($wpdb->prepare("
 			SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, 
 				pprods.amount, pay.comment, pay.amount as total_amount,
 				pay.comment_visible_venues, pay.status, pay.attach_vat_invoice
 			FROM {$wpdb->prefix}taste_venue_payment pay
 			JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
-			WHERE pprods.product_id = %d
+			JOIN {$wpdb->prefix}taste_venue_products vprods on pprods.product_id = vprods.product_id 
+			WHERE vprods.venue_id = %d
 				AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
-			ORDER BY pay.payment_date ASC ", $product_id), ARRAY_A);
+			ORDER BY pay.payment_date ASC ", $venue_id), ARRAY_A);
+
+	$filtered_payment_list = array_filter($venue_payment_list, function ($pay_row) use ($product_id) {
+		return $pay_row['pid'] == $product_id;
+	});
+
+
 	?>
 	<div class=" collapse-container payment_transaction mt-5">
 		<h3 class="text-center">Transactions for Campaign <?php echo $product_id ?></h3>
@@ -164,7 +181,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 		<div class="collapse show" id="payment_transaction_collapse">
 		<h4 id="prod-transactions-cnt-display">
 			<?php 
-				$payment_count = count($payment_list);
+				$payment_count = count($filtered_payment_list);
 				if ($payment_count)  {
 					echo "Transaction Items ($payment_count Rows)";
 				} else {
@@ -174,7 +191,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 		</h4>
 
 	<?php
-		$total_paid_to_venue = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count, $make_payments_below);
+		$total_paid_to_venue = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $filtered_payment_list, $payment_count, $make_payments_below);
 		
 		$balance_due = $payable - $total_paid_to_venue;
 	?>
