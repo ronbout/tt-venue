@@ -5,7 +5,7 @@ set_time_limit(10 * 60);
 require('fpdf/fpdf.php');
 
 define('LN_HEIGHT', 6);
-define('TABLE_LN_HEIGHT', 5);
+define('TABLE_LN_HEIGHT', 4);
 define('IMAGE_SIZE', 42);
 define('IMAGE_HEIGHT', 18);
 define('IMAGE_WIDTH', 68);
@@ -16,9 +16,9 @@ define('FONT_SIZE', 12);
 define('PAGE_WIDTH', 210);
 define('BREAK_WIDTH', 100);
 define('BOX_WIDTH', 178);
-define('PRODUCT_ID_WIDTH', 32);
-define('GROSS_SALES_WIDTH', 32);
-define('COMM_WIDTH', 26);
+define('PRODUCT_ID_WIDTH', 30);
+define('GROSS_SALES_WIDTH', 30);
+define('COMM_WIDTH', 30);
 define('COMM_PCT_WIDTH', 26);
 define('VAT_WIDTH', 26);
 define('COMM_AND_VAT_WIDTH', 32);
@@ -113,7 +113,7 @@ function display_logo($pdf) {
 	}
 	$pdf->SetFont('', '', FONT_SIZE);
 
-	return IMAGE_SIZE + IMAGE_START_Y + 8;
+	return IMAGE_SIZE + IMAGE_START_Y + 4;
 }
 
 function display_venue_info($pdf,  $y_loc, $venue_info) {
@@ -135,13 +135,28 @@ function display_company_tax_info($pdf, $payment_info) {
 	$date = $payment_info['payment_date'];
 	$invoice_no = $payment_info['payment_id'];
 	
-	display_title_info($pdf, 'Company No:', $company_no);
+	$pdf->Ln();
+	$pdf->SetFont('', 'B');
+	$pdf->Cell(95, LN_HEIGHT, 'Company No:', 0, 0, 'C');
+	$pdf->Cell(95, LN_HEIGHT, 'Invoice No:', 0, 1, 'C');
+	$pdf->SetFont('');
+	$pdf->Cell(95, LN_HEIGHT, $company_no, 0, 0, 'C');
+	$pdf->Cell(95, LN_HEIGHT, $invoice_no, 0, 1, 'C');
+	// display_title_info($pdf, 'Company No:', $company_no);
 	
-	display_title_info($pdf, 'Invoice No:', $invoice_no);
+	// display_title_info($pdf, 'Invoice No:', $invoice_no);
 	
-	display_title_info($pdf, 'VAT No:', $company_vat_no);
+	$pdf->Ln();
+	$pdf->SetFont('', 'B');
+	$pdf->Cell(95, LN_HEIGHT, 'VAT No:', 0, 0, 'C');
+	$pdf->Cell(95, LN_HEIGHT, 'Date:', 0, 1, 'C');
+	$pdf->SetFont('');
+	$pdf->Cell(95, LN_HEIGHT, $company_vat_no, 0, 0, 'C');
+	$pdf->Cell(95, LN_HEIGHT, $date, 0, 1, 'C');
+	
+	// display_title_info($pdf, 'VAT No:', $company_vat_no);
 
-	display_title_info($pdf, 'Date:', $date);
+	// display_title_info($pdf, 'Date:', $date);
 }
 
 function display_payment_info($pdf, $payment_info) {
@@ -189,7 +204,7 @@ function display_payment_info($pdf, $payment_info) {
 
 function display_payment_table_header($pdf, $vat_val) {
 	$table_width = BOX_WIDTH;
-	$min_header_height = LN_HEIGHT + 1;
+	$min_header_height = LN_HEIGHT;
 	$header_height = ($min_header_height * 2);
 	$table_x_start = (PAGE_WIDTH - $table_width) / 2;
 	$table_y_start = $pdf->getY();
@@ -228,7 +243,7 @@ function display_payment_table_row($pdf, $payment_row) {
 	$pdf->setX($table_x_start);
 	$pdf->Cell(PRODUCT_ID_WIDTH, $row_height , $product_id, 1, 0, "C");
 	$pdf->Cell(GROSS_SALES_WIDTH, $row_height, disp_euros($payment_gross), 1, 0, "C");
-	$pdf->Cell(COMM_WIDTH, $row_height, disp_euros($commission_amt), 1, 0, "C");
+	$pdf->Cell(COMM_WIDTH, $row_height, disp_euros($commission_amt) . " " . "($commission_val%)", 1, 0, "C");
 	$pdf->Cell(VAT_WIDTH, $row_height, disp_euros($vat_amt), 1, 0, "C");
 	$pdf->Cell(COMM_AND_VAT_WIDTH, $row_height, disp_euros($tot_comm_w_vat), 1, 0, "C");
 	$pdf->Cell(STAGED_PAY_WIDTH, $row_height, disp_euros($payment_amt), 1, 1, "C");
