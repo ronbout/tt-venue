@@ -178,7 +178,10 @@ function display_payment_info($pdf, $payment_info) {
 		display_payment_table_row($pdf, $payment_row);
 	}
 
-	display_payment_table_totals($pdf, $payment_info);
+	if (count($payment_info['product_list']) > 1) {
+		display_payment_table_totals($pdf, $payment_info);
+	}
+
 
 	// $pdf->setX($table_x_start);
 	// $pdf->Cell($label_width, $table_height, ' Gross Sales:', 1);
