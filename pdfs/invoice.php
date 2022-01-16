@@ -7,6 +7,8 @@ require('fpdf/fpdf.php');
 define('LN_HEIGHT', 6);
 define('TABLE_LN_HEIGHT', 5);
 define('IMAGE_SIZE', 42);
+define('IMAGE_HEIGHT', 18);
+define('IMAGE_WIDTH', 68);
 define('IMAGE_START_X', 10);
 define('IMAGE_START_Y', 10);
 define('FONT_STYLE', 'Arial');
@@ -92,7 +94,8 @@ function display_logo($pdf) {
 		'Dublin 1',
 	);
 	
-	$pdf->Image('images/TheTasteLogo.png', IMAGE_START_X, IMAGE_START_Y, IMAGE_SIZE, IMAGE_SIZE);
+	// $pdf->Image('images/TheTasteLogo.png', IMAGE_START_X, IMAGE_START_Y, IMAGE_SIZE, IMAGE_SIZE);
+	$pdf->Image('images/TheTaste-logo-2022.png', IMAGE_START_X, IMAGE_START_Y + 5, IMAGE_WIDTH, IMAGE_HEIGHT);
 
 	$y = IMAGE_START_Y + 5;
 
