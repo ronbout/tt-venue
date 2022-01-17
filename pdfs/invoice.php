@@ -70,6 +70,8 @@ display_horizontal_line($pdf);
 
 display_payment_info($pdf, $payment_info);
 
+display_order_info($pdf, $payment_info);
+
 $pdf->Output();
 
 exit;
@@ -174,34 +176,15 @@ function display_payment_info($pdf, $payment_info) {
 
 	display_payment_table_header($pdf, $vat_val);
 
+	$pdf->SetFont('','',FONT_SIZE - 1);
 	foreach($payment_info['product_list'] as $payment_row) {
 		display_payment_table_row($pdf, $payment_row);
 	}
+	$pdf->SetFont('','',FONT_SIZE);
 
 	if (count($payment_info['product_list']) > 1) {
 		display_payment_table_totals($pdf, $payment_info);
 	}
-
-
-	// $pdf->setX($table_x_start);
-	// $pdf->Cell($label_width, $table_height, ' Gross Sales:', 1);
-	// $pdf->Cell(30, $table_height, disp_euros($payment_gross) . ' ', 1, 2, "R");
-
-	// $pdf->setX($table_x_start);
-	// $pdf->Cell($label_width, $table_height, " Commission @ {$commission_val}%", 1);
-	// $pdf->Cell(30, $table_height, disp_euros($commission_amt) . ' ', 1, 2, "R");
-
-	// $pdf->setX($table_x_start);
-	// $pdf->Cell($label_width, $table_height, " Vat @ {$vat_val}%", 1);
-	// $pdf->Cell(30, $table_height, disp_euros($vat_amt) . ' ', 1, 2, "R");
-	
-	// $pdf->setX($table_x_start);
-	// $pdf->Cell($label_width, $table_height, " Total Commission incl VAT", 1);
-	// $pdf->Cell(30, $table_height, disp_euros($tot_comm_w_vat) . ' ', 1, 2, "R");
-
-	// $pdf->setX($table_x_start);
-	// $pdf->Cell($label_width, $table_height, ' Staged Payment of:', 1);
-	// $pdf->Cell(30, $table_height, disp_euros($payment_amt) . ' ', 1, 2, "R");
 
 }
 
@@ -275,6 +258,63 @@ function display_payment_table_totals($pdf, $payment_info) {
 	$pdf->Cell(COMM_AND_VAT_WIDTH, $row_height, disp_euros($grand_tot_comm_w_vat), 1, 0, "C");
 	$pdf->Cell(STAGED_PAY_WIDTH, $row_height, disp_euros($total_payment_amt), 1, 1, "C");
 
+}
+
+function display_order_info($pdf, $payment_info) {
+	$pdf->AddPage();
+
+	$pdf->SetFont('', 'B');
+	center($pdf, 'Paid Orders by Campaign ID');
+	$pdf->Ln();
+	$pdf->SetFont('');
+
+	display_order_table_header($pdf);
+
+	$pdf->SetFont('','',FONT_SIZE - 1);
+	foreach($payment_info['product_list'] as $payment_row) {
+		display_order_table_row($pdf, $payment_row);
+	}
+	$pdf->SetFont('','',FONT_SIZE);
+
+}
+
+function display_order_table_header($pdf) {
+	$table_width = BOX_WIDTH;
+	$min_header_height = LN_HEIGHT;
+	$header_height = ($min_header_height * 2);
+	$table_x_start = (PAGE_WIDTH - $table_width) / 2;
+	$order_col_width = $table_width - PRODUCT_ID_WIDTH;
+
+	$pdf->SetFont('', 'B');
+
+	$pdf->setX($table_x_start);
+	$pdf->Cell(PRODUCT_ID_WIDTH, $header_height , " Campaign ID", 1, 0, "C");
+	$pdf->Cell($order_col_width, $header_height, " Order ID's", 1, 1, "C");
+	
+	$pdf->SetFont('');
+}
+
+function display_order_table_row($pdf, $payment_row) {
+	$table_width = BOX_WIDTH;
+	$min_table_row_height = TABLE_LN_HEIGHT;
+	$row_height = ($min_table_row_height * 2);
+	$table_x_start = (PAGE_WIDTH - $table_width) / 2;
+	$order_col_width = $table_width - PRODUCT_ID_WIDTH;
+	$order_col_x_start = $table_x_start + PRODUCT_ID_WIDTH;
+
+	$product_id = $payment_row['product_id'];
+
+	$order_ids = str_replace(',', ', ', $payment_row['order_ids']);
+
+	$pdf->setX($order_col_x_start);
+	$cur_y = $pdf->getY();
+
+	$pdf->MultiCell($order_col_width, $row_height, $order_ids, 1);
+
+	$new_y = $pdf->getY();
+	$cell_height = $new_y - $cur_y;
+	$pdf->setXY($table_x_start, $cur_y);
+	$pdf->Cell(PRODUCT_ID_WIDTH, $cell_height , $product_id, 1, 1, "C");
 }
 
 function disp_euros($amt) {
@@ -430,7 +470,8 @@ function process_payment_info($payment_rows, $payment_id) {
 			'commission_amt' => $payment_calcs['pay_comm'],
 			'vat_amt' => $payment_calcs['pay_vat'],
 			'order_qty' => $order_qty,
-			'order_item_list' => $tmp_order_array
+			'order_item_list' => $tmp_order_array,
+			'order_ids' => $order_id_list,
 		);
 		$product_list[] = $tmp_array; 
 	}
