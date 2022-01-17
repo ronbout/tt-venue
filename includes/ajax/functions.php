@@ -52,10 +52,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 		?>
 		<?php if ($disp_invoice) { ?>
 			<td class="text-success">
-				<i data-paymentamt="<?php echo $payment['amount'] ?>" data-paymentdate="<?php echo $payment_date ?>"
-								data-comm="<?php echo $pay_calcs['pay_comm'] ?>" data-vat="<?php echo $pay_calcs['pay_vat'] ?>"
-								data-paymentid="<?php echo $payment['id'] ?>" data-paymentvatval="<?php echo $pay_calcs['vat_val'] ?>"
-								data-paygross=<?php echo $pay_calcs['pay_gross'] ?>"
+				<i data-paymentid="<?php echo $payment['id'] ?>" 
 								class="fas fa-file-pdf print-invoice-btn"></i>
 				</i>
 			</td>

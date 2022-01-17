@@ -306,6 +306,8 @@ function display_order_table_row($pdf, $payment_row) {
 
 	$order_ids = str_replace(',', ', ', $payment_row['order_ids']);
 
+	$order_ids = $order_ids ? $order_ids : "Orders were not attached to this payment";
+
 	$pdf->setX($order_col_x_start);
 	$cur_y = $pdf->getY();
 
