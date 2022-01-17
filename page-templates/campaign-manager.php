@@ -182,7 +182,7 @@ if ($admin) {
 						
 			$payment_rows = $wpdb->get_results($wpdb->prepare("
 				SELECT  pprods.product_id, pay.id, pay.payment_date as timestamp, pprods.product_id as pid, 
-						pay.amount as total_amount, pprods.amount, pay.comment, pay.status,
+						pay.amount as total_amount, pprods.amount, pay.comment, pay.status, pay.attach_vat_invoice,
 						GROUP_CONCAT(pox.order_item_id) as order_item_ids
 				FROM $payment_products_table pprods
 					JOIN  $payment_table pay ON pay.id = pprods.payment_id
@@ -766,6 +766,7 @@ function display_product_row($product_row) {
 
 function display_all_payments($payment_rows, $venue_name, $payment_total) {
 	$currency =  get_woocommerce_currency_symbol();
+	$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
 	?>
 	<div class="collapse-container all-payments-container mt-5">
 		<h3 class="text-center">All Transactions for <?php echo $venue_name ?></h3>
@@ -782,12 +783,14 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 			<div class="table-fixed-wrapper mb-5">
 				<div id="all-payments-table-container" class="table-fixed-container">
 					<table id="all-payments-table" class="table table-striped table-bordered table-fixed"
-							data-allpaymentcnt="<?php echo count($payment_rows) ?>">
+							data-allpaymentcnt="<?php echo count($payment_rows) ?>"
+							data-invoiceurl="<?php echo $invoice_pdf_url ?>">
 						<thead>
 							<th scope="col" class="sort-by-product">Product</th>
 							<th scope="col">Payment ID</th>
 							<th scope="col" class="sort-by-date">Date</th>
 							<th scope="col">Amount</th>
+							<th scope="col">Invoice</th>
 							<th scope="col">PBO Edit</th>
 							<th scope="col">PBO Delete</th>
 						</thead>

@@ -12,6 +12,7 @@ jQuery(document).ready(function () {
 		buildPaymentOrders();
 		displayOrderPaymentInfo();
 		tasteLoadPaymentByOrdersModal();
+		tasteLoadInvoiceButtons();
 		/*
 		if (jQuery(".all-payments-row").length) {
 			console.log("here");

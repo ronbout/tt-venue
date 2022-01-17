@@ -57,7 +57,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 				</i>
 			</td>
 		<?php } else { ?>
-			<td class="text-danger">
+			<td>
 				
 			</td>
 		<?php } ?>
@@ -89,6 +89,7 @@ function disp_all_payment_line($payment) {
 	$total_payment_amount = $payment['total_amount'];
 	$payment_id = $payment['id'];
 	$order_item_list = str_replace(',', ', ', $payment['order_item_ids']);
+	$disp_invoice = $payment['attach_vat_invoice'] && TASTE_PAYMENT_STATUS_PAID == $payment['status'];
 
 	$tooltip_title = "Payment ID: $payment_id &#10;";
 	$tooltip_title .= "Total Payment: $total_payment_amount &#10;";
@@ -113,6 +114,17 @@ function disp_all_payment_line($payment) {
 		<td><?php echo $payment_id, $status_ind ?></td>
 		<td><?php echo $payment_date ?></td>
 		<td class="table-nbr pr-5"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
+		<?php if ($disp_invoice) { ?>
+			<td class="text-success">
+				<i data-paymentid="<?php echo $payment_id ?>" 
+								class="fas fa-file-pdf print-invoice-btn"></i>
+				</i>
+			</td>
+		<?php } else { ?>
+			<td>
+				
+			</td>
+		<?php } ?>
 		<?php 
 			if ($order_item_list) {
 				?>
