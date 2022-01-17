@@ -195,6 +195,11 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 		
 		$balance_due = $payable - $total_paid_to_venue;
 	?>
+	<input type="hidden" id="taste-venue-name" value="<?php echo $venue_info['name'] ?>">
+	<input type="hidden" id="taste-venue-addr1" value="<?php echo $venue_info['address1'] ?>">
+	<input type="hidden" id="taste-venue-addr2" value="<?php echo $venue_info['address2'] ?>">
+	<input type="hidden" id="taste-venue-city" value="<?php echo $venue_info['city'] ?>">
+	<input type="hidden" id="taste-venue-postcode" value="<?php echo $venue_info['postcode'] ?>">
 	<div id="hidden-values">
 		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
 		<input type="hidden" id="taste-product-multiplier" value="<?php echo $multiplier ?>">
@@ -218,6 +223,7 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 		'<i class="fas fa-times-circle ml-2"></i><span class="ml-3 text-danger">Expired</span>';
 	?>
 	<!-- REVENUE CAMPAIGN DETAILS START -->
+	<input type="hidden" id="taste-product-title" value="<?php echo $product_title ?>">
 	<div class="revenue_campaign_details mb-4">
 		<div class="row">
 			<div class="col cols">
@@ -597,12 +603,8 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 			<div class="table-fixed-wrapper">
 				<div id="payment-table-container" class="table-fixed-container">		
 					<table id="audit-payment-table" class="table table-striped table-bordered table-fixed text-center"
-						<?php
-								// need data for invoice button
-								$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
-						?>
 						data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
-						data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo $invoice_pdf_url ?>"
+						data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo TASTE_VENUE_INVOICE_URL ?>"
 						data-venuename="<?php echo $venue_info['name'] ?>" data-venueaddr1="<?php echo $venue_info['address1'] ?>"
 						data-venueaddr2="<?php echo $venue_info['address2'] ?>" data-venuecity="<?php echo $venue_info['city'] ?>"
 						data-venuepostcode="<?php echo $venue_info['postcode'] ?>" data-paymentcnt="<?php echo $payment_count ?>">

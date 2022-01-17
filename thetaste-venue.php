@@ -16,6 +16,7 @@ define('TASTE_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('TASTE_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('TASTE_PLUGIN_INCLUDES', TASTE_PLUGIN_PATH.'includes');
 define('TASTE_PLUGIN_INCLUDES_URL', TASTE_PLUGIN_URL.'includes');
+define('TASTE_VENUE_INVOICE_URL', TASTE_PLUGIN_URL . "pdfs/invoice.php");
 
 /* some helpful CONSTANTS */
 define('TASTE_PAYMENT_STATUS_PAID', 1);

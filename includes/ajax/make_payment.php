@@ -29,6 +29,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$all_payment_cnt = $payment_info['all_payment_cnt'];
 	$prod_payment_cnt = $payment_info['prod_payment_cnt'];
 	$all_payment_id_cnt = $payment_info['all_payment_id_cnt'];
+	$venue_id = $venue_info['venue_id'];
 	$payment_orig_prods = json_decode(html_entity_decode(stripslashes ($payment_info['payment_orig_prods'])), true);
 	$product_order_list = json_decode(html_entity_decode(stripslashes ($payment_info['product_order_list'])), true);
 	
@@ -93,6 +94,11 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		
 		$payment_info['id'] = $payment_id;
 		$payment_diff = $payment_amount;
+
+		// run email routine that sends invoice URL
+		if ($attach_vat_invoice && TASTE_PAYMENT_STATUS_PAID == $payment_status ) {
+			send_invoice_url_email($venue_id, $payment_info, $venue_info);
+		}
 	}
 
 	/*****  AUDIT TABLE UPDATE ******/
@@ -508,4 +514,56 @@ function update_payment ($payment_db_parms, $payment_id) {
 function num_display ($num) {
 	// display number with 2 decimal rounding and formatting
 	return number_format(round($num,2), 2);
+}
+
+function send_invoice_url_email($venue_id, $payment_info, $venue_info) {
+	$payment_id = $payment_info['id'];
+	$payment_date = date('Y-m-d', strtotime($payment_info['timestamp']));
+
+	$payment_amount = $payment_info['amount'];
+	$venue_user_info = get_userdata( $venue_id );
+	$venue_email = $venue_user_info->user_email;
+	$venue_name = $venue_info['venue_name'];
+	// $venue_addr1 = $venue_info['venue_addr1'];
+	// $venue_addr2 = $venue_info['venue_addr2'];
+	// $venue_city = $venue_info['venue_city'];
+	// $venue_postcode = $venue_info['venue_postcode'];
+
+	$invoice_get = "?pay_id=$payment_id";
+
+	$invoice_url = TASTE_VENUE_INVOICE_URL . $invoice_get;
+
+	// $to = $venue_email;	
+	$to = "jim.heffner@3sixd.com";
+	$bcc = array("boutilier.ronald@gmail.com");
+	$from = " The Taste <accounts@TheTaste.ie>";
+	// $bcc = array("accounts@TheTaste.ie", "jfg-digital-limited@inbox.outmin.io");
+	
+	$subject = "Payment Made from the Taste";
+	$body = build_email_body($payment_amount, $payment_date, $invoice_url, $venue_name);
+	$headers = array(
+			"Content-Type: text/html; charset=UTF-8",
+			"From: $from",
+		);
+		foreach ($bcc as $bcc_addr) {
+			$headers[] = "Bcc: $bcc_addr";
+		}
+
+	wp_mail( $to, $subject, $body, $headers );
+
+}
+
+function build_email_body($payment_amount, $payment_date, $invoice_url, $venue_name) {
+	$body = "
+		<h2>A Payment of &euro;$payment_amount has been made to $venue_name on $payment_date.  
+		You should receive the payment in your bank account within the next 2 business days.
+		</h2>
+
+		<h3>To view your VAT Invoice, click the following link:</h3>
+		<p>
+			<a href='$invoice_url' target='_blank'>View Invoice</a>
+		</p>
+	";
+
+	return $body;
 }

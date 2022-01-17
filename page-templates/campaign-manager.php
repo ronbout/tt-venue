@@ -766,7 +766,6 @@ function display_product_row($product_row) {
 
 function display_all_payments($payment_rows, $venue_name, $payment_total) {
 	$currency =  get_woocommerce_currency_symbol();
-	$invoice_pdf_url = TASTE_PLUGIN_URL . "pdfs/invoice.php";
 	?>
 	<div class="collapse-container all-payments-container mt-5">
 		<h3 class="text-center">All Transactions for <?php echo $venue_name ?></h3>
@@ -784,7 +783,7 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 				<div id="all-payments-table-container" class="table-fixed-container">
 					<table id="all-payments-table" class="table table-striped table-bordered table-fixed"
 							data-allpaymentcnt="<?php echo count($payment_rows) ?>"
-							data-invoiceurl="<?php echo $invoice_pdf_url ?>">
+							data-invoiceurl="<?php echo TASTE_VENUE_INVOICE_URL ?>">
 						<thead>
 							<th scope="col" class="sort-by-product">Product</th>
 							<th scope="col">Payment ID</th>

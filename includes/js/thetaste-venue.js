@@ -726,6 +726,7 @@ const tasteGetProductInfo = () => {
 		total_paid: jQuery("#taste-total-paid").val(),
 		multiplier: jQuery("#taste-product-multiplier").val(),
 		balance_due: jQuery("#taste-balance-due").val(),
+		title: jQuery("#taste-product-title").val(),
 	};
 
 	return productInfo;
@@ -790,6 +791,11 @@ const tasteUpdateOrderRowStatusClass = (
 const tasteGetVenueInfo = () => {
 	let venueInfo = {};
 	venueInfo.venue_id = jQuery("#hidden_venue_id").val();
+	venueInfo.venue_name = jQuery("#taste-venue-name").val();
+	venueInfo.venue_addr1 = jQuery("#taste-venue-addr").val();
+	venueInfo.venue_addr2 = jQuery("#taste-venue-addr2").val();
+	venueInfo.venue_city = jQuery("#taste-venue-city").val();
+	venueInfo.venue_postcode = jQuery("#taste-venue-postcode").val();
 	venueInfo.revenue = jQuery("#sum-gr-value").val();
 	venueInfo.commission = jQuery("#sum-commission").val();
 	venueInfo.vat = jQuery("#sum-vat").val();
