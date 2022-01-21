@@ -81,7 +81,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 	$termsandconditions = str_replace('[{"meta_value":"','', $termsandconditions);
 	$termsandconditions = str_replace('"}]','', $termsandconditions);
 	$termsandconditions = str_replace('(\u20ac80)','', $termsandconditions);
-	$termsandconditions = str_replace('<a hef="mailto:','', $termsandconditions);
+	$termsandconditions = str_replace('<a href=\"mailto:','', $termsandconditions);
 	$termsandconditions = str_replace('<\/a>','', $termsandconditions);
 	$termsandconditions = str_replace('\u20ac','€', $termsandconditions);
 	$termsandconditions = str_replace('\u2013','-', $termsandconditions);
