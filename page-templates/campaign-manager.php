@@ -574,13 +574,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals, 
 			<span>
 				<h4 class="mt-1">Offers (<?php echo  number_format(count($product_calcs)) ?> Rows)</h4>
 			</span>
-			<span class="payment-mode-only">
-				<button class="btn btn-success mr-2" id="payAllSelected" data-toggle="modal" data-target="#paySelectedModal">
-					Pay selected offers
-				</button>
-				Total Payment for Selected Orders: 
-				<span id="select-orders-pay-total">0.00</span>
-			</span>
+
 		</div>
 			<div class="table-fixed-wrapper mb-5">
 				<div id="product-table-container" class="table-fixed-container">
@@ -833,16 +827,32 @@ function display_mode_toggle($display_mode) {
 	}
 	
 	?>
-		<div class="ttoggle-container d-flex align-items-center">
-			<div class="row">
-				<div class="col-6 ttoggle toggle-div-redeem">
-					<button id="toggle-btn-redeem" data-toggle="redeem" <?php echo $redeem_disabled ?> class="toggle-btn <?php echo $redeem_class ?>">Redemptions</button>
-				</div>
-				<div class="col-6 ttoggle toggle-div-payment">
-					<button id="toggle-btn-payment" data-toggle="payment" <?php echo $payment_disabled ?> class="toggle-btn <?php echo $payment_class ?>">Payments</button>
+		<div class="card" id="pbo-admin-bar">
+			<div class="card-body">
+				<div class="ttoggle-container">
+					<div class="row">
+						<div class="col-2 ttoggle toggle-div-redeem">
+							<button id="toggle-btn-redeem" data-toggle="redeem" <?php echo $redeem_disabled ?> class="toggle-btn <?php echo $redeem_class ?>">Redemptions</button>
+						</div>
+						<div class="col-2 ttoggle toggle-div-payment">
+							<button id="toggle-btn-payment" data-toggle="payment" <?php echo $payment_disabled ?> class="toggle-btn <?php echo $payment_class ?>">Payments</button>
+						</div>
+						<div class="col-2">
+
+						</div>
+						<div class="col-6">
+							<button class="btn btn-success mr-2" id="payAllSelected" data-toggle="modal" data-target="#paySelectedModal">
+								Pay selected offers
+							</button>
+							Total Payment for Selected Orders: 
+							<span id="select-orders-pay-total">0.00</span>
+						</div>
+					</div>
 				</div>
 			</div>
+
 		</div>
+
 	<?php
 }
 

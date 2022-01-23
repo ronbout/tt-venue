@@ -8,7 +8,7 @@ $spacers: (
 		(
 			10%,
 		)
-		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+		// 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -233,20 +233,28 @@ h2.col-heading_profile {
 	z-index: 2;
 }
 
+#pbo-admin-bar {
+	width: 100%;
+	background-color: lightgray;
+	margin: 16px 0;
+	padding: 0 5px;
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+}
+
 .ttoggle-container {
-	justify-content: start;
-	margin-top: 20px;
+	margin-top: 14px;
 }
 
 .ttoggle {
-	width: 240px;
-	height: 80px;
-	padding: 20px;
+	height: 60px;
+	width: 110px;
 }
 
 .ttoggle > .toggle-btn {
 	width: 100%;
-	height: 100%;
+	padding: 6px 0;
 	font-weight: bold;
 	font-size: 1.1rem;
 	border-radius: 6px;
