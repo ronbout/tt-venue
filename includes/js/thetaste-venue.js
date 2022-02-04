@@ -643,6 +643,76 @@ const tasteDeletePBO = (paymentId) => {
 	});
 };
 
+const tasteHistoricalPBO = (venueId) => {
+	let modalMsg = "Checking Historical Payment Info...";
+	tasteDispMsg(modalMsg);
+	jQuery.ajax({
+		url: tasteVenue.ajaxurl,
+		type: "POST",
+		datatype: "json",
+		data: {
+			action: "retrieve_historical_payments_json",
+			security: tasteVenue.security,
+			venue_id: venueId,
+		},
+		success: function (responseJson) {
+			tasteCloseMsg();
+			console.log(responseJson);
+			const paymentOrderInfo = JSON.parse(responseJson);
+
+			tasteVenue.paymentOrders.editPaymentId = 0;
+			tasteVenue.paymentOrders.editOrigPayDate = "";
+			tasteVenue.paymentOrders.totalNetPayable =
+				paymentOrderInfo.totalNetPayable;
+			tasteVenue.paymentOrders.totalQty = paymentOrderInfo.totalQty;
+			tasteVenue.paymentOrders.editOrigPayStatus = "";
+			tasteVenue.paymentOrders.paymentStatus = paymentOrderInfo.payStatus;
+			const editProdIds = Object.keys(paymentOrderInfo.productList);
+			const venueProdIds = Object.keys(tasteVenue.paymentOrders.productList);
+			venueProdIds.forEach((venueProdId) => {
+				if (editProdIds.includes(venueProdId)) {
+					tasteVenue.paymentOrders.productList[venueProdId] =
+						paymentOrderInfo.productList[venueProdId];
+				}
+			});
+
+			displayOrderPaymentInfo();
+
+			let date = new Date();
+			let dateStr = date.toLocaleDateString();
+			jQuery("#payAllSelected").html(`Historical PBO: `);
+			jQuery("#orders-payment-id").val("");
+			jQuery("#orders-payment-orig-amt").val(0);
+			jQuery("#orders-payment-orig-date").val(dateStr);
+			jQuery("#orders-payment-orig-status").val(0);
+			jQuery("#orders-payment-date").val(dateStr);
+			setOrdersPaymentStatusRadio(paymentOrderInfo.payStatus);
+			jQuery("#orders-payment-submit").html("Make Historical PBO");
+			if (jQuery(".edit-pbo-btn").length) {
+				jQuery(".edit-pbo-btn").addClass("fa-disabled");
+				jQuery(".delete-pbo-btn").addClass("fa-disabled");
+			}
+			if (jQuery("#taste-product-id").length) {
+				// need to rerun the load vouchers routine as easiest approach to
+				// reset the order statuses of the currently displayed product
+				const prodId = jQuery("#taste-product-id").val();
+				const multiplier = jQuery("#taste-product-multiplier").val();
+				const cutoffDate = jQuery("#venue_cutoff_date").val();
+				tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
+			}
+			jQuery(".delete-pbo-mode").hide();
+			jQuery(".add-edit-pbo-mode").show();
+		},
+		error: function (xhr, status, errorThrown) {
+			tasteCloseMsg();
+			console.log(errorThrown);
+			alert(
+				"Error setting up Historical Payments. Your login may have timed out. Please refresh the page and try again."
+			);
+		},
+	});
+};
+
 const setOrdersPaymentStatusRadio = (payStatus) => {
 	jQuery(".payment-status-radio").prop("checked", false);
 	let radioId;
@@ -1293,6 +1363,14 @@ const tasteLoadPBOButtons = () => {
 			e.preventDefault();
 			let paymentId = jQuery(this).data("payment-id");
 			tasteDeletePBO(paymentId);
+		});
+
+	jQuery("#historical-pbo-btn")
+		.off("click")
+		.click(function (e) {
+			e.preventDefault();
+			let venueId = jQuery(this).data("venue-id");
+			tasteHistoricalPBO(venueId);
 		});
 };
 

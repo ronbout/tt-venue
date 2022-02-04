@@ -213,7 +213,7 @@ if ($admin) {
 				display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str, $venue_id);
 				if (count($product_rows)) {
 					if ($admin) { 
-						display_mode_toggle($display_mode); 
+						display_mode_toggle($display_mode, $venue_id); 
 					}
 					display_products_table($product_calcs, $served_heading, $venue_totals, $admin);
 				} else {
@@ -813,7 +813,7 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 	<?php 
 }
 
-function display_mode_toggle($display_mode) {
+function display_mode_toggle($display_mode, $venue_id) {
 	if ("redeem" === $display_mode) {
 		$redeem_class = 'toggle-on';
 		$payment_disabled = '';
@@ -838,7 +838,9 @@ function display_mode_toggle($display_mode) {
 							<button id="toggle-btn-payment" data-toggle="payment" <?php echo $payment_disabled ?> class="toggle-btn <?php echo $payment_class ?>">Payments</button>
 						</div>
 						<div class="col-2">
-
+							<button class="btn btn-info mr-2" id="historical-pbo-btn" data-venue-id="<?php echo $venue_id ?>" >
+								Assign Historical Pay
+							</button>
 						</div>
 						<div class="col-6">
 							<button class="btn btn-success mr-2" id="payAllSelected" data-toggle="modal" data-target="#paySelectedModal">

@@ -35,7 +35,7 @@ require_once '../../../../wp-load.php';
 //As this is external file, we aren't using the WP theme here. So setting this as false
 define('WP_USE_THEMES', false);
 
-require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/ajax-functions.php';
+// require_once TASTE_PLUGIN_INCLUDES.'/ajax/outstanding/ajax-functions.php';
 
 $payment_id = $_GET['pay_id'];
 

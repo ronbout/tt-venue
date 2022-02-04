@@ -41,8 +41,13 @@ function retrieve_payment_orders_info_json($payment_id) {
 	$payment_rows = $wpdb->get_results($wpdb->prepare($sql, $payment_id), ARRAY_A);
 
 	$payment_info_array = process_payment_info($payment_rows, $payment_id); 
-
+	
+	// ugly workaround for the fact that json_encode will screw up some float numbers
+	// 7388.75 => 7388.749999999
+	$orig_serialize = ini_get('serialize_precision');
+	ini_set('serialize_precision', 10);
 	echo wp_json_encode($payment_info_array, JSON_NUMERIC_CHECK );
+	ini_set('serialize_precision', $orig_serialize);
 	return;
 
 }
