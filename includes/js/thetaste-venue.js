@@ -678,8 +678,8 @@ const tasteHistoricalPBO = (venueId) => {
 
 			displayOrderPaymentInfo();
 
-			let date = new Date();
-			let dateStr = date.toLocaleDateString();
+			let dateStr = getFormattedDate();
+			console.log("dateStr: ", dateStr);
 			jQuery("#payAllSelected").html(`Historical PBO: `);
 			jQuery("#orders-payment-id").val("");
 			jQuery("#orders-payment-orig-amt").val(0);
@@ -1416,6 +1416,22 @@ const tasteScrollToVouchers = () => {
 
 const financial = (num) => {
 	return Number.parseFloat(num).toFixed(2);
+};
+
+const getFormattedDate = () => {
+	let date = new Date();
+	return formatDate(date);
+};
+
+const formatDate = (dt) => {
+	// dt must be an instance of Date class
+
+	let year = dt.getFullYear();
+	let month = dt.getMonth() + 1;
+	let dateOfMonth = dt.getDate();
+	month = month.length > 1 ? month : "0" + month;
+	dateOfMonth = dateOfMonth.length > 1 ? dateOfMonth : "0" + dateOfMonth;
+	return `${year}-${month}-${dateOfMonth}`;
 };
 
 /***********************************************************
