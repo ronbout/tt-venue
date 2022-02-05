@@ -126,6 +126,7 @@ const buildPaymentOrders = () => {
 	jQuery("#orders-payment-id").val("");
 	jQuery("#orders-payment-orig-amt").val("");
 	jQuery("#orders-payment-orig-date").val("");
+	jQuery("#orders-payment-date").val(getFormattedDate());
 	setOrdersPaymentStatusRadio(0);
 };
 
@@ -466,6 +467,7 @@ const tasteMakePayment = (
 				jQuery("#orders-payment-submit").html("Make payment");
 				jQuery("#orders-payment-orig-amt").val(0);
 				jQuery("#orders-payment-orig-date").val("");
+				jQuery("#orders-payment-date").val(getFormattedDate());
 				jQuery("#select-orders-pay-total").text("0.00");
 				setOrdersPaymentStatusRadio(1);
 				tasteCloseMsg();
