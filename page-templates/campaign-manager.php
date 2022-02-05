@@ -839,7 +839,7 @@ function display_mode_toggle($display_mode, $venue_id) {
 						</div>
 						<div class="col-2">
 							<button class="btn btn-info mr-2" id="historical-pbo-btn" data-venue-id="<?php echo $venue_id ?>" >
-								Assign Historical Pay
+								Historical PBO
 							</button>
 						</div>
 						<div class="col-6">

@@ -545,6 +545,8 @@ const tasteEditPBO = (paymentId) => {
 				jQuery(".edit-pbo-btn").addClass("fa-disabled");
 				jQuery(".delete-pbo-btn").addClass("fa-disabled");
 			}
+			jQuery("#historical-pbo-btn").addClass("fa-disabled");
+
 			if (jQuery("#taste-product-id").length) {
 				// need to rerun the load vouchers routine as easiest approach to
 				// reset the order statuses of the currently displayed product
@@ -613,6 +615,7 @@ const tasteDeletePBO = (paymentId) => {
 				jQuery(".edit-pbo-btn").addClass("fa-disabled");
 				jQuery(".delete-pbo-btn").addClass("fa-disabled");
 			}
+			jQuery("#historical-pbo-btn").addClass("fa-disabled");
 			if (jQuery("#taste-product-id").length) {
 				// need to rerun the load vouchers routine as easiest approach to
 				// reset the order statuses of the currently displayed product
@@ -694,6 +697,7 @@ const tasteHistoricalPBO = (venueId) => {
 				jQuery(".edit-pbo-btn").addClass("fa-disabled");
 				jQuery(".delete-pbo-btn").addClass("fa-disabled");
 			}
+			jQuery("#historical-pbo-btn").addClass("fa-disabled");
 			if (jQuery("#taste-product-id").length) {
 				// need to rerun the load vouchers routine as easiest approach to
 				// reset the order statuses of the currently displayed product
@@ -1213,6 +1217,7 @@ const tasteLoadPaymentByOrdersModal = () => {
 								jQuery(".edit-pbo-btn").removeClass("fa-disabled");
 								jQuery(".delete-pbo-btn").removeClass("fa-disabled");
 							}
+							jQuery("#historical-pbo-btn").removeClass("fa-disabled");
 							if (editId && jQuery("#taste-product-id").length) {
 								// need to rerun the load vouchers routine as easiest approach to
 								// reset the order statuses of the currently displayed product
@@ -1264,6 +1269,7 @@ const tasteLoadPaymentByOrdersModal = () => {
 					jQuery(".edit-pbo-btn").removeClass("fa-disabled");
 					jQuery(".delete-pbo-btn").removeClass("fa-disabled");
 				}
+				jQuery("#historical-pbo-btn").removeClass("fa-disabled");
 				if (jQuery("#taste-product-id").length) {
 					// need to rerun the load vouchers routine as easiest approach to
 					// reset the order statuses of the currently displayed product
@@ -1289,6 +1295,7 @@ const clearOrdersForPayment = () => {
 		jQuery(".edit-pbo-btn").removeClass("fa-disabled");
 		jQuery(".delete-pbo-btn").removeClass("fa-disabled");
 	}
+	jQuery("#historical-pbo-btn").removeClass("fa-disabled");
 };
 
 const buildOrdersPaymentTableRows = () => {
