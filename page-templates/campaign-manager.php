@@ -201,20 +201,23 @@ if ($admin) {
 
 			$product_calcs = $totals_calcs['calcs'];
 			$venue_totals = $totals_calcs['totals'];
-
 		?>
     <section class="headings">
       <h1 class="overview_heading">Overview</h1>
       <h2 class="venue_name"><?php echo $venue_name; ?></h2>
     </section>
-
+		<?php
+			if (count($product_rows) && $admin) {
+				display_mode_toggle($display_mode, $venue_id); 
+			}
+		?>
 		<section id="all-campaigns-container" class="container">
 			<?php	
 				display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str, $venue_id);
 				if (count($product_rows)) {
-					if ($admin) { 
-						display_mode_toggle($display_mode, $venue_id); 
-					}
+					// if ($admin) { 
+					// 	display_mode_toggle($display_mode, $venue_id); 
+					// }
 					display_products_table($product_calcs, $served_heading, $venue_totals, $admin);
 				} else {
 					echo "<h2>*** No Products Found ***</h2>";
