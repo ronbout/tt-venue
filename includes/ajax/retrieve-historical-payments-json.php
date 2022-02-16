@@ -170,6 +170,7 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 		$tmp_array = array(
 			'netPayable' => $prod_net_payable,
 			'orderQty' => $prod_qty,
+			'neededOrderQty' => $needed_order_cnt,
 			'orderItemList' => $tmp_order_array
 		);
 		$product_list[$prod_id] = $tmp_array; 
