@@ -411,7 +411,13 @@ function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights
 		$tmp = array();
 		$tmp['product_id'] = $product_id;
 		$tmp['title'] = $product_row['post_title'];
-		$tmp['status'] = ("N" === $product_row['expired']) ? "Active" : "Expired";
+		$expired_val = $product_row['expired'];
+		if(strpos($expired_val, 'N') !== false){
+			$expired_val = 'N';
+		} else{
+			$expired_val = 'Y';
+		}
+		$tmp['status'] = ("N" === $expired_val) ? "Active" : "Expired";
 		$tmp['redeemed_cnt'] = $product_row['redeemed_cnt'];
 		$tmp['redeemed_qty'] = $product_row['redeemed_qty'];
 		$tmp['order_cnt'] = $product_row['order_cnt'];
