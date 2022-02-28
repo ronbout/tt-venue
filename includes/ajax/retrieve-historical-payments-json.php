@@ -143,6 +143,7 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 	$total_net_payable = 0;
 	$total_qty = 0;
 	$product_list = array();
+	$trouble_product_list = array();
 
 	foreach ($needed_orders_per_product as $prod_id => $prod_order_info) {
 		$net_payable_per_qty = $prod_order_info['net_payable'];
@@ -177,6 +178,10 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 			'orderItemList' => $tmp_order_array
 		);
 		$product_list[$prod_id] = $tmp_array; 
+		if ($needed_order_cnt != $prod_qty) {
+			$trouble_product_list[$prod_id] = $tmp_array;
+		}
+		 
 	}
 
 	return array(
@@ -184,5 +189,6 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 		'totalQty' => $total_qty,
 		'productList' => $product_list,
 		'payStatus' => TASTE_PAYMENT_STATUS_ADJ,
+		'troubleProductList' => $trouble_product_list,
 	);
 }
