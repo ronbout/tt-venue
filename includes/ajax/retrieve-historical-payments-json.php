@@ -103,6 +103,7 @@ function calc_needed_orders($orig_payment_rows, $historical_payment_rows) {
 
 		$needed_ords_by_product[$prod_id] = array(
 			'needed_orders' => $needed_historical_order_cnt,
+			'needed_amt' => $payment_amount,
 			'net_payable' => $net_payable_per_order,
 		);
 
@@ -146,6 +147,7 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 	foreach ($needed_orders_per_product as $prod_id => $prod_order_info) {
 		$net_payable_per_qty = $prod_order_info['net_payable'];
 		$needed_order_cnt = $prod_order_info['needed_orders'];
+		$needed_amt = $prod_order_info['needed_amt'];
 		if (!$needed_order_cnt) continue;
 		$targeted_orders = $wpdb->get_results($wpdb->prepare($sql, $prod_id, $needed_order_cnt), ARRAY_A);
 		$prod_qty = 0;
@@ -171,6 +173,7 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 			'netPayable' => $prod_net_payable,
 			'orderQty' => $prod_qty,
 			'neededOrderQty' => $needed_order_cnt,
+			'neededAmt' => $needed_amt,
 			'orderItemList' => $tmp_order_array
 		);
 		$product_list[$prod_id] = $tmp_array; 
