@@ -23,6 +23,10 @@ define('TASTE_PAYMENT_STATUS_PAID', 1);
 define('TASTE_PAYMENT_STATUS_ADJ', 2);
 define('TASTE_PAYMENT_STATUS_PENDING', 3);
 
+$uploads_info = wp_get_upload_dir();
+$uploads_base_url = $uploads_info['baseurl'];
+define('TASTE_VENUE_UPLOADS_BASE_URL', $uploads_base_url);
+
 
 require_once TASTE_PLUGIN_INCLUDES.'/activation-deactivation.php';
 

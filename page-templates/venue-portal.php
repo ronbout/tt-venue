@@ -45,7 +45,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 	</div>
 	<div class="text-center">
 		<a href="<?php echo get_site_url() ?>">
-				<img src="<?php echo get_site_url() ?>/wp-content/uploads/2017/12/thetaste-site-homepage-logo5.png" alt="homepage_logo">
+				<img src="<?php echo TASTE_VENUE_UPLOADS_BASE_URL ?>/2017/12/thetaste-site-homepage-logo5.png" alt="homepage_logo">
 		</a>
 	</div>
 	<br><br>

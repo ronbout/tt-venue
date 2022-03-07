@@ -11,8 +11,6 @@
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 function venue_navbar ($links) {
-	$uploads_info = wp_get_upload_dir();
-	$uploads_base_url = $uploads_info['baseurl'];
 	$links_html = '';
 	foreach($links as $link) {
 		$links_html .= '
@@ -25,7 +23,7 @@ function venue_navbar ($links) {
 	<header>
 		<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
 				<a class="navbar-brand" href="<?php echo get_site_url() ?>">
-						<img src="<?php echo $uploads_base_url ?>/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
+						<img src="<?php echo TASTE_VENUE_UPLOADS_BASE_URL ?>/2017/12/thetaste-site-homepage-logo5.png" class="img-fluid" style="width: 220px"  alt="" loading="lazy">
 				</a>
 				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#venueNavbarToggler" aria-controls="venueNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
