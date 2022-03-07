@@ -122,7 +122,7 @@ function display_venue_select($display_submit=true, $venue_id = 0, $add_form=tru
 	</script>
 
 	<div id="venue-form-container" class="wrap">
-	<?php echo ($add_form) ?	'<form method="post" action="'. $form_action .'" id="venue-select-form">' : '' ?>
+	<?php echo ($add_form) ?	'<form method="get" action="'. $form_action .'" id="venue-select-form">' : '' ?>
 		<label for="venue-type-filter">Filter Venues by Type:</label>
 		<select name="venue-type-filter" id="venue-type-select" class="form-control" style="width: 180px;">
 			<option value='all'>All Venue Types</option>
@@ -178,10 +178,15 @@ function display_venue_select($display_submit=true, $venue_id = 0, $add_form=tru
  * 	NOTE: verify that the role is venue before 	
  * 				attempting to access the venue array elements
  */
-function get_user_venue_info() {
+function get_user_venue_info($venue_id = null) {
 	global $wpdb;
 
-	$user = wp_get_current_user();
+	if ($venue_id) {
+		$user = get_userdata( $venue_id );
+	} else {
+		$user = wp_get_current_user();
+	}
+
 	$role = $user->roles[0];
 	if ('VENUE' !== strtoupper($role)) {
 		return compact('user', 'role');

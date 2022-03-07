@@ -32,36 +32,37 @@ require_once TASTE_PLUGIN_INCLUDES.'/ajax/functions.php';
 
 $venue_id = '';
 if ($admin) {
-	$nav_links = array(
+	$selection_nav_links = array(
 		array(
 			'title' => 'Log Out',
 			'url' => wp_logout_url(get_site_url()),
 			'active' => false
 		),
 	);
-	// check if the Venue ID is in POST from form 
-	if (isset($_POST['venue-id'])) {
-		$venue_id = $_POST['venue-id'];
+	// check if the Venue ID is in GET from form 
+	if (isset($_GET['venue-id'])) {
+		$venue_id = $_GET['venue-id'];
 		// add the link to return to venue selection
 		$venue_select_link = array(
 			'title' => 'Venue Selection',
 			'url' => get_page_link(),
 			'active' => false
 		);
-		array_unshift($nav_links, $venue_select_link);
+		array_unshift($selection_nav_links, $venue_select_link);
 	} 
 	$display_mode = 'payment';
 } else {
-	$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
+	//$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
 	$venue_id = $user->ID;
 	$display_mode = 'redeem';
 }
+$navbar_get = $admin ? "venue-id=$venue_id" : "";
+$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page'], $admin, $navbar_get);
 
 ?>
 <body class="campaign-manager">
 	<?php
 	
-	venue_navbar($nav_links);
 	/**
 	 * because this is not using the theme styling, I cannot (currently) run wp_head
 	 * as a result, this is my wp_localize_script replacement
@@ -74,11 +75,15 @@ if ($admin) {
 				tasteVenue.displayMode = '" . $display_mode . "'
 			</script>
 		";
+	$navbar_get = $admin ? "venue-id=$venue_id" : "";
 	if (!$venue_id) {
 		// display form to select Venue as user is admin w/o a venue selected
+		venue_navbar($selection_nav_links, $navbar_get);
 		display_venue_select(true, 0, true, get_page_link());
 		echo '<script type="text/javascript" src= "' . TASTE_PLUGIN_INCLUDES_URL . '/js/thetaste-venue-select.js"></script>';
 		die();
+	} else {
+		venue_navbar($nav_links, $navbar_get);
 	}
 ?>
 	<main class="container mb-3">

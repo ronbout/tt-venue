@@ -18,6 +18,7 @@ function venue_navbar ($links) {
 				<a class="nav-link" href="' . $link['url'] . '" ' . (isset($link['attrs']) ? $link['attrs']  : '') . '>' . $link['title'] . '</a>
 			</li>
 		';
+		
 	}
 	?>
 	<header>
@@ -38,8 +39,12 @@ function venue_navbar ($links) {
 	<?php
 }
 
-function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page) {
+function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $admin=false, $get_string='') {
 	global $pagename;
+	
+	if ($get_string) {
+		$get_string = "?$get_string";
+	}
 
 	if ($use_new_campaign) {
 		$voucher_page_title = 'Campaign Manager';
@@ -51,17 +56,17 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page) {
 	$links = array(
 		array(
 			'title' => 'Dashboard',
-			'url' => get_site_url(null, '/venue-portal'),
+			'url' => get_site_url(null, '/venue-portal') . $get_string,
 			'active' => 'venue-portal' === $pagename
 		),
 		array(
 			'title' => $voucher_page_title,
-			'url' => get_site_url(null, $voucher_page),
+			'url' => get_site_url(null, $voucher_page) . $get_string,
 			'active' => $voucher_page === '/' . $pagename
 		),
 		array(
 			'title' => 'Profile',
-			'url' => get_site_url(null, '/venue-profile-page'),
+			'url' => get_site_url(null, '/venue-profile-page') . $get_string,
 			'active' => 'venue-profile-page' === $pagename
 		),
 		array(
@@ -70,5 +75,15 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page) {
 			'active' => false
 		),
 	);
+
+	// if admin, add Venue Selection to the beginning
+	if ($admin) {
+		$venue_select_link = array(
+			'title' => 'Venue Selection',
+			'url' => get_page_link(),
+			'active' => false
+		);
+		array_unshift($links, $venue_select_link);
+	}
 	return $links;
 }
