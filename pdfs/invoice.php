@@ -89,11 +89,10 @@ function set_up_pdf() {
 function display_logo($pdf) {
 	$company_title = "JFG Digital Ltd T/A TheTaste.ie";
 	$company_addr = array(
-		'The Chq Building,',
-		'DogpatchLabs Office',
-		'Unit 1, North Wall Quay',
-		'North Wall',
+		'Unit 1, The CHG Building',
+		'North Wall Quay',
 		'Dublin 1',
+		'D01 Y6H7'
 	);
 	
 	// $pdf->Image('images/TheTasteLogo.png', IMAGE_START_X, IMAGE_START_Y, IMAGE_SIZE, IMAGE_SIZE);
