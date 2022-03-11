@@ -24,6 +24,17 @@ function taste_register_product_meta_box() {
 }
 add_action( 'add_meta_boxes', 'taste_register_product_meta_box' );
 
+function taste_register_order_meta_box() {
+
+	$post_types = array('shop_order');
+
+	foreach($post_types as $p_type) {
+		add_meta_box( 'taste-order-transaction-box', __( 'Order Venue Transactions'), 'taste_display_order_trans_info', $p_type, 'normal', 'high' );
+	}
+
+}
+add_action( 'add_meta_boxes', 'taste_register_order_meta_box' );
+
 /**
  *  Callback to create the product venue metabox
  */
@@ -81,3 +92,29 @@ function taste_save_venue_metabox($post_id) {
 
 }
 add_action('save_post_product', 'taste_save_venue_metabox', 10, 2);
+
+function taste_display_order_trans_info($post_info) {
+	global $wpdb;
+
+	if (property_exists($post_info, 'ID')) {
+		// need to check for redemptions and payments
+		$order_item_rows = $wpdb->get_results($wpdb->prepare("
+		SELECT otrans.* 
+			FROM {$wpdb->prefix}taste_order_transactions otrans
+			WHERE otrans.order_id = %d 
+			AND otrans.trans_type IN ('Redemption', 'Creditor Payment')
+			", $post_info->ID), ARRAY_A
+		);
+		if (count($order_item_rows)) {
+			// display redemptions and payments
+
+			foreach ($order_item_rows as $order_item_row) {
+				?>
+					<p>Order Item Id: <?php echo $order_item_row['order_item_id'] . ' - ' . 
+						$order_item_row['trans_type'] . ' - ' . $order_item_row['trans_entry_timestamp']?></p>
+				<?php
+			}
+		}
+	}
+
+}
