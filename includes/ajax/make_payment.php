@@ -533,11 +533,9 @@ function send_invoice_url_email($venue_id, $payment_info, $venue_info) {
 
 	$invoice_url = TASTE_VENUE_INVOICE_URL . $invoice_get;
 
-	// $to = $venue_email;	
-	$to = "jim.heffner@3sixd.com";
-	$bcc = array("boutilier.ronald@gmail.com");
+	$to = $venue_email;	
 	$from = " The Taste <accounts@TheTaste.ie>";
-	// $bcc = array("accounts@TheTaste.ie", "jfg-digital-limited@inbox.outmin.io");
+	$bcc = array("accounts@TheTaste.ie", "jfg-digital-limited@inbox.outmin.io");
 	
 	$subject = "Payment Made from the Taste";
 	$body = build_email_body($payment_amount, $payment_date, $invoice_url, $venue_name);
