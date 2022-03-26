@@ -91,4 +91,15 @@ body.post-new-php.post-type-post #venue-form-container label {
   padding: 6px;
 }
 
+.order-metabox-venue-transactions-table {
+  width: 98%;
+  border-collapse: collapse;
+}
+
+.order-metabox-venue-transactions-table td,
+.order-metabox-venue-transactions-table th {
+  border: 1px solid black;
+  padding-left: 4px;
+}
+
 /*# sourceMappingURL=thetaste-admin.css.map */
