@@ -50,9 +50,11 @@ function insert_post_venues($post_id, $venue_ids) {
 //  die(); 
 
 	foreach($venue_ids as $venue_id) {
-		$insert_values .= '(%d, %d),';
-		$insert_parms[] = intval($venue_id);
-		$insert_parms[] = $post_id; 
+		if ($venue_id) {
+			$insert_values .= '(%d, %d),';
+			$insert_parms[] = intval($venue_id);
+			$insert_parms[] = $post_id; 
+		}
 	}
 	$insert_values = rtrim($insert_values, ',');
 
