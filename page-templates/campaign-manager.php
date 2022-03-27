@@ -369,7 +369,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 	</button>
 	</a>
 	</footer>
-	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js?v=2.1"></script>
+	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js?v=3.27"></script>
 </body>
 
 </html>
