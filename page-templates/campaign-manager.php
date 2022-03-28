@@ -48,7 +48,13 @@ if ($admin) {
 			'url' => get_page_link(),
 			'active' => false
 		);
-		array_unshift($selection_nav_links, $venue_select_link);
+		array_unshift($selection_nav_links, $venue_select_link);		// get venue name and other info
+		$user_info = get_user_venue_info($venue_id);
+		$venue_name = $user_info['venue_name'];
+		$venue_type = $user_info['venue_type'];
+		$use_new_campaign = $user_info['use_new_campaign'];
+		$venue_voucher_page = $user_info['venue_voucher_page'];
+		$type_desc = $venue_type;
 	} 
 	$display_mode = 'payment';
 } else {
