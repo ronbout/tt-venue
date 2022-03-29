@@ -1161,15 +1161,17 @@ const tasteLoadPaymentByOrdersModal = () => {
     });
 
   // load the submit button for this modal
-  jQuery("#orders-payment-submit").length &&
-    jQuery("#orders-payment-submit")
-      .off("click")
-      .click(function (e) {
+  // jQuery("#orders-payment-submit").length &&
+  //   jQuery("#orders-payment-submit")
+  jQuery("#orders-payment-add-form").length &&
+    jQuery("#orders-payment-add-form")
+      .off("submit")
+      .submit(function (e) {
         e.preventDefault();
-        const $submitBtn = jQuery(this);
-        const $modal = $submitBtn.closest(".modal");
-        const formId = $submitBtn.attr("form");
-        const $paymentForm = jQuery(`#${formId}`);
+        const $paymentForm = jQuery(this);
+        const $modal = $paymentForm.closest(".modal");
+        // const formId = $submitBtn.attr("form");
+        // const $paymentForm = jQuery(`#${formId}`);
         let paymentData = new FormData($paymentForm[0]);
         const deleteMode = false;
         // get payment counts for both All Payments (if exists) and product Payments
