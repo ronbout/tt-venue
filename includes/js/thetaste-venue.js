@@ -106,6 +106,9 @@ const buildPaymentOrders = () => {
     editOrigPayDate: "",
     editOrigPayStatus: "",
     paymentStatus: 1,
+    paymentComment: "",
+    commentVisibility: 1,
+    attachInvoice: 1,
     totalQty: 0,
     productList: {},
   };
@@ -127,7 +130,7 @@ const buildPaymentOrders = () => {
   jQuery("#orders-payment-orig-amt").val("");
   jQuery("#orders-payment-orig-date").val("");
   jQuery("#orders-payment-date").val(getFormattedDate());
-  setOrdersPaymentStatusRadio(0);
+  jQuery("#select-orders-pay-total").text("0.00");
 };
 
 const displayOrderPaymentInfo = () => {
@@ -154,6 +157,12 @@ const displayOrderPaymentInfo = () => {
   tasteVenue.paymentOrders.totalQty = totalQty;
   jQuery("#select-orders-pay-total").text(financial(totalPayments));
   jQuery("#payAllSelected").attr("disabled", !totalPayments);
+  jQuery("#orders-payment-comment").text(
+    tasteVenue.paymentOrders.paymentComment
+  );
+  setOrdersPaymentStatusRadio(tasteVenue.paymentOrders.paymentStatus);
+  setOrdersCommentsVisibleCheck(tasteVenue.paymentOrders.commentVisibility);
+  setOrdersAttachInvCheck(tasteVenue.paymentOrders.attachInvoice);
 };
 
 const setupToggleButtons = () => {
@@ -465,11 +474,6 @@ const tasteMakePayment = (
         jQuery("#paySelectedModal").modal("hide");
         jQuery("#payAllSelected").html("Pay selected offers");
         jQuery("#orders-payment-submit").html("Make payment");
-        jQuery("#orders-payment-orig-amt").val(0);
-        jQuery("#orders-payment-orig-date").val("");
-        jQuery("#orders-payment-date").val(getFormattedDate());
-        jQuery("#select-orders-pay-total").text("0.00");
-        setOrdersPaymentStatusRadio(1);
         tasteCloseMsg();
         if (jQuery("#taste-product-id").length) {
           // need to rerun the load vouchers routine as easiest approach to
@@ -481,6 +485,11 @@ const tasteMakePayment = (
         }
       }
 
+      if (jQuery(".edit-pbo-btn").length) {
+        jQuery(".edit-pbo-btn").removeClass("fa-disabled");
+        jQuery(".delete-pbo-btn").removeClass("fa-disabled");
+      }
+      jQuery("#historical-pbo-btn").removeClass("fa-disabled");
       jQuery(".delete-pbo-mode").hide();
       jQuery(".add-edit-pbo-mode").show();
     },
@@ -521,6 +530,12 @@ const tasteEditPBO = (paymentId) => {
         paymentOrderInfo.editOrigPayStatus;
       tasteVenue.paymentOrders.paymentStatus =
         paymentOrderInfo.editOrigPayStatus;
+      tasteVenue.paymentOrders.paymentComment =
+        paymentOrderInfo.editOrigPayComment;
+      tasteVenue.paymentOrders.commentVisibility =
+        paymentOrderInfo.editCommentVisibleVenues;
+      tasteVenue.paymentOrders.attachInvoice =
+        paymentOrderInfo.editAttachVatInvoice;
       const editProdIds = Object.keys(paymentOrderInfo.productList);
       const venueProdIds = Object.keys(tasteVenue.paymentOrders.productList);
       venueProdIds.forEach((venueProdId) => {
@@ -539,7 +554,6 @@ const tasteEditPBO = (paymentId) => {
         paymentOrderInfo.editOrigPayStatus
       );
       jQuery("#orders-payment-date").val(paymentOrderInfo.editOrigPayDate);
-      setOrdersPaymentStatusRadio(paymentOrderInfo.editOrigPayStatus);
       jQuery("#orders-payment-submit").html("Update payment");
       if (jQuery(".edit-pbo-btn").length) {
         jQuery(".edit-pbo-btn").addClass("fa-disabled");
@@ -591,6 +605,16 @@ const tasteDeletePBO = (paymentId) => {
       tasteVenue.paymentOrders.totalNetPayable =
         paymentOrderInfo.totalNetPayable;
       tasteVenue.paymentOrders.totalQty = paymentOrderInfo.totalQty;
+      tasteVenue.paymentOrders.editOrigPayStatus =
+        paymentOrderInfo.editOrigPayStatus;
+      tasteVenue.paymentOrders.paymentStatus =
+        paymentOrderInfo.editOrigPayStatus;
+      tasteVenue.paymentOrders.paymentComment =
+        paymentOrderInfo.editOrigPayComment;
+      tasteVenue.paymentOrders.commentVisibility =
+        paymentOrderInfo.editCommentVisibleVenues;
+      tasteVenue.paymentOrders.attachInvoice =
+        paymentOrderInfo.editAttachVatInvoice;
       const delProdIds = Object.keys(paymentOrderInfo.productList);
       const venueProdIds = Object.keys(tasteVenue.paymentOrders.productList);
       venueProdIds.forEach((venueProdId) => {
@@ -609,7 +633,6 @@ const tasteDeletePBO = (paymentId) => {
         paymentOrderInfo.editOrigPayStatus
       );
       jQuery("#orders-payment-date").val(paymentOrderInfo.editOrigPayDate);
-      setOrdersPaymentStatusRadio(paymentOrderInfo.editOrigPayStatus);
       jQuery("#orders-payment-submit").html("Update payment");
       if (jQuery(".edit-pbo-btn").length) {
         jQuery(".edit-pbo-btn").addClass("fa-disabled");
@@ -672,6 +695,9 @@ const tasteHistoricalPBO = (venueId) => {
       tasteVenue.paymentOrders.totalQty = paymentOrderInfo.totalQty;
       tasteVenue.paymentOrders.editOrigPayStatus = "";
       tasteVenue.paymentOrders.paymentStatus = paymentOrderInfo.payStatus;
+      tasteVenue.paymentOrders.paymentComment = "";
+      tasteVenue.paymentOrders.commentVisibility = 0;
+      tasteVenue.paymentOrders.attachInvoice = 0;
       const editProdIds = Object.keys(paymentOrderInfo.productList);
       const venueProdIds = Object.keys(tasteVenue.paymentOrders.productList);
       venueProdIds.forEach((venueProdId) => {
@@ -690,7 +716,6 @@ const tasteHistoricalPBO = (venueId) => {
       jQuery("#orders-payment-orig-date").val(dateStr);
       jQuery("#orders-payment-orig-status").val(0);
       jQuery("#orders-payment-date").val(dateStr);
-      setOrdersPaymentStatusRadio(paymentOrderInfo.payStatus);
       jQuery("#orders-payment-submit").html("Make Historical PBO");
       if (jQuery(".edit-pbo-btn").length) {
         jQuery(".edit-pbo-btn").addClass("fa-disabled");
@@ -736,6 +761,16 @@ const setOrdersPaymentStatusRadio = (payStatus) => {
   }
 
   jQuery(radioId).prop("checked", true);
+};
+
+const setOrdersCommentsVisibleCheck = (visibilityStatus) => {
+  let checkVal = visibilityStatus ? true : false;
+  jQuery("#orders-payment-comment-visible-checkbox").prop("checked", checkVal);
+};
+
+const setOrdersAttachInvCheck = (attachInvoice) => {
+  let checkVal = attachInvoice ? true : false;
+  jQuery("#orders-payment-attach-invoice-checkbox").prop("checked", checkVal);
 };
 
 const updateOfferCalcs = (respObj, productId) => {

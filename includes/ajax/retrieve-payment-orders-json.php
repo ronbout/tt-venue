@@ -23,7 +23,7 @@ function retrieve_payment_orders_info_json($payment_id) {
 	$sql = "
 			SELECT  pprods.product_id, pay.id AS payment_id, pay.payment_date as timestamp, pprods.product_id as pid, 
 				pay.amount as total_amount, pprods.amount as product_amount, pay.comment, pay.status,
-				pay.payment_date,
+				pay.payment_date, pay.comment_visible_venues, pay.attach_vat_invoice,
 				GROUP_CONCAT(plook.order_item_id) as order_item_ids,
 				GROUP_CONCAT(plook.product_qty) as order_item_qty,
 				GROUP_CONCAT(plook.order_id) as order_ids
@@ -58,6 +58,9 @@ function process_payment_info($payment_rows, $payment_id) {
 	$product_list = array();
 	$orig_payment_date = date('Y-m-d', strtotime($payment_rows[0]['payment_date']));
 	$orig_payment_status = $payment_rows[0]['status'];
+	$orig_payment_comment = $payment_rows[0]['comment'];
+	$orig_comment_visible_venues = $payment_rows[0]['comment_visible_venues'];
+	$orig_attach_vat_invoice = $payment_rows[0]['attach_vat_invoice'];
 
 	foreach($payment_rows as $payment_row) {
 		$product_id = $payment_row['product_id'];
@@ -95,6 +98,9 @@ function process_payment_info($payment_rows, $payment_id) {
 		'editPaymentId' => $payment_id,
 		'editOrigPayDate' => $orig_payment_date,
 		'editOrigPayStatus' => $orig_payment_status,
+		'editOrigPayComment' => $orig_payment_comment,
+		'editCommentVisibleVenues' => $orig_comment_visible_venues,
+		'editAttachVatInvoice' => $orig_attach_vat_invoice,
 		'totalQty' => $total_qty,
 		'productList' => $product_list,
 	);
