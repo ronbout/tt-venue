@@ -1437,8 +1437,8 @@ const formatDate = (dt) => {
   let year = dt.getFullYear();
   let month = dt.getMonth() + 1;
   let dateOfMonth = dt.getDate();
-  month = month.length > 1 ? month : "0" + month;
-  dateOfMonth = dateOfMonth.length > 1 ? dateOfMonth : "0" + dateOfMonth;
+  month = month > 9 ? month : "0" + month;
+  dateOfMonth = dateOfMonth > 9 ? dateOfMonth : "0" + dateOfMonth;
   return `${year}-${month}-${dateOfMonth}`;
 };
 
