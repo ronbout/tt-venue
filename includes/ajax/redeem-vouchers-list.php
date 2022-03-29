@@ -22,7 +22,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 				bf.meta_value AS b_fname,
 				bl.meta_value AS b_lname,
 				be.meta_value AS b_email,
-				poix.payment_id,
+				poix.payment_id, pay.payment_date, pay.status as payment_status,
 				i.order_id, i.order_item_id as itemid, i.downloaded as downloaded,i.paid as paid
 			FROM " . $wpdb->prefix . "wc_order_product_lookup wclook
 			JOIN " . $wpdb->prefix . "woocommerce_order_itemmeta im ON im.order_item_id = wclook.order_item_id
@@ -33,6 +33,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 			LEFT JOIN " . $wpdb->prefix . "postmeta bl ON bl.post_id = wclook.order_id
 			LEFT JOIN " . $wpdb->prefix . "postmeta be ON be.post_id = wclook.order_id
 			LEFT JOIN " . $wpdb->prefix . "taste_venue_payment_order_item_xref poix ON poix.order_item_id = wclook.order_item_id
+			LEFT JOIN " . $wpdb->prefix . "taste_venue_payment pay ON pay.id = poix.payment_id
 			WHERE im.meta_key = '_qty'
 			AND bf.meta_key = '_billing_first_name'
 			AND bl.meta_key = '_billing_last_name'
@@ -385,6 +386,7 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 	$action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3';
 	$payment_due = !$order_item_info->payment_id && $order_item_info->downloaded === '1';
 	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan);
+	$row_tooltip_title = '';
 	if ('0' == $order_item_info->downloaded) {
 		if ('N' == $expired_val || $admin) {
 			$row_status_class = ' or-display-unredeemed';
@@ -394,11 +396,20 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 	}	elseif ($payment_due) {
 		$row_status_class = ' or-display-pay-due';
 	} else {
-		if ($order_item_info->payment_id !== $edit_payment_id) {
+		$payment_id = $order_item_info->payment_id;
+		if ($payment_id !== $edit_payment_id) {
 			$row_status_class = ' or-display-paid';
 		} else {
 			$row_status_class = ' or-edit-mode-display-paid';
 		}
+		$row_tooltip_title = 'title="';
+		if (1 == $order_item_info->payment_status) {
+			$row_tooltip_title .= "Payment ID: $payment_id &#10;";
+			$row_tooltip_title .= "Payment Date: " . explode(' ', $order_item_info->payment_date)[0];
+		} else {
+			$row_tooltip_title .= "Archived Payment";
+		}
+		$row_tooltip_title .= '"';
 	}
 	?>
 	<tr  id="order-table-row-<?php echo $order_item_info->itemid ?>"
@@ -407,6 +418,8 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 			data-order-item-id="<?php echo $order_item_info->itemid ?>"
 			data-order-net-payable="<?php echo $net_payable_order_item ?>"
 			class="<?php echo $row_status_class ?>"
+			<?php echo $row_tooltip_title ?>
+
 	>
 		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center  redeem-mode-only">
 			<?php 
