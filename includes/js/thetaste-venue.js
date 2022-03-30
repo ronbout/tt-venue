@@ -255,6 +255,8 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
         updateOfferCalcs(respObj, productId);
         updateVenueCalcs(respObj, false);
         tasteLoadVoucherPaymentButtons();
+
+        jQuery("#checkbox-all").prop("checked", false);
         tasteCloseMsg();
       }
     },

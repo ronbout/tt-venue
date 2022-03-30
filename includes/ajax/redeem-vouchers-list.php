@@ -285,14 +285,14 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	if (count($order_rows)) {
 				?>
 				<?php
-					if ($expired_val === 'N') {
+					if ($expired_val === 'N' || $admin) {
 						echo '<button class="btn btn-success order-redeem-checked-btn my-2" disabled >Redeem Checked</button>';
 					}
 				?>
 				<div class="table-fixed-wrapper">
 					<div id="voucher-table-container" class="table-fixed-container">
 						<table class="table table-striped table-bordered table-fixed">
-							<?php display_order_table_heading($order_rows, $expired_val) ?>
+							<?php display_order_table_heading($order_rows, $expired_val, $admin) ?>
 
 								<tbody id="voucher-table-body">
 
@@ -333,13 +333,13 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	return $order_totals;
 }
 
-function display_order_table_heading($order_rows, $expired_val) {
+function display_order_table_heading($order_rows, $expired_val, $admin) {
 	$show_payment_check_all = check_for_payments($order_rows);
 	?>
 	<thead>
 		<th scope="col" class="redeem-mode-only">
 			<?php 
-				if ($expired_val === 'N' && in_array('0', array_column($order_rows, 'downloaded'))) {
+				if (($expired_val === 'N' || $admin) && in_array('0', array_column($order_rows, 'downloaded'))) {
 					?>
 						<input type="checkbox" id="checkbox-all">
 					<?php
