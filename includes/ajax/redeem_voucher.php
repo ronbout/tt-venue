@@ -131,6 +131,7 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 
 	$hidden_payment_values = "
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
+	<input type='hidden' id='taste-balance-due' value='$balance_due'>
 	";
 
 	// make adjustments for the totals in the summary section

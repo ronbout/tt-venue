@@ -808,6 +808,9 @@ const updateVenueCalcs = (respObj, paymentOnly = false) => {
     jQuery("#summary-hidden-payment-values").html(
       respObj.sumHiddenPaymentValues
     );
+  respObj.hiddenPaymentValues &&
+    jQuery("#hidden-payment-values").html(respObj.hiddenPaymentValues);
+
   if (paymentOnly) {
     return;
   }
