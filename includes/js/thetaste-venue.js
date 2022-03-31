@@ -870,7 +870,9 @@ const tasteUpdateProductRows = (prodList) => {
     let $productRow = jQuery(`#product-table-row-${prodId}`);
     $productRow.data("paidamount", prodInfo["total_paid"]);
     $productRow.data("balancedue", prodInfo["balance_due"]);
-    jQuery(`#balance-due-display-${prodId}`).html(prodInfo["balance_due"]);
+    jQuery(`#balance-due-display-${prodId}`).html(
+      financial(prodInfo["balance_due"])
+    );
     jQuery(`#selected-pay-amt-${prodId}`).text("0.00");
   }
 };

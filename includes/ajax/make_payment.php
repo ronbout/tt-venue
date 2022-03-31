@@ -138,33 +138,59 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$payment_line = '';
 	$update_cur_prod = 0;
 	$cur_prod_ord_list = [];
-	if (count($cur_prod_info) && false) {
+
+	/**
+	 * ****	THE COMMENTED SECTION WAS ORIGINAL CODE AND
+	 * ****	IS NO LONGER RUNNING.  I HAVE KEPT IT IN 
+	 * ****	CASE IT BECOMES USEFUL AGAIN IN THE FUTURE
+	 * *		It calculated the values for the product being paid.
+	 * 			With PBO, multiple products must now be calculated.
+	 * NOTE:	A few lines are being kept so that the return 
+	 * 				values are accurate, even though the reload
+	 *				of the voucher section means those values
+	 *				not currently being used.  Again, this
+	 *				is to ease future maintenance if that 
+	 *				reload is not done.
+	 */
+
+	if (count($cur_prod_info)) {
 		$product_id = array_keys($cur_prod_info)[0];
-		$cur_prod_info = $cur_prod_info[$product_id];
-		if (in_array($product_id, array_keys($product_order_info))) {
-			$update_cur_prod = 1;
-			if ($edit_mode === 'INSERT') {
-				$prod_payment_cnt += 1;
-			} elseif ($edit_mode === 'DELETE') {
-				$prod_payment_cnt -= 1;
-			}
 		// need to get the payment amount for the displayed product only
 		$cur_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? $product_order_info[$product_id]['amount'] : 0;
-		
-		$total_paid = $cur_prod_info['total_paid'] + $cur_payment_diff;
-		$balance_due = $cur_prod_info['balance_due'] - $cur_payment_diff;
-		// for the payment line at the bottom, where 'amount' needs to 
-		// only for that product and total amount is entire payment
-		$disp_payment_info = $payment_info;
-		$disp_payment_info['product_id'] = $product_id;
-		$disp_payment_info['amount'] = $cur_payment_diff;
-		$disp_payment_info['total_amount'] = $payment_info['amount'];
-
-		$cur_prod_ord_list = array_column($product_order_info[$product_id]['order_list'], 'orderItemId');
-	
-		$payment_line = 'DELETE' === $edit_mode ? '' : disp_payment_line($disp_payment_info, $admin, $commission_value);
-		}
+		$total_paid = $cur_prod_info[$product_id]['total_paid'] + $cur_payment_diff;
+		$balance_due = $cur_prod_info[$product_id]['balance_due'] - $cur_payment_diff;
 	}
+	// if (count($cur_prod_info) && false) {
+	// 	$product_id = array_keys($cur_prod_info)[0];
+	// 	$cur_prod_info = $cur_prod_info[$product_id];
+	// 	if (in_array($product_id, array_keys($product_order_info))) {
+	// 		$update_cur_prod = 1;
+	// 		if ($edit_mode === 'INSERT') {
+	// 			$prod_payment_cnt += 1;
+	// 		} elseif ($edit_mode === 'DELETE') {
+	// 			$prod_payment_cnt -= 1;
+	// 		}
+	// 	// need to get the payment amount for the displayed product only
+	// 	$cur_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? $product_order_info[$product_id]['amount'] : 0;
+		
+	// 	$total_paid = $cur_prod_info['total_paid'] + $cur_payment_diff;
+	// 	$balance_due = $cur_prod_info['balance_due'] - $cur_payment_diff;
+	// 	// for the payment line at the bottom, where 'amount' needs to 
+	// 	// only for that product and total amount is entire payment
+	// 	$disp_payment_info = $payment_info;
+	// 	$disp_payment_info['product_id'] = $product_id;
+	// 	$disp_payment_info['amount'] = $cur_payment_diff;
+	// 	$disp_payment_info['total_amount'] = $payment_info['amount'];
+
+	// 	$cur_prod_ord_list = array_column($product_order_info[$product_id]['order_list'], 'orderItemId');
+	
+	// 	$payment_line = 'DELETE' === $edit_mode ? '' : disp_payment_line($disp_payment_info, $admin, $commission_value);
+	// 	}
+	// }
+	/**
+	 * *** END OF OLD CURRENT PROD CALCULATION CODE
+	 */
+
 	// now similar to above but for all included products and the 
 	// display of the products table and All Transactions
 	$all_payment_lines = '';
@@ -226,6 +252,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 
 	$hidden_payment_values = "
 	<input type='hidden' id='taste-total-paid' value='$total_paid'>
+	<input type='hidden' id='taste-balance-due' value='$balance_due'>
 	";
 	
 	// make adjustments for the totals in the summary section
