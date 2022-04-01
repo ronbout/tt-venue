@@ -154,9 +154,18 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	 */
 
 	if (count($cur_prod_info)) {
-		$product_id = array_keys($cur_prod_info)[0];
 		// need to get the payment amount for the displayed product only
-		$cur_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? $product_order_info[$product_id]['amount'] : 0;
+		$product_id = array_keys($cur_prod_info)[0];
+		$amount = $product_order_info[$product_id]['amount'];
+		if ('INSERT' == $edit_mode) {
+			$cur_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? $amount : 0;
+		} elseif ('UPDATE' == $edit_mode) {
+			$orig_prod_amount = isset($payment_orig_prods[$product_id]) ? $payment_orig_prods[$product_id]['amount'] : 0;
+			$cur_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? $amount - $orig_prod_amount : 0;
+		} else {
+			$cur_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? - $amount : 0;
+		}
+
 		$total_paid = $cur_prod_info[$product_id]['total_paid'] + $cur_payment_diff;
 		$balance_due = $cur_prod_info[$product_id]['balance_due'] - $cur_payment_diff;
 	}
@@ -201,7 +210,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		if ('INSERT' == $edit_mode) {
 			$prod_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? $amount : 0;
 		} elseif ('UPDATE' == $edit_mode) {
-			$orig_prod_amount = isset($payment_orig_prods[$prod_id]) ? $payment_orig_prods[$prod_id][amount] : 0;
+			$orig_prod_amount = isset($payment_orig_prods[$prod_id]) ? $payment_orig_prods[$prod_id]['amount'] : 0;
 			$prod_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? $amount - $orig_prod_amount : 0;
 		} else {
 			$prod_payment_diff = TASTE_PAYMENT_STATUS_PAID == $payment_status ? - $amount : 0;
