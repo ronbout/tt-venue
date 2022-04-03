@@ -210,3 +210,18 @@ function get_user_venue_info($venue_id = null) {
 
 	return compact('user', 'role', 'venue_id', 'venue_name', 'venue_type', 'use_new_campaign', 'venue_voucher_page', 'venue_type_desc', 'venue_row', 'cutoff_date');
 }
+
+/**
+ *	replacement for ceil() if you only want it to 
+ *	to consider $dec_prec number of decimals.  
+ *	Ex:  ceil(4.0000001) = 5
+ *			 ceiling(4.0000001) = 4
+ */ 
+function ceiling($nbr, $dec_prec=0) {
+  if (0 == $dec_prec) {
+    return ceil($nbr);
+  }
+  $ret_nbr = (int) $nbr * pow(10, $dec_prec);
+  $ret_nbr = $ret_nbr / pow(10, $dec_prec);
+  return ceil($ret_nbr);
+}
