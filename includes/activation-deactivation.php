@@ -17,7 +17,7 @@ function taste_add_venue_table() {
 	$user_table = $wpdb->prefix.'users';
 
 	$sql = "CREATE TABLE IF NOT EXISTS $venue_table (
-			venue_id BIGINT(20) UNSIGNED NOT NULL,
+			venue_id BIGINT UNSIGNED NOT NULL,
 			name VARCHAR(80) NOT NULL,
 			description VARCHAR(255),
 			address1 VARCHAR(120),
@@ -29,10 +29,10 @@ function taste_add_venue_table() {
 			phone VARCHAR(40),
 			venue_type ENUM ('Restaurant', 'Bar', 'Hotel', 'Product'),
 			voucher_pct FLOAT,
-			paid_member TINYINT(1) ZEROFILL NOT NULL DEFAULT 0, 
+			paid_member TINYINT ZEROFILL NOT NULL DEFAULT 0, 
 			member_renewal_date DATE,
 			membership_cost DECIMAL(10,2),
-			use_new_campaign TINYINT(1) NOT NULL DEFAULT 0,
+			use_new_campaign TINYINT NOT NULL DEFAULT 0,
 			historical_cutoff_date DATE NULL DEFAULT NULL,
 			PRIMARY KEY (venue_id),
 			UNIQUE KEY (name),
@@ -50,8 +50,8 @@ function taste_add_venue_product_table() {
 	$products_table = $wpdb->prefix.'wc_product_meta_lookup';
 
 	$sql = "CREATE TABLE IF NOT EXISTS $venue_products_table (
-			venue_id BIGINT(20) UNSIGNED NOT NULL,
-			product_id BIGINT(20) NOT NULL,
+			venue_id BIGINT UNSIGNED NOT NULL,
+			product_id BIGINT NOT NULL,
 			PRIMARY KEY  (venue_id, product_id),
 			UNIQUE KEY (product_id)
 		)";
@@ -66,8 +66,8 @@ function taste_add_venues_posts_table() {
 	$venue_table = $wpdb->prefix.'taste_venue';
 
 	$sql = "CREATE TABLE IF NOT EXISTS $venues_posts_table (
-			venue_id BIGINT(20) UNSIGNED NOT NULL,
-			post_id BIGINT(20) UNSIGNED NOT NULL,
+			venue_id BIGINT UNSIGNED NOT NULL,
+			post_id BIGINT UNSIGNED NOT NULL,
 			PRIMARY KEY  (venue_id, post_id),
 			KEY (post_id)
 		)";
@@ -81,11 +81,11 @@ function taste_add_venue_order_redemption_audit_table() {
 	$venue_order_redemption_table = $wpdb->prefix.'taste_venue_order_redemption_audit';
 
 	$sql = "CREATE TABLE IF NOT EXISTS $venue_order_redemption_table (
-		id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-		order_item_id BIGINT(20) NOT NULL,
+		id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+		order_item_id BIGINT NOT NULL,
 		timestamp TIMESTAMP NOT NULL DEFAULT current_timestamp(),
-		user_id BIGINT(20) UNSIGNED NOT NULL,
-		redemption_value TINYINT(1) NOT NULL,
+		user_id BIGINT UNSIGNED NOT NULL,
+		redemption_value TINYINT NOT NULL,
 		PRIMARY KEY  (id),
 		INDEX order_item_id (order_item_id)
 	)";
@@ -101,11 +101,11 @@ function taste_add_venue_payment_audit_table() {
 
 	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_audit_table (
 		id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-		payment_id INT(11) NOT NULL,
+		payment_id INT NOT NULL,
 		entry_timestamp TIMESTAMP NOT NULL DEFAULT current_timestamp(),
 		prev_payment_timestamp TIMESTAMP NULL DEFAULT '0000-00-00 00:00:00',
 		payment_timestamp TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
-		user_id BIGINT(20) UNSIGNED NOT NULL,
+		user_id BIGINT UNSIGNED NOT NULL,
 		action ENUM('INSERT','UPDATE','DELETE') NOT NULL,
 		prev_amount DECIMAL(10,2) NULL DEFAULT NULL,
 		amount DECIMAL(10,2) NULL DEFAULT NULL,
@@ -127,14 +127,14 @@ function taste_add_payment_tables() {
 	$venue_payment_order_item_table = $wpdb->prefix.'taste_venue_payment_order_item_xref';
 	
 	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_table (
-		`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+		`id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 		`payment_date` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
-		`venue_id` BIGINT(20) NULL DEFAULT NULL,
+		`venue_id` BIGINT NULL DEFAULT NULL,
 		`amount` DECIMAL(10,2) NOT NULL,
 		`comment` VARCHAR(400) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
-		`comment_visible_venues` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1',
-		`attach_vat_invoice` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1',
-		`status` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+		`comment_visible_venues` TINYINT UNSIGNED NOT NULL DEFAULT '1',
+		`attach_vat_invoice` TINYINT UNSIGNED NOT NULL DEFAULT '1',
+		`status` TINYINT UNSIGNED NOT NULL DEFAULT '0',
 		PRIMARY KEY (`payment_id`) USING BTREE,
 		INDEX `venue_id` (`venue_id`) USING BTREE,
 		INDEX `payment_id_venue_id` (`payment_id`, `venue_id`) USING BTREE
@@ -142,8 +142,8 @@ function taste_add_payment_tables() {
 	dbDelta($sql);
 	
 	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_products_table (
-		`payment_id` BIGINT(20) UNSIGNED NOT NULL,
-		`product_id` BIGINT(20) UNSIGNED NOT NULL,
+		`payment_id` BIGINT UNSIGNED NOT NULL,
+		`product_id` BIGINT UNSIGNED NOT NULL,
 		`amount` DECIMAL(10,2) NOT NULL,
 		PRIMARY KEY (`payment_id`, `product_id`) USING BTREE,
 		INDEX `product_id` (`product_id`) USING BTREE,
@@ -154,8 +154,8 @@ function taste_add_payment_tables() {
 	dbDelta($sql);
 
 	$sql = "CREATE TABLE IF NOT EXISTS $venue_payment_order_item_table (
-		payment_id BIGINT(20) UNSIGNED NOT NULL,
-		order_item_id BIGINT(20) UNSIGNED NOT NULL,
+		payment_id BIGINT UNSIGNED NOT NULL,
+		order_item_id BIGINT UNSIGNED NOT NULL,
 		PRIMARY KEY (payment_id, order_item_id),
 		INDEX order_item_id (order_item_id) USING BTREE,
 		CONSTRAINT `FK_wp_taste_venue_payment_order_item_xref_wp_taste_venue_payment` 
