@@ -221,7 +221,7 @@ function ceiling($nbr, $dec_prec=0) {
   if (0 == $dec_prec) {
     return ceil($nbr);
   }
-  $ret_nbr = (int) $nbr * pow(10, $dec_prec);
+  $ret_nbr = (int) ($nbr * pow(10, $dec_prec));
   $ret_nbr = $ret_nbr / pow(10, $dec_prec);
   return ceil($ret_nbr);
 }

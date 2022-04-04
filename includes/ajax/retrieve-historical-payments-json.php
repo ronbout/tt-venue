@@ -99,7 +99,7 @@ function calc_needed_orders($orig_payment_rows, $historical_payment_rows) {
 		// if payments don't match order net payable's evenly, would rather underpay and have to
 		// make an extra adjustment payment  than overpay and risk never getting that money back.
 		// $historical_order_cnt = (int) round($payment_amount / $net_payable_per_order);
-		$historical_order_cnt = (int) ceiling($payment_amount / $net_payable_per_order, 3);
+		$historical_order_cnt = (int) ceiling($payment_amount / $net_payable_per_order, 5);
 
 		$prev_historical_order_cnt = isset($historical_payment_rows[$prod_id]) ? $historical_payment_rows[$prod_id]['order_cnt'] : 0;
 
