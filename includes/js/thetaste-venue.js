@@ -520,7 +520,6 @@ const tasteEditPBO = (paymentId) => {
     },
     success: function (responseJson) {
       tasteCloseMsg();
-      console.log(responseJson);
       const paymentOrderInfo = JSON.parse(responseJson);
 
       tasteVenue.paymentOrders.editPaymentId = paymentOrderInfo.editPaymentId;
@@ -549,6 +548,25 @@ const tasteEditPBO = (paymentId) => {
       });
 
       displayOrderPaymentInfo();
+
+      // if status = 2, visible = 0, and attach inv = 0, then
+      // it is an Historical PBO and those fields should be disabled
+      if (
+        2 == paymentOrderInfo.editOrigPayStatus &&
+        !paymentOrderInfo.editAttachVatInvoice &&
+        !paymentOrderInfo.editCommentVisibleVenues
+      ) {
+        jQuery("#orders-payment-comment-visible-checkbox").prop(
+          "disabled",
+          true
+        );
+        jQuery("#orders-payment-attach-invoice-checkbox").prop(
+          "disabled",
+          true
+        );
+        jQuery(".payment-status-radio").prop("disabled", true);
+      }
+
       jQuery("#payAllSelected").html(`Preview Edit #${paymentId}`);
       jQuery("#paySelectedModalLabel").html(`Edit #${paymentId}`);
       jQuery("#orders-payment-id").val(paymentId);
@@ -722,6 +740,9 @@ const tasteHistoricalPBO = (venueId) => {
       });
 
       displayOrderPaymentInfo();
+      jQuery("#orders-payment-comment-visible-checkbox").prop("disabled", true);
+      jQuery("#orders-payment-attach-invoice-checkbox").prop("disabled", true);
+      jQuery(".payment-status-radio").prop("disabled", true);
 
       let dateStr = getFormattedDate();
       jQuery("#payAllSelected").html(`Preview Payment`);
@@ -1223,6 +1244,16 @@ const tasteLoadPaymentByOrdersModal = () => {
       .off("submit")
       .submit(function (e) {
         e.preventDefault();
+        // 3 inputs may have been set to disabled during Historical PBO
+        jQuery("#orders-payment-comment-visible-checkbox").prop(
+          "disabled",
+          false
+        );
+        jQuery("#orders-payment-attach-invoice-checkbox").prop(
+          "disabled",
+          false
+        );
+        jQuery(".payment-status-radio").prop("disabled", false);
         const $paymentForm = jQuery(this);
         const $modal = $paymentForm.closest(".modal");
         // const formId = $submitBtn.attr("form");
@@ -1249,6 +1280,16 @@ const tasteLoadPaymentByOrdersModal = () => {
       .off("click")
       .click(function (e) {
         e.preventDefault();
+        // 3 inputs may have been set to disabled during Historical PBO
+        jQuery("#orders-payment-comment-visible-checkbox").prop(
+          "disabled",
+          false
+        );
+        jQuery("#orders-payment-attach-invoice-checkbox").prop(
+          "disabled",
+          false
+        );
+        jQuery(".payment-status-radio").prop("disabled", false);
         const editId = tasteVenue.paymentOrders.editPaymentId;
         if (editId) {
           jQuery("#response-modal-msg").html(

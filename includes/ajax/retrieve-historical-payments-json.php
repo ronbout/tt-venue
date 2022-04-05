@@ -95,11 +95,9 @@ function calc_needed_orders($orig_payment_rows, $historical_payment_rows) {
 	foreach ($orig_payment_rows as $prod_id => $pay_row) {
 		$net_payable_per_order = round(calc_net_payable($pay_row['price'], $pay_row['vat_val'], $pay_row['comm_val'], 1), 2);
 		$payment_amount = $pay_row['product_amount'];
-		// decided that ceiling (includes/functions.php) is better than round as it prevents possibility of overpayment
-		// if payments don't match order net payable's evenly, would rather underpay and have to
-		// make an extra adjustment payment  than overpay and risk never getting that money back.
+		// use floor instead of INT so that only fully paid orders get marked as paid
 		// $historical_order_cnt = (int) round($payment_amount / $net_payable_per_order);
-		$historical_order_cnt = (int) ceiling($payment_amount / $net_payable_per_order, 5);
+		$historical_order_cnt = (int) floor($payment_amount / $net_payable_per_order);
 
 		$prev_historical_order_cnt = isset($historical_payment_rows[$prod_id]) ? $historical_payment_rows[$prod_id]['order_cnt'] : 0;
 
