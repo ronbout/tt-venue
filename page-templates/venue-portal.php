@@ -93,9 +93,7 @@ if (!$venue_id) {
 			</div>
 	</div>
 	<div class="text-center">
-		<a href="<?php echo get_site_url() ?>">
-				<img src="<?php echo TASTE_VENUE_UPLOADS_BASE_URL ?>/2017/12/thetaste-site-homepage-logo5.png" alt="homepage_logo">
-		</a>
+		<img src="<?php echo TASTE_PLUGIN_URL ?>assets/img/taste_logo_large_circle.jpeg" width="320" alt="homepage_logo">
 	</div>
 	<br><br>
 	<div class="text-center">
