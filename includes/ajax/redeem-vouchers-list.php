@@ -155,18 +155,20 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 	$venue_payment_list = $wpdb->get_results($wpdb->prepare("
 			SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, 
 				pprods.amount, pay.comment, pay.amount as total_amount,
-				pay.comment_visible_venues, pay.status, pay.attach_vat_invoice
+				pay.comment_visible_venues, pay.status, pay.attach_vat_invoice,
+				GROUP_CONCAT(pox.order_item_id) as order_item_ids
 			FROM {$wpdb->prefix}taste_venue_payment pay
-			JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
-			JOIN {$wpdb->prefix}taste_venue_products vprods on pprods.product_id = vprods.product_id 
+				JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
+				JOIN {$wpdb->prefix}taste_venue_products vprods on pprods.product_id = vprods.product_id 
+				LEFT JOIN {$wpdb->prefix}taste_venue_payment_order_item_xref pox ON pox.payment_id = pay.id
 			WHERE vprods.venue_id = %d
 				AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
+			GROUP BY pay.id
 			ORDER BY pay.payment_date ASC ", $venue_id), ARRAY_A);
 
 	$filtered_payment_list = array_filter($venue_payment_list, function ($pay_row) use ($product_id) {
 		return $pay_row['pid'] == $product_id;
 	});
-
 
 	?>
 	<div class=" collapse-container payment_transaction mt-5">

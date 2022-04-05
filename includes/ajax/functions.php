@@ -41,6 +41,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 	$show_comment_venue = $payment['comment_visible_venues'];
 	$disp_comment = (empty($comment) || (! $show_comment_venue && ! $admin)) ? "Payment" : $comment;
 	$disp_invoice = $payment['attach_vat_invoice'];
+	$order_list = $payment['order_item_ids'];
 	ob_start();
 	?>
 		<tr id="pay-<?php echo $payment['id'] ?>">
@@ -64,7 +65,7 @@ function disp_payment_line($payment, $admin, $commission_val) {
 			<td>
 				<?php echo $admin ? $comment : $disp_comment	?>
 			</td>
-			<?php if ($admin) {	?>
+			<?php if ($admin && !$order_list) {	?>
 				<td class="text-primary">
 					<i data-toggle="modal" data-target="#addEditPaymentModal"
 							<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
@@ -74,7 +75,14 @@ function disp_payment_line($payment, $admin, $commission_val) {
 					<i data-toggle="modal" data-target="#addEditPaymentModal"
 							<?php build_editable_payment_data_attrs($payment, $payment_date, true) ?>
 						class="fas fa-trash-alt"></i>
-				</td>
+				</td>		
+				<?php } else { ?>
+			<td>
+				
+			</td>
+			<td>
+
+			</td>
 				<?php
 			}
 	?>
