@@ -474,7 +474,8 @@ const tasteMakePayment = (
           //tasteLoadInvoiceButtons();
         }
         jQuery("#paySelectedModal").modal("hide");
-        jQuery("#payAllSelected").html("Pay selected offers");
+        jQuery("#payAllSelected").html("Preview Payment");
+        jQuery("#paySelectedModalLabel").html("Add Payment");
         jQuery("#orders-payment-submit").html("Make payment");
         tasteCloseMsg();
         if (jQuery("#taste-product-id").length) {
@@ -548,7 +549,8 @@ const tasteEditPBO = (paymentId) => {
       });
 
       displayOrderPaymentInfo();
-      jQuery("#payAllSelected").html(`Edit Pay #${paymentId}`);
+      jQuery("#payAllSelected").html(`Preview Edit #${paymentId}`);
+      jQuery("#paySelectedModalLabel").html(`Edit #${paymentId}`);
       jQuery("#orders-payment-id").val(paymentId);
       jQuery("#orders-payment-orig-amt").val(paymentOrderInfo.totalNetPayable);
       jQuery("#orders-payment-orig-date").val(paymentOrderInfo.editOrigPayDate);
@@ -627,7 +629,8 @@ const tasteDeletePBO = (paymentId) => {
       });
 
       displayOrderPaymentInfo();
-      jQuery("#payAllSelected").html(`Delete Pay #${paymentId}`);
+      jQuery("#payAllSelected").html(`Preview Delete #${paymentId}`);
+      jQuery("#paySelectedModalLabel").html(`Delete #${paymentId}`);
       jQuery("#orders-payment-id").val(paymentId);
       jQuery("#orders-payment-orig-amt").val(paymentOrderInfo.totalNetPayable);
       jQuery("#orders-payment-orig-date").val(paymentOrderInfo.editOrigPayDate);
@@ -712,7 +715,8 @@ const tasteHistoricalPBO = (venueId) => {
       displayOrderPaymentInfo();
 
       let dateStr = getFormattedDate();
-      jQuery("#payAllSelected").html(`Historical PBO: `);
+      jQuery("#payAllSelected").html(`Preview Payment`);
+      jQuery("#paySelectedModalLabel").html("Add Payment");
       jQuery("#orders-payment-id").val("");
       jQuery("#orders-payment-orig-amt").val(0);
       jQuery("#orders-payment-orig-date").val(dateStr);
@@ -1254,7 +1258,8 @@ const tasteLoadPaymentByOrdersModal = () => {
               ev.preventDefault();
               clearOrdersForPayment();
               jQuery("#paySelectedModal").modal("hide");
-              jQuery("#payAllSelected").html("Pay selected offers");
+              jQuery("#payAllSelected").html("Preview Payment");
+              jQuery("#paySelectedModalLabel").html("Add Payment");
               jQuery("#orders-payment-submit").html("Make payment");
               if (jQuery(".edit-pbo-btn").length) {
                 jQuery(".edit-pbo-btn").removeClass("fa-disabled");
@@ -1306,7 +1311,8 @@ const tasteLoadPaymentByOrdersModal = () => {
         e.preventDefault();
         clearOrdersForPayment();
         jQuery("#paySelectedModal").modal("hide");
-        jQuery("#payAllSelected").html("Pay selected offers");
+        jQuery("#payAllSelected").html("Preview Payment");
+        jQuery("#paySelectedModalLabel").html("Add Payment");
         jQuery("#orders-payment-submit").html("Make payment");
         if (jQuery(".edit-pbo-btn").length) {
           jQuery(".edit-pbo-btn").removeClass("fa-disabled");
