@@ -85,15 +85,16 @@ function taste_ajax_retrieve_payment_json() {
 		wp_die();
 	}
 
-	if (!isset($_POST['payment_id']) ) {
-		echo 'Missing valid payment id info';
+	if (!isset($_POST['payment_id']) || !isset($_POST['product_info'])  ) {
+		echo 'Missing valid payment id or product info';
 		wp_die();
 	}
 
 	$payment_id = $_POST['payment_id'];
+	$product_info = $_POST['product_info'];
 
 	require_once(plugin_dir_path(__FILE__). 'retrieve-payment-orders-json.php');
-	retrieve_payment_orders_info_json($payment_id);
+	retrieve_payment_orders_info_json($payment_id, $product_info);
 
 	wp_die();
 } 

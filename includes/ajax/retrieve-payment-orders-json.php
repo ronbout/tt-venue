@@ -11,7 +11,7 @@
 
 defined('ABSPATH') or die();
 
-function retrieve_payment_orders_info_json($payment_id) {
+function retrieve_payment_orders_info_json($payment_id, $product_info) {
 	global $wpdb;
 
 	$payment_table = $wpdb->prefix."taste_venue_payment";
@@ -40,7 +40,7 @@ function retrieve_payment_orders_info_json($payment_id) {
 
 	$payment_rows = $wpdb->get_results($wpdb->prepare($sql, $payment_id), ARRAY_A);
 
-	$payment_info_array = process_payment_info($payment_rows, $payment_id); 
+	$payment_info_array = process_payment_info($payment_rows, $payment_id, $product_info); 
 	
 	// ugly workaround for the fact that json_encode will screw up some float numbers
 	// 7388.75 => 7388.749999999
@@ -52,7 +52,7 @@ function retrieve_payment_orders_info_json($payment_id) {
 
 }
 
-function process_payment_info($payment_rows, $payment_id) {
+function process_payment_info($payment_rows, $payment_id, $product_info) {
 	$total_net_payable = $payment_rows[0]['total_amount'];
 	$total_qty = 0;
 	$product_list = array();
@@ -75,14 +75,26 @@ function process_payment_info($payment_rows, $payment_id) {
 		$order_qty = array_sum($order_qty_array);
 		$total_qty += $order_qty;
 
-		$net_pay_per_qty = $net_payable / $order_qty;
+		/*****  
+		 * 
+		 * calculate exact net payable with no rounding
+		 * this originally just divided order cnt into
+		 * payment amount.  But, that is a round 
+		 * and can throw off the total payment amount later
+		 */
+		$vat_val = $product_info[$product_id]['vat_value'];
+		$comm_val = $product_info[$product_id]['commission_value'];
+		$price = $product_info[$product_id]['price'];
+
+		$net_pay_per_qty = calc_net_payable($price, $vat_val, $comm_val, 1);
+		// $net_pay_per_qty2 = $net_payable / $order_qty;
 
 		foreach($order_item_id_array as $key => $order_item_id) {
 			$tmp_order_array[] = array(
 				'orderItemId' => $order_item_id,
 				'orderId' => $order_id_array[$key],
 				'orderQty' => $order_qty_array[$key],
-				'orderNetPayable' => round($order_qty_array[$key] * $net_pay_per_qty, 2)
+				'orderNetPayable' => $order_qty_array[$key] * $net_pay_per_qty
 			);
 		}
 

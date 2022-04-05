@@ -295,7 +295,7 @@ const tasteMakePayment = (
       return prod[1].orderQty;
     });
 
-    productInfo = tasteGetAllProductInfo(postProductList);
+    productInfo = tasteGetProdListInfo(postProductList);
     curProdInfo = tasteGetProductInfo();
     postTotalAmount = tasteVenue.paymentOrders.totalNetPayable;
   } else {
@@ -509,6 +509,7 @@ const tasteMakePayment = (
 const tasteEditPBO = (paymentId) => {
   let modalMsg = "Setting Up Edit Mode...";
   tasteDispMsg(modalMsg);
+  allProductInfo = tasteGetAllProductInfo();
   jQuery.ajax({
     url: tasteVenue.ajaxurl,
     type: "POST",
@@ -516,6 +517,7 @@ const tasteEditPBO = (paymentId) => {
     data: {
       action: "retrieve_payment_json",
       security: tasteVenue.security,
+      product_info: allProductInfo,
       payment_id: paymentId,
     },
     success: function (responseJson) {
@@ -881,15 +883,43 @@ const tasteGetProductInfo = () => {
   return productInfo;
 };
 
-const tasteGetAllProductInfo = (prodList) => {
-  let productAllProductInfo = {};
+/*****
+ *
+ * make this tasteGetProdListInfo
+ *
+ * create new tasteGetAllProductInfo that actually gets
+ * all the product info on the page using .product-info-row
+ * with each()
+ *
+ */
+
+const tasteGetProdListInfo = (prodList) => {
+  let prodListInfo = {};
 
   prodList.forEach((prodInfo) => {
     const prodId = prodInfo[0];
     const $productRow = jQuery(`#product-table-row-${prodId}`);
+    prodListInfo[prodId] = {
+      vat_value: $productRow.data("vatrate"),
+      commission_value: $productRow.data("commissionrate"),
+      price: $productRow.data("price"),
+      total_paid: $productRow.data("paidamount"),
+      balance_due: $productRow.data("balancedue"),
+    };
+  });
+
+  return prodListInfo;
+};
+
+const tasteGetAllProductInfo = () => {
+  let productAllProductInfo = {};
+
+  jQuery(".product-info-row").each((ndx, prodRow) => {
+    const $productRow = jQuery(prodRow);
+    const prodId = $productRow.data("productid");
     productAllProductInfo[prodId] = {
       vat_value: $productRow.data("vatrate"),
-      commisson_value: $productRow.data("commissionrate"),
+      commission_value: $productRow.data("commissionrate"),
       price: $productRow.data("price"),
       total_paid: $productRow.data("paidamount"),
       balance_due: $productRow.data("balancedue"),
