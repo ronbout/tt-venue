@@ -691,7 +691,16 @@ const tasteHistoricalPBO = (venueId) => {
     success: function (responseJson) {
       tasteCloseMsg();
       const paymentOrderInfo = JSON.parse(responseJson);
-      console.log(paymentOrderInfo);
+
+      // if no products list, just reset
+      if (!Object.keys(paymentOrderInfo.productList).length) {
+        jQuery("#historical-pbo-btn").removeClass("fa-disabled");
+        if (jQuery(".edit-pbo-btn").length) {
+          jQuery(".edit-pbo-btn").removeClass("fa-disabled");
+          jQuery(".delete-pbo-btn").removeClass("fa-disabled");
+        }
+        return;
+      }
 
       tasteVenue.paymentOrders.editPaymentId = 0;
       tasteVenue.paymentOrders.editOrigPayDate = "";
