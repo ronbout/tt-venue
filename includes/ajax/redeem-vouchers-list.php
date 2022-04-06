@@ -160,11 +160,16 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 			FROM {$wpdb->prefix}taste_venue_payment pay
 				JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
 				JOIN {$wpdb->prefix}taste_venue_products vprods on pprods.product_id = vprods.product_id 
+				JOIN {$wpdb->prefix}wc_order_product_lookup plook ON plook.product_id = vprods.product_id
 				LEFT JOIN {$wpdb->prefix}taste_venue_payment_order_item_xref pox ON pox.payment_id = pay.id
+					AND pox.order_item_id = plook.order_item_id
 			WHERE vprods.venue_id = %d
 				AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
 			GROUP BY pay.id, pprods.product_id
 			ORDER BY pay.payment_date ASC ", $venue_id), ARRAY_A);
+
+var_dump($venue_payment_list);
+die();			
 
 	$filtered_payment_list = array_filter($venue_payment_list, function ($pay_row) use ($product_id) {
 		return $pay_row['pid'] == $product_id;
