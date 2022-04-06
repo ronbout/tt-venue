@@ -168,9 +168,6 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 			GROUP BY pay.id, pprods.product_id
 			ORDER BY pay.payment_date ASC ", $venue_id), ARRAY_A);
 
-var_dump($venue_payment_list);
-die();			
-
 	$filtered_payment_list = array_filter($venue_payment_list, function ($pay_row) use ($product_id) {
 		return $pay_row['pid'] == $product_id;
 	});
