@@ -163,7 +163,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 				LEFT JOIN {$wpdb->prefix}taste_venue_payment_order_item_xref pox ON pox.payment_id = pay.id
 			WHERE vprods.venue_id = %d
 				AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
-			GROUP BY pay.id
+			GROUP BY pay.id, pprods.product_id
 			ORDER BY pay.payment_date ASC ", $venue_id), ARRAY_A);
 
 	$filtered_payment_list = array_filter($venue_payment_list, function ($pay_row) use ($product_id) {
