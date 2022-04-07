@@ -105,15 +105,16 @@ function taste_ajax_retrieve_historical_payments_json() {
 		wp_die();
 	}
 
-	if (!isset($_POST['venue_id']) ) {
+	if (!isset($_POST['venue_id'])  || !isset($_POST['product_info'])  ) {
 		echo 'Missing valid Venue id info';
 		wp_die();
 	}
 
 	$venue_id = $_POST['venue_id'];
+	$product_info = $_POST['product_info'];
 
 	require_once(plugin_dir_path(__FILE__). 'retrieve-historical-payments-json.php');
-	retrieve_historical_payments_json($venue_id);
+	retrieve_historical_payments_json($venue_id, $product_info);
 
 	wp_die();
 } 

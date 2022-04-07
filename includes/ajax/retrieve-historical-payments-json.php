@@ -16,7 +16,7 @@ defined('ABSPATH') or die();
 
 require_once TASTE_PLUGIN_INCLUDES.'/ajax/functions.php';
 
-function retrieve_historical_payments_json($venue_id) {
+function retrieve_historical_payments_json($venue_id, $prod_info) {
 	global $wpdb;
 
 	$payment_table = $wpdb->prefix."taste_venue_payment";
@@ -70,12 +70,9 @@ function retrieve_historical_payments_json($venue_id) {
 	$orig_payment_rows = array_column($orig_payment_rows, null, 'product_id');
 	$historical_payment_rows = array_column($historical_payment_rows, null, 'product_id');
 
-	$needed_orders_per_product = calc_needed_orders($orig_payment_rows, $historical_payment_rows);
+	$needed_orders_per_product = calc_needed_orders($orig_payment_rows, $historical_payment_rows, $prod_info);
 
 	$payment_orders_json = build_payment_with_orders($orig_payment_rows, $needed_orders_per_product);
-
-	// var_dump($payment_orders_json);
-	// die();
 
 	// ugly workaround for the fact that json_encode will screw up some float numbers
 	// 7388.75 => 7388.749999999
@@ -87,21 +84,30 @@ function retrieve_historical_payments_json($venue_id) {
 
 }
 
-function calc_needed_orders($orig_payment_rows, $historical_payment_rows) {
+function calc_needed_orders($orig_payment_rows, $historical_payment_rows, $prod_info) {
 	// loop through each product with orig payments, calc net payment / order 
 	// then compare to historical order cnt to see if more are needed
 
 	$needed_ords_by_product = array();
 	foreach ($orig_payment_rows as $prod_id => $pay_row) {
-		$net_payable_per_order = round(calc_net_payable($pay_row['price'], $pay_row['vat_val'], $pay_row['comm_val'], 1), 2);
-		$payment_amount = $pay_row['product_amount'];
-		// use floor instead of INT so that only fully paid orders get marked as paid
-		// $historical_order_cnt = (int) round($payment_amount / $net_payable_per_order);
-		$historical_order_cnt = (int) floor($payment_amount / $net_payable_per_order);
-
-		$prev_historical_order_cnt = isset($historical_payment_rows[$prod_id]) ? $historical_payment_rows[$prod_id]['order_cnt'] : 0;
-
-		$needed_historical_order_cnt = $historical_order_cnt - $prev_historical_order_cnt;
+		$net_payable_per_order = calc_net_payable($pay_row['price'], $pay_row['vat_val'], $pay_row['comm_val'], 1);
+		if (0 == $prod_info[$prod_id]['balance_due']) {
+			// if balance due is 0, no need to calc anythiing, 
+			// just get all unpaid, redeemed orders
+			$needed_historical_order_cnt = -99;
+			$payment_amount = -99;
+		} else {
+			
+			$payment_amount = $pay_row['product_amount'];
+			// use floor instead of INT so that only fully paid orders get marked as paid
+			// $historical_order_cnt = (int) round($payment_amount / $net_payable_per_order);
+			// due to the inevitable 2 digit rounding of payments, the payment/net payable calc
+			// can have a remainder similar to 0.99998.  This should not have the floor applied 
+			// to it.  Adding 0.005 will increase the value enough to get correct number even w floor
+			$historical_order_cnt = (int) floor(($payment_amount / $net_payable_per_order) + 0.005);
+			$prev_historical_order_cnt = isset($historical_payment_rows[$prod_id]) ? $historical_payment_rows[$prod_id]['order_cnt'] : 0;
+			$needed_historical_order_cnt = $historical_order_cnt - $prev_historical_order_cnt;
+		}
 
 		$needed_ords_by_product[$prod_id] = array(
 			'needed_orders' => $needed_historical_order_cnt,
@@ -138,8 +144,7 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 				AND poix.payment_id IS NULL 
 				AND wclook.product_id = %d
 			GROUP BY o.id
-			ORDER BY o.post_date ASC 
-			LIMIT %d
+			ORDER BY o.post_date ASC
 	";
 	
 	$total_net_payable = 0;
@@ -152,16 +157,21 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 		$needed_order_cnt = $prod_order_info['needed_orders'];
 		$needed_amt = $prod_order_info['needed_amt'];
 		if (!$needed_order_cnt) continue;
-		$targeted_orders = $wpdb->get_results($wpdb->prepare($sql, $prod_id, $needed_order_cnt), ARRAY_A);
+		if (-99 == $needed_order_cnt) {
+			$limit_clause = '';
+		} else {
+			$limit_clause = ' LIMIT %d ';
+		}
+		$targeted_orders = $wpdb->get_results($wpdb->prepare($sql . $limit_clause, $prod_id, $needed_order_cnt), ARRAY_A);
 		$prod_qty = 0;
 		$prod_net_payable = 0;
 		$tmp_order_array = array();
 		foreach ($targeted_orders as $order_info) {
 			$ord_qty = $order_info['quan'];
-			if ($prod_qty + $ord_qty > $needed_order_cnt) break;
+			if ($prod_qty + $ord_qty > $needed_order_cnt && -99 != $needed_order_cnt) break;
 			$prod_qty += $ord_qty;
 			$total_qty += $ord_qty;
-			$net_payable = round($net_payable_per_qty * $ord_qty, 2);
+			$net_payable = $net_payable_per_qty * $ord_qty;
 			$prod_net_payable += $net_payable;
 			$total_net_payable += $net_payable;
 			$tmp_order_array[] = array(
@@ -180,7 +190,7 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 			'orderItemList' => $tmp_order_array
 		);
 		$product_list[$prod_id] = $tmp_array; 
-		if ($needed_order_cnt != $prod_qty) {
+		if ($needed_order_cnt != $prod_qty && -99 != $needed_order_cnt) {
 			$trouble_product_list[$prod_id] = $tmp_array;
 		}
 		 

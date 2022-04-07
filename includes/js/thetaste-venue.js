@@ -206,7 +206,6 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
       redeem_flg: redeemFlg ? 1 : 0,
     },
     success: function (responseText) {
-      // console.log(responseText);
       let respObj = JSON.parse(responseText);
       if (respObj.error) {
         console.log(respObj);
@@ -699,6 +698,7 @@ const tasteDeletePBO = (paymentId) => {
 const tasteHistoricalPBO = (venueId) => {
   let modalMsg = "Checking Historical Payment Info...";
   tasteDispMsg(modalMsg);
+  allProductInfo = tasteGetAllProductInfo();
   jQuery.ajax({
     url: tasteVenue.ajaxurl,
     type: "POST",
@@ -706,6 +706,7 @@ const tasteHistoricalPBO = (venueId) => {
     data: {
       action: "retrieve_historical_payments_json",
       security: tasteVenue.security,
+      product_info: allProductInfo,
       venue_id: venueId,
     },
     success: function (responseJson) {
@@ -832,6 +833,10 @@ const updateOfferCalcs = (respObj, productId) => {
   jQuery("#balance-due-display-" + productId).html(
     respObj.balanceDue.split(" ")[1]
   );
+  jQuery("#product-table-row-" + productId).data(
+    "balancedue",
+    respObj.balanceDue.split(" ")[1]
+  );
 
   jQuery("#hidden-values").html(respObj.hiddenValues);
 };
@@ -882,16 +887,6 @@ const tasteGetProductInfo = () => {
 
   return productInfo;
 };
-
-/*****
- *
- * make this tasteGetProdListInfo
- *
- * create new tasteGetAllProductInfo that actually gets
- * all the product info on the page using .product-info-row
- * with each()
- *
- */
 
 const tasteGetProdListInfo = (prodList) => {
   let prodListInfo = {};
@@ -1478,7 +1473,6 @@ const tasteLoadButtons = () => {
         let multiplier = $rowData.data("multiplier");
         let cutoffDate = jQuery("#venue_cutoff_date").val();
         let makePaymentsBelow = jQuery(this).data("payments-below");
-        // console.log("cutoffDate: ", cutoffDate);
         tasteLoadVouchers(prodId, multiplier, cutoffDate, makePaymentsBelow);
       }
     });
