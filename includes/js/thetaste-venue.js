@@ -140,12 +140,27 @@ const displayOrderPaymentInfo = () => {
   for (const [prodId, prodInfo] of Object.entries(
     tasteVenue.paymentOrders.productList
   )) {
-    let prodTotal = 0;
+    /**
+     *  REDO THIS TO INLCUDE A NET PAYABLE CALCULATION
+     *  THAT MIMICS THE APPROACH IN CM
+     *
+     *  THE DIFFERENCE IS THAT VAT AND COMM MUST BE
+     *  ROUNDED BEFORE THE PAYMENT AMOUNT CALC IS DONE
+     */
+
+    // load vat, comm, and price
+    const vatRate = jQuery(`#product-table-row-${prodId}`).data("vatrate");
+    const commRate = jQuery(`#product-table-row-${prodId}`).data(
+      "commissionrate"
+    );
+    const price = jQuery(`#product-table-row-${prodId}`).data("price");
+    // run loop to get prodQtyTotal
     let prodQtyTotal = 0;
     prodInfo.orderItemList.forEach((orderItem) => {
-      prodTotal += orderItem.orderNetPayable;
       prodQtyTotal += orderItem.orderQty;
     });
+    // call calc net payable
+    let prodTotal = calc_net_payable(price, prodQtyTotal, commRate, vatRate);
     tasteVenue.paymentOrders.productList[prodId].netPayable =
       financial(prodTotal);
     tasteVenue.paymentOrders.productList[prodId].orderQty = prodQtyTotal;
@@ -163,6 +178,42 @@ const displayOrderPaymentInfo = () => {
   setOrdersPaymentStatusRadio(tasteVenue.paymentOrders.paymentStatus);
   setOrdersCommentsVisibleCheck(tasteVenue.paymentOrders.commentVisibility);
   setOrdersAttachInvCheck(tasteVenue.paymentOrders.attachInvoice);
+};
+
+// const calc_net_payable = (price, qty, commRate, vatRate) => {
+//   // due to floating point calc errors in js, convert all to whole numbers
+//   let revenue = qty * price;
+//   let commission = (revenue / 100) * commRate;
+//   let vat = (commission / 100) * vatRate;
+//   revenue = parseFloat(financial(revenue));
+//   commission = parseFloat(financial(commission));
+//   vat = parseFloat(financial(vat));
+//   let payable = revenue - (commission + vat);
+//   return parseFloat(financial(payable));
+// };
+
+const calc_net_payable = (price, qty, commRate, vatRate) => {
+  // due to floating point calc errors in js, convert all to whole numbers
+  const priceBig = new Big(price);
+  const revenueBig = priceBig.times(qty);
+  const commBig = revenueBig.times(commRate).div(100);
+  const vatBig = commBig.times(vatRate).div(100);
+  // console.log("----------");
+  // console.log("priceBig: ", priceBig.toString());
+  // console.log("revenueBig: ", revenueBig.toString());
+  // console.log("commBig: ", commBig.toString());
+  // console.log("vatBig: ", vatBig.toString());
+  const revenue = revenueBig.round(2);
+  const commission = commBig.round(2);
+  const vat = vatBig.round(2);
+  // console.log("revenue: ", revenue.toString());
+  // console.log("commission: ", commission.toString());
+  // console.log("vat: ", vat.toString());
+  const payable = revenueBig.minus(commission).minus(vat).round(2);
+  // console.log("payable: ", payable.toString());
+  // console.log("payable float: ", parseFloat(payable.toString()));
+  // console.log("----------");
+  return parseFloat(payable.toString());
 };
 
 const setupToggleButtons = () => {
@@ -608,6 +659,7 @@ const tasteEditPBO = (paymentId) => {
 const tasteDeletePBO = (paymentId) => {
   let modalMsg = "Setting Up Delete Mode...";
   tasteDispMsg(modalMsg);
+  allProductInfo = tasteGetAllProductInfo();
   jQuery.ajax({
     url: tasteVenue.ajaxurl,
     type: "POST",
@@ -615,6 +667,7 @@ const tasteDeletePBO = (paymentId) => {
     data: {
       action: "retrieve_payment_json",
       security: tasteVenue.security,
+      product_info: allProductInfo,
       payment_id: paymentId,
     },
     success: function (responseJson) {
@@ -670,15 +723,6 @@ const tasteDeletePBO = (paymentId) => {
         const multiplier = jQuery("#taste-product-multiplier").val();
         const cutoffDate = jQuery("#venue_cutoff_date").val();
         tasteLoadVouchers(prodId, multiplier, cutoffDate, false);
-        /**
-         *
-         * TURN OFF ALL CHECKBOXES
-         *
-         * OPEN THE paySelectedModal MODAL IN DELETE MODE.  Make sure
-         * it can only be closed with the buttons
-         *
-         *
-         */
       }
 
       jQuery(".add-edit-pbo-mode").hide();
