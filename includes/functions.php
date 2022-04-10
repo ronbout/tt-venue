@@ -211,6 +211,30 @@ function get_user_venue_info($venue_id = null) {
 	return compact('user', 'role', 'venue_id', 'venue_name', 'venue_type', 'use_new_campaign', 'venue_voucher_page', 'venue_type_desc', 'venue_row', 'cutoff_date');
 }
 
+function calc_net_payable($product_price, $vat_val, $commission_val, $cnt, $round_flag=true) {
+	// if the round flag is set, need to round revenue, commission and VAT 
+	// before calculating the payable. Then, eturn the rounded payable
+	$grevenue = $cnt * $product_price;
+	$commission = ($grevenue / 100) * $commission_val;
+	$vat = ($commission / 100) * $vat_val; 
+	if ($round_flag) {
+		$grevenue = round($grevenue, 2);
+		$commission = round($commission, 2);
+		$vat = round($vat);
+	}
+	$payable = $grevenue - ($commission + $vat);
+	if ($round_flag) {
+		$payable = round($payable, 2);
+	}
+	
+	return array(
+		'gross_revenue' => $grevenue,
+		'commission' => $commission,
+		'vat' => $vat,
+		'net_payable' => $payable
+	);
+}
+
 /**
  *	replacement for ceil() if you only want it to 
  *	to consider $dec_prec number of decimals.  

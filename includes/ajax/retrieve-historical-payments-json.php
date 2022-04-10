@@ -90,7 +90,7 @@ function calc_needed_orders($orig_payment_rows, $historical_payment_rows, $prod_
 
 	$needed_ords_by_product = array();
 	foreach ($orig_payment_rows as $prod_id => $pay_row) {
-		$net_payable_per_order = calc_net_payable($pay_row['price'], $pay_row['vat_val'], $pay_row['comm_val'], 1);
+		$net_payable_per_order = calc_net_payable($pay_row['price'], $pay_row['vat_val'], $pay_row['comm_val'], 1, false)['net_payable'];
 		if (0 == $prod_info[$prod_id]['balance_due']) {
 			// if balance due is 0, no need to calc anythiing, 
 			// just get all unpaid, redeemed orders

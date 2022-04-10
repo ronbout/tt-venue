@@ -86,7 +86,7 @@ function process_payment_info($payment_rows, $payment_id, $product_info) {
 		$comm_val = $product_info[$product_id]['commission_value'];
 		$price = $product_info[$product_id]['price'];
 
-		$net_pay_per_qty = calc_net_payable($price, $vat_val, $comm_val, 1);
+		$net_pay_per_qty = calc_net_payable($price, $vat_val, $comm_val, 1, false)['net_payable'];
 		// $net_pay_per_qty2 = $net_payable / $order_qty;
 
 		foreach($order_item_id_array as $key => $order_item_id) {

@@ -170,14 +170,3 @@ function build_editable_payment_data_attrs($payment, $payment_date, $delete_flag
 		data-invoiceattachment="<?php echo $payment['attach_vat_invoice'] ?>"
 	<?php
 }
-
-
-function calc_net_payable($product_price, $vat_val, $commission_val, $cnt) {
-	// do not round here, but at the display so that adding orders 
-	// individually gives the same result as calculating the entire amount
-	$grevenue = $cnt * $product_price;
-	$commission = ($grevenue / 100) * $commission_val;
-	$vat = ($commission / 100) * $vat_val;
-	$payable = $grevenue - ($commission + $vat);
-	return $payable;
-}
