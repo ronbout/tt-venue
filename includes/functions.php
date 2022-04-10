@@ -220,7 +220,7 @@ function calc_net_payable($product_price, $vat_val, $commission_val, $cnt, $roun
 	if ($round_flag) {
 		$grevenue = round($grevenue, 2);
 		$commission = round($commission, 2);
-		$vat = round($vat);
+		$vat = round($vat,2);
 	}
 	$payable = $grevenue - ($commission + $vat);
 	if ($round_flag) {
