@@ -357,11 +357,19 @@ function display_terms($termsandconditions) {
 function display_payments_table($product_ids, $pid_placeholders, $payable) {
 	global $wpdb;
 	
+	// $paymentList = $wpdb->get_results($wpdb->prepare("
+	// 			SELECT  id, timestamp, pid, amount
+	// 			FROM {$wpdb->prefix}offer_payments 
+	// 			WHERE pid IN ($pid_placeholders)
+	// 			ORDER BY pid, timestamp DESC ", $product_ids), ARRAY_A);
+
+
 	$paymentList = $wpdb->get_results($wpdb->prepare("
-				SELECT  id, timestamp, pid, amount
-				FROM {$wpdb->prefix}offer_payments 
-				WHERE pid IN ($pid_placeholders)
-				ORDER BY pid, timestamp DESC ", $product_ids), ARRAY_A);
+				SELECT  vpay.id, vpay.payment_date AS timestamp, pprods.product_id AS pid, pprods.amount
+				FROM {$wpdb->prefix}taste_venue_payment vpay 
+					JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = vpay.id
+				WHERE pprods.product_id IN ($pid_placeholders)
+				ORDER BY pprods.product_id, vpay.payment_date DESC ", $product_ids), ARRAY_A);
 
 	$total_paid_to_customer = 0;
 

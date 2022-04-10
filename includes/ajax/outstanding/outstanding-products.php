@@ -40,7 +40,9 @@ function outstanding_display_product_table($filter_data) {
 	$order_items_table = $wpdb->prefix."woocommerce_order_items";
 	$venue_table = $wpdb->prefix."taste_venue";
 	$v_p_join_table = $wpdb->prefix."taste_venue_products";
-	$payment_table = $wpdb->prefix."offer_payments";
+	$payment_table = $wpdb->prefix."taste_venue_payment";
+	$payment_products_table = $wpdb->prefix."taste_venue_payment_products";
+	$payment_order_xref_table = $wpdb->prefix."taste_venue_payment_order_item_xref";
 	$order_trans_table = $wpdb->prefix."taste_order_transactions";
 
 	$sql = "
@@ -85,12 +87,26 @@ function outstanding_display_product_table($filter_data) {
 	$product_id_list = array_column($product_rows, 'product_id');
 	$placeholders = array_fill(0, count($product_id_list), '%s');
 	$placeholders = implode(', ', $placeholders);
+
+	// $orig_payment_table = $wpdb->prefix."offer_payments";
+	// $payment_rows = $wpdb->get_results($wpdb->prepare("
+	// 		SELECT  pmnt.id, pr.product_id, pmnt.amount, CAST(pmnt.timestamp AS DATE) AS payment_date
+	// 		FROM $product_table pr
+	// 		JOIN $orig_payment_table pmnt ON pmnt.pid = pr.product_id
+	// 		WHERE pr.product_id IN ($placeholders)
+	// 		ORDER BY pr.product_id, CAST(pmnt.timestamp AS DATE)", $product_id_list), ARRAY_A);
+
+
 	$payment_rows = $wpdb->get_results($wpdb->prepare("
-			SELECT  pmnt.id, pr.product_id, pmnt.amount, CAST(pmnt.timestamp AS DATE) AS payment_date
+			SELECT  pprods.product_id, pay.id, CAST(pay.payment_date AS DATE) as payment_date,
+							pay.amount as total_amount, pprods.amount, pay.status
 			FROM $product_table pr
-			JOIN $payment_table pmnt ON pmnt.pid = pr.product_id
+				JOIN $payment_products_table pprods ON pprods.product_id = pr.product_id
+				JOIN $payment_table pay ON pay.id = pprods.payment_id
 			WHERE pr.product_id IN ($placeholders)
-			ORDER BY pr.product_id, CAST(pmnt.timestamp AS DATE)", $product_id_list), ARRAY_A);
+				AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
+			ORDER BY pr.product_id, CAST(pay.payment_date AS DATE) ", 
+			$product_id_list), ARRAY_A);
 
 	// create array w product id's as keys and pay totals as values
 	$payments = build_payments($payment_rows);
