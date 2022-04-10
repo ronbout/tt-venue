@@ -360,6 +360,7 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 		$tmp['max_order_date'] = explode(' ', $product_row['max_order_date'])[0];
 		$tmp['product_date'] = explode(' ', $product_row['post_date'])[0];
 		$tmp['venue_name'] = $product_row['venue_name'] ? $product_row['venue_name'] : ' ------- ';
+		$tmp['venue_id'] = $product_row['venue_id'] ? $product_row['venue_id'] : ' ------- ';
 		// new...calculate income from expired, unredeemed orders!!
 		$tmp['unredeemed_income'] = ("N" === $product_row['expired']) ? 0 : num_display(($tmp['order_qty'] - $tmp['redeemed_qty']) * $product_row['price']);
 		$tmp['total_income'] = num_display($tmp['commission'] + $tmp['unredeemed_income']);
