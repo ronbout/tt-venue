@@ -437,10 +437,17 @@ function get_totals_calcs($ordered_products, $payments, $venue_type, $bed_nights
 		$tmp['vat_rate'] = $product_row['vat'];
 		$tmp['commission_rate'] = $product_row['commission'];
 		$tmp['price'] = $product_row['price'];
-		$tmp['revenue'] = $product_row['price'] * $tmp['redeemed_qty'];
-		$tmp['commission'] = round(($tmp['revenue'] / 100) * $product_row['commission'], 2);
-		$tmp['vat'] = round(($tmp['commission'] / 100) * $product_row['vat'], 2);
-		$tmp['net_payable'] = $tmp['revenue'] - ($tmp['commission'] + $tmp['vat']);
+
+		$curr_prod_values = calc_net_payable($tmp['price'], $tmp['vat_rate'], $tmp['commission_rate'], $tmp['redeemed_qty'], true);
+		$grevenue = $curr_prod_values['gross_revenue'];
+		$commission = $curr_prod_values['commissioni'];
+		$vat = $curr_prod_values['vat'];
+		$payable = $curr_prod_values['net_payable'];
+
+		$tmp['revenue'] = $grevenue;
+		$tmp['commission'] = $commission;
+		$tmp['vat'] = $vat;
+		$tmp['net_payable'] = $payable;
 		$tmp['paid_amount'] = empty($payments[$product_id]) ? 0 : $payments[$product_id];
 		$tmp['balance_due'] = $tmp['net_payable'] - $tmp['paid_amount'];
 		// display qty must now have the multiplier applied per row, 

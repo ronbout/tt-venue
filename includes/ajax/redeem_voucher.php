@@ -96,25 +96,23 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 	$total_paid = $product_info['total_paid'];
 	$multiplier = $product_info['multiplier'];
 
-	// $redeem_qty += $order_qty;
-	$grevenue = $redeem_qty * $price; 
-	$commission = ($grevenue / 100) * $commission_value;
-	$vat = ($commission / 100) * $vat_value;
-	$payable = $grevenue - ($commission + $vat);
+	$curr_prod_values = calc_net_payable($price, $vat_value, $commission_value, $redeem_qty, true);
+	$grevenue = $curr_prod_values['gross_revenue'];
+	$commission = $curr_prod_values['commissioni'];
+	$vat = $curr_prod_values['vat'];
+	$payable = $curr_prod_values['net_payable'];
 	$balance_due = $payable - $total_paid;
 	// for summary section, just adjust based on increase/decrease
 	$qty_increase = $redeem_qty - $orig_redeem_qty;
 	$revenue_increase = $qty_increase * $price;
 	$commission_increase = ($revenue_increase / 100) * $commission_value;
 	$vat_increase = ($commission_increase / 100) * $vat_value;
-	$payable_increase = $revenue_increase - ($commission_increase + $vat_increase);
+	$commission_increase = round($commission_increase,2);
+	$vat_increase = round($vat_increase,2);
+	$payable_increase = round($revenue_increase - ($commission_increase + $vat_increase), 2);
 	$balance_due_increase = $payable_increase;
 	$num_served = $redeem_qty * $multiplier;
 
-	$grevenue = round($grevenue, 2);
-	$commission = round($commission, 2);
-	$vat = round($vat, 2);
-	$payable = round($payable, 2);
 	$balance_due = round($balance_due, 2);
 
 	$currency = get_woocommerce_currency_symbol();

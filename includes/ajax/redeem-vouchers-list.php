@@ -523,14 +523,12 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 
 function display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val) {
 	// the totals at the end
-	$grevenue = $redeem_qty * $product_price;
-	$commission = ($grevenue / 100) * $commission_val;
-	$vat = ($commission / 100) * $vat_val;
-	$grevenue = round($grevenue, 2);
-	$commission = round($commission, 2);
-	$vat = round($vat, 2);
-	$payable = $grevenue - ($commission + $vat);
-	$payable = round($payable, 2);
+	$curr_prod_values = calc_net_payable($product_price, $vat_val, $commission_val, $redeem_qty, true);
+	$grevenue = $curr_prod_values['gross_revenue'];
+	$commission = $curr_prod_values['commissioni'];
+	$vat = $curr_prod_values['vat'];
+	$payable = $curr_prod_values['net_payable'];
+	
 	?>
             
 	<div class="row mt-3">
