@@ -135,7 +135,7 @@ const buildPaymentOrders = () => {
   jQuery("#payAllSelected").removeClass("pbo-over-warning");
 };
 
-const displayOrderPaymentInfo = () => {
+const displayOrderPaymentInfo = (origNetPayableFlag = false) => {
   // re-calcs totals and displays on screen
   let totalPayments = 0;
   let totalQty = 0;
@@ -155,6 +155,9 @@ const displayOrderPaymentInfo = () => {
     });
     // call calc net payable
     let prodTotal = calc_net_payable(price, prodQtyTotal, commRate, vatRate);
+    if (origNetPayableFlag) {
+      tasteVenue.paymentOrders.productList[prodId].origNetPayable = prodTotal;
+    }
     tasteVenue.paymentOrders.productList[prodId].netPayable =
       financial(prodTotal);
     tasteVenue.paymentOrders.productList[prodId].orderQty = prodQtyTotal;
@@ -596,7 +599,7 @@ const tasteEditPBO = (paymentId) => {
         }
       });
 
-      displayOrderPaymentInfo();
+      displayOrderPaymentInfo(true);
 
       // if status = 2, visible = 0, and attach inv = 0, then
       // it is an Historical PBO and those fields should be disabled
@@ -1482,24 +1485,29 @@ const buildOrdersPaymentTableRows = () => {
     let balanceDue = jQuery(`#product-table-row-${prodId}`).data("balancedue");
     balanceDue = Math.round(balanceDue * 100) / 100;
     let trClass = "";
-    let editPBOMode = false;
     let resultBalance;
+    let balanceCheck = false;
 
     switch (tasteVenue.paymentOrders.PBOMode) {
       case "delete":
         resultBalance = balanceDue + payAmt;
         break;
       case "edit":
-        resultBalance = "";
-        editPBOMode = true;
+        const startingAmt = prodInfo.origNetPayable;
+        resultBalance = balanceDue - (payAmt - startingAmt);
+        balanceCheck = true;
         break;
       case "insert":
-      default:
         resultBalance = balanceDue - payAmt;
-        if (0 > resultBalance && payAmt) {
-          trClass = " class='pbo-over-warning' ";
-          overFlag = true;
-        }
+        balanceCheck = true;
+        break;
+      case "historical":
+        resultBalance = balanceDue;
+    }
+
+    if (0 > resultBalance && balanceCheck) {
+      trClass = " class='pbo-over-warning' ";
+      overFlag = true;
     }
 
     tbodyRows += `
@@ -1508,7 +1516,7 @@ const buildOrdersPaymentTableRows = () => {
 				<td>${prodInfo.orderQty}</td>
 				<td>${financial(prodInfo.netPayable)}</td>
 				<td>${financial(balanceDue)}</td>
-				<td>${!editPBOMode ? financial(resultBalance) : ""}</td>
+				<td>${financial(resultBalance)}</td>
 			</tr>
 		`;
   });
