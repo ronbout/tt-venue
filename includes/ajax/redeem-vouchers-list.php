@@ -389,7 +389,8 @@ function check_for_payments($order_rows) {
 function display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id, $admin) {
 	$action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3';
 	$payment_due = !$order_item_info->payment_id && $order_item_info->downloaded === '1';
-	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan, false)['net_payable'];
+	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan, true)['net_payable'];
+	$net_payable_order_data = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan, false)['net_payable'];
 	$row_tooltip_title = '';
 	if ('0' == $order_item_info->downloaded) {
 		if ('N' == $expired_val || $admin) {
@@ -420,7 +421,7 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 			data-order-id="<?php echo $order_item_info->order_id ?>" 
 			data-order-qty="<?php echo $order_item_info->quan ?>" 
 			data-order-item-id="<?php echo $order_item_info->itemid ?>"
-			data-order-net-payable="<?php echo $net_payable_order_item ?>"
+			data-order-net-payable="<?php echo $net_payable_order_data ?>"
 			class="<?php echo $row_status_class ?>"
 			<?php echo $row_tooltip_title ?>
 
