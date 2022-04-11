@@ -304,11 +304,24 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 		$tmp['sales_amt'] = num_display($product_row['price'] * $tmp['order_qty']);
 		$tmp['coupon_amt'] = num_display($product_row['coupon_amt']);
 		$tmp['net_sales'] = num_display($tmp['sales_amt'] - $product_row['coupon_amt']);
-		$tmp['revenue'] = num_display($product_row['price'] * $tmp['redeemed_qty']);
 		$tmp['view'] = "<button data-prod-id='" . $product_row['product_id'] . "' class='btn btn-primary product-select-btn'>View</button>";
-		$tmp['commission'] = num_display(($tmp['revenue'] / 100) * $product_row['commission']);
-		$tmp['vat'] = num_display(($tmp['commission'] / 100) * $product_row['vat']);
-		$tmp['net_payable'] = num_display($tmp['revenue'] - ($tmp['commission'] + $tmp['vat']));
+
+		$curr_prod_values = calc_net_payable($product_row['price'], $product_row['vat'], $product_row['commission'], $tmp['redeemed_qty'], true);
+		$grevenue = $curr_prod_values['gross_revenue'];
+		$commission = $curr_prod_values['commissioni'];
+		$vat = $curr_prod_values['vat'];
+		$payable = $curr_prod_values['net_payable'];
+
+		$tmp['revenue'] = $grevenue;
+		$tmp['commission'] = $commission;
+		$tmp['vat'] = $vat;
+		$tmp['net_payable'] = $payable;
+
+		// $tmp['revenue'] = num_display($product_row['price'] * $tmp['redeemed_qty']);
+		// $tmp['commission'] = num_display(($tmp['revenue'] / 100) * $product_row['commission']);
+		// $tmp['vat'] = num_display(($tmp['commission'] / 100) * $product_row['vat']);
+		// $tmp['net_payable'] = num_display($tmp['revenue'] - ($tmp['commission'] + $tmp['vat']));
+
 		$tmp['paid_amount'] = num_display(empty($payments[$product_id]) ? 0 : $payments[$product_id]['total']);
 		$tmp['payment_list'] = empty($payments[$product_id]) ? '' : $payments[$product_id]['listing'];
 		$tmp['balance_due'] = num_display($tmp['net_payable'] - $tmp['paid_amount']);

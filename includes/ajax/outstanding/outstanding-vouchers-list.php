@@ -155,11 +155,17 @@ function calc_order_data($order_item_rows, $product_data) {
 		$tmp['venue_name'] = $product_data[$product_id]['venue_name'] ? $product_data[$product_id]['venue_name'] : '------';
 		$tmp['venue_id'] = $product_data[$product_id]['venue_id'] ? $product_data[$product_id]['venue_id'] : '-----';
 		$order_data[] = $tmp;
+		
+		$curr_prod_values = calc_net_payable($product_price, $vat_val, $commission_val, $redeemed_qty, true);
+		$grevenue = $curr_prod_values['gross_revenue'];
+		$commission = $curr_prod_values['commissioni'];
+		$vat = $curr_prod_values['vat'];
+		$payable = $curr_prod_values['net_payable'];
 
-		$grevenue = $redeemed_qty * $product_price;
-		$commission = ($grevenue / 100) * $commission_val;
-		$vat = ($commission / 100) * $vat_val;
-		$payable = $grevenue - ($commission + $vat);
+		// $grevenue = $redeemed_qty * $product_price;
+		// $commission = ($grevenue / 100) * $commission_val;
+		// $vat = ($commission / 100) * $vat_val;
+		// $payable = $grevenue - ($commission + $vat);
 	
 		$order_totals['gross_revenue'] += $grevenue;
 		$order_totals['commission'] += $commission;
