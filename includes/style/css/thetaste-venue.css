@@ -10847,6 +10847,15 @@ h2.col-heading_profile {
   z-index: 1000;
 }
 
+.pbo-over-warning {
+  background-color: orangered !important;
+  color: whitesmoke;
+}
+
+#orders-payment-table td {
+  text-align: right;
+}
+
 .ttoggle-container {
   margin-top: 14px;
 }

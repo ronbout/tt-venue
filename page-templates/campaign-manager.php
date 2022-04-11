@@ -265,7 +265,9 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 									<tr>
 										<th scope="col">Product Id</th>
 										<th scope="col">Qty</th>
-										<th scope="col">Net Payable</th>
+										<th scope="col">Pay Amt</th>
+										<th scope="col">Balance<br>Due</th>
+										<th scope="col">Result<br>Balance</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -376,7 +378,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 	</a>
 	</footer>
 	<script src='https://cdn.jsdelivr.net/npm/big.js@6.0.0/big.min.js'></script>
-	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js?v=4.7"></script>
+	<script type="text/javascript" src= "<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js?v=4.11"></script>
 </body>
 
 </html>
@@ -830,7 +832,7 @@ function display_all_payments($payment_rows, $venue_name, $payment_total) {
 								<th class="paid-amount-total table-nbr pr-5">
 								<?php echo $currency . ' ' . num_display($payment_total) ?>
 								</th>
-								<td colspan="2">&nbsp;</td>
+								<td colspan="3">&nbsp;</td>
 							</tr>
 						</tfoot>
 					</table>

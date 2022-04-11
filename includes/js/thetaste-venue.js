@@ -103,6 +103,7 @@ const buildPaymentOrders = () => {
   tasteVenue.paymentOrders = {
     totalNetPayable: 0,
     editPaymentId: 0,
+    PBOMode: "insert",
     editOrigPayDate: "",
     editOrigPayStatus: "",
     paymentStatus: 1,
@@ -131,6 +132,7 @@ const buildPaymentOrders = () => {
   jQuery("#orders-payment-orig-date").val("");
   jQuery("#orders-payment-date").val(getFormattedDate());
   jQuery("#select-orders-pay-total").text("0.00");
+  jQuery("#payAllSelected").removeClass("pbo-over-warning");
 };
 
 const displayOrderPaymentInfo = () => {
@@ -140,14 +142,6 @@ const displayOrderPaymentInfo = () => {
   for (const [prodId, prodInfo] of Object.entries(
     tasteVenue.paymentOrders.productList
   )) {
-    /**
-     *  REDO THIS TO INLCUDE A NET PAYABLE CALCULATION
-     *  THAT MIMICS THE APPROACH IN CM
-     *
-     *  THE DIFFERENCE IS THAT VAT AND COMM MUST BE
-     *  ROUNDED BEFORE THE PAYMENT AMOUNT CALC IS DONE
-     */
-
     // load vat, comm, and price
     const vatRate = jQuery(`#product-table-row-${prodId}`).data("vatrate");
     const commRate = jQuery(`#product-table-row-${prodId}`).data(
@@ -178,6 +172,7 @@ const displayOrderPaymentInfo = () => {
   setOrdersPaymentStatusRadio(tasteVenue.paymentOrders.paymentStatus);
   setOrdersCommentsVisibleCheck(tasteVenue.paymentOrders.commentVisibility);
   setOrdersAttachInvCheck(tasteVenue.paymentOrders.attachInvoice);
+  buildOrdersPaymentTableRows();
 };
 
 // const calc_net_payable = (price, qty, commRate, vatRate) => {
@@ -350,7 +345,7 @@ const tasteMakePayment = (
     postTotalAmount = tasteVenue.paymentOrders.totalNetPayable;
   } else {
     productInfo = curProdInfo = tasteGetProductInfo();
-    postTotalAmount = paymentData.get("payment-amt");
+    postTotalAmount = parseFloat(paymentData.get("payment-amt"));
     const prodId = Object.keys(productInfo)[0];
     postProductList = [
       [
@@ -441,6 +436,7 @@ const tasteMakePayment = (
       } else {
         console.log(respObj);
 
+        tasteVenue.paymentOrders.PBOMode = "insert";
         updateVenueCalcs(respObj, true);
         if (respObj.updateCurrentProd) {
           jQuery(".total-payments-display").html(respObj.totalPaid);
@@ -574,7 +570,8 @@ const tasteEditPBO = (paymentId) => {
       tasteCloseMsg();
       const paymentOrderInfo = JSON.parse(responseJson);
 
-      tasteVenue.paymentOrders.editPaymentId = paymentOrderInfo.editPaymentId;
+      tasteVenue.paymentOrders.editPaymentId = paymentId;
+      tasteVenue.paymentOrders.PBOMode = "edit";
       tasteVenue.paymentOrders.editOrigPayDate =
         paymentOrderInfo.editOrigPayDate;
       tasteVenue.paymentOrders.totalNetPayable =
@@ -672,10 +669,11 @@ const tasteDeletePBO = (paymentId) => {
     },
     success: function (responseJson) {
       tasteCloseMsg();
-      console.log(responseJson);
+      // console.log(responseJson);
       const paymentOrderInfo = JSON.parse(responseJson);
 
-      tasteVenue.paymentOrders.editPaymentId = paymentOrderInfo.editPaymentId;
+      tasteVenue.paymentOrders.editPaymentId = paymentId;
+      tasteVenue.paymentOrders.PBOMode = "delete";
       tasteVenue.paymentOrders.editOrigPayDate =
         paymentOrderInfo.editOrigPayDate;
       tasteVenue.paymentOrders.totalNetPayable =
@@ -768,6 +766,7 @@ const tasteHistoricalPBO = (venueId) => {
       }
 
       tasteVenue.paymentOrders.editPaymentId = 0;
+      tasteVenue.paymentOrders.PBOMode = "historical";
       tasteVenue.paymentOrders.editOrigPayDate = "";
       tasteVenue.paymentOrders.totalNetPayable =
         paymentOrderInfo.totalNetPayable;
@@ -1468,25 +1467,67 @@ const clearOrdersForPayment = () => {
 
 const buildOrdersPaymentTableRows = () => {
   let tbodyRows = "";
+  let overFlag = false;
+  // for (const [prodId, prodInfo] of Object.entries(
+  //   tasteVenue.paymentOrders.productList
+  // )) {
+  jQuery(".product-select-for-payments").each(function () {
+    const prodId = $(this).data("prod-id");
+    const prodInfo = tasteVenue.paymentOrders.productList[prodId];
+    const payAmt = parseFloat(prodInfo.netPayable);
+    if (!payAmt) {
+      return true;
+    }
+    // const insertMode = "insert" === tasteVenue.paymentOrders.PBOMode;
+    let balanceDue = jQuery(`#product-table-row-${prodId}`).data("balancedue");
+    balanceDue = Math.round(balanceDue * 100) / 100;
+    let trClass = "";
+    let editPBOMode = false;
+    let resultBalance;
 
-  for (const [prodId, prodInfo] of Object.entries(
-    tasteVenue.paymentOrders.productList
-  )) {
+    switch (tasteVenue.paymentOrders.PBOMode) {
+      case "delete":
+        resultBalance = balanceDue + payAmt;
+        break;
+      case "edit":
+        resultBalance = "";
+        editPBOMode = true;
+        break;
+      case "insert":
+      default:
+        resultBalance = balanceDue - payAmt;
+        if (0 > resultBalance && payAmt) {
+          trClass = " class='pbo-over-warning' ";
+          overFlag = true;
+        }
+    }
+
     tbodyRows += `
-			<tr>
+			<tr ${trClass}>
 				<td>${prodId}</td>
 				<td>${prodInfo.orderQty}</td>
 				<td>${financial(prodInfo.netPayable)}</td>
+				<td>${financial(balanceDue)}</td>
+				<td>${!editPBOMode ? financial(resultBalance) : ""}</td>
 			</tr>
 		`;
-  }
+  });
   tfootRow = `
 		<tr>
 			<td>Totals:</td>
 			<td>${tasteVenue.paymentOrders.totalQty}</td>
 			<td>${financial(tasteVenue.paymentOrders.totalNetPayable)}</td>
+      <td colspan="2">
+      </td>
 		</tr>
 	`;
+
+  if (overFlag && !jQuery("#payAllSelected").prop("disabled")) {
+    jQuery("#payAllSelected").addClass("pbo-over-warning");
+  } else {
+    jQuery("#payAllSelected").removeClass("pbo-over-warning");
+  }
+
   return {
     tbodyRows,
     tfootRow,
