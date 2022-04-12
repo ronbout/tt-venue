@@ -198,7 +198,9 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 				FROM $payment_products_table pprods
 					JOIN  $payment_table pay ON pay.id = pprods.payment_id
 					JOIN $v_p_join_table vp ON vp.product_id = pprods.product_id
+					JOIN $product_order_table plook ON plook.product_id = vp.product_id
 					LEFT JOIN $payment_order_xref_table pox ON pox.payment_id = pay.id
+						AND pox.order_item_id = plook.order_item_id
 				WHERE pprods.product_id IN ($placeholders)
 				GROUP BY pprods.product_id, pay.id
 				ORDER BY pprods.product_id DESC, pay.payment_date ASC ", 
