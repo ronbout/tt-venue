@@ -89,11 +89,11 @@ if (!$venue_id) {
 <div class="container" id="main_wrapper">
 	<div class="row pb-4">
 			<div class="col-sm-12 col-xl-12 dashboard_grid_cols d-flex align-items-center flex-column">
-					<h2 class="dashboard_heading mt-5 font-weight-bold text-left">Welcome to Your Dashboard, <?php echo $venue_name; ?> </h2>
+					<h2 class="dashboard_heading mt-5 font-weight-bold text-left">Welcome to Your New Dashboard, <?php echo $venue_name; ?> </h2>
 			</div>
 	</div>
 	<div class="text-center">
-		<img src="<?php echo TASTE_PLUGIN_URL ?>assets/img/taste_logo_large_circle.jpeg" width="320" alt="homepage_logo">
+		<img src="<?php echo TASTE_PLUGIN_URL ?>assets/img/theTaste_Badge.png" width="320" alt="homepage_logo">
 	</div>
 	<br><br>
 	<div class="text-center">
