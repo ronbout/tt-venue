@@ -15,34 +15,37 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 	$role = $user->roles[0];
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 
-	$order_rows = $wpdb->get_results($wpdb->prepare("
-			SELECT p.post_title,
-				im.meta_value AS quan,
-				wclook.product_id AS productID,
-				bf.meta_value AS b_fname,
-				bl.meta_value AS b_lname,
-				be.meta_value AS b_email,
-				poix.payment_id, pay.payment_date, pay.status as payment_status,
-				i.order_id, i.order_item_id as itemid, i.downloaded as downloaded,i.paid as paid
-			FROM " . $wpdb->prefix . "wc_order_product_lookup wclook
-			JOIN " . $wpdb->prefix . "woocommerce_order_itemmeta im ON im.order_item_id = wclook.order_item_id
-			LEFT JOIN " . $wpdb->prefix . "woocommerce_order_items i ON i.order_item_id = wclook.order_item_id
-			LEFT JOIN " . $wpdb->prefix . "posts o ON o.id = wclook.order_id
-			JOIN " . $wpdb->prefix . "posts p ON p.id = %d
-			LEFT JOIN " . $wpdb->prefix . "postmeta bf ON bf.post_id = wclook.order_id
-			LEFT JOIN " . $wpdb->prefix . "postmeta bl ON bl.post_id = wclook.order_id
-			LEFT JOIN " . $wpdb->prefix . "postmeta be ON be.post_id = wclook.order_id
-			LEFT JOIN " . $wpdb->prefix . "taste_venue_payment_order_item_xref poix ON poix.order_item_id = wclook.order_item_id
-			LEFT JOIN " . $wpdb->prefix . "taste_venue_payment pay ON pay.id = poix.payment_id
-			WHERE im.meta_key = '_qty'
-			AND bf.meta_key = '_billing_first_name'
-			AND bl.meta_key = '_billing_last_name'
-			AND be.meta_key = '_billing_email'
-			AND o.post_status = 'wc-completed'
-			AND o.post_type = 'shop_order'
-			AND o.post_date >= %s
-			AND wclook.product_id = %d 
-			GROUP BY o.id", $product_id, $cutoff_date, $product_id));
+	$order_rows_sql = "
+				SELECT p.post_title,
+					im.meta_value AS quan,
+					wclook.product_id AS productID,
+					bf.meta_value AS b_fname,
+					bl.meta_value AS b_lname,
+					be.meta_value AS b_email,
+					poix.payment_id, pay.payment_date, pay.status as payment_status,
+					i.order_id, i.order_item_id as itemid, i.downloaded as downloaded,i.paid as paid,
+					coup_p.ID AS store_credit_id, o.post_status AS order_status
+				FROM " . $wpdb->prefix . "wc_order_product_lookup wclook
+					JOIN " . $wpdb->prefix . "woocommerce_order_itemmeta im ON im.order_item_id = wclook.order_item_id
+					LEFT JOIN " . $wpdb->prefix . "woocommerce_order_items i ON i.order_item_id = wclook.order_item_id
+					LEFT JOIN " . $wpdb->prefix . "posts o ON o.id = wclook.order_id
+					JOIN " . $wpdb->prefix . "posts p ON p.id = wclook.product_id
+					LEFT JOIN " . $wpdb->prefix . "postmeta bf ON bf.post_id = wclook.order_id
+					LEFT JOIN " . $wpdb->prefix . "postmeta bl ON bl.post_id = wclook.order_id
+					LEFT JOIN " . $wpdb->prefix . "postmeta be ON be.post_id = wclook.order_id
+					LEFT JOIN " . $wpdb->prefix . "taste_venue_payment_order_item_xref poix ON poix.order_item_id = wclook.order_item_id
+					LEFT JOIN " . $wpdb->prefix . "taste_venue_payment pay ON pay.id = poix.payment_id
+					LEFT JOIN " . $wpdb->prefix . "posts coup_p ON coup_p.post_title = CAST(wclook.order_id AS CHAR(8)) COLLATE UTF8MB4_UNICODE_CI
+				WHERE im.meta_key = '_qty'
+					AND bf.meta_key = '_billing_first_name'
+					AND bl.meta_key = '_billing_last_name'
+					AND be.meta_key = '_billing_email'
+					AND o.post_status in ('wc-completed', 'wc-refunded', 'wc-on-hold')
+					AND o.post_type = 'shop_order'
+					AND wclook.product_id = %d 
+				GROUP BY o.id";
+
+	$order_rows = $wpdb->get_results($wpdb->prepare($order_rows_sql, $product_id));
 
 	$product_row = $wpdb->get_results($wpdb->prepare("
 		SELECT  pm.post_id, p.post_title,	v.venue_id, 
@@ -141,16 +144,6 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 	<!-- CAMPAIGN SUMMARY END -->
 
 	<?php 
-
-	// $payment_list = $wpdb->get_results($wpdb->prepare("
-	// 		SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, 
-	// 			pprods.amount, pay.comment, pay.amount as total_amount,
-	// 			pay.comment_visible_venues, pay.status, pay.attach_vat_invoice
-	// 		FROM {$wpdb->prefix}taste_venue_payment pay
-	// 		JOIN {$wpdb->prefix}taste_venue_payment_products pprods ON pprods.payment_id = pay.id 
-	// 		WHERE pprods.product_id = %d
-	// 			AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
-	// 		ORDER BY pay.payment_date ASC ", $product_id), ARRAY_A);
 
 	$venue_payment_list = $wpdb->get_results($wpdb->prepare("
 			SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, 
@@ -389,14 +382,21 @@ function check_for_payments($order_rows) {
 function display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id, $admin) {
 	$action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3';
 	$payment_due = !$order_item_info->payment_id && $order_item_info->downloaded === '1';
+	$order_status = $order_item_info->order_status;
+	$order_store_credit = $order_item_info->store_credit_id;
 	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan, true)['net_payable'];
 	$net_payable_order_data = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan, false)['net_payable'];
 	$row_tooltip_title = '';
 	if ('0' == $order_item_info->downloaded) {
-		if ('N' == $expired_val || $admin) {
-			$row_status_class = ' or-display-unredeemed';
+		// check for a status other than completed
+		if ('wc-completed' != $order_status ) {
+			$row_status_class = ' or-display-not-complete';
 		} else {
-			$row_status_class = ' or-display-expired';
+			if ('N' == $expired_val || $admin) {
+				$row_status_class = ' or-display-unredeemed';
+			} else {
+				$row_status_class = ' or-display-expired';
+			}
 		}
 	}	elseif ($payment_due) {
 		$row_status_class = ' or-display-pay-due';
@@ -424,7 +424,8 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 			data-order-net-payable="<?php echo $net_payable_order_data ?>"
 			class="<?php echo $row_status_class ?>"
 			<?php echo $row_tooltip_title ?>
-
+			data-status="<?php echo $order_status ?>"
+			data-store-credit="<?php echo $order_store_credit ?>"
 	>
 		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center  redeem-mode-only">
 			<?php 
@@ -472,51 +473,79 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 				Paid
 			</span>
 			<?php
-				// if ('0' == $order_item_info->downloaded) {
-				// 		if ('N' == $expired_val) {
-				// 			echo '<button	class="btn btn-success order-redeem-btn or-status-display-unredeemed">Redeem</button>';
-				// 		}
-				// 		else {
-				// 			echo '<span class="notserved or-status-display-expired">
-				// 							<i class="fas fa-times-circle"></i>
-				// 							Not Served / Expired
-				// 						</span>';
-				// 		}
-				// }	else {
-					if ($expired_val == 'N' || $admin) {
-						?>
-						<button	class="btn btn-info order-unredeem-btn or-display or-status-display-pay-due">Unredeem</button>
-						<button	class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>
-						<?php
+					if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
+						if ($order_status == 'wc-on-hold' && !$order_store_credit) {
+							?>
+								<span class="or-display or-status-display-not-complete">
+									<i class="fas fa-times-circle"></i>
+									On Hold
+								</span>
+							<?php
+						} else {
+							?>
+								<span class="or-display or-status-display-not-complete">
+									<i class="fas fa-times-circle"></i>
+									Refunded
+								</span>
+							<?php	
+						}
 					} else {
-						?>
-						<span class="notserved or-display or-status-display-expired">
-							<i class="fas fa-times-circle"></i>
-							Not Served / Expired
-						</span>
-						<span class="served or-display or-status-display-pay-due">
-							<i class="fas fa-check-circle"></i>
-							Voucher Served
-						</span>
-						<?php
+						if ($expired_val == 'N' || $admin) {
+							?>
+							<button	class="btn btn-info order-unredeem-btn or-display or-status-display-pay-due">Unredeem</button>
+							<button	class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>
+							<?php
+						} else {
+							?>
+							<span class="notserved or-display or-status-display-expired">
+								<i class="fas fa-times-circle"></i>
+								Not Served / Expired
+							</span>
+							<span class="served or-display or-status-display-pay-due">
+								<i class="fas fa-check-circle"></i>
+								Voucher Served
+							</span>
+							<?php
+						}
 					}
-					$redeem_qty = $redeem_qty + $order_item_info->quan;
-				// }
 						?>
 		</td> 
 		<td class="payment-mode-only">
-			<span class="notserved  or-display or-status-display-unredeemed">
-				<i class="fas fa-times-circle"></i>
-				Not Served 
-			</span>
-			<span class="text-primary font-weight-bold payment-due-status or-display or-status-display-pay-due" >
-				<i class="fas fa-minus-circle"></i>
-				Payment Due
-			</span>
-			<span class="served or-display or-status-display-paid">
-				<i class="fas fa-check-circle"></i>
-				Paid
-			</span>
+			<?php
+				if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
+					if ($order_status == 'wc-on-hold' && !$order_store_credit) {
+						?>
+							<span class="or-display or-status-display-not-complete">
+								<i class="fas fa-times-circle"></i>
+								On Hold
+							</span>
+						<?php
+					} else {
+						?>
+							<span class="or-display or-status-display-not-complete">
+								<i class="fas fa-times-circle"></i>
+								Refunded
+							</span>
+						<?php	
+					}
+				} else {
+					?>
+						<span class="notserved  or-display or-status-display-unredeemed">
+							<i class="fas fa-times-circle"></i>
+							Not Served 
+						</span>
+						<span class="text-primary font-weight-bold payment-due-status or-display or-status-display-pay-due" >
+							<i class="fas fa-minus-circle"></i>
+							Payment Due
+						</span>
+						<span class="served or-display or-status-display-paid">
+							<i class="fas fa-check-circle"></i>
+							Paid
+						</span>
+					<?php
+				}
+			?>
+
 		</td>
 	</tr>
 	<?php

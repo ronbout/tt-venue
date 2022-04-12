@@ -8,7 +8,7 @@ $spacers: (
     (
       10%,
     )
-    // 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    // 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -678,7 +678,10 @@ body.campaign-manager {
   tr.or-display-paid > td > .or-display:not(.or-status-display-paid),
   tr.or-display-expired
     > td
-    > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired) {
+    > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired),
+  tr.or-display-not-complete
+    > td
+    > .or-display:not(.or-status-display-not-complete) {
     display: none;
   }
 

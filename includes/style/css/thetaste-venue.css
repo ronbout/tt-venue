@@ -11252,7 +11252,8 @@ body.campaign-manager .fa-disabled {
 body.campaign-manager tr.or-display-unredeemed > td > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired),
 body.campaign-manager tr.or-display-pay-due > td > .or-display:not(.or-status-display-pay-due),
 body.campaign-manager tr.or-display-paid > td > .or-display:not(.or-status-display-paid),
-body.campaign-manager tr.or-display-expired > td > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired) {
+body.campaign-manager tr.or-display-expired > td > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired),
+body.campaign-manager tr.or-display-not-complete > td > .or-display:not(.or-status-display-not-complete) {
   display: none;
 }
 body.campaign-manager tr.or-edit-mode-display-paid > td > .or-display:not(.or-status-display-paid) {
