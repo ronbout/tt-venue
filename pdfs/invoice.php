@@ -263,7 +263,7 @@ function display_order_info($pdf, $payment_info) {
 	$pdf->AddPage();
 
 	$pdf->SetFont('', 'B');
-	center($pdf, 'Paid Orders by Campaign ID');
+	center($pdf, 'Orders Payment Details');
 	$pdf->Ln();
 	$pdf->SetFont('');
 
