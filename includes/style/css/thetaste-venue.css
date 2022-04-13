@@ -11129,6 +11129,8 @@ body.campaign-manager {
   /* icon circle background */
   /* icons */
   /* use class at the tr and td span level to determine what gets displayed */
+  /* BEGIN Styles for the Voucher Listing Status Column */
+  /* END Styles for the Voucher Listing Status Column */
 }
 body.campaign-manager div.headings {
   margin-top: 2.5rem;
@@ -11237,7 +11239,8 @@ body.campaign-manager .notserved {
 }
 body.campaign-manager .fa-check-circle,
 body.campaign-manager .fa-times-circle,
-body.campaign-manager .payment-due-status .fa-minus-circle {
+body.campaign-manager .or-display-pay-due .fa-plus-circle,
+body.campaign-manager .or-status-on-hold .fa-minus-circle {
   font-size: 20px;
 }
 body.campaign-manager .active-prod,
@@ -11261,6 +11264,31 @@ body.campaign-manager tr.or-display-paid > td > .or-display:not(.or-status-displ
 body.campaign-manager tr.or-display-expired > td > .or-display:not(.or-status-display-unredeemed):not(.or-status-display-expired),
 body.campaign-manager tr.or-display-not-complete > td > .or-display:not(.or-status-display-not-complete) {
   display: none;
+}
+body.campaign-manager .or-display {
+  font-weight: bold;
+}
+body.campaign-manager .served.or-status-display-paid,
+body.campaign-manager .served.or-status-display-paid .fa-check-circle {
+  color: #44c4a1;
+}
+body.campaign-manager .payment-due-status.or-status-display-pay-due,
+body.campaign-manager .served.or-status-display-pay-due,
+body.campaign-manager .payment-due-status.or-status-display-pay-due .fa-minus-circle,
+body.campaign-manager .served.or-status-display-pay-due .fa-check-circle {
+  color: #007bff;
+}
+body.campaign-manager .notserved.or-status-display-unredeemed,
+body.campaign-manager .notserved.or-status-display-unredeemed .fa-times-circle,
+body.campaign-manager .notserved.or-status-display-expired,
+body.campaign-manager .notserved.or-status-display-expired .fa-times-circle {
+  color: darkorange;
+}
+body.campaign-manager .or-status-refunded,
+body.campaign-manager .or-status-on-hold,
+body.campaign-manager .or-status-refunded .fa-times-circle,
+body.campaign-manager .or-status-on-hold .fa-times-circle {
+  color: #f44336;
 }
 body.campaign-manager tr.or-edit-mode-display-paid > td > .or-display:not(.or-status-display-paid) {
   display: none;

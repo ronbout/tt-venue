@@ -8,7 +8,7 @@ $spacers: (
     (
       10%,
     )
-    // 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+    // 80% -> form inputs became 10% shorter on width from each side,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 );
 
 @import "../bootstrap/scss/bootstrap";
@@ -655,7 +655,8 @@ body.campaign-manager {
 
   .fa-check-circle,
   .fa-times-circle,
-  .payment-due-status .fa-minus-circle {
+  .or-display-pay-due .fa-plus-circle,
+  .or-status-on-hold .fa-minus-circle {
     font-size: 20px;
   }
 
@@ -691,6 +692,40 @@ body.campaign-manager {
     > .or-display:not(.or-status-display-not-complete) {
     display: none;
   }
+
+  /* BEGIN Styles for the Voucher Listing Status Column */
+
+  .or-display {
+    font-weight: bold;
+  }
+
+  .served.or-status-display-paid,
+  .served.or-status-display-paid .fa-check-circle {
+    color: #44c4a1;
+  }
+
+  .payment-due-status.or-status-display-pay-due,
+  .served.or-status-display-pay-due,
+  .payment-due-status.or-status-display-pay-due .fa-minus-circle,
+  .served.or-status-display-pay-due .fa-check-circle {
+    color: #007bff;
+  }
+
+  .notserved.or-status-display-unredeemed,
+  .notserved.or-status-display-unredeemed .fa-times-circle,
+  .notserved.or-status-display-expired,
+  .notserved.or-status-display-expired .fa-times-circle {
+    color: darkorange;
+  }
+
+  .or-status-refunded,
+  .or-status-on-hold,
+  .or-status-refunded .fa-times-circle,
+  .or-status-on-hold .fa-times-circle {
+    color: #f44336;
+  }
+
+  /* END Styles for the Voucher Listing Status Column */
 
   tr.or-edit-mode-display-paid > td > .or-display:not(.or-status-display-paid) {
     display: none;

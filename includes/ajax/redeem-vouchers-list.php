@@ -387,6 +387,15 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 	$net_payable_order_item = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan, true)['net_payable'];
 	$net_payable_order_data = calc_net_payable($product_price, $vat_val, $commission_val, $order_item_info->quan, false)['net_payable'];
 	$row_tooltip_title = '';
+
+	$status_icons = array(
+		'paid' => 'fa-check-circle',
+		'pay_due' => 'fa-plus-circle',
+		'unredeem' => 'fa-times-circle',
+		'refunded' => 'fa-times-circle',
+		'on_hold' => 'fa-minus-circle',
+	);
+
 	if ('0' == $order_item_info->downloaded) {
 		// check for a status other than completed
 		if ('wc-completed' != $order_status ) {
@@ -481,22 +490,22 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 		<?php $action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3' ?>
 		<td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>" class="<?php echo $action_class ?> redeem-mode-only">		
 			<span class="served or-display or-display or-status-display-paid">
-				<i class="fas fa-check-circle"></i>
+				<i class="fas <?php echo $status_icons['paid'] ?>"></i>
 				Paid
 			</span>
 			<?php
 					if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
 						if ($order_status == 'wc-on-hold' && !$order_store_credit) {
 							?>
-								<span class="or-display or-status-display-not-complete">
-									<i class="fas fa-times-circle"></i>
+								<span class="or-display or-status-on-hold or-status-display-not-complete">
+									<i class="fas <?php echo $status_icons['on_hold'] ?>"></i>
 									On Hold
 								</span>
 							<?php
 						} else {
 							?>
-								<span class="or-display or-status-display-not-complete">
-									<i class="fas fa-times-circle"></i>
+								<span class="or-display or-status-refunded or-status-display-not-complete">
+									<i class="fas <?php echo $status_icons['refunded'] ?>"></i>
 									Refunded
 								</span>
 							<?php	
@@ -510,11 +519,11 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 						} else {
 							?>
 							<span class="notserved or-display or-status-display-expired">
-								<i class="fas fa-times-circle"></i>
+								<i class="fas <?php echo $status_icons['unredeem'] ?>"></i>
 								Not Served / Expired
 							</span>
 							<span class="served or-display or-status-display-pay-due">
-								<i class="fas fa-check-circle"></i>
+								<i class="fas <?php echo $status_icons['pay_due'] ?>"></i>
 								Voucher Served
 							</span>
 							<?php
@@ -527,15 +536,15 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 				if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
 					if ($order_status == 'wc-on-hold' && !$order_store_credit) {
 						?>
-							<span class="or-display or-status-display-not-complete">
-								<i class="fas fa-times-circle"></i>
+							<span class="or-display or-status-on-hold or-status-display-not-complete">
+								<i class="fas <?php echo $status_icons['on_hold'] ?>"></i>
 								On Hold
 							</span>
 						<?php
 					} else {
 						?>
-							<span class="or-display or-status-display-not-complete">
-								<i class="fas fa-times-circle"></i>
+							<span class="or-display or-status-refunded or-status-display-not-complete">
+								<i class="fas <?php echo $status_icons['refunded'] ?>"></i>
 								Refunded
 							</span>
 						<?php	
@@ -543,15 +552,15 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 				} else {
 					?>
 						<span class="notserved  or-display or-status-display-unredeemed">
-							<i class="fas fa-times-circle"></i>
+							<i class="fas <?php echo $status_icons['unredeem'] ?>"></i>
 							Not Served 
 						</span>
-						<span class="text-primary font-weight-bold payment-due-status or-display or-status-display-pay-due" >
-							<i class="fas fa-minus-circle"></i>
+						<span class="font-weight-bold payment-due-status or-display or-status-display-pay-due" >
+							<i class="fas <?php echo $status_icons['pay_due'] ?>"></i>
 							Payment Due
 						</span>
 						<span class="served or-display or-status-display-paid">
-							<i class="fas fa-check-circle"></i>
+							<i class="fas <?php echo $status_icons['paid'] ?>"></i>
 							Paid
 						</span>
 					<?php
