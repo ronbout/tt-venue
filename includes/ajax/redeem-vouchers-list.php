@@ -438,7 +438,7 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 	>
 		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center  redeem-mode-only">
 			<?php 
-				if ($order_item_info->downloaded === '0' && ("N" === $expired_val || $admin)) {
+				if ($order_item_info->downloaded === '0' && ("N" === $expired_val || $admin) && 'wc-completed' == $order_status ) {
 					?>
 						<input type="checkbox" class="order-redeem-check">
 					<?php
