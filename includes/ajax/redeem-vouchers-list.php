@@ -451,7 +451,19 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 																		or-status-display-pay-due <?php echo $edit_mode_chk_class ?>" <?php echo $checked_status ?>>
 		</td>
 		<td class="payment-mode-only"><?php echo $order_item_info->itemid ?></td>
-		<td><?php echo $order_item_info->order_id ?></td>
+		<td>
+			<?php
+			if ($admin) {
+				?>
+				<a href="<?php echo get_edit_post_link( $order_item_info->order_id ) ?>" class="cm-order-link" target="_blank">
+					<?php echo $order_item_info->order_id ?>
+				</a>
+				<?php
+			} else {
+				echo $order_item_info->order_id;
+			}
+			?>
+		</td>
 		<td><?php echo $order_item_info->b_fname . ' ' . $order_item_info->b_lname ?></td>
 		<td class="redeem-mode-only">
 			<span id="email-display-<?php echo $order_item_info->order_id ?>">

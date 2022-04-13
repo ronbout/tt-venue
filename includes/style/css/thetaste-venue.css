@@ -11186,6 +11186,12 @@ body.campaign-manager p.titles {
   font-size: 15px;
   color: #656565;
 }
+body.campaign-manager .cm-product-link,
+body.campaign-manager .cm-order-link {
+  text-decoration: none;
+  font-weight: bold;
+  color: black;
+}
 body.campaign-manager .eclipse_icon_bg {
   position: absolute;
   right: 1rem;

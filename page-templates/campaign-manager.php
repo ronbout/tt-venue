@@ -627,7 +627,7 @@ function display_products_table($product_calcs, $served_heading, $venue_totals, 
 						<tbody>
 							<?php
 								foreach($product_calcs as $product_row) {
-									display_product_row($product_row);
+									display_product_row($product_row, $admin);
 								}
 							?>
 						</tbody>
@@ -686,7 +686,7 @@ function display_table_totals($venue_totals) {
 <?php
 }
 
-function display_product_row($product_row) {
+function display_product_row($product_row, $admin) {
 	$id = $product_row['product_id'];
 	$title = $product_row['title'];
 	$status = $product_row['status'];
@@ -719,7 +719,19 @@ function display_product_row($product_row) {
 			data-vatrate="<?php echo $vat_rate ?>" data-commissionrate="<?php echo $commission_rate ?>" data-price="<?php echo $price ?>"
 			data-productid="<?php echo $id?>" data-paidamount="<?php echo $paid_amount ?>" data-balancedue="<?php echo $balance_due ?>"
 	>
-		<td><?php echo $id ?></td>
+		<td>
+			<?php
+				if ($admin) {
+					?>
+					<a href="<?php echo get_edit_post_link( $id ) ?>" class="cm-product-link" target="_blank">
+						<?php echo $id ?>
+					</a>
+					<?php
+				} else {
+					echo $id;
+				}
+			?>
+		</td>
 		<td><?php echo $title ?></td>
 		<?php echo $status_display ?>
 		<td class="table-nbr">
