@@ -3,6 +3,7 @@ const TASTE_ORDER_STATUS_PAID = 0; // (or-display-paid)
 const TASTE_ORDER_STATUS_NOT_PAID_REDEEMED = 1; //  (or-display-pay-due)
 const TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED = 2; // unredeemed, not expired  (or-display-unredeemed)
 const TASTE_ORDER_STATUS_NOT_PAID_EXPIRED = 3; // unredeemed, expired  (or-display-expired)
+const TASTE_PBO_NET_PAYABLE_THRESHOLD = 0.05;
 jQuery(document).ready(function () {
   if ($("body").hasClass("campaign-manager")) {
     cmDisplayMode = tasteVenue?.displayMode;
@@ -154,7 +155,13 @@ const displayOrderPaymentInfo = (origNetPayableFlag = false) => {
       prodQtyTotal += orderItem.orderQty;
     });
     // call calc net payable
-    let prodTotal = calc_net_payable(price, prodQtyTotal, commRate, vatRate);
+    let prodTotal = calc_net_payable(
+      price,
+      prodQtyTotal,
+      commRate,
+      vatRate,
+      prodId
+    );
     if (origNetPayableFlag) {
       tasteVenue.paymentOrders.productList[prodId].origNetPayable = prodTotal;
     }
@@ -178,19 +185,7 @@ const displayOrderPaymentInfo = (origNetPayableFlag = false) => {
   buildOrdersPaymentTableRows();
 };
 
-// const calc_net_payable = (price, qty, commRate, vatRate) => {
-//   // due to floating point calc errors in js, convert all to whole numbers
-//   let revenue = qty * price;
-//   let commission = (revenue / 100) * commRate;
-//   let vat = (commission / 100) * vatRate;
-//   revenue = parseFloat(financial(revenue));
-//   commission = parseFloat(financial(commission));
-//   vat = parseFloat(financial(vat));
-//   let payable = revenue - (commission + vat);
-//   return parseFloat(financial(payable));
-// };
-
-const calc_net_payable = (price, qty, commRate, vatRate) => {
+const calc_net_payable = (price, qty, commRate, vatRate, prodId = 0) => {
   // due to floating point calc errors in js, convert all to whole numbers
   const priceBig = new Big(price);
   const revenueBig = priceBig.times(qty);
@@ -207,11 +202,24 @@ const calc_net_payable = (price, qty, commRate, vatRate) => {
   // console.log("revenue: ", revenue.toString());
   // console.log("commission: ", commission.toString());
   // console.log("vat: ", vat.toString());
-  const payable = revenueBig.minus(commission).minus(vat).round(2);
+  let payable = revenueBig.minus(commission).minus(vat).round(2);
   // console.log("payable: ", payable.toString());
   // console.log("payable float: ", parseFloat(payable.toString()));
   // console.log("----------");
-  return parseFloat(payable.toString());
+  payable = parseFloat(payable.toString());
+
+  // check for a Balance Due Threshold to account for rounding
+  // if | Balance Due - payable | < threshold
+  // just set payable = to Balance Due.
+  if (prodId) {
+    let balanceDue = jQuery(`#product-table-row-${prodId}`).data("balancedue");
+    balanceDue = Math.round(balanceDue * 100) / 100;
+    if (Math.abs(balanceDue - payable) <= TASTE_PBO_NET_PAYABLE_THRESHOLD) {
+      payable = balanceDue;
+    }
+  }
+
+  return payable;
 };
 
 const setupToggleButtons = () => {
