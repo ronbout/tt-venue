@@ -258,22 +258,3 @@ function update_venue_info($form_info, $venue_table, $venue_id) {
 	return $rows_affected;
 	// return true;
 }
-
-function display_logout() {
-	?>
-	  <a class="nav-link" href="<?php echo wp_logout_url(get_site_url()) ?>" data-toggle="tooltip" data-placement="left" title="Logout" id="logout"><i class="fas fa-sign-out-alt"></i></a>
-
-	<?php
-}
-
-function display_new_portal_link() {
-    ?>
-        <li><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Campaign Manager</a></li>
-    <?php
-}
-
-function display_old_portal_link() {
-    ?>
-        <li class="nav-item"><a class="nav-link" href="<?php echo get_site_url(null, '/campaign-manager') ?>">Manage Vouchers</a></li>
-    <?php
-}
