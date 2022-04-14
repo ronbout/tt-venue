@@ -63,6 +63,7 @@ function taste_add_venue_manager_template ($templates) {
 	$templates['venue-portal.php'] = 'Venue Portal';
 	$templates['venue-profile-page.php'] = 'Venue Profile Page';
 	$templates['audit-by-products.php'] = 'Audit By Products';
+	$templates['mini-order-page.php'] = 'Mini Order Item Page';
 	return $templates;
 	}
 add_filter ('theme_page_templates', 'taste_add_venue_manager_template');
@@ -79,6 +80,9 @@ function taste_redirect_page_template ($template) {
 	}
 	if (is_page_template('audit-by-products.php')) {
 		$template = plugin_dir_path( __FILE__ ).'page-templates/audit-by-products.php';
+	}
+	if (is_page_template('mini-order-page.php')) {
+		$template = plugin_dir_path( __FILE__ ).'page-templates/mini-order-page.php';
 	}
 	return $template;
 }
