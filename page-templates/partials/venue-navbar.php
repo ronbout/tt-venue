@@ -21,22 +21,24 @@ function venue_navbar ($links) {
 		
 	}
 	?>
-	<header>
-		<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
-				<a class="navbar-brand" href="<?php echo get_site_url() ?>">
-						<img src="<?php echo TASTE_VENUE_UPLOADS_BASE_URL ?>/2022/01/TheTaste-logo-2022.svg" class="img-fluid" style="width: 180px"  alt="" loading="lazy">
-				</a>
-				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#venueNavbarToggler" aria-controls="venueNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-						<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="venueNavbarToggler">
-						<ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-							<?php echo $links_html ?>
-						</ul>
-				</div>
-		</nav>
-	</header>
-	<?php
+<header>
+  <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="<?php echo get_site_url() ?>">
+      <img src="<?php echo TASTE_VENUE_UPLOADS_BASE_URL ?>/2022/01/TheTaste-logo-2022.svg" class="img-fluid"
+        style="width: 180px" alt="" loading="lazy">
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#venueNavbarToggler"
+      aria-controls="venueNavbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="venueNavbarToggler">
+      <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+        <?php echo $links_html ?>
+      </ul>
+    </div>
+  </nav>
+</header>
+<?php
 }
 
 function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $admin=false, $get_string='') {
@@ -65,9 +67,14 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $ad
 			'active' => $voucher_page === '/' . $pagename
 		),
 		array(
-			'title' => 'Profile',
-			'url' => get_site_url(null, '/venue-profile-page') . $get_string,
-			'active' => 'venue-profile-page' === $pagename
+			'title' => 'Jobs',
+			'url' => get_site_url(null, '/job-dashboard') . $get_string,
+			'active' => 'job-dashboard' === $pagename
+		),
+		array(
+			'title' => 'Account',
+			'url' => get_site_url(null, '/my-taste-account') . $get_string,
+			'active' => 'my-taste-account' === $pagename
 		),
 		array(
 			'title' => 'Log Out',
