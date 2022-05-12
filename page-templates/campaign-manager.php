@@ -128,10 +128,10 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 								UPPER(pm2.meta_value) AS 'expired', pm3.meta_value AS 'price', pm4.meta_value AS 'vat',
 								pm5.meta_value AS 'commission', pm6.meta_value AS 'bed_nights', 
 								COALESCE(pm7.meta_value, 2) AS 'total_covers',
-								SUM(IF(orderp.post_status = 'wc-completed', 1, 0)) AS 'order_cnt', 
-								SUM(IF(orderp.post_status = 'wc-completed',plook.product_qty, 0)) AS 'order_qty', 
-								SUM(IF(orderp.post_status = 'wc-completed',wc_oi.downloaded, 0)) AS 'redeemed_cnt', 
-								SUM(IF(orderp.post_status = 'wc-completed',wc_oi.downloaded * plook.product_qty, 0)) AS 'redeemed_qty'
+								SUM(IF(orderp.post_status = 'wc-completed' OR wc_oi.downloaded = 1, 1, 0)) AS 'order_cnt', 
+								SUM(IF(orderp.post_status = 'wc-completed' OR wc_oi.downloaded = 1, plook.product_qty, 0)) AS 'order_qty', 
+								SUM(IF(orderp.post_status = 'wc-completed' OR wc_oi.downloaded = 1, wc_oi.downloaded, 0)) AS 'redeemed_cnt', 
+								SUM(IF(orderp.post_status = 'wc-completed' OR wc_oi.downloaded = 1, wc_oi.downloaded * plook.product_qty, 0)) AS 'redeemed_qty'
 							FROM $v_p_join_table vp 
 							JOIN $product_table pr ON vp.product_id = pr.product_id AND pr.onsale = 1
 							JOIN $posts_table p ON vp.product_id =  p.ID
@@ -145,7 +145,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 							LEFT JOIN $product_order_table plook ON plook.product_id = pr.product_id
 							LEFT JOIN $posts_table orderp ON orderp.ID = plook.order_id 
 							LEFT JOIN $order_items_table wc_oi ON wc_oi.order_item_id = plook.order_item_id
-								AND orderp.post_status = 'wc-completed'
+								AND orderp.post_status in ('wc-completed', 'wc-refunded', 'wc-on-hold')
 								AND orderp.post_type = 'shop_order'
 							WHERE	vp.venue_id = %d
 								AND p.post_date >= %s
