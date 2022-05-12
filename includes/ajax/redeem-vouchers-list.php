@@ -103,20 +103,16 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 		'<i class="fas fa-times-circle fa-lg ml-2"></i><span class="ml-3 text-danger">Expired</span>';
 
 	?>
-	<!-- CAMPAIGN SUMMARY START -->
+<!-- CAMPAIGN SUMMARY START -->
 
-	<div class="collapse-container campaign_summary mt-5">
-		<h3 class="text-center">Summary for Campaign <?php echo $product_id . ' - ' . $status_display?></h3>
-		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
-				<i 
-				data-toggle="collapse" 
-				data-target="#campaign_summary_collapse" 
-				aria-expanded="true" 
-				aria-controls="campaign_summary_collapse" 
-				class="collapse-icon fas fa-minus-circle"></i>
-		</span>
-		<div class="collapse show" id="campaign_summary_collapse">
-			<?php 
+<div class="collapse-container campaign_summary mt-5">
+  <h3 class="text-center">Summary for Campaign <?php echo $product_id . ' - ' . $status_display?></h3>
+  <span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
+    <i data-toggle="collapse" data-target="#campaign_summary_collapse" aria-expanded="true"
+      aria-controls="campaign_summary_collapse" class="collapse-icon fas fa-minus-circle"></i>
+  </span>
+  <div class="collapse show" id="campaign_summary_collapse">
+    <?php 
 			
 			display_campaign_header($expired_val, $product_id, $product_title);
 			
@@ -139,11 +135,11 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 			
 			display_terms($termsandconditions);
 			?>
-		</div>
-	</div>
-	<!-- CAMPAIGN SUMMARY END -->
+  </div>
+</div>
+<!-- CAMPAIGN SUMMARY END -->
 
-	<?php 
+<?php 
 
 	$venue_payment_list = $wpdb->get_results($wpdb->prepare("
 			SELECT  pay.id, pay.payment_date AS timestamp, pprods.product_id AS pid, 
@@ -166,53 +162,49 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 	});
 
 	?>
-	<div class=" collapse-container payment_transaction mt-5">
-		<h3 class="text-center">Transactions for Campaign <?php echo $product_id ?></h3>
-		<span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
-			<i 
-				data-toggle="collapse" 
-				data-target="#payment_transaction_collapse" 
-				aria-expanded="true" 
-				aria-controls="payment_transaction_collapse" 
-				class="collapse-icon fas fa-minus-circle"></i>
-		</span>
-		<div class="collapse show" id="payment_transaction_collapse">
-		<h4 id="prod-transactions-cnt-display">
-			<?php 
+<div class=" collapse-container payment_transaction mt-5">
+  <h3 class="text-center">Transactions for Campaign <?php echo $product_id ?></h3>
+  <span class="circle-span" data-placement="top" title="Show / Hide" data-toggle="tooltip">
+    <i data-toggle="collapse" data-target="#payment_transaction_collapse" aria-expanded="true"
+      aria-controls="payment_transaction_collapse" class="collapse-icon fas fa-minus-circle"></i>
+  </span>
+  <div class="collapse show" id="payment_transaction_collapse">
+    <h4 id="prod-transactions-cnt-display">
+      <?php 
 				$payment_count = count($filtered_payment_list);
 				if ($payment_count)  {
 					echo "Transaction Items ($payment_count Rows)";
 				} else {
 					echo "No Transactions Found";
 				}
-			?>				
-		</h4>
+			?>
+    </h4>
 
-	<?php
+    <?php
 		$total_paid_to_venue = display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $filtered_payment_list, $payment_count, $make_payments_below);
 		
 		$balance_due = $payable - $total_paid_to_venue;
 	?>
-	<input type="hidden" id="taste-venue-name" value="<?php echo $venue_info['name'] ?>">
-	<input type="hidden" id="taste-venue-addr1" value="<?php echo $venue_info['address1'] ?>">
-	<input type="hidden" id="taste-venue-addr2" value="<?php echo $venue_info['address2'] ?>">
-	<input type="hidden" id="taste-venue-city" value="<?php echo $venue_info['city'] ?>">
-	<input type="hidden" id="taste-venue-postcode" value="<?php echo $venue_info['postcode'] ?>">
-	<div id="hidden-values">
-		<input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
-		<input type="hidden" id="taste-product-multiplier" value="<?php echo $multiplier ?>">
-		<input type="hidden" id="taste-price" value="<?php echo $product_price ?>">
-		<input type="hidden" id="taste-commission-value" value="<?php echo $commission_val ?>">
-		<input type="hidden" id="taste-vat-value" value="<?php echo $vat_val ?>">
-		<input type="hidden" id="taste-redeem-qty" value="<?php echo $redeem_qty ?>">
-		<input type="hidden" id="taste-num-served" value="<?php echo ($redeem_qty * $multiplier) ?>">
-		<input type="hidden" id="taste-total-sold" value="<?php echo $total_sold ?>">
-	</div>
-	<div id="hidden-payment-values">
-		<input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_venue ?>">
-		<input type="hidden" id="taste-balance-due" value="<?php echo $balance_due ?>">
-	</div>
-	<?php
+    <input type="hidden" id="taste-venue-name" value="<?php echo $venue_info['name'] ?>">
+    <input type="hidden" id="taste-venue-addr1" value="<?php echo $venue_info['address1'] ?>">
+    <input type="hidden" id="taste-venue-addr2" value="<?php echo $venue_info['address2'] ?>">
+    <input type="hidden" id="taste-venue-city" value="<?php echo $venue_info['city'] ?>">
+    <input type="hidden" id="taste-venue-postcode" value="<?php echo $venue_info['postcode'] ?>">
+    <div id="hidden-values">
+      <input type="hidden" id="taste-product-id" value="<?php echo $product_id ?>">
+      <input type="hidden" id="taste-product-multiplier" value="<?php echo $multiplier ?>">
+      <input type="hidden" id="taste-price" value="<?php echo $product_price ?>">
+      <input type="hidden" id="taste-commission-value" value="<?php echo $commission_val ?>">
+      <input type="hidden" id="taste-vat-value" value="<?php echo $vat_val ?>">
+      <input type="hidden" id="taste-redeem-qty" value="<?php echo $redeem_qty ?>">
+      <input type="hidden" id="taste-num-served" value="<?php echo ($redeem_qty * $multiplier) ?>">
+      <input type="hidden" id="taste-total-sold" value="<?php echo $total_sold ?>">
+    </div>
+    <div id="hidden-payment-values">
+      <input type="hidden" id="taste-total-paid" value="<?php echo $total_paid_to_venue ?>">
+      <input type="hidden" id="taste-balance-due" value="<?php echo $balance_due ?>">
+    </div>
+    <?php
 }
 
 function display_campaign_header($expired_val, $product_id, $product_title) {
@@ -220,58 +212,58 @@ function display_campaign_header($expired_val, $product_id, $product_title) {
 		'<i class="fas fa-check-circle ml-2"></i><span class="ml-3 text-danger">Expired</span>' :
 		'<i class="fas fa-times-circle ml-2"></i><span class="ml-3 text-danger">Expired</span>';
 	?>
-	<!-- REVENUE CAMPAIGN DETAILS START -->
-	<input type="hidden" id="taste-product-title" value="<?php echo $product_title ?>">
-	<div class="revenue_campaign_details mb-4">
-		<div class="row">
-			<div class="col cols">
-					<p class="lead"><strong><?php echo $product_title ?></strong></p>
-			</div>
-		</div>
-		<div class="row mt-3">
-			<div class="col please_note cols">
-					<h3>Please Note :</h3>
-					<p>
-							This management console has 3 unique rules, the first is all payments due to venues
-							are for served customers only, by law TheTaste must be able to complete refunds 
-							direct to customers who have not been served. The second change you will notice is 
-							as a result of the recent GDPR laws meaning we can only disclose the email addresses 
-							of the customers you have served. The final change is due to National Consumer Law
-							meaning we have to allow 14 days after the campaign validity has expired
-							to issue payments.
-					</p>
-			</div>
-		</div>
-		<div class="row mt-3">
-				<div class="col-md please_note cols">
-						<h3>Important :</h3>
-						<p>
-								By clicking the Redeem button below you are confirming you have fully served that customer and the 
-								customer will receive an automatic email thanking them and asking them to share their experience 
-								feedback with us. Fraudulently Redeeming Vouchers will expose details of customers 
-								below and break GDPR Laws.
-						</p>
-						<p class="text-danger font-weight-bold">You must retain all paper vouchers for this campaign!</p>
-						<p class="text-danger font-weight-bold">
-								Fraudulently Redeeming Vouchers will result in a full paper 
-								audit of this campaign and Put Your Payment On Hold!
-						</p>
-				</div>
-				<div class="col-md-4 revenue_campaign_info cols">
-						<h3>Campaign VAT Statement :</h3>
-						<p class="campaign_details">
-								JFG Digital Ltd T/A TheTaste.ie<br/><br/>
-								Unit 1, The CHG Building, 
-								North Wall Quay, Dublin 1<br/><br/>
-								D01 Y6H7<br/><br/>
-								Company No 681166<br/><br/>
-								VAT No 3738046TH<br/><br/>
-						</p>
-				</div>
-		</div>
-	</div>
-<!-- REVENUE CAMPAIGN DETAILS END -->
-	<?php
+    <!-- REVENUE CAMPAIGN DETAILS START -->
+    <input type="hidden" id="taste-product-title" value="<?php echo $product_title ?>">
+    <div class="revenue_campaign_details mb-4">
+      <div class="row">
+        <div class="col cols">
+          <p class="lead"><strong><?php echo $product_title ?></strong></p>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col please_note cols">
+          <h3>Please Note :</h3>
+          <p>
+            This management console has 3 unique rules, the first is all payments due to venues
+            are for served customers only, by law TheTaste must be able to complete refunds
+            direct to customers who have not been served. The second change you will notice is
+            as a result of the recent GDPR laws meaning we can only disclose the email addresses
+            of the customers you have served. The final change is due to National Consumer Law
+            meaning we have to allow 14 days after the campaign validity has expired
+            to issue payments.
+          </p>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md please_note cols">
+          <h3>Important :</h3>
+          <p>
+            By clicking the Redeem button below you are confirming you have fully served that customer and the
+            customer will receive an automatic email thanking them and asking them to share their experience
+            feedback with us. Fraudulently Redeeming Vouchers will expose details of customers
+            below and break GDPR Laws.
+          </p>
+          <p class="text-danger font-weight-bold">You must retain all paper vouchers for this campaign!</p>
+          <p class="text-danger font-weight-bold">
+            Fraudulently Redeeming Vouchers will result in a full paper
+            audit of this campaign and Put Your Payment On Hold!
+          </p>
+        </div>
+        <div class="col-md-4 revenue_campaign_info cols">
+          <h3>Campaign VAT Statement :</h3>
+          <p class="campaign_details">
+            JFG Digital Ltd T/A TheTaste.ie<br /><br />
+            Unit 1, The CHG Building,
+            North Wall Quay, Dublin 1<br /><br />
+            D01 Y6H7<br /><br />
+            Company No 681166<br /><br />
+            VAT No 3738046TH<br /><br />
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- REVENUE CAMPAIGN DETAILS END -->
+    <?php
 }
 
 function display_orders_table($order_rows, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id, $admin ) {
@@ -281,19 +273,19 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 	$tproduct = 0;
 	if (count($order_rows)) {
 				?>
-				<?php
+    <?php
 					if ($expired_val === 'N' || $admin) {
 						echo '<button class="btn btn-success order-redeem-checked-btn my-2" disabled >Redeem Checked</button>';
 					}
 				?>
-				<div class="table-fixed-wrapper">
-					<div id="voucher-table-container" class="table-fixed-container">
-						<table class="table table-striped table-bordered table-fixed">
-							<?php display_order_table_heading($order_rows, $expired_val, $admin) ?>
+    <div class="table-fixed-wrapper">
+      <div id="voucher-table-container" class="table-fixed-container">
+        <table class="table table-striped table-bordered table-fixed">
+          <?php display_order_table_heading($order_rows, $expired_val, $admin) ?>
 
-								<tbody id="voucher-table-body">
+          <tbody id="voucher-table-body">
 
-								<?php 
+            <?php 
 								foreach ($order_rows as $order_item_info) {
 									$tproduct = $tproduct + 1;							
 									$total_sold = $total_sold + $order_item_info->quan;
@@ -303,11 +295,11 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 									display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id, $admin);
 								}
 								?>
-								</tbody>
-						</table>
-					</div>
-				</div>
-				<?php 
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <?php 
 				$totals = display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val);
 				$payable = $totals['payable'];
 				$commission = $totals['commission'];
@@ -318,7 +310,7 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 				$vat = 0;
 			}
 			?>
-	<?php
+    <?php
 	// have to return some of th totals calculated 
 	$order_totals = array (
 		'payable' => $payable,
@@ -333,39 +325,39 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 function display_order_table_heading($order_rows, $expired_val, $admin) {
 	$show_payment_check_all = check_for_payments($order_rows);
 	?>
-	<thead>
-		<th scope="col" class="redeem-mode-only">
-			<?php 
+    <thead>
+      <th scope="col" class="redeem-mode-only">
+        <?php 
 				if (($expired_val === 'N' || $admin) && in_array('0', array_column($order_rows, 'downloaded'))) {
 					?>
-						<input type="checkbox" id="checkbox-all">
-					<?php
+        <input type="checkbox" id="checkbox-all">
+        <?php
 				} else {
 					echo '';
 				}
 			?>
-		</th>
-		<th scope="col" class="payment-mode-only">
-			<?php 
+      </th>
+      <th scope="col" class="payment-mode-only">
+        <?php 
 				if ($show_payment_check_all) {
 					?>
-						<input type="checkbox" id="checkbox-payment-all">
-					<?php
+        <input type="checkbox" id="checkbox-payment-all">
+        <?php
 				} else {
 					echo '';
 				}
 			?>
-		</th>
-		<th scope="col" class="payment-mode-only">Order Item Id</th>
-		<th scope="col">Order ID</th>
-		<th scope="col">Customer Name</th>
-		<th scope="col" class="redeem-mode-only">Customer Email</th>
-		<th scope="col">Quantity</th>
-		<th scope="col" class="payment-mode-only">Net Payable</th>
-		<th scope="col" class="redeem-mode-only">Status</th>
-		<th scope="col" class="payment-mode-only">Payment</br>Status</th>
-	</thead>
-	<?php
+      </th>
+      <th scope="col" class="payment-mode-only">Order Item Id</th>
+      <th scope="col">Order ID</th>
+      <th scope="col">Customer Name</th>
+      <th scope="col" class="redeem-mode-only">Customer Email</th>
+      <th scope="col">Quantity</th>
+      <th scope="col" class="payment-mode-only">Net Payable</th>
+      <th scope="col" class="redeem-mode-only">Status</th>
+      <th scope="col" class="payment-mode-only">Payment</br>Status</th>
+    </thead>
+    <?php
 }
 
 function check_for_payments($order_rows) {
@@ -425,30 +417,28 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 		}
 		$row_tooltip_title .= '"';
 	}
+	$redeemed_refunded_class =  ('1' == $order_item_info->downloaded && 'wc-completed' != $order_status) ? " redeemed-refunded " : "";
 	?>
-	<tr  id="order-table-row-<?php echo $order_item_info->itemid ?>"
-			data-order-id="<?php echo $order_item_info->order_id ?>" 
-			data-order-qty="<?php echo $order_item_info->quan ?>" 
-			data-order-item-id="<?php echo $order_item_info->itemid ?>"
-			data-order-net-payable="<?php echo $net_payable_order_data ?>"
-			class="<?php echo $row_status_class ?>"
-			<?php echo $row_tooltip_title ?>
-			data-status="<?php echo $order_status ?>"
-			data-store-credit="<?php echo $order_store_credit ?>"
-	>
-		<td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center  redeem-mode-only">
-			<?php 
+    <tr id="order-table-row-<?php echo $order_item_info->itemid ?>"
+      data-order-id="<?php echo $order_item_info->order_id ?>" data-order-qty="<?php echo $order_item_info->quan ?>"
+      data-order-item-id="<?php echo $order_item_info->itemid ?>"
+      data-order-net-payable="<?php echo $net_payable_order_data ?>"
+      class="<?php echo $row_status_class ?> <?php echo $admin ? ' admin-mode ' : '' ?>"
+      <?php echo $row_tooltip_title ?> data-status="<?php echo $order_status ?>"
+      data-store-credit="<?php echo $order_store_credit ?>">
+      <td id="td-check-order-id-<?php echo $order_item_info->order_id ?>" class="text-center  redeem-mode-only">
+        <?php 
 				if ($order_item_info->downloaded === '0' && ("N" === $expired_val || $admin) && 'wc-completed' == $order_status ) {
 					?>
-						<input type="checkbox" class="order-redeem-check">
-					<?php
+        <input type="checkbox" class="order-redeem-check">
+        <?php
 				} else {
 					echo '';
 				}
 			?>
-		</td>
-		<td id="td-check-order-payment-id-<?php echo $order_item_info->order_id ?>" class="text-center payment-mode-only">
-		<?php
+      </td>
+      <td id="td-check-order-payment-id-<?php echo $order_item_info->order_id ?>" class="text-center payment-mode-only">
+        <?php
 			// determine if this order needs to be checked, either due to having been checked but not 
 			// yet processed through the MakePayment routine, OR because it is a previous payment being edited
 			$checked_status = in_array($order_item_info->itemid, $order_payments_checklist) || 
@@ -456,120 +446,121 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 
 			$edit_mode_chk_class = $order_item_info->payment_id == $edit_payment_id ? " or-status-display-paid" : "";
 		?>
-			<input type="checkbox" class="order-payment-check or-display 
+        <input type="checkbox" class="order-payment-check or-display 
 																		or-status-display-pay-due <?php echo $edit_mode_chk_class ?>" <?php echo $checked_status ?>>
-		</td>
-		<td class="payment-mode-only"><?php echo $order_item_info->itemid ?></td>
-		<td>
-			<?php
+      </td>
+      <td class="payment-mode-only"><?php echo $order_item_info->itemid ?></td>
+      <td>
+        <?php
 			if ($admin) {
 				?>
-				<a href="<?php echo get_edit_post_link( $order_item_info->order_id ) ?>" class="cm-order-link" target="_blank">
-					<?php echo $order_item_info->order_id ?>
-				</a>
-				<?php
+        <a href="<?php echo get_edit_post_link( $order_item_info->order_id ) ?>" class="cm-order-link" target="_blank">
+          <?php echo $order_item_info->order_id ?>
+        </a>
+        <?php
 			} else {
 				echo $order_item_info->order_id;
 			}
 			?>
-		</td>
-		<td><?php echo $order_item_info->b_fname . ' ' . $order_item_info->b_lname ?></td>
-		<td class="redeem-mode-only">
-			<span id="email-display-<?php echo $order_item_info->order_id ?>">
-			<?php
+      </td>
+      <td><?php echo $order_item_info->b_fname . ' ' . $order_item_info->b_lname ?></td>
+      <td class="redeem-mode-only">
+        <span id="email-display-<?php echo $order_item_info->order_id ?>">
+          <?php
 				if ($order_item_info->downloaded == '1') {
 						echo $order_item_info->b_email;
 				} else {
 						echo "*** GDPR BLANKED EMAIL ***";
 				}
 			?>
-			</span>
-		</td>
-		<td class="table-nbr"><?php echo $order_item_info->quan ?> </td>
-		<td class="table-nbr payment-mode-only"><?php echo round($net_payable_order_item,2) ?></td>
-		<?php $action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3' ?>
-		<td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>" class="<?php echo $action_class ?> redeem-mode-only">		
-			<span class="served or-display or-display or-status-display-paid">
-				<i class="fas <?php echo $status_icons['paid'] ?>"></i>
-				Paid
-			</span>
-			<?php
+        </span>
+      </td>
+      <td class="table-nbr"><?php echo $order_item_info->quan ?> </td>
+      <td class="table-nbr payment-mode-only"><?php echo round($net_payable_order_item,2) ?></td>
+      <?php $action_class = ('N' == $expired_val) ? 'text-center' : 'pl-3' ?>
+      <td id="td-btn-order-id-<?php echo $order_item_info->order_id ?>"
+        class="<?php echo $action_class ?> redeem-mode-only  <?php echo $redeemed_refunded_class ?>">
+        <span class="served or-display or-display or-status-display-paid">
+          <i class="fas <?php echo $status_icons['paid'] ?>"></i>
+          Paid
+        </span>
+        <?php
 					if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
 						if ($order_status == 'wc-on-hold' && !$order_store_credit) {
 							?>
-								<span class="or-display or-status-on-hold or-status-display-not-complete">
-									<i class="fas <?php echo $status_icons['on_hold'] ?>"></i>
-									On Hold
-								</span>
-							<?php
+        <span class="or-display or-status-on-hold or-status-display-not-complete">
+          <i class="fas <?php echo $status_icons['on_hold'] ?>"></i>
+          On Hold
+        </span>
+        <?php
 						} else {
 							?>
-								<span class="or-display or-status-refunded or-status-display-not-complete">
-									<i class="fas <?php echo $status_icons['refunded'] ?>"></i>
-									Refunded
-								</span>
-							<?php	
+        <span class="or-display or-status-refunded or-status-display-not-complete">
+          <i class="fas <?php echo $status_icons['refunded'] ?>"></i>
+          Refunded
+        </span>
+        <?php	
 						}
 					} else {
 						if ($expired_val == 'N' || $admin) {
 							?>
-							<button	class="btn btn-info order-unredeem-btn or-display or-status-display-pay-due">Unredeem</button>
-							<button	class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>
-							<?php
+        <button class="btn btn-info order-unredeem-btn or-display or-status-display-pay-due">Unredeem</button>
+        <button class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>
+        <?php
 						} else {
 							?>
-							<span class="notserved or-display or-status-display-expired">
-								<i class="fas <?php echo $status_icons['unredeem'] ?>"></i>
-								Not Served / Expired
-							</span>
-							<span class="served or-display or-status-display-pay-due">
-								<i class="fas <?php echo $status_icons['pay_due'] ?>"></i>
-								Voucher Served
-							</span>
-							<?php
+        <span class="notserved or-display or-status-display-expired">
+          <i class="fas <?php echo $status_icons['unredeem'] ?>"></i>
+          Not Served / Expired
+        </span>
+        <span class="served or-display or-status-display-pay-due">
+          <i class="fas <?php echo $status_icons['pay_due'] ?>"></i>
+          Voucher Served
+        </span>
+        <?php
 						}
 					}
 						?>
-		</td> 
-		<td class="payment-mode-only">
-			<?php
+      </td>
+      <td class="payment-mode-only <?php echo $redeemed_refunded_class ?>">
+        <?php
 				if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
 					if ($order_status == 'wc-on-hold' && !$order_store_credit) {
 						?>
-							<span class="or-display or-status-on-hold or-status-display-not-complete">
-								<i class="fas <?php echo $status_icons['on_hold'] ?>"></i>
-								On Hold
-							</span>
-						<?php
+        <span class="or-display or-status-on-hold or-status-display-not-complete">
+          <i class="fas <?php echo $status_icons['on_hold'] ?>"></i>
+          On Hold
+        </span>
+        <?php
 					} else {
 						?>
-							<span class="or-display or-status-refunded or-status-display-not-complete">
-								<i class="fas <?php echo $status_icons['refunded'] ?>"></i>
-								Refunded
-							</span>
-						<?php	
+        <span class="or-display or-status-refunded or-status-display-not-complete">
+          <i class="fas <?php echo $status_icons['refunded'] ?>"></i>
+          Refunded
+        </span>
+        <?php	
 					}
 				} else {
 					?>
-						<span class="notserved  or-display or-status-display-unredeemed">
-							<i class="fas <?php echo $status_icons['unredeem'] ?>"></i>
-							Not Served 
-						</span>
-						<span class="font-weight-bold payment-due-status or-display or-status-display-pay-due" >
-							<i class="fas <?php echo $status_icons['pay_due'] ?>"></i>
-							Payment Due
-						</span>
-						<span class="served or-display or-status-display-paid">
-							<i class="fas <?php echo $status_icons['paid'] ?>"></i>
-							Paid
-						</span>
-					<?php
+        <span class="notserved  or-display or-status-display-unredeemed">
+          <i class="fas <?php echo $status_icons['unredeem'] ?>"></i>
+          Not Served
+        </span>
+        <span class="font-weight-bold payment-due-status or-display or-status-display-pay-due">
+          <i class="fas <?php echo $status_icons['pay_due'] ?>"></i>
+          Payment Due
+        </span>
+        <span class="served or-display or-status-display-paid">
+          <i class="fas <?php echo $status_icons['paid'] ?>"></i>
+          Paid
+        </span>
+        <?php
 				}
 			?>
 
-		</td>
-	</tr>
-	<?php
+      </td>
+    </tr>
+    <?php
 }
 
 function display_order_table_summary($redeem_qty, $total_sold, $product_price, $commission_val, $vat_val) {
@@ -581,66 +572,66 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 	$payable = $curr_prod_values['net_payable'];
 	
 	?>
-            
-	<div class="row mt-3">
-		<div class="col-md tcard-lg">
-				<h3 class="numbers">
-					<span id="redeem-qty-display"><?php echo $redeem_qty ?></span>
-				<h3>
-				<p class="titles">Out of possible 
-					<span id="total-sold-display"><?php echo $total_sold ?></span>
-				</p>
-				<div class="eclipse_icon_bg users_icon">
-						<i class="fas fa-users"></i>
-				</div>
-		</div>
-		<div class="col-md tcard-lg">
-				<h3 class="numbers">
-					<span id="grevenue-display">
-						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($grevenue, 2)  ?>
-					</span>
-				<h3>
-				<p class="titles">Gross Revenue</p>
-				<div class="eclipse_icon_bg money_bill_icon">
-						<i class="far fa-money-bill-alt"></i>
-				</div>
-		</div>
-		<div class="col-md tcard">
-			<h3 class="numbers">
-				<span id="commission-display">
-					<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($commission, 2)  ?>
-				</span>
-			<h3>
-			<p class="titles">Commission</p>
-			<div class="eclipse_icon_bg coins_icon">
-					<i class="fas fa-coins"></i>
-			</div>
-		</div>
-		<div class="col-md tcard">
-				<h3 class="numbers">
-					<span id="vat-display">
-						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($vat, 2)  ?>
-					</span>
-				<h3>
-				<p class="titles">VAT</p>
-				<div class="eclipse_icon_bg balance_scale_icon">
-						<i class="fas fa-balance-scale"></i>
-				</div>
-		</div>
-		<div class="col-md tcard">
-				<h3 class="numbers">
-					<span class="payable-display">
-						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
-					</span>
-				<h3>
-				<p class="titles">Net Payable</p>
-				<div class="eclipse_icon_bg cash_register_icon">
-						<i class="fas fa-cash-register"></i>
-				</div>
-		</div>
-	</div>
 
-	<?php
+    <div class="row mt-3">
+      <div class="col-md tcard-lg">
+        <h3 class="numbers">
+          <span id="redeem-qty-display"><?php echo $redeem_qty ?></span>
+          <h3>
+            <p class="titles">Out of possible
+              <span id="total-sold-display"><?php echo $total_sold ?></span>
+            </p>
+            <div class="eclipse_icon_bg users_icon">
+              <i class="fas fa-users"></i>
+            </div>
+      </div>
+      <div class="col-md tcard-lg">
+        <h3 class="numbers">
+          <span id="grevenue-display">
+            <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($grevenue, 2)  ?>
+          </span>
+          <h3>
+            <p class="titles">Gross Revenue</p>
+            <div class="eclipse_icon_bg money_bill_icon">
+              <i class="far fa-money-bill-alt"></i>
+            </div>
+      </div>
+      <div class="col-md tcard">
+        <h3 class="numbers">
+          <span id="commission-display">
+            <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($commission, 2)  ?>
+          </span>
+          <h3>
+            <p class="titles">Commission</p>
+            <div class="eclipse_icon_bg coins_icon">
+              <i class="fas fa-coins"></i>
+            </div>
+      </div>
+      <div class="col-md tcard">
+        <h3 class="numbers">
+          <span id="vat-display">
+            <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($vat, 2)  ?>
+          </span>
+          <h3>
+            <p class="titles">VAT</p>
+            <div class="eclipse_icon_bg balance_scale_icon">
+              <i class="fas fa-balance-scale"></i>
+            </div>
+      </div>
+      <div class="col-md tcard">
+        <h3 class="numbers">
+          <span class="payable-display">
+            <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
+          </span>
+          <h3>
+            <p class="titles">Net Payable</p>
+            <div class="eclipse_icon_bg cash_register_icon">
+              <i class="fas fa-cash-register"></i>
+            </div>
+      </div>
+    </div>
+
+    <?php
 		$totals = array(
 			'payable' => $payable,
 			'commission' => $commission,
@@ -651,16 +642,16 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 
 function display_terms($termsandconditions) {
 	?>
-	<div class="revenue_camapaign_details mt-5">
-		<div class="row">
-			<div class="revenue_campaign_info p-4 col cols">
-				<h3 class="terms">Campaign Terms & Conditions</h3>
-				<p class="text-secondary">(printed on each voucher)</p>
-				<?php	echo stripslashes($termsandconditions) ?>
-			</div>
-		</div>
-	</div>
-	<?php
+    <div class="revenue_camapaign_details mt-5">
+      <div class="row">
+        <div class="revenue_campaign_info p-4 col cols">
+          <h3 class="terms">Campaign Terms & Conditions</h3>
+          <p class="text-secondary">(printed on each voucher)</p>
+          <?php	echo stripslashes($termsandconditions) ?>
+        </div>
+      </div>
+    </div>
+    <?php
 }
 
 function display_payments_table($product_id, $payable, $commission_val, $commission, $vat_val, $vat, $admin, $venue_info, $payment_list, $payment_count, $make_payments_below) {
@@ -668,31 +659,31 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 
 	$total_paid_to_venue = 0;
 	?>
-			<div class="table-fixed-wrapper">
-				<div id="payment-table-container" class="table-fixed-container">		
-					<table id="audit-payment-table" class="table table-striped table-bordered table-fixed text-center"
-						data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
-						data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo TASTE_VENUE_INVOICE_URL ?>"
-						data-venuename="<?php echo $venue_info['name'] ?>" data-venueaddr1="<?php echo $venue_info['address1'] ?>"
-						data-venueaddr2="<?php echo $venue_info['address2'] ?>" data-venuecity="<?php echo $venue_info['city'] ?>"
-						data-venuepostcode="<?php echo $venue_info['postcode'] ?>" data-paymentcnt="<?php echo $payment_count ?>">
-						<thead>
-							<tr>
-								<?php echo $admin ? '<th scope="col">ID</th>' : '' ?>
-								<th scope="col" class="sort-by-date">Date</th>
-								<th scope="col">Amount</th>
-								<th scope="col">Invoice</th>
-								<th scope="col">Description</th>
-								<?php if ($admin && $make_payments_below) {	?>
-									<th scope="col">Edit</th>
-									<th scope="col">Delete</th>
-									<?php
+    <div class="table-fixed-wrapper">
+      <div id="payment-table-container" class="table-fixed-container">
+        <table id="audit-payment-table" class="table table-striped table-bordered table-fixed text-center"
+          data-commval="<?php echo $commission_val ?>" data-vatval="<?php echo $vat_val ?>"
+          data-productid="<?php echo $product_id ?>" data-invoiceurl="<?php echo TASTE_VENUE_INVOICE_URL ?>"
+          data-venuename="<?php echo $venue_info['name'] ?>" data-venueaddr1="<?php echo $venue_info['address1'] ?>"
+          data-venueaddr2="<?php echo $venue_info['address2'] ?>" data-venuecity="<?php echo $venue_info['city'] ?>"
+          data-venuepostcode="<?php echo $venue_info['postcode'] ?>" data-paymentcnt="<?php echo $payment_count ?>">
+          <thead>
+            <tr>
+              <?php echo $admin ? '<th scope="col">ID</th>' : '' ?>
+              <th scope="col" class="sort-by-date">Date</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Invoice</th>
+              <th scope="col">Description</th>
+              <?php if ($admin && $make_payments_below) {	?>
+              <th scope="col">Edit</th>
+              <th scope="col">Delete</th>
+              <?php
 								}
 								?>
-							</tr>
-						</thead>
-						<tbody id="payment-lines">
-							<?php
+            </tr>
+          </thead>
+          <tbody id="payment-lines">
+            <?php
 							$ln = 1;
 							foreach($payment_list as $payment){ 
 								// disp_payment_line is in ajax/functions.php
@@ -701,160 +692,166 @@ function display_payments_table($product_id, $payable, $commission_val, $commiss
 								$ln++;
 							}
 							?>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<?php if ($admin) {
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <?php if ($admin) {
 				?>
-			<div class="redeem-mode-only">
-					<!--  ADD NEW TRANSACTION MODAL TRIGGER  -->
-					<button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#addEditPaymentModal"
-						data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment="" 
-						data-commentvisibility="1" data-invoiceattachment="1"
-						>
-					<i class="fa fa-plus-circle"></i> &nbsp; Add Transaction
-				</button>
-			</div>
-			<?php
+    <div class="redeem-mode-only">
+      <!--  ADD NEW TRANSACTION MODAL TRIGGER  -->
+      <button type="button" class="btn btn-success mt-2" data-toggle="modal" data-target="#addEditPaymentModal"
+        data-paymentid="" data-paymentdate="<?php echo date('Y-m-d') ?>" data-paymentamt="0" data-comment=""
+        data-commentvisibility="1" data-invoiceattachment="1">
+        <i class="fa fa-plus-circle"></i> &nbsp; Add Transaction
+      </button>
+    </div>
+    <?php
 			}
 			$balance_due = $payable - $total_paid_to_venue;
 			?>
-			<!-- PAYMENTS SUMMARY -->
-			<div class="row">
-				<div class="col-md tcard">
-						<h3 class="numbers">
-							<span class="payable-display">
-								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
-							</span>
-						<h3>
-						<p class="titles">Net Payable</p>
-						<div class="eclipse_icon_bg cash_register_icon">
-								<i class="fas fa-cash-register"></i>
-						</div>
-				</div>
-				<div class="col-md tcard">
-						<h3 class="numbers">
-							<span class="total-payments-display">
-								<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($total_paid_to_venue, 2)  ?>
-							</span>
-						<h3>
-						<p class="titles">Campaign Payments</p>
-						<div class="eclipse_icon_bg coins_icon">
-							<i class="fas fa-coins"></i>
-						</div>
-				</div>
-				<div class="col-md tcard">
-						<h3 class="numbers">
-						<span id="balance-due-display">
-						<?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($balance_due, 2) ?>
-							</span>
-						<h3>
-						<p class="titles">Balance Due</p>
-						<div class="eclipse_icon_bg balance_scale_icon">
-								<i class="fas fa-balance-scale"></i>
-						</div>
-				</div>
-			</div>
-			<!-- END OF PAYMENTS SUMMARY -->
+    <!-- PAYMENTS SUMMARY -->
+    <div class="row">
+      <div class="col-md tcard">
+        <h3 class="numbers">
+          <span class="payable-display">
+            <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($payable, 2)  ?>
+          </span>
+          <h3>
+            <p class="titles">Net Payable</p>
+            <div class="eclipse_icon_bg cash_register_icon">
+              <i class="fas fa-cash-register"></i>
+            </div>
+      </div>
+      <div class="col-md tcard">
+        <h3 class="numbers">
+          <span class="total-payments-display">
+            <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($total_paid_to_venue, 2)  ?>
+          </span>
+          <h3>
+            <p class="titles">Campaign Payments</p>
+            <div class="eclipse_icon_bg coins_icon">
+              <i class="fas fa-coins"></i>
+            </div>
+      </div>
+      <div class="col-md tcard">
+        <h3 class="numbers">
+          <span id="balance-due-display">
+            <?php echo get_woocommerce_currency_symbol() ?> <?php echo number_format($balance_due, 2) ?>
+          </span>
+          <h3>
+            <p class="titles">Balance Due</p>
+            <div class="eclipse_icon_bg balance_scale_icon">
+              <i class="fas fa-balance-scale"></i>
+            </div>
+      </div>
+    </div>
+    <!-- END OF PAYMENTS SUMMARY -->
 
-		<!-- Payment Modal -->
-		<div class="modal fade" id="addEditPaymentModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="addEditPaymentModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title" id="addEditPaymentModalLabel"></h4>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<form id="modal-payment-form">
-							<input type="hidden" id="modal-payment-id" value="0" name="payment-id">
-							<input type="hidden" id="modal-payment-orig-amt" name="payment-orig-amt">
-							<input type="hidden" id="modal-payment-orig-date" name="payment-orig-date">
-							<input type="hidden" id="modal-payment-status" name="payment-status" 
-											value="<?php echo TASTE_PAYMENT_STATUS_PAID ?>">
-							<div class="form-group">
-								<label for="modal-payment-date">Transaction date</label>
-								<input class="form-control" type="date" id="modal-payment-date" required name="payment-date">
-							</div>
-							<div class="form-group">
-								<label for="modal-payment-amt">Transaction amount</label>
-								<input class="form-control" type="text" id="modal-payment-amt" required name="payment-amt">
-							</div>
-							<div class="form-group">
-								<label for="modal-payment-comment">Description							
-									<div class="form-check" class="payment-visibility-checkbox-div">
-										<input class="form-check-input" type="checkbox" value="" id="payment-comment-visible-checkbox"	
-												name="payment-comment-visibility">
-											<label class="form-check-label" for="payment-comment-visible-checkbox">
-												Visible to Venues
-											</label>
-									</div>
-								</label>
-								<textarea class="form-control" id="modal-payment-comment" name="payment-comment" placeholder="Add description" rows="3"></textarea>
-							</div>
-							<div class="form-check" >
-								<input class="form-check-input" type="checkbox" value="" id="payment-attach-invoice-checkbox"	
-										name="payment-invoice-attachment">
-									<label class="form-check-label" for="payment-attach-invoice-checkbox">
-										Generate Invoice for this Payment
-									</label>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<div id="payment-modal-addedit">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-							<button type="submit" form="modal-payment-form" id="modal-payment-submit" class="btn btn-primary payment-save-btn">Save</button>
-						</div>
-						<div id="payment-modal-delete">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-							<button type="button" form="modal-payment-form" id="modal-payment-delete-btn" class="btn btn-danger payment-save-btn">Delete</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+    <!-- Payment Modal -->
+    <div class="modal fade" id="addEditPaymentModal" data-backdrop="static" tabindex="-1" role="dialog"
+      aria-labelledby="addEditPaymentModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="addEditPaymentModalLabel"></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="modal-payment-form">
+              <input type="hidden" id="modal-payment-id" value="0" name="payment-id">
+              <input type="hidden" id="modal-payment-orig-amt" name="payment-orig-amt">
+              <input type="hidden" id="modal-payment-orig-date" name="payment-orig-date">
+              <input type="hidden" id="modal-payment-status" name="payment-status"
+                value="<?php echo TASTE_PAYMENT_STATUS_PAID ?>">
+              <div class="form-group">
+                <label for="modal-payment-date">Transaction date</label>
+                <input class="form-control" type="date" id="modal-payment-date" required name="payment-date">
+              </div>
+              <div class="form-group">
+                <label for="modal-payment-amt">Transaction amount</label>
+                <input class="form-control" type="text" id="modal-payment-amt" required name="payment-amt">
+              </div>
+              <div class="form-group">
+                <label for="modal-payment-comment">Description
+                  <div class="form-check" class="payment-visibility-checkbox-div">
+                    <input class="form-check-input" type="checkbox" value="" id="payment-comment-visible-checkbox"
+                      name="payment-comment-visibility">
+                    <label class="form-check-label" for="payment-comment-visible-checkbox">
+                      Visible to Venues
+                    </label>
+                  </div>
+                </label>
+                <textarea class="form-control" id="modal-payment-comment" name="payment-comment"
+                  placeholder="Add description" rows="3"></textarea>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="payment-attach-invoice-checkbox"
+                  name="payment-invoice-attachment">
+                <label class="form-check-label" for="payment-attach-invoice-checkbox">
+                  Generate Invoice for this Payment
+                </label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <div id="payment-modal-addedit">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="submit" form="modal-payment-form" id="modal-payment-submit"
+                class="btn btn-primary payment-save-btn">Save</button>
+            </div>
+            <div id="payment-modal-delete">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="button" form="modal-payment-form" id="modal-payment-delete-btn"
+                class="btn btn-danger payment-save-btn">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-		<!-- Comment Modal -->
-		<div class="modal fade" id="addCommentModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="addCommentModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title" id="addCommentModalLabel"><strong>Add / Edit Description</strong></h4>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<form id="modal-comment-form">
-							<input type="hidden" id="modal-comment-id" name="payment-id">
-							<input type="hidden" id="modal-comment-amt" name="payment-amt">
-							<input type="hidden" id="modal-comment-date" name="payment-date">
-							<input type="hidden" id="modal-comment-orig-amt" name="payment-orig-amt">
-							<input type="hidden" id="modal-comment-orig-date" name="payment-orig-date">
-							<div class="form-group">
-								<label for="modal-comment">Description</label>
-								<textarea class="form-control" id="modal-comment" name="payment-comment" placeholder="Add comment" rows="3"></textarea>
-							</div>
-							<div class="form-check">
-								<input class="form-check-input" type="checkbox" value="" id="modal-comment-visible-checkbox" name="payment-comment-visibility">
-								<label class="form-check-label" for="modal-comment-visible-checkbox" >
-									Visible to Venues
-								</label>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-						<button type="submit" form="modal-comment-form" id="modal-comment-submit" class="btn btn-primary payment-save-btn">Save changes</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	<?php
+    <!-- Comment Modal -->
+    <div class="modal fade" id="addCommentModal" data-backdrop="static" tabindex="-1" role="dialog"
+      aria-labelledby="addCommentModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="addCommentModalLabel"><strong>Add / Edit Description</strong></h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="modal-comment-form">
+              <input type="hidden" id="modal-comment-id" name="payment-id">
+              <input type="hidden" id="modal-comment-amt" name="payment-amt">
+              <input type="hidden" id="modal-comment-date" name="payment-date">
+              <input type="hidden" id="modal-comment-orig-amt" name="payment-orig-amt">
+              <input type="hidden" id="modal-comment-orig-date" name="payment-orig-date">
+              <div class="form-group">
+                <label for="modal-comment">Description</label>
+                <textarea class="form-control" id="modal-comment" name="payment-comment" placeholder="Add comment"
+                  rows="3"></textarea>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="modal-comment-visible-checkbox"
+                  name="payment-comment-visibility">
+                <label class="form-check-label" for="modal-comment-visible-checkbox">
+                  Visible to Venues
+                </label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" form="modal-comment-form" id="modal-comment-submit"
+              class="btn btn-primary payment-save-btn">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php
 	return $total_paid_to_venue;
 }
-

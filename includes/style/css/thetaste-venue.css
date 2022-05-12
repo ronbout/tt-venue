@@ -11265,6 +11265,9 @@ body.campaign-manager tr.or-display-expired > td > .or-display:not(.or-status-di
 body.campaign-manager tr.or-display-not-complete > td > .or-display:not(.or-status-display-not-complete) {
   display: none;
 }
+body.campaign-manager tr.admin-mode .redeemed-refunded {
+  background-color: lightpink;
+}
 body.campaign-manager .or-display {
   font-weight: bold;
 }
