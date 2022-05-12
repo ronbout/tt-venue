@@ -20,8 +20,14 @@ if ( !is_user_logged_in()) {
 	// if the user is not logged in, we will still give them a quick 
 	// notice of Redeemable / Not Redeemable and the Venue Name so they
 	// can quickly determine whether it is legitimate
+	if (isset($_GET['login']) && $_GET['login']) {
+		require_once TASTE_PLUGIN_PATH.'page-templates/thetaste-venue-login.php';
+		die();
+	}
+	ob_start();
 	non_user_display($order_item_id);
-	die();
+  $non_user_disp = ob_get_clean();
+	$user_info = null;
 } else {
 	$user_info = get_user_venue_info();
 	$user = $user_info['user'];
@@ -48,23 +54,9 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/mini-order-item-display.
 
 $venue_id = '';
 if ($admin) {
-	$nav_links = array(
-		array(
-			'title' => 'Log Out',
-			'url' => wp_logout_url(get_site_url()),
-			'active' => false
-		),
-	);
 	// check if the Venue ID is in GET from form 
 	if (isset($_GET['venue-id'])) {
 		$venue_id = $_GET['venue-id'];
-		// add the link to return to venue selection
-		$venue_select_link = array(
-			'title' => 'Venue Selection',
-			'url' => get_page_link(),
-			'active' => false
-		);
-		array_unshift($nav_links, $venue_select_link);
 		// get venue name and other info
 		$user_info = get_user_venue_info($venue_id);
 		$venue_name = $user_info['venue_name'];
@@ -73,19 +65,36 @@ if ($admin) {
 		$venue_voucher_page = $user_info['venue_voucher_page'];
 		$type_desc = $venue_type;
 	} 
-} else {
-	//$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
+	
+	$navbar_get = "venue-id=$venue_id";
+	$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page'], $admin, $navbar_get);
+} elseif ($user_info) {
+	$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
 	$venue_id = $user->ID;
+} else {
+	global $wp;
+	$query_vars = array(
+		'login' => 1,
+		'order-item-id' => $order_item_id
+	);
+	$this_page_url = add_query_arg( $query_vars, home_url( $wp->request ) );
+	$nav_links = array(
+		array(
+			'title' => 'Log In',
+			'url' => $this_page_url,
+			'active' => false
+		),
+	);
 }
 
 $venue_table = $wpdb->prefix."taste_venue";
-$navbar_get = $admin ? "venue-id=$venue_id" : "";
-$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page'], $admin, $navbar_get);
+// $navbar_get = $admin ? "venue-id=$venue_id" : "";
+// $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page'], $admin, $navbar_get);
 ?>
 
 <body>
   <?php
-if (!$venue_id) {
+if (!$venue_id && $user_info) {
 	// display form to select Venue as user if admin w/o a venue selected
 	display_venue_select(true, 0, true, get_page_link());
 	echo '<script type="text/javascript" src= "' . TASTE_PLUGIN_INCLUDES_URL . '/js/thetaste-venue-select.js"></script>';
@@ -103,7 +112,13 @@ if (!$venue_id) {
       </div>
     </div>
     <div class="order-item-display-container text-center">
-      <?php echo get_mini_order_item_display($order_item_id, $venue_id, $venue_name) ?>
+      <?php 
+				if ($user_info) {
+					echo get_mini_order_item_display($order_item_id, $venue_id, $venue_name); 
+				} else {
+					echo $non_user_disp;
+				}
+			?>
     </div>
     <br><br>
     <div class="text-center">

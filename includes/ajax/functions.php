@@ -44,50 +44,49 @@ function disp_payment_line($payment, $admin, $commission_val) {
 	$order_list = $payment['order_item_ids'];
 	ob_start();
 	?>
-		<tr id="pay-<?php echo $payment['id'] ?>">
-		<?php echo $admin ? "<th scope='row'>{$payment['id']}</th>" : '' ?>
-		<td><?php echo $payment_date ?></td>
-		<td class="table-nbr"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
-		<?php
-			$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $payment_date)
+<tr id="pay-<?php echo $payment['id'] ?>">
+  <?php echo $admin ? "<th scope='row'>{$payment['id']}</th>" : '' ?>
+  <td><?php echo $payment_date ?></td>
+  <td class="table-nbr"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?>
+  </td>
+  <?php
+			$pay_calcs = comm_vat_per_payment($payment['amount'], $commission_val, $payment_date);
 		?>
-		<?php if ($disp_invoice) { ?>
-			<td class="text-success">
-				<i data-paymentid="<?php echo $payment['id'] ?>" 
-								class="fas fa-file-pdf print-invoice-btn"></i>
-				</i>
-			</td>
-		<?php } else { ?>
-			<td>
-				
-			</td>
-		<?php } ?>
-			<td>
-				<?php echo $admin ? $comment : $disp_comment	?>
-			</td>
-			<?php if ($admin && !$order_list) {	?>
-				<td class="text-primary">
-					<i data-toggle="modal" data-target="#addEditPaymentModal"
-							<?php build_editable_payment_data_attrs($payment, $payment_date) ?>
-							class="fas fa-pencil-alt edit-payment-btn"></i>
-				</td>
-				<td class="text-danger">
-					<i data-toggle="modal" data-target="#addEditPaymentModal"
-							<?php build_editable_payment_data_attrs($payment, $payment_date, true) ?>
-						class="fas fa-trash-alt"></i>
-				</td>		
-				<?php } else { ?>
-			<td>
-				
-			</td>
-			<td>
+  <?php if ($disp_invoice) { ?>
+  <td class="text-success">
+    <i data-paymentid="<?php echo $payment['id'] ?>" class="fas fa-file-pdf print-invoice-btn"></i>
+    </i>
+  </td>
+  <?php } else { ?>
+  <td>
 
-			</td>
-				<?php
+  </td>
+  <?php } ?>
+  <td>
+    <?php echo $admin ? $comment : $disp_comment	?>
+  </td>
+  <?php if ($admin && !$order_list) {	?>
+  <td class="text-primary">
+    <i data-toggle="modal" data-target="#addEditPaymentModal"
+      <?php build_editable_payment_data_attrs($payment, $payment_date) ?>
+      class="fas fa-pencil-alt edit-payment-btn"></i>
+  </td>
+  <td class="text-danger">
+    <i data-toggle="modal" data-target="#addEditPaymentModal"
+      <?php build_editable_payment_data_attrs($payment, $payment_date, true) ?> class="fas fa-trash-alt"></i>
+  </td>
+  <?php } else { ?>
+  <td>
+
+  </td>
+  <td>
+
+  </td>
+  <?php
 			}
 	?>
-	</tr>
-	<?php
+</tr>
+<?php
 	$payment_line = ob_get_clean();
 	return $payment_line;
 }
@@ -113,60 +112,56 @@ function disp_all_payment_line($payment) {
 	$status_ind = (TASTE_PAYMENT_STATUS_ADJ == $payment['status']) ? ' - ADJ': '';
 	ob_start();
 	?>
-		<tr id="all-pay-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>" 
-				class="all-payments-row all-pay-<?php echo $payment_id ?>" data-toggle="tooltip"
-				data-prodamount="<?php echo $payment['amount'] ?>"
-				data-prodid="<?php echo $payment['product_id'] ?>"
-				title="<?php echo $tooltip_title ?>"	>
-		<td><?php echo $payment['product_id'] ?></td>
-		<td><?php echo $payment_id, $status_ind ?></td>
-		<td><?php echo $payment_date ?></td>
-		<td class="table-nbr pr-5"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
-		<?php if ($disp_invoice) { ?>
-			<td class="text-success">
-				<i data-paymentid="<?php echo $payment_id ?>" 
-								class="fas fa-file-pdf print-invoice-btn"></i>
-				</i>
-			</td>
-		<?php } else { ?>
-			<td>
-				
-			</td>
-		<?php } ?>
-		<?php 
+<tr id="all-pay-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
+  class="all-payments-row all-pay-<?php echo $payment_id ?>" data-toggle="tooltip"
+  data-prodamount="<?php echo $payment['amount'] ?>" data-prodid="<?php echo $payment['product_id'] ?>"
+  title="<?php echo $tooltip_title ?>">
+  <td><?php echo $payment['product_id'] ?></td>
+  <td><?php echo $payment_id, $status_ind ?></td>
+  <td><?php echo $payment_date ?></td>
+  <td class="table-nbr pr-5">
+    <?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?></td>
+  <?php if ($disp_invoice) { ?>
+  <td class="text-success">
+    <i data-paymentid="<?php echo $payment_id ?>" class="fas fa-file-pdf print-invoice-btn"></i>
+    </i>
+  </td>
+  <?php } else { ?>
+  <td>
+
+  </td>
+  <?php } ?>
+  <?php 
 			if ($order_item_list) {
 				?>
-				<td class="text-primary">
-					<i id="edit-pbo-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
-							class="fas fa-pencil-alt edit-pbo-btn"
-							data-payment-id="<?php echo $payment_id ?>"></i>
-				</td>
-				<td class="text-danger">
-					<i 
-					<?php /* data-toggle="modal" data-target="#deletePBOModal" */ ?>
-							id="delete-pbo-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
-							data-payment-id="<?php echo $payment_id ?>"
-						class="fas fa-trash-alt delete-pbo-btn"></i>
-				</td>
-				<?php
+  <td class="text-primary">
+    <i id="edit-pbo-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
+      class="fas fa-pencil-alt edit-pbo-btn" data-payment-id="<?php echo $payment_id ?>"></i>
+  </td>
+  <td class="text-danger">
+    <i <?php /* data-toggle="modal" data-target="#deletePBOModal" */ ?>
+      id="delete-pbo-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"
+      data-payment-id="<?php echo $payment_id ?>" class="fas fa-trash-alt delete-pbo-btn"></i>
+  </td>
+  <?php
 			} else {
 				?>
-				<td colspan="2">&nbsp;</td>
-				<?php
+  <td colspan="2">&nbsp;</td>
+  <?php
 			}
 			?>
-	</tr>
-	<?php
+</tr>
+<?php
 	$payment_line = ob_get_clean();
 	return $payment_line;
 }
 
 function build_editable_payment_data_attrs($payment, $payment_date, $delete_flag=false) {
 	?>
-		data-paymentid="<?php echo $payment['id'] ?>" data-paymentdate="<?php echo $payment_date ?>" 
-		data-paymentamt="<?php echo $payment['amount'] ?>" data-comment="<?php echo $payment['comment'] ?>"
-		data-deletemode="<?php echo $delete_flag ? 'true' : 'false' ?>"
-		data-commentvisibility="<?php echo $payment['comment_visible_venues'] ?>"
-		data-invoiceattachment="<?php echo $payment['attach_vat_invoice'] ?>"
-	<?php
+data-paymentid="<?php echo $payment['id'] ?>" data-paymentdate="<?php echo $payment_date ?>"
+data-paymentamt="<?php echo $payment['amount'] ?>" data-comment="<?php echo $payment['comment'] ?>"
+data-deletemode="<?php echo $delete_flag ? 'true' : 'false' ?>"
+data-commentvisibility="<?php echo $payment['comment_visible_venues'] ?>"
+data-invoiceattachment="<?php echo $payment['attach_vat_invoice'] ?>"
+<?php
 }
