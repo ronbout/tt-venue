@@ -14,7 +14,10 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-navbar.php';
 
 
-$url_path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+$url_path = parse_url(home_url( $wp->request ), PHP_URL_PATH);
+// echo "<h2>", home_url( $wp->request ), "</h2>";
+// echo '<h2>', $url_path, "</h2>";
+// die();
 $request_base = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $url_path;
 $query_var_str = check_query();
 $login_failed = strpos($query_var_str, "?login=failed") !== false ? true : false;
