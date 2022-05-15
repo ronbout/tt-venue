@@ -20,7 +20,7 @@ if ( !is_user_logged_in()) {
 	// if the user is not logged in, we will still give them a quick 
 	// notice of Redeemable / Not Redeemable and the Venue Name so they
 	// can quickly determine whether it is legitimate
-	if (isset($_GET['login']) && $_GET['login']) {
+	if (isset($_GET['login_venue']) && $_GET['login_venue']) {
 		require_once TASTE_PLUGIN_PATH.'page-templates/thetaste-venue-login.php';
 		die();
 	}
@@ -74,7 +74,7 @@ if ($admin) {
 } else {
 	global $wp;
 	$query_vars = array(
-		'login' => 1,
+		'login_venue' => 1,
 		'order-item-id' => $order_item_id
 	);
 	$this_page_url = add_query_arg( $query_vars, home_url( $wp->request ) );

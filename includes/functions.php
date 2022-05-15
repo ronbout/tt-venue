@@ -118,47 +118,47 @@ function display_venue_select($display_submit=true, $venue_id = 0, $add_form=tru
 	$first_option = $bulk_flg ?   __( "— No change —", 'woocommerce' ) :  __( "Select A Venue", 'woocommerce' );
 	// have to send venue rows to javascript code for autocomplete
 	?>
-	<script>
-		let venuesList = <?php echo json_encode($venue_rows) ?>;
-		let firstOption = "<?php echo $first_option ?>";
-	</script>
+<script>
+let venuesList = <?php echo json_encode($venue_rows) ?>;
+let firstOption = "<?php echo $first_option ?>";
+</script>
 
-	<div id="venue-form-container" class="wrap">
-	<?php echo ($add_form) ?	'<form method="get" action="'. $form_action .'" id="venue-select-form">' : '' ?>
-		<label for="venue-type-filter">Filter Venues by Type:</label>
-		<select name="venue-type-filter" id="venue-type-select" class="form-control" style="width: 180px;">
-			<option value='all'>All Venue Types</option>
-		<?php 
+<div id="venue-form-container" class="wrap">
+  <?php echo ($add_form) ?	'<form method="get" action="'. $form_action .'" id="venue-select-form">' : '' ?>
+  <label for="venue-type-filter">Filter Venues by Type:</label>
+  <select name="venue-type-filter" id="venue-type-select" class="form-control" style="width: 180px;">
+    <option value='all'>All Venue Types</option>
+    <?php 
 			foreach ($venue_types as $venue_type) {
 				echo "<option value='$venue_type'>
 					$venue_type
 				</option>";
 			}
 		?>
-		</select>
-		<br/>
+  </select>
+  <br />
 
-		<label for="venue-select">Choose a Venue:</label>
-		<select name="venue-id" id="venue-select" class="form-control" style="width: 280px;">
-			<option value=0 <?php echo (0 === $venue_id) ? 'selected' : ''?> ><?php echo $first_option ?></option>
-		<?php 
+  <label for="venue-select">Choose a Venue:</label>
+  <select name="venue-id" id="venue-select" class="form-control" style="width: 280px;">
+    <option value=0 <?php echo (0 === $venue_id) ? 'selected' : ''?>><?php echo $first_option ?></option>
+    <?php 
 			foreach ($venue_rows as $venue_row) {
 				echo "<option value={$venue_row['venue_id']} " . (($venue_id  === $venue_row['venue_id']) ? 'selected' : '') . ">
 					{$venue_row['name']}
 				</option>";
 			}
 		?>
-		</select>
-		<br/>
-		<?php
+  </select>
+  <br />
+  <?php
 			if ($display_submit) {
 				?>
-					<button type="submit" id="select-venue-btn" disabled class="btn btn-primary button button-primary">Submit</button>
-				<?php
+  <button type="submit" id="select-venue-btn" disabled class="btn btn-primary button button-primary">Submit</button>
+  <?php
 			}
 		?>
-		<?php echo ($add_form) ?	'</form>' : '' ?>
-	</div>
+  <?php echo ($add_form) ?	'</form>' : '' ?>
+</div>
 
 <?php
 }
@@ -248,4 +248,14 @@ function ceiling($nbr, $dec_prec=0) {
   $ret_nbr = (int) ($nbr * pow(10, $dec_prec));
   $ret_nbr = $ret_nbr / pow(10, $dec_prec);
   return ceil($ret_nbr);
+}
+
+function check_query($convert_array=false) {
+	// checks and returns the query string if present
+	$query_str =  isset($_SERVER['QUERY_STRING']) ? urldecode($_SERVER['QUERY_STRING']) : '';
+  if (!$convert_array) {
+    return $query_str;
+  }
+  parse_str($query_str, $query_array);
+  return $query_array;
 }
