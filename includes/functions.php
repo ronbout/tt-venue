@@ -124,7 +124,6 @@ let firstOption = "<?php echo $first_option ?>";
 </script>
 
 <div id="venue-form-container" class="wrap">
-  <?php echo ($add_form) ?	'<form method="get" action="'. $form_action .'" id="venue-select-form">' : '' ?>
   <label for="venue-type-filter">Filter Venues by Type:</label>
   <select name="venue-type-filter" id="venue-type-select" class="form-control" style="width: 180px;">
     <option value='all'>All Venue Types</option>
@@ -137,7 +136,7 @@ let firstOption = "<?php echo $first_option ?>";
 		?>
   </select>
   <br />
-
+  <?php echo ($add_form) ?	'<form method="get" action="'. $form_action .'" id="venue-select-form">' : '' ?>
   <label for="venue-select">Choose a Venue:</label>
   <select name="venue-id" id="venue-select" class="form-control" style="width: 280px;">
     <option value=0 <?php echo (0 === $venue_id) ? 'selected' : ''?>><?php echo $first_option ?></option>
