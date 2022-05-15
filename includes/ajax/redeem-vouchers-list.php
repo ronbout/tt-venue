@@ -289,7 +289,8 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
 								foreach ($order_rows as $order_item_info) {
 									$tproduct = $tproduct + 1;							
 									$total_sold = $total_sold + $order_item_info->quan;
-									if (1 == $order_item_info->downloaded ) {
+									if (("wc-completed" != $order_item_info->order_status && $order_item_info->payment_id) ||
+                      ("wc-completed" == $order_item_info->order_status && 1 == $order_item_info->downloaded) ) {
 										$redeem_qty = $redeem_qty + $order_item_info->quan;
 									}
 									display_order_table_row($order_item_info, $expired_val, $product_price, $vat_val, $commission_val, $order_payments_checklist, $edit_payment_id, $admin);
@@ -399,8 +400,12 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 				$row_status_class = ' or-display-expired';
 			}
 		}
-	}	elseif ($payment_due) {
-		$row_status_class = ' or-display-pay-due';
+	}	elseif ($payment_due ) {
+    if ('wc-completed' != $order_status ) {
+			$row_status_class = ' or-display-not-complete';
+		} else {
+	  	$row_status_class = ' or-display-pay-due';
+    }
 	} else {
 		$payment_id = $order_item_info->payment_id;
 		if ($payment_id !== $edit_payment_id) {
@@ -485,7 +490,8 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
           Paid
         </span>
         <?php
-					if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
+				//	if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
+					if ('wc-completed' !== $order_status && !$order_item_info->payment_id) {
 						if ($order_status == 'wc-on-hold' && !$order_store_credit) {
 							?>
         <span class="or-display or-status-on-hold or-status-display-not-complete">
@@ -524,7 +530,7 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
       </td>
       <td class="payment-mode-only <?php echo $redeemed_refunded_class ?>">
         <?php
-				if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
+				if ('wc-completed' !== $order_status && !$order_item_info->payment_id) {
 					if ($order_status == 'wc-on-hold' && !$order_store_credit) {
 						?>
         <span class="or-display or-status-on-hold or-status-display-not-complete">
