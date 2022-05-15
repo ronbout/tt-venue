@@ -35,7 +35,7 @@ if ($admin) {
 	$selection_nav_links = array(
 		array(
 			'title' => 'Log Out',
-			'url' => wp_logout_url(get_site_url()),
+			'url' => wp_logout_url(get_site_url(null, '/venue-portal')),
 			'active' => false
 		),
 	);
