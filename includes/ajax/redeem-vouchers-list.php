@@ -288,7 +288,10 @@ function display_orders_table($order_rows, $expired_val, $product_price, $vat_va
             <?php 
 								foreach ($order_rows as $order_item_info) {
 									$tproduct = $tproduct + 1;							
-									$total_sold = $total_sold + $order_item_info->quan;
+									if (("wc-completed" != $order_item_info->order_status && $order_item_info->payment_id) ||
+                      ("wc-completed" == $order_item_info->order_status) ) {
+                      $total_sold = $total_sold + $order_item_info->quan;
+									}
 									if (("wc-completed" != $order_item_info->order_status && $order_item_info->payment_id) ||
                       ("wc-completed" == $order_item_info->order_status && 1 == $order_item_info->downloaded) ) {
 										$redeem_qty = $redeem_qty + $order_item_info->quan;
@@ -573,7 +576,7 @@ function display_order_table_summary($redeem_qty, $total_sold, $product_price, $
 	// the totals at the end
 	$curr_prod_values = calc_net_payable($product_price, $vat_val, $commission_val, $redeem_qty, true);
 	$grevenue = $curr_prod_values['gross_revenue'];
-	$commission = $curr_prod_values['commissioni'];
+	$commission = $curr_prod_values['commission'];
 	$vat = $curr_prod_values['vat'];
 	$payable = $curr_prod_values['net_payable'];
 	
