@@ -100,6 +100,19 @@ function insert_venue_product_on_dup($venue_id, $post_id) {
 function display_venue_select($display_submit=true, $venue_id = 0, $add_form=true, $form_action='', $bulk_flg=false) {
 	global $wpdb;
 
+	// because we are now using the GET string in some of our pages, 
+	// the query vars need to be preserved even if a form is submitted
+	// with the venue select.  This will be handled with hidden inputs
+	$hidden_inputs = "";
+	if ($add_form) {
+		$query_vars = check_query(true);
+		foreach($query_vars as $key => $val) {
+			if ('venue-id' != $key) {
+				$hidden_inputs .= ' <input type="hidden" name="'.htmlspecialchars($key).'" value="'.htmlspecialchars($val).'" /> ';
+			} 
+		}
+	}
+
 	$venue_types = array(
 		'Restaurant',
 		'Hotel',
@@ -156,7 +169,7 @@ let firstOption = "<?php echo $first_option ?>";
   <?php
 			}
 		?>
-  <?php echo ($add_form) ?	'</form>' : '' ?>
+  <?php echo ($add_form) ?	$hidden_inputs . '</form>' : '' ?>
 </div>
 
 <?php
