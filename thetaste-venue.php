@@ -92,10 +92,21 @@ add_filter ('page_template', 'taste_redirect_page_template');
 add_action( 'wp_login_failed', 'taste_venue_login_fail' );  // hook failed login
 
 function taste_venue_login_fail( $username ) {
-   $referrer = $_SERVER['HTTP_REFERER'];  
-   // if there's a valid referrer, and it's not the default log-in screen
-   if ( !empty($referrer) && !strstr($referrer,'wp-login') && !strstr($referrer,'wp-admin') ) {
-      wp_redirect( $referrer . '?login=failed' );  // let's append some information (login=failed) to the URL for the theme to use
+   $referer = $_SERVER['HTTP_REFERER'];  
+   // if there's a valid referer, and it's not the default log-in screen
+   if ( !empty($referer) && !strstr($referer,'wp-login') && !strstr($referer,'wp-admin') ) {
+			$url_path = parse_url($referer, PHP_URL_PATH);
+			$url_host = parse_url($referer, PHP_URL_HOST);
+			$url_scheme = parse_url($referer, PHP_URL_SCHEME);
+			$url_query = parse_url($referer, PHP_URL_QUERY);
+			$request_base =  $url_scheme . "://" . $url_host . $url_path;
+			$url_query = str_replace('?login=failed', '', $url_query);
+			parse_str($url_query, $query_var_array);
+			if (!isset($query_var_array['login']) ||  $query_var_array['login'] != 'failed') {
+					$query_var_array['login'] = 'failed';
+			}
+			$redirect = add_query_arg( $query_var_array, $request_base );
+      wp_redirect( $redirect );  // let's append some information (login=failed) to the URL if not already present
       exit;
    }
 }
@@ -111,13 +122,12 @@ add_filter( 'query_vars', 'taste_venue_query_vars' );
 
 function dingle_banner_ad() {
 	?>
-	<div>
-<a href="https://dingledistillery.ie/" target="_blank">
-<img src="https://www.thetaste.ie/wp-content/uploads/2021/09/dinlge-banner-1400.jpg" alt="">
-</a>
-	</div>
-	<?php
+<div>
+  <a href="https://dingledistillery.ie/" target="_blank">
+    <img src="https://www.thetaste.ie/wp-content/uploads/2021/09/dinlge-banner-1400.jpg" alt="">
+  </a>
+</div>
+<?php
 }
 add_action('__before_main', 'dingle_banner_ad');
 //add_action('__before_content', 'dingle_banner_ad');
-
