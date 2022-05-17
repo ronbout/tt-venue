@@ -386,7 +386,7 @@ function insert_payment ($payment_db_parms) {
 		);
 		// if not success set error array and return
 		if (!$rows_affected) {
-			$ret_json = array('error' => 'Could not update Payment Order Xref Table. ' . $wpdb->last_error);
+			$ret_json = array('error' => 'Could not insert row into Payment Order Xref Table. ' . $wpdb->last_error);
 			echo wp_json_encode($ret_json);
 			$wpdb->query("ROLLBACK");
 			return array('db_status' => false);

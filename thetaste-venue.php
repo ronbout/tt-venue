@@ -23,6 +23,12 @@ define('TASTE_PAYMENT_STATUS_PAID', 1);
 define('TASTE_PAYMENT_STATUS_ADJ', 2);
 define('TASTE_PAYMENT_STATUS_PENDING', 3);
 
+// we use GROUP_CONCAT in a number of instances.  To ensure that the
+// size of that field is always large enough, change it at the session level.
+global $wpdb;
+
+$wpdb->query("SET SESSION group_concat_max_len = 30000;");
+
 $uploads_info = wp_get_upload_dir();
 $uploads_base_url = $uploads_info['baseurl'];
 define('TASTE_VENUE_UPLOADS_BASE_URL', $uploads_base_url);
