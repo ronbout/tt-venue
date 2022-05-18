@@ -16,6 +16,8 @@ if (!$order_item_id) {
   die("Invalid URL");
 }
 
+require_once TASTE_PLUGIN_PATH.'page-templates/partials/mini-order-item-display.php';
+
 if ( !is_user_logged_in()) {
 	// if the user is not logged in, we will still give them a quick 
 	// notice of Redeemable / Not Redeemable and the Venue Name so they
@@ -50,7 +52,6 @@ if ( !is_user_logged_in()) {
 
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-navbar.php';
-require_once TASTE_PLUGIN_PATH.'page-templates/partials/mini-order-item-display.php';
 
 $venue_id = '';
 if ($admin) {
@@ -155,21 +156,28 @@ if (!$venue_id && $user_info) {
 
 <?php 
 function non_user_display($order_item_id) {
-	$order_item_info = get_order_item_redeemable($order_item_id);
+	$order_item_redeemable_info = get_order_item_redeemable($order_item_id);
+	$redeemable = $order_item_redeemable_info['redeemable'];
+	$order_item_info = $order_item_redeemable_info['order_item_info'];
 ?>
-<h1>Order Item Id: <?php echo $order_item_id ?></h1>
 <?php
-	if (!$order_item_info) {
+	if (!$order_item_redeemable_info) {
 		?>
 <h1>
-  <strong>NOT</strong> Redeemable
+  <strong>Invalid Item</strong>
 </h1>
 <?php
 	} else {
 		?>
-<h1>
-  Redeemable by <?php echo $order_item_info['venue_name'] ?>
-</h1>
+        <div class="row">
+          <div class="col-md-4">
+          </div>
+          <div class="col-md-4">
+            <?php echo get_order_item_card($order_item_info, $order_item_info['venue_name']) ?>
+          </div>
+          <div class="col-md-4">
+          </div>
+        </div>
 <?php
 	}
 }
@@ -179,7 +187,7 @@ function get_order_item_redeemable($order_item_id) {
 
 	$sql = "
 			SELECT plook.order_id, plook.product_id, plook.product_qty,
-				plook.date_created AS order_date,	ord_p.post_status AS order_status, prod_p.post_title AS prod_desc,
+				plook.date_created AS order_date,	ord_p.post_status AS order_status, prod_p.post_title AS prod_desc, plook.order_item_id,
 				ven.venue_id, ven.name AS venue_name, wcoi.downloaded AS redeemed
 			FROM {$wpdb->prefix}wc_order_product_lookup plook
 				JOIN {$wpdb->prefix}posts prod_p ON prod_p.ID = plook.product_id
@@ -204,9 +212,13 @@ function get_order_item_redeemable($order_item_id) {
 	 * our people are attaching to refunds to an item.
 	 * 
 	 */
+	$redeemable = true;
 	if ('wc-completed' != $order_item_row[0]['order_status'] || '1' == $order_item_row[0]['redeemed']) {
-		return false;
+		$redeemable = false;
 	}
 
-	return $order_item_row[0];
+	return array(
+		'redeemable' => $redeemable,
+		'order_item_info' => $order_item_row[0],
+	);
 }

@@ -125,20 +125,28 @@ function build_venue_rows($order_items) {
   return $venue_item_rows;
 }
 
-function get_order_item_card($order_item_info) {
+function get_order_item_card($order_item_info, $venue=null) {
   $product_id = $order_item_info['product_id'];
   $prod_desc = $order_item_info['prod_desc'];
   $order_id = $order_item_info['order_id'];
   $order_item_id = $order_item_info['order_item_id'];
   $redeemed = $order_item_info['redeemed'];
   $status = $order_item_info['order_status'];
-  $payment_id = $order_item_info['payment_id'];
+  //$payment_id = $order_item_info['payment_id'];
   $redeemable = true;
   if ('wc-completed' != $status || '1' == $redeemed['redeemed'] ) {
 		$redeemable = false;
 	}
-  $redeem_status = $redeemable ? "Redeemable" : "<strong>NOT</strong> Redeemable";
-  $status_color = $redeemable ? "text-primary" : "text-danger";
+  if ($redeemable) {
+    $redeem_status = "Redeemable";
+    $status_color = "text-primary";
+    if ($venue) {
+      $redeem_status .= " By<br> " . $venue;
+    }
+  } else {
+    $redeem_status = "<strong>NOT</strong> Redeemable";
+    $status_color = "text-danger";
+  }
   ob_start();
   ?>
 <div class="order-item-card card">
@@ -149,7 +157,7 @@ function get_order_item_card($order_item_info) {
     <p class="card-text">
       <h4 id="redeem-status-<?php echo $order_item_id ?>" class="<?php echo $status_color ?>"><?php echo $redeem_status ?></h4>
     </p>
-    <?php if ($redeemable) {
+    <?php if ($redeemable && !$venue) {
       ?>
       <button type="button" id="redeem-btn-<?php echo $order_item_id ?>" data-order-item-id="<?php echo $order_item_id ?>" class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>
       <?php
