@@ -111,7 +111,7 @@ if (!$venue_id && $user_info) {
 
   <?php venue_navbar($nav_links); ?>
   <div class="container" id="main_wrapper">
-    <div class="row pb-4">
+    <div class="row">
       <div class="col-sm-12 col-xl-12 dashboard_grid_cols d-flex align-items-center flex-column">
         <h2 class="dashboard_heading mt-5 font-weight-bold text-left"><?php echo $venue_name; ?>
         </h2>

@@ -39,7 +39,10 @@ const tasteRedeemMiniPageVoucher = (orderItemId) => {
       } else {
         console.log(respObj);
         // success, update the Order Item Card
-        $(`#redeem-status-${orderItemId}`).text("Redeemed!");
+        $statusText = $(`#redeem-status-${orderItemId}`);
+        $statusText.text("Redeemed!");
+        $statusText.addClass("text-success");
+        $statusText.removeClass("text-primary");
         $(`#redeem-btn-${orderItemId}`).hide();
       }
     },

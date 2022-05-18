@@ -20,8 +20,6 @@ function get_mini_order_item_display($order_item_id, $venue_id, $venue_name) {
   ob_start();
   ?>
 
-<h2>Order Item Id <?php echo $order_item_id ?></h2>
-
 <div class="container">
   <?php
     $order_db_info = retrieve_order($order_item_id);
@@ -55,7 +53,7 @@ function get_mini_order_item_display($order_item_id, $venue_id, $venue_name) {
 
   <?php
     } else {
-      echo "<p>The Order Item you scanned is not a ", $venue_name, " Campaign</p>";
+      echo "<h4>The Order Item you scanned is not a ", $venue_name, " Campaign</h4>";
     }
     $other_redeemable_items = array();
     foreach($venue_item_rows[$venue_id] as $order_item_info) {
@@ -140,15 +138,16 @@ function get_order_item_card($order_item_info) {
 		$redeemable = false;
 	}
   $redeem_status = $redeemable ? "Redeemable" : "<strong>NOT</strong> Redeemable";
+  $status_color = $redeemable ? "text-primary" : "text-danger";
   ob_start();
   ?>
-<div class="card">
+<div class="order-item-card card">
   <div class="card-body">
     <?php echo get_the_post_thumbnail($product_id, array( 200, 200), array('class'=>"card-img-top")) ?>
     <h5 class="card-title">Order ID: <?php echo $order_id ?></h5>
-    <h6 class="card-subtitle mb-2 text-muted"><strong>Item:</strong> <?php echo $prod_desc ?></h6>
+    <h6 class="card-subtitle mb-2 text-muted"><?php echo $prod_desc ?></h6>
     <p class="card-text">
-      Status: <span id="redeem-status-<?php echo $order_item_id ?>"><?php echo $redeem_status ?></span>
+      <h4 id="redeem-status-<?php echo $order_item_id ?>" class="<?php echo $status_color ?>"><?php echo $redeem_status ?></h4>
     </p>
     <?php if ($redeemable) {
       ?>
