@@ -17,8 +17,6 @@
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 function get_mini_order_item_display($order_item_id, $venue_id, $venue_name) {
-
-
   ob_start();
   ?>
 
@@ -29,6 +27,10 @@ function get_mini_order_item_display($order_item_id, $venue_id, $venue_name) {
     $order_db_info = retrieve_order($order_item_id);
     $order_item_rows = $order_db_info['rows_by_item'];
     $venue_item_rows = $order_db_info['rows_by_venue'];
+
+    //  print_r($venue_item_rows); 
+    //  print_r($order_item_rows); 
+    //  die();
 
     if (!isset($venue_item_rows[$venue_id])) {
       ?>
@@ -53,13 +55,30 @@ function get_mini_order_item_display($order_item_id, $venue_id, $venue_name) {
 
   <?php
     } else {
-      echo "The Order Item you scanned is not a ", $venue_name, "Campaign<br>";
-      // $item_count = count($venue_item_rows[$venue_id]);
-      // $msg_item = $item_count > 1 ? 'But these Items on that Order are' 
-      //       : 'But this Item on that Order is';
-      // echo $msg_item ."  <br>";
-      // var_dump($venue_item_rows[$venue_id]);
+      echo "<p>The Order Item you scanned is not a ", $venue_name, " Campaign</p>";
     }
+    $other_redeemable_items = array();
+    foreach($venue_item_rows[$venue_id] as $order_item_info) {
+      if ($order_item_info['redeemed'] == 0 && $order_item_info['order_item_id'] !== $order_item_id)  {
+        $other_redeemable_items[] = $order_item_info;
+      }
+    }
+      if (count($other_redeemable_items) ) {
+        echo "<h3>Other redeemable item(s) on this order:</h3>";
+        foreach($other_redeemable_items as $redeemable_item) {
+          ?>
+        <div class="row">
+          <div class="col-md-4">
+          </div>
+          <div class="col-md-4">
+            <?php echo get_order_item_card($redeemable_item) ?>
+          </div>
+          <div class="col-md-4">
+          </div>
+        </div>
+        <?php
+        }
+      }
     ?>
 </div>
 <?php
@@ -116,10 +135,11 @@ function get_order_item_card($order_item_info) {
   $redeemed = $order_item_info['redeemed'];
   $status = $order_item_info['order_status'];
   $payment_id = $order_item_info['payment_id'];
-  $redeem_status = "Redeemable";
+  $redeemable = true;
   if ('wc-completed' != $status || '1' == $redeemed['redeemed'] ) {
-		$redeem_status = "<strong>NOT</strong> Redeemable";
+		$redeemable = false;
 	}
+  $redeem_status = $redeemable ? "Redeemable" : "<strong>NOT</strong> Redeemable";
   ob_start();
   ?>
 <div class="card">
@@ -130,7 +150,10 @@ function get_order_item_card($order_item_info) {
     <p class="card-text">
       Status: <?php echo $redeem_status ?>
     </p>
-    <button class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>
+    <?php if ($redeemable) {
+      echo '<button class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>';
+    }
+    ?>
   </div>
 </div>
 <?php

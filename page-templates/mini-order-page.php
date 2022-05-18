@@ -139,7 +139,9 @@ if (!$venue_id && $user_info) {
 <?php 
 function non_user_display($order_item_id) {
 	$order_item_info = get_order_item_redeemable($order_item_id);
-
+?>
+<h1>Order Item Id: <?php echo $order_item_id ?></h1>
+<?php
 	if (!$order_item_info) {
 		?>
 <h1>
@@ -168,7 +170,7 @@ function get_order_item_redeemable($order_item_id) {
 				JOIN {$wpdb->prefix}taste_venue ven ON ven.venue_id = vprods.venue_id
 				JOIN {$wpdb->prefix}posts ord_p ON ord_p.ID = plook.order_id
 				LEFT JOIN {$wpdb->prefix}woocommerce_order_items wcoi ON wcoi.order_item_id = plook.order_item_id
-			WHERE plook.order_item_id = 174493
+			WHERE plook.order_item_id = %d
 	";
 	
   $order_item_row = $wpdb->get_results($wpdb->prepare($sql, $order_item_id), ARRAY_A); 
