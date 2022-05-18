@@ -141,7 +141,12 @@ function get_order_item_card($order_item_info, $disp_btn=true) {
     $redeem_status = "Redeemable";
     $status_color = "text-primary";
   } else {
-    $redeem_status = "<strong>NOT</strong> Redeemable";
+    if ($redeemed) {
+      $redeem_status = "Previously Redeemed";
+    } else {
+      $redeem_status = "Refunded<br><strong>NOT</strong> Redeemable";
+    }
+
     $status_color = "text-danger";
   }
   ob_start();
