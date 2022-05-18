@@ -27,7 +27,7 @@ if ( !is_user_logged_in()) {
 		die();
 	}
 	ob_start();
-	non_user_display($order_item_id);
+	$venue_name = non_user_display($order_item_id);
   $non_user_disp = ob_get_clean();
 	$user_info = null;
 } else {
@@ -161,6 +161,7 @@ function non_user_display($order_item_id) {
 	$order_item_redeemable_info = get_order_item_redeemable($order_item_id);
 	$redeemable = $order_item_redeemable_info['redeemable'];
 	$order_item_info = $order_item_redeemable_info['order_item_info'];
+	$venue_name = '';
 ?>
 <?php
 	if (!$order_item_redeemable_info) {
@@ -170,18 +171,20 @@ function non_user_display($order_item_id) {
 </h1>
 <?php
 	} else {
+		$venue_name = $order_item_info['venue_name'];
 		?>
         <div class="row">
           <div class="col-md-4">
           </div>
           <div class="col-md-4">
-            <?php echo get_order_item_card($order_item_info, $order_item_info['venue_name']) ?>
+            <?php echo get_order_item_card($order_item_info, false) ?>
           </div>
           <div class="col-md-4">
           </div>
         </div>
 <?php
 	}
+	return $venue_name;
 }
 
 function get_order_item_redeemable($order_item_id) {
