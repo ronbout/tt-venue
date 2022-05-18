@@ -56,6 +56,26 @@ function taste_ajax_redeem_voucher() {
 	wp_die();
 }
 
+function taste_ajax_redeem_voucher_mini() {
+
+	if (!check_ajax_referer('taste-venue-nonce','security', false)) {
+		echo '<h2>Security error loading data.  <br>Please Refresh the page and try again.</h2>';
+		wp_die();
+	}
+
+	if (!isset($_POST['order_item_id'])) {
+		echo 'Missing valid order item id';
+		wp_die();
+	}
+
+	$order_item_id = $_POST['order_item_id'];
+
+	require_once(plugin_dir_path(__FILE__). 'redeem_voucher_mini.php');
+	redeem_voucher_update_mini($order_item_id);
+
+	wp_die();
+}
+
 function taste_ajax_make_payment() {
 
 	if (!check_ajax_referer('taste-venue-nonce','security', false)) {
@@ -122,6 +142,7 @@ function taste_ajax_retrieve_historical_payments_json() {
 if ( is_admin() ) {
 	add_action('wp_ajax_load_vouchers','taste_ajax_load_vouchers');
 	add_action('wp_ajax_redeem_voucher','taste_ajax_redeem_voucher');
+	add_action('wp_ajax_redeem_voucher_mini','taste_ajax_redeem_voucher_mini');
 	add_action('wp_ajax_make_payment','taste_ajax_make_payment');
 	add_action('wp_ajax_retrieve_payment_json','taste_ajax_retrieve_payment_json');
 	add_action('wp_ajax_retrieve_historical_payments_json','taste_ajax_retrieve_historical_payments_json');

@@ -146,12 +146,14 @@ function get_order_item_card($order_item_info) {
   <div class="card-body">
     <?php echo get_the_post_thumbnail($product_id, array( 200, 200), array('class'=>"card-img-top")) ?>
     <h5 class="card-title">Order ID: <?php echo $order_id ?></h5>
-    <h6 class="card-subtitle mb-2 text-muted">Item: <?php $prod_desc ?></h6>
+    <h6 class="card-subtitle mb-2 text-muted"><strong>Item:</strong> <?php echo $prod_desc ?></h6>
     <p class="card-text">
-      Status: <?php echo $redeem_status ?>
+      Status: <span id="redeem-status-<?php echo $order_item_id ?>"><?php echo $redeem_status ?></span>
     </p>
     <?php if ($redeemable) {
-      echo '<button class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>';
+      ?>
+      <button type="button" id="redeem-btn-<?php echo $order_item_id ?>" data-order-item-id="<?php echo $order_item_id ?>" class="btn btn-success order-redeem-btn or-display or-status-display-unredeemed">Redeem</button>
+      <?php
     }
     ?>
   </div>

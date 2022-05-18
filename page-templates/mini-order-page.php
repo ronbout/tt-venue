@@ -88,8 +88,14 @@ if ($admin) {
 }
 
 $venue_table = $wpdb->prefix."taste_venue";
-// $navbar_get = $admin ? "venue-id=$venue_id" : "";
-// $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page'], $admin, $navbar_get);
+
+echo "
+<script>
+	let tasteVenue = {}
+	tasteVenue.ajaxurl = '". admin_url( 'admin-ajax.php' ) . "'
+	tasteVenue.security = '" . wp_create_nonce('taste-venue-nonce') . "'
+</script>
+";
 ?>
 
 <body>
@@ -130,6 +136,17 @@ if (!$venue_id && $user_info) {
         BUSINESS IN IRELAND</span>
     </div>
   </div>
+
+	<div id="spinner-modal" class="modal" data-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body d-flex flex-column justify-content-center align-content-center">
+          <p class="py-5 px-3 text-center" id="taste-msg-text">Some sample text</p>
+        </div>
+      </div>
+    </div>
+  </div>
+	
   <script type="text/javascript" src="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-mini-order.js"></script>
 </body>
 
