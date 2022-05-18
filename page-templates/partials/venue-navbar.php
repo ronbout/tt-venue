@@ -41,11 +41,14 @@ function venue_navbar ($links) {
 <?php
 }
 
-function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $admin=false, $get_string='') {
+function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $admin=false, $get_string='', $admin_select_get='') {
 	global $pagename;
 	
 	if ($get_string) {
 		$get_string = "?$get_string";
+	}
+	if ($admin_select_get) {
+		$admin_select_get = "?$admin_select_get";
 	}
 
 	if ($use_new_campaign) {
@@ -87,7 +90,7 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $ad
 	if ($admin) {
 		$venue_select_link = array(
 			'title' => 'Venue Selection',
-			'url' => get_page_link(),
+			'url' => get_page_link() . $admin_select_get,
 			'active' => false
 		);
 		array_unshift($links, $venue_select_link);

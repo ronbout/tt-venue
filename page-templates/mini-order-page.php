@@ -68,7 +68,9 @@ if ($admin) {
 	} 
 	
 	$navbar_get = "venue-id=$venue_id";
-	$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page'], $admin, $navbar_get);
+	$admin_select_get = "order-item-id=$order_item_id";
+	$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page'], 
+																						$admin, $navbar_get, $admin_select_get);
 } elseif ($user_info) {
 	$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
 	$venue_id = $user->ID;
