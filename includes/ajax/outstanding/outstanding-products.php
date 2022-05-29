@@ -308,7 +308,7 @@ function get_totals_calcs($ordered_products, $payments, $balance_due_filter) {
 
 		$curr_prod_values = calc_net_payable($product_row['price'], $product_row['vat'], $product_row['commission'], $tmp['redeemed_qty'], true);
 		$grevenue = $curr_prod_values['gross_revenue'];
-		$commission = $curr_prod_values['commissioni'];
+		$commission = $curr_prod_values['commission'];
 		$vat = $curr_prod_values['vat'];
 		$payable = $curr_prod_values['net_payable'];
 
