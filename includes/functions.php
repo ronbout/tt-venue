@@ -97,7 +97,7 @@ function insert_venue_product_on_dup($venue_id, $post_id) {
 	return $rows_affected;
 }
 
-function display_venue_select($display_submit=true, $venue_id = 0, $add_form=true, $form_action='', $bulk_flg=false) {
+function display_venue_select($display_submit=true, $venue_id = 0, $add_form=true, $form_action='', $bulk_flg=false, $admin_checkbox=false) {
 	global $wpdb;
 
 	// because we are now using the GET string in some of our pages, 
@@ -161,6 +161,20 @@ let firstOption = "<?php echo $first_option ?>";
 			}
 		?>
   </select>
+	
+	<?php 
+		if ($admin_checkbox) {
+			?>
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" id="cm-imposter-check" name="venue-view">
+				<label class="form-check-label" for="cm-imposter-check">
+					View as Venue
+				</label>
+			</div>
+			<?php
+		}
+	?>
+	
   <br />
   <?php
 			if ($display_submit) {

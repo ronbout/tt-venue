@@ -31,6 +31,7 @@ require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-navbar.php';
 require_once TASTE_PLUGIN_INCLUDES.'/ajax/functions.php';
 
 $venue_id = '';
+$venue_view = true;
 if ($admin) {
 	$selection_nav_links = array(
 		array(
@@ -48,6 +49,10 @@ if ($admin) {
 			'url' => get_page_link(),
 			'active' => false
 		);
+    // check if Venue View is turned on 
+    if (!isset($_GET['venue-view'])) {
+      $venue_view = false;
+    } 
 		array_unshift($selection_nav_links, $venue_select_link);		// get venue name and other info
 		$user_info = get_user_venue_info($venue_id);
 		$venue_name = $user_info['venue_name'];
@@ -56,7 +61,7 @@ if ($admin) {
 		$venue_voucher_page = $user_info['venue_voucher_page'];
 		$type_desc = $venue_type;
 	} 
-	$display_mode = 'payment';
+	$display_mode = $venue_view ? 'redeem' : 'payment';
 } else {
 	//$nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_info['venue_voucher_page']);
 	$venue_id = $user->ID;
@@ -86,12 +91,15 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 	if (!$venue_id) {
 		// display form to select Venue as user is admin w/o a venue selected
 		venue_navbar($selection_nav_links, $navbar_get);
-		display_venue_select(true, 0, true, get_page_link());
+		display_venue_select(true, 0, true, get_page_link(), false, true);
 		echo '<script type="text/javascript" src= "' . TASTE_PLUGIN_INCLUDES_URL . '/js/thetaste-venue-select.js"></script>';
 		die();
 	} else {
 		venue_navbar($nav_links, $navbar_get);
 	}
+  if ($admin && $venue_view) {
+    $admin = false;
+  }
 ?>
   <main class="container mb-3">
 
@@ -228,7 +236,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 		?>
     <section id="all-campaigns-container" class="container">
       <?php	
-				display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str, $venue_id);
+				display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str, $venue_id, $venue_view);
 				if (count($product_rows)) {
 					// if ($admin) { 
 					// 	display_mode_toggle($display_mode, $venue_id); 
@@ -517,7 +525,7 @@ function check_payment_by_order_item($prod_calcs, $prod_date, $payment_rows) {
 	// return ! in_array(NULL, array_column($prod_payments, 'order_item_id'));
 }
 
-function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str, $venue_id) {
+function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutoff_date_str, $venue_id, $venue_view) {
 	$currency =  get_woocommerce_currency_symbol();
 	?>
 
@@ -580,6 +588,7 @@ function display_venue_summary($venue_totals, $summ_heading, $venue_type, $cutof
 
 <input type="hidden" id="venue_cutoff_date" value="<?php echo $cutoff_date_str ?>">
 <input type="hidden" id="hidden_venue_id" value="<?php echo $venue_id ?>">
+<input type="hidden" id="hidden_venue_view" value="<?php echo $venue_view ? 1 : 0 ?>">
 <div id="summary-hidden-values">
   <input type="hidden" id="sum-gr-value" value="<?php echo $venue_totals['revenue'] ?>">
   <input type="hidden" id="sum-commission" value="<?php echo $venue_totals['commission'] ?>">

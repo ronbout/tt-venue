@@ -6,14 +6,14 @@
  */
 
  
-function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_payments_below, $order_payments_checklist, $edit_payment_id) {
+function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_payments_below, $order_payments_checklist, $edit_payment_id, $venue_view) {
 	global $wpdb;
 	
 	$make_payments_below = !("false" === $make_payments_below);
 
 	$user = wp_get_current_user();
 	$role = $user->roles[0];
-	$admin = ('ADMINISTRATOR' === strtoupper($role));
+	$admin = ('ADMINISTRATOR' === strtoupper($role)) && !$venue_view;
 
 	$order_rows_sql = "
 				SELECT p.post_title,

@@ -39,6 +39,7 @@ const tasteLoadVouchers = (
   let modalMsg = "Loading Vouchers...";
   tasteDispMsg(modalMsg);
   orderPaymentChecklist = buildOrderPaymentChecklist(prodId) || [];
+  let venueView = jQuery("#hidden_venue_view").val();
   // console.log(orderPaymentChecklist);
   jQuery.ajax({
     url: tasteVenue.ajaxurl,
@@ -53,6 +54,7 @@ const tasteLoadVouchers = (
       make_payments_below: makePaymentsBelow,
       order_payments_checklist: orderPaymentChecklist,
       edit_payment_id: tasteVenue.paymentOrders.editPaymentId,
+      venue_view: venueView,
     },
     success: function (responseText) {
       //console.log(responseText);
