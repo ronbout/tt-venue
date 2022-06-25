@@ -288,3 +288,49 @@ function check_query($convert_array=false) {
   parse_str($query_str, $query_array);
   return $query_array;
 }
+
+/**
+ * 
+ * test out creating a new post status for orders
+ */
+
+function register_taste_credit_order_status() {
+	register_post_status( 'wc-taste-credit', array(
+			'label'                     => 'Store Credit',
+			'public'                    => true,
+			'show_in_admin_status_list' => true,
+			'show_in_admin_all_list'    => true,
+			'exclude_from_search'       => false,
+	) );
+}
+add_action( 'init', 'register_taste_credit_order_status' );
+
+function add_taste_credit_to_order_statuses( $order_statuses ) {
+
+	$new_order_statuses = array();
+
+	foreach ( $order_statuses as $key => $status ) {
+
+			$new_order_statuses[ $key ] = $status;
+
+			if ( 'wc-processing' === $key ) {
+					$new_order_statuses['wc-taste-credit'] = 'Taste Credit';
+			}
+	}
+
+	return $new_order_statuses;
+}
+add_filter( 'wc_order_statuses', 'add_taste_credit_to_order_statuses' );
+
+
+
+function taste_order_credited($order_id) {
+  $file1 = "C:/Users/ronbo/Documents/jim-stuff/tmp/write_test_order_status_" . time() . ".txt";
+
+  // $msg1 = serialize($order);
+	$msg = "I just change order $order_id to Taste Credit status.  Create coupon??";
+  
+  file_put_contents($file1, $msg);
+}
+
+add_action( "woocommerce_order_status_taste-credit", "taste_order_credited", 10, 1);
