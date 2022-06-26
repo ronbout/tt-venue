@@ -28,6 +28,8 @@ function redeem_voucher_update_mini($order_item_id) {
     echo wp_json_encode($ret_json);
     return;
   }
+  
+	do_action('taste_after_redeem_mini', $order_item_id);
 
   // update the audit table so that a history of the redemptions exist.
   $redemption_audit_table = $wpdb->prefix ."taste_venue_order_redemption_audit";

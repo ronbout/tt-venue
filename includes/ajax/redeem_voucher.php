@@ -39,6 +39,8 @@ function redeem_voucher_update($order_list, $product_info, $venue_info, $redeem_
 		return;
 	}
 
+	do_action('taste_after_redeem', $order_list, $redeem_flg);
+
 	// update the audit table so that a history of the redemptions exist.
 	$redemption_audit_table = $wpdb->prefix ."taste_venue_order_redemption_audit";
 	$user_id = get_current_user_id();
