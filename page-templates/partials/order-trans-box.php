@@ -25,23 +25,18 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 
 
 function disp_order_trans_box($order_id) {
-	global $wpdb;
 
+  $order_item_rows = get_order_trans_rows($order_id);
+  $prev_order_id = null;
+  $next_order_id = null;
   ob_start();
-  $order_item_rows = $wpdb->get_results($wpdb->prepare("
-  SELECT otrans.*, posts.post_title as product_title
-    FROM {$wpdb->prefix}taste_order_transactions otrans
-      JOIN {$wpdb->prefix}posts posts ON posts.ID = otrans.product_id
-    WHERE otrans.order_id = %d 
-    ORDER BY otrans.order_item_id, otrans.transaction_date
-    ", $order_id), ARRAY_A
-  );
-  if (count($order_item_rows)) {
+  if ($order_item_rows && count($order_item_rows)) {
     // display redemptions and payments
     ?>
       <table class="order-metabox-venue-transactions-table">
         <thead>
           <tr>
+            <th scope="col">Order ID</th>
             <th scope="col">Item ID</th>
             <th scope="col">Item Desc</th>
             <th scope="col">Transaction Type</th>
@@ -51,11 +46,22 @@ function disp_order_trans_box($order_id) {
         <tbody>
     <?php
     foreach ($order_item_rows as $order_item_row) {
+      // check for from credit trans, which will be previous order
+      if ("Order - From Credit" == $order_item_row['trans_type'] && !$prev_order_id) {
+        $prev_order_id = $order_item_row['coupon_code'];
+      }
+      // if Taste Credit, get the next orders, if available
+      if ("Taste Credit" == $order_item_row['trans_type'] && !$next_order_id) {
+        $next_order_id = get_orders_by_coupon($order_item_row['taste_credit_coupon_id']);
+      }
       $tooltip_title = "Product: ${order_item_row['product_id']} &#10;";
       $tooltip_title .= $order_item_row['product_title'];
       ?>
         <tr title="<?php echo $tooltip_title ?>">
           <th scope="row">
+            <?php echo $order_item_row['order_id'] ?>
+          </th>
+          <td>
             <?php echo $order_item_row['order_item_id'] ?>
           </td>
           <td>
@@ -79,5 +85,41 @@ function disp_order_trans_box($order_id) {
       <p>No Venue Transactions Found</p>
     <?php
   }
-  return ob_get_clean();
+
+  return array(
+    'display' => ob_get_clean(),
+    'prev_order_id' => $prev_order_id,
+    'next_order_id' => $next_order_id,
+  );
+}
+
+function get_order_trans_rows($order_id) {
+	global $wpdb;
+
+  $order_item_rows = $wpdb->get_results($wpdb->prepare("
+    SELECT otrans.*, posts.post_title as product_title
+    FROM {$wpdb->prefix}taste_order_transactions otrans
+      JOIN {$wpdb->prefix}posts posts ON posts.ID = otrans.product_id
+    WHERE otrans.order_id = %d 
+    ORDER BY otrans.order_item_id, otrans.transaction_date
+    ", $order_id), ARRAY_A
+  );
+  return $order_item_rows;
+}
+
+function get_orders_by_coupon($coupon_id) {
+  global $wpdb;
+
+  $order_ids = $wpdb->get_results($wpdb->prepare("
+    SELECT GROUP_CONCAT(oc_look.order_id) AS order_ids
+    FROM {$wpdb->prefix}wc_order_coupon_lookup oc_look
+    WHERE oc_look.coupon_id = %d
+    GROUP BY oc_look.coupon_id
+    ORDER BY oc_look.date_created
+    ", $coupon_id), ARRAY_A
+  );
+  if (!$order_ids) {
+    return '';
+  }
+  return $order_ids[0]['order_ids'];
 }
