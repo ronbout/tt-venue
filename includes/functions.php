@@ -8,6 +8,9 @@
 
 defined('ABSPATH') or die('Direct script access disallowed.');
 
+
+require_once TASTE_PLUGIN_PATH.'/page-templates/partials/order-trans-box.php';
+
 function insert_venue_products($venue_id, $prod_ids) {
 	global $wpdb;
 	// works for an array of products that are NOT currently assigned.
