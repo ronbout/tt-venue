@@ -190,9 +190,9 @@ const displayOrderPaymentInfo = (origNetPayableFlag = false) => {
 const calc_net_payable = (price, qty, commRate, vatRate, prodId = 0) => {
   // due to floating point calc errors in js, convert all to whole numbers
   const priceBig = new Big(price);
-  const revenueBig = priceBig.times(qty);
-  const commBig = revenueBig.times(commRate).div(100);
-  const vatBig = commBig.times(vatRate).div(100);
+  const revenueBig = qty ? priceBig.times(qty) : new Big(0);
+  const commBig = commRate ? revenueBig.times(commRate).div(100) : new Big(0);
+  const vatBig = vatRate ? commBig.times(vatRate).div(100) : new Big(0);
   // console.log("----------");
   // console.log("priceBig: ", priceBig.toString());
   // console.log("revenueBig: ", revenueBig.toString());
