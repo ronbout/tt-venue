@@ -28,7 +28,7 @@ function taste_display_order_trans_info($post_info) {
 	global $wpdb;
 
 	if (property_exists($post_info, 'ID')) {
-		$order_trans_display = disp_order_trans_box($post_info->ID);
+		$order_trans_display = disp_order_trans_box($post_info->ID, false);
 		if ($order_trans_display['prev_order_id']) {
 			echo "<h3>Previous Credited Order(s)</h3>";
 			display_other_orders($order_trans_display['prev_order_id']);
@@ -50,7 +50,7 @@ function display_other_orders($order_id_string) {
 		if (!$first) {
 			echo "<hr>";
 		}
-		$order_trans_display = disp_order_trans_box($order_id);
+		$order_trans_display = disp_order_trans_box($order_id, true);
 		echo $order_trans_display['display'];
 		$first = false;
 	}
