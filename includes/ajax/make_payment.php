@@ -10,10 +10,6 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$user_id = get_current_user_id();
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 
-	// var_dump($payment_info);
-	// var_dump($product_info);
-	// var_dump($venue_info);
-	// die();
 
 	$orders_flag = $payment_info['orders_flag'];
 	$payment_id = $payment_info['id'];
@@ -40,6 +36,20 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 			'order_qty' => $prod_orders[1]['orderQty'],
 			'order_list' => $prod_orders[1]['orderItemList'],
 		);
+	}
+
+	$order_item_ids = array_reduce($product_order_info, function($id_list, $prod_info) {
+		$prod_item_id_list = array_reduce($prod_info['order_list'], function ($p_id_list, $order_info) {
+			$p_id_list[] = $order_info['orderItemId'];
+			return $p_id_list;
+		}, array());
+		return array_merge($id_list, $prod_item_id_list);
+	}, array());
+
+	foreach($prod_info['order_list'] as $order_info) {
+		$insert_values .= '(%d, %d),';
+		$insert_parms[] = $payment_id;
+		$insert_parms[] = $order_info['orderItemId'];
 	}
 
 	$delete_mode = 'true' === $payment_info['delete_mode'];
@@ -99,6 +109,15 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 		if ($attach_vat_invoice && TASTE_PAYMENT_STATUS_PAID == $payment_status ) {
 			send_invoice_url_email($venue_id, $payment_info, $venue_info);
 		}
+	}
+
+	if ($orders_flag) {
+		$hook_payment_info = array(
+			'edit_mode' => $edit_mode,
+			'order_item_ids' => $order_item_ids,
+		);
+	
+		do_action('taste_payment_update', $payment_id, $hook_payment_info);
 	}
 
 	/*****  AUDIT TABLE UPDATE ******/
