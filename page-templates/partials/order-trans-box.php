@@ -24,7 +24,7 @@ defined('ABSPATH') or die('Direct script access disallowed.');
   // multiple levels of orders
 
 
-function disp_order_trans_box($order_id, $link_orders=false) {
+function disp_order_trans_box($order_id, $link_orders=false, $link_prods=true) {
 
   $order_item_rows = get_order_trans_rows($order_id);
   $prev_order_id = null;
@@ -75,7 +75,17 @@ function disp_order_trans_box($order_id, $link_orders=false) {
             <?php echo $order_item_row['order_item_id'] ?>
           </td>
           <td>
-            <?php echo substr($order_item_row['product_title'], 0, 80) ?>...
+          <?php
+            if ($link_prods) {
+              ?>
+                <a href="<?php echo get_edit_post_link($order_item_row['product_id']) ?>" target="_blank" ">
+                  <?php echo substr($order_item_row['product_title'], 0, 80) ?>...
+                </a>
+              <?php
+            } else {
+              echo substr($order_item_row['product_title'], 0, 80), "...";
+            }
+            ?>
           </td>
           <td>
             <?php echo $order_item_row['trans_type'] ?>
