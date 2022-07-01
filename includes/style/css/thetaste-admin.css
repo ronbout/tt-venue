@@ -102,4 +102,11 @@ body.post-new-php.post-type-post #venue-form-container label {
   padding-left: 4px;
 }
 
+/* product page venue validation styling */
+body.post-type-product #venue-required-msg {
+  text-align: center;
+  margin: 8px;
+  display: none;
+}
+
 /*# sourceMappingURL=thetaste-admin.css.map */
