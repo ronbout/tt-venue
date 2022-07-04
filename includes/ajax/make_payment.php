@@ -113,6 +113,7 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	if ($orders_flag) {
 		$hook_payment_info = array(
 			'payment_date' => $payment_date,
+			'payment_status' => $payment_status,
 			'edit_mode' => $edit_mode,
 			'order_item_ids' => $order_item_ids,
 		);
