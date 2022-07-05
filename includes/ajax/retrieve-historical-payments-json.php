@@ -40,7 +40,7 @@ function retrieve_historical_payments_json($venue_id, $prod_info) {
 				LEFT JOIN $postmeta_table pm2 ON pprods.product_id = pm2.post_id AND pm2.meta_key = '_sale_price'
 				LEFT JOIN $postmeta_table pm3 ON pprods.product_id = pm3.post_id AND pm3.meta_key = 'vat'
 			WHERE vp.venue_id = %d
-				AND pay.status = 1
+				AND pay.status <> 2
 				AND pox.order_item_id IS NULL
 			GROUP BY pprods.product_id
 			HAVING  GROUP_CONCAT(plook.order_item_id) IS NULL

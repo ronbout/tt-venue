@@ -37,14 +37,24 @@ function disp_payment_line($payment, $admin, $commission_val) {
 	$payment_date = date('Y-m-d', strtotime($payment['timestamp']));
 	//  determine comment to display.  if venue and not visible flag or empty, show "Payment"
 	
+	$total_payment_amount = $payment['total_amount'];
 	$comment = $payment['comment'];
 	$show_comment_venue = $payment['comment_visible_venues'];
 	$disp_comment = (empty($comment) || (! $show_comment_venue && ! $admin)) ? "Payment" : $comment;
 	$disp_invoice = $payment['attach_vat_invoice'];
 	$order_list = $payment['order_item_ids'];
+	
+	$payment_status = $payment['status'];
+	$payment_status_display = payment_status_to_string($payment_status);
+
+	$tooltip_title = "Payment ID: {$payment['id']} &#10;";
+	$tooltip_title .= "Total Payment: $total_payment_amount &#10;";
+	$tooltip_title .= "Payment Status: $payment_status_display &#10;";
+
+
 	ob_start();
 	?>
-<tr id="pay-<?php echo $payment['id'] ?>">
+<tr id="pay-<?php echo $payment['id'] ?>" title="<?php echo $tooltip_title ?>">
   <?php echo $admin ? "<th scope='row'>{$payment['id']}</th>" : '' ?>
   <td><?php echo $payment_date ?></td>
   <td class="table-nbr"><?php echo get_woocommerce_currency_symbol() . ' ' . number_format($payment['amount'], 2)	?>
@@ -96,10 +106,15 @@ function disp_all_payment_line($payment) {
 	$total_payment_amount = $payment['total_amount'];
 	$payment_id = $payment['id'];
 	$order_item_list = str_replace(',', ', ', $payment['order_item_ids']);
-	$disp_invoice = $payment['attach_vat_invoice'] && TASTE_PAYMENT_STATUS_PAID == $payment['status'];
+	
+	$payment_status = $payment['status'];
+	$payment_status_display = payment_status_to_string($payment_status);
+	
+	$disp_invoice = $payment['attach_vat_invoice'] && TASTE_PAYMENT_STATUS_ADJ != $payment_status;
 
 	$tooltip_title = "Payment ID: $payment_id &#10;";
 	$tooltip_title .= "Total Payment: $total_payment_amount &#10;";
+	$tooltip_title .= "Payment Status: $payment_status_display &#10;";
 	$tooltip_title .= $order_item_list ? "Order Items for this Product: &#10; $order_item_list &#10;" : "";
 	/**
 	 * 
@@ -109,7 +124,15 @@ function disp_all_payment_line($payment) {
 	 * 	potential re-write to a minimum
 	 * 
 	 */
-	$status_ind = (TASTE_PAYMENT_STATUS_ADJ == $payment['status']) ? ' - ADJ': '';
+	$status_ind = '';
+
+	if (TASTE_PAYMENT_STATUS_ADJ == $payment['status']) {
+		$status_ind = ' - Archived';
+	}
+	if (TASTE_PAYMENT_STATUS_PENDING == $payment['status']) {
+		$status_ind = ' - Pending';
+	}
+
 	ob_start();
 	?>
 <tr id="all-pay-<?php echo $payment_id ?>-<?php echo $payment['product_id']?>"

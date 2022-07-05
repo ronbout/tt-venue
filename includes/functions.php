@@ -289,11 +289,17 @@ function check_query($convert_array=false) {
   return $query_array;
 }
 
-// function test_redeem_hook($order_list, $redeem_flg) {
-// 	$file1 = "C:/Users/ronbo/Documents/jim-stuff/tmp/write_test_redeem_hook_" . time() . ".txt";
-
-// 	$msg1 = serialize(print_r($order_list, true));
-
-// 	file_put_contents($file1, $msg1);
-// }
-// add_action('taste_after_redeem', 'test_redeem_hook', 10, 2);
+function payment_status_to_string($payment_status) {
+	switch($payment_status) {
+		case (1):
+			return "Paid";
+		case (2):
+			return "Archived Payment";
+		case (3):
+			return "Pending";
+		case(4):
+			return "Processing";
+		default:
+			return "Unknown";
+	}
+}

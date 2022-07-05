@@ -153,7 +153,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 				LEFT JOIN {$wpdb->prefix}taste_venue_payment_order_item_xref pox ON pox.payment_id = pay.id
 					AND pox.order_item_id = plook.order_item_id
 			WHERE vprods.venue_id = %d
-				AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
+				AND pay.status <> " . TASTE_PAYMENT_STATUS_ADJ . "
 			GROUP BY pay.id, pprods.product_id
 			ORDER BY pay.payment_date ASC ", $venue_id), ARRAY_A);
 
@@ -417,11 +417,16 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
 			$row_status_class = ' or-edit-mode-display-paid';
 		}
 		$row_tooltip_title = 'title="';
-		if (1 == $order_item_info->payment_status) {
+
+    $payment_status = $order_item_info->payment_status;
+    $payment_status_display = payment_status_to_string($payment_status);
+
+		if (TASTE_PAYMENT_STATUS_ADJ != $payment_status) {
 			$row_tooltip_title .= "Payment ID: $payment_id &#10;";
+			$row_tooltip_title .= "Payment Status: $payment_status_display &#10;";
 			$row_tooltip_title .= "Payment Date: " . explode(' ', $order_item_info->payment_date)[0];
 		} else {
-			$row_tooltip_title .= "Archived Payment";
+			$row_tooltip_title .= $payment_status_display;
 		}
 		$row_tooltip_title .= '"';
 	}

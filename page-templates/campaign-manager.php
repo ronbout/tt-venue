@@ -301,18 +301,25 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
               <h5>Payment Status/Type:</h5>
               <div class="form-check form-check-inline">
                 <input class="form-check-input payment-status-radio" type="radio" name="payment-status"
-                  id="orders-pay-status-paid" value="<?php echo TASTE_PAYMENT_STATUS_PAID ?>" checked>
+                  id="orders-pay-status-paid" value="<?php echo TASTE_PAYMENT_STATUS_PAID ?>"
+                  <?php echo TASTE_DEFAULT_PAYMENT_STATUS == TASTE_PAYMENT_STATUS_PAID ? "checked" : "" ?>>
                 <label class="form-check-label" for="orders-pay-status-paid">Paid</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input payment-status-radio" type="radio" name="payment-status"
-                  id="orders-pay-status-adj" value="<?php echo TASTE_PAYMENT_STATUS_ADJ ?>">
-                <label class="form-check-label" for="orders-pay-status-adj">Adjustment</label>
+                  id="orders-pay-status-pend" value="<?php echo TASTE_PAYMENT_STATUS_PENDING ?>"
+                  <?php echo TASTE_DEFAULT_PAYMENT_STATUS == TASTE_PAYMENT_STATUS_PENDING ? "checked" : "" ?>>
+                <label class="form-check-label" for="orders-pay-status-pend">Pending</label>
               </div>
               <div class="form-check form-check-inline">
                 <input class="form-check-input payment-status-radio" type="radio" name="payment-status"
-                  id="orders-pay-status-pend" value="<?php echo TASTE_PAYMENT_STATUS_PENDING ?>" disabled>
-                <label class="form-check-label" for="orders-pay-status-pend">Pending (disabled)</label>
+                  id="orders-pay-status-process" value="<?php echo TASTE_PAYMENT_STATUS_PROCESSING ?> disabled">
+                <label class="form-check-label" for="orders-pay-status-pend">Processing</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input payment-status-radio" type="radio" name="payment-status"
+                  id="orders-pay-status-adj" value="<?php echo TASTE_PAYMENT_STATUS_ADJ ?>">
+                <label class="form-check-label" for="orders-pay-status-adj">Archived</label>
               </div>
             </div>
             <div class="form-group">

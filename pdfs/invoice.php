@@ -398,7 +398,7 @@ function get_payment_info($payment_id) {
 					AND plook.product_id = pprods.product_id
 				LEFT JOIN $postmeta_table pm1 ON pprods.product_id = pm1.post_id AND pm1.meta_key = 'commission'
 			WHERE pay.id = %d
-			AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
+			AND pay.status <> " . TASTE_PAYMENT_STATUS_ADJ . "
 			GROUP BY pprods.product_id
 			ORDER BY pay.id, pprods.product_id DESC, pay.payment_date ASC
 	";

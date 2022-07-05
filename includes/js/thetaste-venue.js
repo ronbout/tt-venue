@@ -4,6 +4,7 @@ const TASTE_ORDER_STATUS_NOT_PAID_REDEEMED = 1; //  (or-display-pay-due)
 const TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED = 2; // unredeemed, not expired  (or-display-unredeemed)
 const TASTE_ORDER_STATUS_NOT_PAID_EXPIRED = 3; // unredeemed, expired  (or-display-expired)
 const TASTE_PBO_NET_PAYABLE_THRESHOLD = 0.05;
+const TASTE_DEFAULT_PAYMENT_STATUS = 1;
 jQuery(document).ready(function () {
   if ($("body").hasClass("campaign-manager")) {
     cmDisplayMode = tasteVenue?.displayMode;
@@ -109,7 +110,7 @@ const buildPaymentOrders = () => {
     PBOMode: "insert",
     editOrigPayDate: "",
     editOrigPayStatus: "",
-    paymentStatus: 1,
+    paymentStatus: TASTE_DEFAULT_PAYMENT_STATUS,
     paymentComment: "",
     commentVisibility: 1,
     attachInvoice: 1,
@@ -850,6 +851,9 @@ const setOrdersPaymentStatusRadio = (payStatus) => {
       break;
     case 3:
       radioId = "#orders-pay-status-pend";
+      break;
+    case 4:
+      radioId = "#orders-pay-status-process";
       break;
     default:
       radioId = "#orders-pay-status-paid";
