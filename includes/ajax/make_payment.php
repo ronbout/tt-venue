@@ -10,7 +10,6 @@ function make_payment_update($payment_info, $product_info, $cur_prod_info, $venu
 	$user_id = get_current_user_id();
 	$admin = ('ADMINISTRATOR' === strtoupper($role));
 
-
 	$orders_flag = $payment_info['orders_flag'];
 	$payment_id = $payment_info['id'];
 	$payment_amount = $payment_info['amount'];

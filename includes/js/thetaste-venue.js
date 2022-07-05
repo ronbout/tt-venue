@@ -739,6 +739,7 @@ const tasteDeletePBO = (paymentId) => {
 
       jQuery(".add-edit-pbo-mode").hide();
       jQuery(".delete-pbo-mode").show();
+      jQuery(".payment-status-radio").prop("disabled", true);
       jQuery("#paySelectedModal").modal();
     },
     error: function (xhr, status, errorThrown) {
@@ -1422,6 +1423,9 @@ const tasteLoadPaymentByOrdersModal = () => {
         const $modal = $deleteBtn.closest(".modal");
         const formId = $deleteBtn.attr("form");
         const $paymentForm = jQuery(`#${formId}`);
+
+        jQuery(".payment-status-radio").prop("disabled", false);
+
         let paymentData = new FormData($paymentForm[0]);
         const deleteMode = true;
         // get payment counts for both All Payments (if exists) and product Payments
@@ -1454,6 +1458,7 @@ const tasteLoadPaymentByOrdersModal = () => {
           jQuery(".delete-pbo-btn").removeClass("fa-disabled");
         }
         jQuery("#historical-pbo-btn").removeClass("fa-disabled");
+        jQuery(".payment-status-radio").prop("disabled", false);
         if (jQuery("#taste-product-id").length) {
           // need to rerun the load vouchers routine as easiest approach to
           // reset the order statuses of the currently displayed product
