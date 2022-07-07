@@ -68,6 +68,7 @@ function retrieve_historical_payments_json($venue_id, $prod_info) {
 	$historical_payment_rows = $wpdb->get_results($wpdb->prepare($sql, $venue_id), ARRAY_A);
 	
 	$orig_payment_rows = array_column($orig_payment_rows, null, 'product_id');
+
 	$historical_payment_rows = array_column($historical_payment_rows, null, 'product_id');
 
 	$needed_orders_per_product = calc_needed_orders($orig_payment_rows, $historical_payment_rows, $prod_info);
@@ -163,6 +164,9 @@ function build_payment_with_orders($orig_payment_rows, $needed_orders_per_produc
 			$limit_clause = ' LIMIT %d ';
 		}
 		$targeted_orders = $wpdb->get_results($wpdb->prepare($sql . $limit_clause, $prod_id, $needed_order_cnt), ARRAY_A);
+		if (!count($targeted_orders)) {
+			break;
+		}
 		$prod_qty = 0;
 		$prod_net_payable = 0;
 		$tmp_order_array = array();
