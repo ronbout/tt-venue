@@ -47,12 +47,17 @@ function disp_order_trans_box($order_id, $link_orders=false, $link_prods=true) {
     <?php
     foreach ($order_item_rows as $order_item_row) {
       // check for from credit trans, which will be previous order
-      if ("Order - From Credit" == $order_item_row['trans_type'] && !$prev_order_id) {
+      $trans_type = $order_item_row['trans_type'];
+      $trans_type_display = $trans_type;
+      if ("Order - From Credit" == $trans_type && !$prev_order_id) {
         $prev_order_id = $order_item_row['coupon_code'];
       }
       // if Taste Credit, get the next orders, if available
-      if ("Taste Credit" == $order_item_row['trans_type'] && !$next_order_id) {
-        $next_order_id = get_orders_by_coupon($order_item_row['taste_credit_coupon_id']);
+      if ("Taste Credit" == $trans_type && !$next_order_id) {
+        $credit_coupon_id = $order_item_row['taste_credit_coupon_id'];
+        $next_order_id = get_orders_by_coupon($credit_coupon_id);
+        $credit_coupon_link = get_edit_post_link($credit_coupon_id );
+        $trans_type_display = "<a href='$credit_coupon_link'>Taste Credit</a>";
       }
       $tooltip_title = "Product: ${order_item_row['product_id']} &#10;";
       $tooltip_title .= $order_item_row['product_title'];
@@ -88,7 +93,7 @@ function disp_order_trans_box($order_id, $link_orders=false, $link_prods=true) {
             ?>
           </td>
           <td>
-            <?php echo $order_item_row['trans_type'] ?>
+            <?php echo $trans_type_display ?>
           </td>
           <td>
             <?php echo $order_item_row['transaction_date']  ?>
