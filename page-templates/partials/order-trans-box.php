@@ -46,24 +46,31 @@ function disp_order_trans_box($order_id, $link_orders=false, $link_prods=true) {
         <tbody>
     <?php
     foreach ($order_item_rows as $order_item_row) {
-      // check for from credit trans, which will be previous order
       $trans_type = $order_item_row['trans_type'];
       $trans_type_display = $trans_type;
+      // check for from credit trans, which will be previous order
       if ("Order - From Credit" == $trans_type && !$prev_order_id) {
         $prev_order_id = $order_item_row['coupon_code'];
       }
+      $credit_tooltip = "";
+      // build order item trans page link
+      $order_item_id = $order_item_row['order_item_id'];
+      $oi_trans_link = get_admin_url( null, "admin.php?page=view-order-transactions&order-item-id=$order_item_id");
+      $order_item_id_disp = "<a href='$oi_trans_link'>$order_item_id</a>";
+      $order_item_tooltip = "Transactions List Page for Order Item: $order_item_id";
       // if Taste Credit, get the next orders, if available
       if ("Taste Credit" == $trans_type && !$next_order_id) {
         $credit_coupon_id = $order_item_row['taste_credit_coupon_id'];
         $next_order_id = get_orders_by_coupon($credit_coupon_id);
         $credit_coupon_link = get_edit_post_link($credit_coupon_id );
         $trans_type_display = "<a href='$credit_coupon_link'>Taste Credit</a>";
+        $credit_tooltip = "Admin Edit Page for Coupon: $credit_coupon_id" ;
       }
-      $tooltip_title = "Product: ${order_item_row['product_id']} &#10;";
-      $tooltip_title .= $order_item_row['product_title'];
+      $product_tooltip = "Admin Edit Page for Product: ${order_item_row['product_id']}";
+      $order_tooltip = $link_orders ? "Admin Edit Page for Order: ${order_item_row['order_id']}" : "";
       ?>
-        <tr title="<?php echo $tooltip_title ?>">
-          <th scope="row">
+        <tr>
+          <th scope="row" title="<?php echo $order_tooltip ?>">
           <?php
             if ($link_orders) {
               ?>
@@ -76,10 +83,10 @@ function disp_order_trans_box($order_id, $link_orders=false, $link_prods=true) {
             }
             ?>
           </th>
-          <td>
-            <?php echo $order_item_row['order_item_id'] ?>
+          <td title="<?php echo $order_item_tooltip ?>">
+            <?php echo $order_item_id_disp ?>
           </td>
-          <td>
+          <td title="<?php echo $product_tooltip ?>">
           <?php
             if ($link_prods) {
               ?>
@@ -92,7 +99,7 @@ function disp_order_trans_box($order_id, $link_orders=false, $link_prods=true) {
             }
             ?>
           </td>
-          <td>
+          <td title="<?php echo $credit_tooltip ?>">
             <?php echo $trans_type_display ?>
           </td>
           <td>
