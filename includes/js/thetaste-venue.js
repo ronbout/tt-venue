@@ -3,7 +3,7 @@ const TASTE_ORDER_STATUS_PAID = 0; // (or-display-paid)
 const TASTE_ORDER_STATUS_NOT_PAID_REDEEMED = 1; //  (or-display-pay-due)
 const TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED = 2; // unredeemed, not expired  (or-display-unredeemed)
 const TASTE_ORDER_STATUS_NOT_PAID_EXPIRED = 3; // unredeemed, expired  (or-display-expired)
-const TASTE_PBO_NET_PAYABLE_THRESHOLD = 0.05;
+const TASTE_PBO_NET_PAYABLE_THRESHOLD = 0.1;
 const TASTE_DEFAULT_PAYMENT_STATUS = 1;
 jQuery(document).ready(function () {
   if ($("body").hasClass("campaign-manager")) {
