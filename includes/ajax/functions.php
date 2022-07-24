@@ -110,7 +110,7 @@ function disp_all_payment_line($payment) {
 	$payment_status = $payment['status'];
 	$payment_status_display = payment_status_to_string($payment_status);
 	
-	$disp_invoice = $payment['attach_vat_invoice'] && TASTE_PAYMENT_STATUS_ADJ != $payment_status;
+	$disp_invoice = $payment['attach_vat_invoice'] && TASTE_PAYMENT_STATUS_PAID == $payment_status;
 
 	$tooltip_title = "Payment ID: $payment_id &#10;";
 	$tooltip_title .= "Total Payment: $total_payment_amount &#10;";
@@ -131,6 +131,10 @@ function disp_all_payment_line($payment) {
 	}
 	if (TASTE_PAYMENT_STATUS_PENDING == $payment['status']) {
 		$status_ind = ' - Pending';
+	}
+	
+	if (TASTE_PAYMENT_STATUS_PROCESSING == $payment['status']) {
+		$status_ind = ' - Processing';
 	}
 
 	ob_start();

@@ -417,7 +417,7 @@ function calc_payments_by_product($payment_rows) {
 	$payment_totals_by_product = array();
 	foreach ($payment_rows as $payment) {
 		// do not process new "adjustment" status
-		if (TASTE_PAYMENT_STATUS_ADJ == $payment['status']) {
+		if (TASTE_PAYMENT_STATUS_PAID != $payment['status']) {
 			continue;
 		}
 		$product_id = $payment['product_id'];

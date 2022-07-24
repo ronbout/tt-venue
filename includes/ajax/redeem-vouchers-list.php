@@ -153,7 +153,7 @@ function display_voucher_table($product_id, $multiplier, $cutoff_date, $make_pay
 				LEFT JOIN {$wpdb->prefix}taste_venue_payment_order_item_xref pox ON pox.payment_id = pay.id
 					AND pox.order_item_id = plook.order_item_id
 			WHERE vprods.venue_id = %d
-				AND pay.status <> " . TASTE_PAYMENT_STATUS_ADJ . "
+				AND pay.status = " . TASTE_PAYMENT_STATUS_PAID . "
 			GROUP BY pay.id, pprods.product_id
 			ORDER BY pay.payment_date ASC ", $venue_id), ARRAY_A);
 
@@ -495,7 +495,7 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
         class="<?php echo $action_class ?> redeem-mode-only  <?php echo $redeemed_refunded_class ?>">
         <span class="served or-display or-display or-status-display-paid">
           <i class="fas <?php echo $status_icons['paid'] ?>"></i>
-          Paid
+          <?php echo $payment_status_display ?> 
         </span>
         <?php
 				//	if ('wc-completed' !== $order_status && '0' == $order_item_info->downloaded) {
@@ -566,7 +566,7 @@ function display_order_table_row($order_item_info, $expired_val, $product_price,
         </span>
         <span class="served or-display or-status-display-paid">
           <i class="fas <?php echo $status_icons['paid'] ?>"></i>
-          Paid
+          <?php echo $payment_status_display ?> 
         </span>
         <?php
 				}

@@ -406,7 +406,7 @@ function get_payment_info($payment_id) {
 	$payment_rows = $wpdb->get_results($wpdb->prepare($sql, $payment_id), ARRAY_A);
 
 	if (!count($payment_rows)) {
-		die("Payment Id is either does not exist or does not have a Paid status.");
+		die("Payment Id is either does not exist or does not have a Pending or Paid status.");
 	}
 	
 	$payment_info = process_payment_info($payment_rows, $payment_id); 

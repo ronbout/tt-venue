@@ -194,21 +194,10 @@ const calc_net_payable = (price, qty, commRate, vatRate, prodId = 0) => {
   const revenueBig = qty ? priceBig.times(qty) : new Big(0);
   const commBig = commRate ? revenueBig.times(commRate).div(100) : new Big(0);
   const vatBig = vatRate ? commBig.times(vatRate).div(100) : new Big(0);
-  // console.log("----------");
-  // console.log("priceBig: ", priceBig.toString());
-  // console.log("revenueBig: ", revenueBig.toString());
-  // console.log("commBig: ", commBig.toString());
-  // console.log("vatBig: ", vatBig.toString());
   const revenue = revenueBig.round(2);
   const commission = commBig.round(2);
   const vat = vatBig.round(2);
-  // console.log("revenue: ", revenue.toString());
-  // console.log("commission: ", commission.toString());
-  // console.log("vat: ", vat.toString());
   let payable = revenueBig.minus(commission).minus(vat).round(2);
-  // console.log("payable: ", payable.toString());
-  // console.log("payable float: ", parseFloat(payable.toString()));
-  // console.log("----------");
   payable = parseFloat(payable.toString());
 
   // check for a Balance Due Threshold to account for rounding
