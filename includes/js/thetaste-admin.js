@@ -41,6 +41,7 @@ const editPostVenues = ($documentBody) => {
     console.log("postVenuesList: ", postVenuesList);
     buildVenueListsForPostAssign(postVenuesList);
     // setup change of the venue select to add to the venue lists
+    $venueSelect = jQuery("#venue-select");
     $venueSelect.change(() => {
       let venueId = Number.parseInt($venueSelect.val());
       let fnd = postVenuesList.findIndex((venInfo) => {
