@@ -1,30 +1,27 @@
-let cmDisplayMode;
+let cmDisplayMode, taste_pbo_net_payable_threshold;
 const TASTE_ORDER_STATUS_PAID = 0; // (or-display-paid)
 const TASTE_ORDER_STATUS_NOT_PAID_REDEEMED = 1; //  (or-display-pay-due)
 const TASTE_ORDER_STATUS_NOT_PAID_UNREDEEMED = 2; // unredeemed, not expired  (or-display-unredeemed)
 const TASTE_ORDER_STATUS_NOT_PAID_EXPIRED = 3; // unredeemed, expired  (or-display-expired)
-const TASTE_PBO_NET_PAYABLE_THRESHOLD = 0.1;
-const TASTE_DEFAULT_PAYMENT_STATUS = 1;
+const TASTE_DEFAULT_PAYMENT_STATUS = 3;
 jQuery(document).ready(function () {
   if ($("body").hasClass("campaign-manager")) {
     cmDisplayMode = tasteVenue?.displayMode;
     cmDisplayMode = cmDisplayMode || "redeem";
+    if (
+      "undefined" !== typeof tasteVenue &&
+      tasteVenue.hasOwnProperty("pboThreshold")
+    ) {
+      taste_pbo_net_payable_threshold = tasteVenue.pboThreshold;
+    } else {
+      taste_pbo_net_payable_threshold = 0.1;
+    }
     setupToggleButtons();
     setDisplayForMode();
     buildPaymentOrders();
     displayOrderPaymentInfo();
     tasteLoadPaymentByOrdersModal();
     tasteLoadInvoiceButtons();
-    /*
-		if (jQuery(".all-payments-row").length) {
-			console.log("here");
-			const tooltipOptions = {
-				placement: "right",
-				html: true,
-				container: "body",
-			};
-			// jQuery(".all-payments-row").tooltip(tooltipOptions);
-		}			*/
   }
   tasteLoadButtons();
   tasteLoadCollapseIcons();
@@ -206,7 +203,7 @@ const calc_net_payable = (price, qty, commRate, vatRate, prodId = 0) => {
   if (prodId) {
     let balanceDue = jQuery(`#product-table-row-${prodId}`).data("balancedue");
     balanceDue = Math.round(balanceDue * 100) / 100;
-    if (Math.abs(balanceDue - payable) <= TASTE_PBO_NET_PAYABLE_THRESHOLD) {
+    if (Math.abs(balanceDue - payable) <= taste_pbo_net_payable_threshold) {
       payable = balanceDue;
     }
   }
@@ -257,7 +254,6 @@ const tasteRedeemVoucher = (orderList, redeemFlg = true) => {
     success: function (responseText) {
       let respObj = JSON.parse(responseText);
       if (respObj.error) {
-        console.log(respObj);
         tasteCloseMsg();
         alert("error in redeem Voucher ajax code");
       } else {

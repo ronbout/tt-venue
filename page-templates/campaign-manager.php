@@ -85,6 +85,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 				tasteVenue.ajaxurl = '". admin_url( 'admin-ajax.php' ) . "'
 				tasteVenue.security = '" . wp_create_nonce('taste-venue-nonce') . "'
 				tasteVenue.displayMode = '" . $display_mode . "'
+        tasteVenue.pboThreshold = ". get_option( 'tf_financials_rounding_threshold') . "
 			</script>
 		";
 	$navbar_get = $admin ? "venue-id=$venue_id" : "";
