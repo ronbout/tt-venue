@@ -91,12 +91,12 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
 	$navbar_get = $admin ? "venue-id=$venue_id" : "";
 	if (!$venue_id) {
 		// display form to select Venue as user is admin w/o a venue selected
-		venue_navbar($selection_nav_links, $navbar_get);
+		venue_navbar($selection_nav_links);
 		display_venue_select(true, 0, true, get_page_link(), false, true);
 		echo '<script type="text/javascript" src= "' . TASTE_PLUGIN_INCLUDES_URL . '/js/thetaste-venue-select.js"></script>';
 		die();
 	} else {
-		venue_navbar($nav_links, $navbar_get);
+		venue_navbar($nav_links, true, $venue_name);
 	}
   if ($admin && $venue_view) {
     $admin = false;
