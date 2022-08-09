@@ -112,7 +112,13 @@ if (!$venue_id && $user_info) {
 
 ?>
 
-  <?php venue_navbar($nav_links); ?>
+	<?php 
+		if ($user_info) {
+			venue_navbar($nav_links, true, $venue_name); 
+		} else {
+			venue_navbar($nav_links); 
+		}
+	?>
   <div class="container" id="main_wrapper">
     <div class="row">
       <div class="col-sm-12 col-xl-12 dashboard_grid_cols d-flex align-items-center flex-column">
