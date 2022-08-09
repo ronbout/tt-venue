@@ -106,7 +106,7 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $ad
 		array(
 			'profile_dropdown' => true,
 			'title' => 'Account',
-			'url' => get_site_url(null, '/my-taste-account') . $get_string,
+			'url' => get_site_url(null, '/venue-profile-page') . $get_string,
 			'active' => 'my-taste-account' === $pagename
 		),
 		array(
