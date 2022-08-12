@@ -13,6 +13,7 @@ defined('ABSPATH') or die('Direct script access disallowed.');
 function venue_navbar ($links, $profile_flag="false", $venue_name="") {
 	$link_count = count($links);
 	$links_html = '';
+	$dropdown_link_flag = false;
 	foreach($links as $link) {
 		if (!isset($link['profile_dropdown']) || !$link['profile_dropdown']) {
 			$links_html .= '
@@ -20,9 +21,11 @@ function venue_navbar ($links, $profile_flag="false", $venue_name="") {
 					<a class="nav-link" href="' . $link['url'] . '" ' . (isset($link['attrs']) ? $link['attrs']  : '') . '>' . $link['title'] . '</a>
 				</li>
 			';
+		} else {
+			$dropdown_link_flag = true;
 		}
 	}
-	if ($profile_flag) {
+	if ($profile_flag && $dropdown_link_flag) {
 		// add profile dropdown menu
 		$links_html .= '
 			<li class="nav-item dropdown">
@@ -112,7 +115,7 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $ad
 		array(
 			'profile_dropdown' => true,
 			'title' => 'Password Reset',
-			'url' => "#" . $get_string,
+			'url' => get_site_url(null, '/venue-change-password') . $get_string,
 			'active' => '#' === $pagename
 		),
 		array(

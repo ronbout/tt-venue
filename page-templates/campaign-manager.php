@@ -24,6 +24,9 @@ if ( !is_user_logged_in()) {
 			echo "<h2>Role: $role </h2>";
 			die('You must be logged in as a Venue to access this page.');
 	}
+  if (!$admin) {
+    $venue_name = $user_info['venue_name'];
+  }
 }
 
 require_once TASTE_PLUGIN_PATH.'page-templates/partials/venue-head.php';
