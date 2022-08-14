@@ -74,6 +74,7 @@ function taste_add_venue_manager_template ($templates) {
 	$templates['audit-by-products.php'] = 'Audit By Products';
 	$templates['mini-order-page.php'] = 'Mini Order Item Page';
 	$templates['venue-change-password.php'] = 'Venue Change Password';
+	$templates['venue-lost-password.php'] = 'Venue Lost Password';
 	return $templates;
 	}
 add_filter ('theme_page_templates', 'taste_add_venue_manager_template');
@@ -96,6 +97,9 @@ function taste_redirect_page_template ($template) {
 	}
 	if (is_page_template('venue-change-password.php')) {
 		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-change-password.php';
+	}
+	if (is_page_template('venue-lost-password.php')) {
+		$template = plugin_dir_path( __FILE__ ).'page-templates/venue-lost-password.php';
 	}
 	return $template;
 }

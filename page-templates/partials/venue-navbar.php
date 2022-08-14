@@ -114,7 +114,7 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $ad
 		),
 		array(
 			'profile_dropdown' => true,
-			'title' => 'Password Reset',
+			'title' => 'Change Password',
 			'url' => get_site_url(null, '/venue-change-password') . $get_string,
 			'active' => '#' === $pagename
 		),

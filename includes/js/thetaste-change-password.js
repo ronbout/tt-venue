@@ -1,6 +1,7 @@
 (function ($) {
   $(document).ready(function () {
-    tasteLoadPassChangeBtn();
+    $("#venue-password-change-form").length && tasteLoadPassChangeBtn();
+    $("from").length && tasteLoadFormSubmits();
   });
 
   const tasteLoadPassChangeBtn = () => {
@@ -13,6 +14,12 @@
         );
         e.preventDefault();
       }
+    });
+  };
+
+  const tasteLoadFormSubmits = () => {
+    $(form).on("submit", function () {
+      $('button[type="submit"]', this).attr("disabled", "disabled");
     });
   };
 })(jQuery);

@@ -87,14 +87,20 @@ if (!$venue_id) {
 $user_msg = '';
 $alert_type = 'alert-success';
 if (isset($_POST['venue_change_password_submit'])) {
-	$update_result = update_venue_password($_POST, $venue_id);
-
-	if ($update_result['error']) {
-		$user_msg =  'Error updating password. ' . $update_result['error'];
-		$alert_type = 'alert-danger';
+	$nonce_value = wc_get_var( $_REQUEST['venue-change-password-nonce'], '');
+	if ( wp_verify_nonce( $nonce_value, 'change_password' ) ) {
+		$update_result = update_venue_password($venue_id);
+	
+		if ($update_result['error']) {
+			$user_msg =  'Error updating password. ' . $update_result['error'];
+			$alert_type = 'alert-danger';
+		} else {
+			$user_msg = 'Venue Password was successfully Changed';
+			$venue_info = $_POST;
+		}
 	} else {
-		$user_msg = 'Venue Password was successfully Changed';
-		$venue_info = $_POST;
+		$user_msg = "Invalid Security check.  Please try again.";
+		$alert_type = 'alert-danger';
 	}
 }
 ?>
@@ -176,6 +182,8 @@ function display_venue_change_password_form($venue_info, $name) {
 						Update Password
 					</button>
 				</div>
+				
+				<?php wp_nonce_field( 'change_password', 'venue-change-password-nonce' ); ?>
 				<div class="col-sm-6">
 					<span id="venue-pass-match-error-msg" style="color:red;"></span>
 				</div>
@@ -184,7 +192,7 @@ function display_venue_change_password_form($venue_info, $name) {
 	<?php
 }
 
-function update_venue_password($form_info, $venue_id) {
+function update_venue_password($venue_id) {
 	global $wpdb;
 
 	$pass_cur             = ! empty( $_POST['password_current'] ) ? $_POST['password_current'] : '';
