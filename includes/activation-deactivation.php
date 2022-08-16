@@ -43,6 +43,23 @@ function taste_add_venue_table() {
 	dbDelta($sql);
 }
 
+function taste_add_venue_creditor_table() {
+	global $wpdb;
+	$venue_table = $wpdb->prefix.'taste_venue_creditor';
+
+	$sql = "
+	CREATE TABLE `wp_taste_venue_creditor` (
+		`creditor_id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+		`creditor_name` VARCHAR(80) NOT NULL,
+		PRIMARY KEY (`creditor_id`)
+	)
+	COLLATE='utf8mb4_0900_ai_ci'
+	;";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta($sql);
+}
+
 function taste_add_venue_product_table() {
 	global $wpdb;
 	$venue_products_table = $wpdb->prefix.'taste_venue_products';
@@ -171,6 +188,8 @@ function taste_venue_activation() {
 	taste_add_venue_role();
 	
 	taste_add_venue_table();
+
+	taste_add_venue_creditor_table();
 
 	taste_add_venue_product_table();
 
