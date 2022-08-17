@@ -79,10 +79,9 @@ class VenueUserFields
 			$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
 			$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : '';
 			$use_new = !empty($_POST['venue_use_new']) ? $_POST['venue_use_new'] : 0;
-			$cutoff = !empty($_POST['venue_cutoff_date']) ? $_POST['venue_cutoff_date'] : '';
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
 			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new, $cutoff);
+																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new);
 		}
 		
 		/**
@@ -100,18 +99,6 @@ class VenueUserFields
 				if ( empty( $_POST['venue_name'] ))  {
 					$errors->add( 'required_venue_name_error', __( '<strong>ERROR</strong>: Venue Name is a required field.', 'crf' ) );
 				}
-
-				/**
-				 * A cutoff date must exist, even if it is prior to the creation of theTaste
-				 */
-				// if ( empty( $_POST['venue_cutoff_date'] ))  {
-				// 	$cutoff_test = false;
-				// } else {
-				// 	$cutoff_test = strtotime($_POST['venue_cutoff_date']) > 0 ? strtotime($_POST['venue_cutoff_date']) : false;
-				// }
-				// if (! $cutoff_test) {
-				// 	$errors->add( 'required_venue_cutoff_date_error', __( '<strong>ERROR</strong>: Venue Historical Cutoff Date is a required field.', 'crf' ) );
-				// }
 
 				/**
 				 * IF PAID MEMBER, renewal and cost are required
@@ -176,7 +163,6 @@ class VenueUserFields
 				$renewal = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : NULL;
 				$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : NULL;
 				$use_new = !empty($_POST['venue_use_new']) && $_POST['venue_use_new'] === "on" ? 1 : 0;
-				$cutoff = !empty($_POST['venue_cutoff_date']) ? $_POST['venue_cutoff_date'] : NULL;
 
 				$data['name'] = $name;
 				$data['description'] =  $desc;
@@ -193,7 +179,6 @@ class VenueUserFields
 				$data['member_renewal_date'] = $renewal;
 				$data['membership_cost'] = $cost;
 				$data['use_new_campaign'] = $use_new;
-				$data['historical_cutoff_date'] = $cutoff;
 
 				$format = array_merge($format, array('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%f','%d','%s','%f', '%d', '%s'));
 
@@ -231,7 +216,6 @@ class VenueUserFields
 			$renewal  = '';
 			$cost  = '';
 			$use_new = 0;
-			$cutoff = '';
 
 			// if POST has venue data, it takes precedence as it means the user 
 			// created info but could not save due to error (missing venue name?)
@@ -251,13 +235,11 @@ class VenueUserFields
 				$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
 				$cost  = !empty($_POST['venue_cost']) ? $_POST['venue_cost'] : '';
 				$use_new = !empty($_POST['venue_use_new']) ? $_POST['venue_use_new'] : 0;
-				$cutoff  = !empty($_POST['venue_cutoff_date']) ? $_POST['venue_cutoff_date'] : '';
 			} elseif ('venue' === $role) {
 					// we came in with the user role = venue and should have db row
 					$sql = "
 					SELECT name, description, address1, address2, city, postcode, state, country, phone, venue_type, voucher_pct, 
-								 paid_member,	DATE(member_renewal_date) as member_renewal_date, membership_cost, use_new_campaign,
-								 DATE(historical_cutoff_date) as historical_cutoff_date
+								 paid_member,	DATE(member_renewal_date) as member_renewal_date, membership_cost, use_new_campaign
 					FROM {$wpdb->prefix}taste_venue
 					WHERE venue_id = %d
 				";
@@ -278,13 +260,12 @@ class VenueUserFields
 					$renewal  = ($venue_row[0]['member_renewal_date']) ? $venue_row[0]['member_renewal_date'] : '';
 					$cost  = ($venue_row[0]['membership_cost']) ? $venue_row[0]['membership_cost'] : '';
 					$use_new  = $venue_row[0]['use_new_campaign'];
-					$cutoff  = ($venue_row[0]['historical_cutoff_date']) ? $venue_row[0]['historical_cutoff_date'] : '';
 				}
 			}
 
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
 			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new, $cutoff);
+																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new);
 		}
 		
 
