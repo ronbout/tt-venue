@@ -117,6 +117,7 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 								<option value="0" <?php echo ('0' === $creditor) ? 'selected' : ''?>>None</option>
 								<?php echo display_creditor_options($creditor) ?>
 							</select>
+							<span style="margin-left: 12px;">(Must be created separately, if not already listed)</span>
 						</td>
 					</tr>
 					<tr>
