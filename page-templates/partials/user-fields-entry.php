@@ -2,7 +2,7 @@
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 function display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																				 $country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new) {
+																				 $country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new, $creditor) {
 			?>
 			<div id="user-venue-fields" style="display: <?php echo ('venue' === $role) ? 'block' : 'none' ?>">
 				<h3><?php esc_html_e('Venue Information'); ?>
@@ -110,6 +110,16 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</td>
 					</tr>
 					<tr>
+						<th><label for="venue-creditor"><?php esc_html_e('Venue Creditor'); ?></label>
+						</th>
+						<td>
+							<select id="venue-creditor" name="venue_creditor">
+								<option value="0" <?php echo ('0' === $creditor) ? 'selected' : ''?>>None</option>
+								<?php echo display_creditor_options($creditor) ?>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<th><label for="venue-pct"><?php esc_html_e('Voucher Pct'); ?></label>
 						</th>
 						<td>
@@ -157,4 +167,28 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 				</table>
 			</div>
 			<?php
+		}
+
+		function display_creditor_options($creditor=0) {
+			global $wpdb;
+
+			$return_options = "";
+			$sql = "
+				SELECT creditor_id, creditor_name 
+				FROM {$wpdb->prefix}taste_venue_creditor
+				ORDER BY creditor_name ASC
+			";
+
+			$creditor_rows = $wpdb->get_results($sql, ARRAY_A);
+			if (!$creditor_rows) {
+				return $return_options;
+			}
+			foreach($creditor_rows as $creditor_row) {
+				$creditor_id = $creditor_row['creditor_id'];
+				$creditor_name = $creditor_row['creditor_name'];
+				$return_options .= "
+				<option value='$creditor_id' " . (($creditor_id == $creditor) ? 'selected' : '' ). ">$creditor_name</option>
+				";
+			}
+			return $return_options;
 		}

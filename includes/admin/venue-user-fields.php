@@ -74,6 +74,7 @@ class VenueUserFields
 			$country = !empty($_POST['venue_country']) ? $_POST['venue_country'] : '';
 			$phone = !empty($_POST['venue_phone']) ? $_POST['venue_phone'] : '';
 			$type = !empty($_POST['venue_type']) ? $_POST['venue_type'] : 'none';
+			$creditor = !empty($_POST['venue_creditor']) ? $_POST['venue_creditor'] : '0';
 			$pct  = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : 10;
 			$paid = !empty($_POST['venue_paid']) ? $_POST['venue_paid'] : 0;
 			$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
@@ -81,7 +82,7 @@ class VenueUserFields
 			$use_new = !empty($_POST['venue_use_new']) ? $_POST['venue_use_new'] : 0;
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
 			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new);
+																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new, $creditor);
 		}
 		
 		/**
@@ -158,6 +159,7 @@ class VenueUserFields
 				$country = !empty($_POST['venue_country']) ? stripslashes($_POST['venue_country']) : NULL;
 				$phone = !empty($_POST['venue_phone']) ? stripslashes($_POST['venue_phone']) : NULL;
 				$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? NULL : stripslashes($_POST['venue_type']);
+				$creditor = !isset($_POST['venue_creditor']) || empty($_POST['venue_creditor'])? NULL : stripslashes($_POST['venue_creditor']);
 				$pct = !empty($_POST['venue_pct']) ? $_POST['venue_pct'] : NULL;
 				$paid = !empty($_POST['venue_paid']) && $_POST['venue_paid'] === "on" ? 1 : 0;
 				$renewal = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : NULL;
@@ -174,13 +176,14 @@ class VenueUserFields
 				$data['country'] = $country;
 				$data['phone'] = $phone;
 				$data['venue_type'] = $type;
+				$data['creditor_id'] = $creditor;
 				$data['voucher_pct'] = $pct;
 				$data['paid_member'] = $paid;
 				$data['member_renewal_date'] = $renewal;
 				$data['membership_cost'] = $cost;
 				$data['use_new_campaign'] = $use_new;
 
-				$format = array_merge($format, array('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%f','%d','%s','%f', '%d', '%s'));
+				$format = array_merge($format, array('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%d','%f','%d','%s','%f', '%d'));
 
 				if ($insert_flg) {
 					$rows_affected = $wpdb->insert($venue_table, $data, $format);
@@ -230,6 +233,7 @@ class VenueUserFields
 				$country = $_POST['venue_country'];
 				$phone = $_POST['venue_phone'];
 				$type = !isset($_POST['venue_type']) || empty($_POST['venue_type'])? 'none' : $_POST['venue_type'];
+				$creditor = !isset($_POST['venue_creditor']) || empty($_POST['venue_creditor'])? '0' : $_POST['venue_creditor'];
 				$pct = $_POST['venue_pct'];
 				$paid = !empty($_POST['venue_paid']) ? $_POST['venue_paid'] : 0;
 				$renewal  = !empty($_POST['venue_renewal_date']) ? $_POST['venue_renewal_date'] : '';
@@ -239,7 +243,8 @@ class VenueUserFields
 					// we came in with the user role = venue and should have db row
 					$sql = "
 					SELECT name, description, address1, address2, city, postcode, state, country, phone, venue_type, voucher_pct, 
-								 paid_member,	DATE(member_renewal_date) as member_renewal_date, membership_cost, use_new_campaign
+								 paid_member,	DATE(member_renewal_date) as member_renewal_date, membership_cost, use_new_campaign,
+								 creditor_id
 					FROM {$wpdb->prefix}taste_venue
 					WHERE venue_id = %d
 				";
@@ -255,6 +260,7 @@ class VenueUserFields
 					$country = $venue_row[0]['country'];
 					$phone = $venue_row[0]['phone'];
 					$type = ($venue_row[0]['venue_type']) ? $venue_row[0]['venue_type'] : 'none';
+					$creditor = ($venue_row[0]['creditor_id']) ? $venue_row[0]['creditor_id'] : '0';
 					$pct  = $venue_row[0]['voucher_pct'];
 					$paid  = $venue_row[0]['paid_member'];
 					$renewal  = ($venue_row[0]['member_renewal_date']) ? $venue_row[0]['member_renewal_date'] : '';
@@ -265,7 +271,7 @@ class VenueUserFields
 
 			require_once TASTE_PLUGIN_PATH . 'page-templates/partials/user-fields-entry.php';
 			display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new);
+																			$country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new, $creditor);
 		}
 		
 
