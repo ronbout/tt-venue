@@ -2,7 +2,7 @@
 defined('ABSPATH') or die('Direct script access disallowed.');
 
 function display_venue_fields_user_forms($role, $name, $desc, $address1, $address2, $city, $postcode, $state,
-																				 $country, $phone, $type, $pct, $paid, $renewal, $cost, $use_new, $creditor) {
+																				 $country, $phone, $type, $pct, $paid, $renewal, $cost, $creditor, $venue_id=null) {
 			?>
 			<div id="user-venue-fields" style="display: <?php echo ('venue' === $role) ? 'block' : 'none' ?>">
 				<h3><?php esc_html_e('Venue Information'); ?>
@@ -114,10 +114,9 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 						</th>
 						<td>
 							<select id="venue-creditor" name="venue_creditor">
-								<option value="0" <?php echo ('0' === $creditor) ? 'selected' : ''?>>None</option>
-								<?php echo display_creditor_options($creditor) ?>
+								<?php echo display_creditor_options($creditor, $venue_id) ?>
 							</select>
-							<span style="margin-left: 12px;">(Must be created separately, if not already listed)</span>
+							<span style="margin-left: 12px;">(If different name and not listed, must be created separately)</span>
 						</td>
 					</tr>
 					<tr>
@@ -156,21 +155,12 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 							/>
 						</td>
 					</tr>
-					<tr>
-						<th><label for="venue_use_new"><?php esc_html_e('Use New Campaign Manager'); ?></label>
-						</th>
-						<td>
-							<input type="checkbox" id="venue-use-new" name="venue_use_new"
-								<?php echo $use_new ? 'checked' : '' ?>
-							 />
-						</td>
-					</tr>
 				</table>
 			</div>
 			<?php
 		}
 
-		function display_creditor_options($creditor=0) {
+		function display_creditor_options($creditor=0, $venue_id) {
 			global $wpdb;
 
 			$return_options = "";
@@ -183,6 +173,10 @@ function display_venue_fields_user_forms($role, $name, $desc, $address1, $addres
 			$creditor_rows = $wpdb->get_results($sql, ARRAY_A);
 			if (!$creditor_rows) {
 				return $return_options;
+			}
+			
+			if (!$venue_id) {
+				$return_options .= "<option value='0' " . (('0' === $creditor) ? 'selected' : '') . ">Create creditor with same name</option>";
 			}
 			foreach($creditor_rows as $creditor_row) {
 				$creditor_id = $creditor_row['creditor_id'];
