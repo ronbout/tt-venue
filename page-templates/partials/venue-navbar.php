@@ -10,15 +10,44 @@
  */
 defined('ABSPATH') or die('Direct script access disallowed.');
 
-function venue_navbar ($links) {
+function venue_navbar ($links, $profile_flag="false", $venue_name="") {
+	$link_count = count($links);
 	$links_html = '';
+	$dropdown_link_flag = false;
 	foreach($links as $link) {
+		if (!isset($link['profile_dropdown']) || !$link['profile_dropdown']) {
+			$links_html .= '
+				<li class="nav-item ' . ($link['active'] ? 'active' : '') . '">
+					<a class="nav-link" href="' . $link['url'] . '" ' . (isset($link['attrs']) ? $link['attrs']  : '') . '>' . $link['title'] . '</a>
+				</li>
+			';
+		} else {
+			$dropdown_link_flag = true;
+		}
+	}
+	if ($profile_flag && $dropdown_link_flag) {
+		// add profile dropdown menu
 		$links_html .= '
-			<li class="nav-item ' . ($link['active'] ? 'active' : '') . '">
-				<a class="nav-link" href="' . $link['url'] . '" ' . (isset($link['attrs']) ? $link['attrs']  : '') . '>' . $link['title'] . '</a>
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbar-profile-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					' . $venue_name . '
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbar-profile-dropdown">
+			';
+		foreach($links as $ndx => $link) { 
+			if ($link_count - 1 == $ndx) {
+				$links_html .= '<div class="dropdown-divider"></div>';
+			}
+			if (isset($link['profile_dropdown']) && $link['profile_dropdown']) {
+				$links_html .= '
+				<a class="dropdown-item" href="' . $link['url'] . '" ' . (isset($link['attrs']) ? $link['attrs']  : '') . '>' . $link['title'] . '</a>
+				';
+			}
+		}
+		$links_html .= '
+				</div>
 			</li>
 		';
-		
 	}
 	?>
 <header>
@@ -60,26 +89,37 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $ad
 	}
 	$links = array(
 		array(
+			'profile_dropdown' => false,
 			'title' => 'Dashboard',
 			'url' => get_site_url(null, '/venue-portal') . $get_string,
 			'active' => 'venue-portal' === $pagename
 		),
 		array(
+			'profile_dropdown' => false,
 			'title' => $voucher_page_title,
 			'url' => get_site_url(null, $voucher_page) . $get_string,
 			'active' => $voucher_page === '/' . $pagename
 		),
 		array(
+			'profile_dropdown' => false,
 			'title' => 'Jobs',
 			'url' => get_site_url(null, '/job-dashboard') . $get_string,
 			'active' => 'job-dashboard' === $pagename
 		),
 		array(
+			'profile_dropdown' => true,
 			'title' => 'Account',
-			'url' => get_site_url(null, '/my-taste-account') . $get_string,
+			'url' => get_site_url(null, '/venue-profile-page') . $get_string,
 			'active' => 'my-taste-account' === $pagename
 		),
 		array(
+			'profile_dropdown' => true,
+			'title' => 'Change Password',
+			'url' => get_site_url(null, '/venue-change-password') . $get_string,
+			'active' => '#' === $pagename
+		),
+		array(
+			'profile_dropdown' => true,
 			'title' => 'Log Out',
 			'url' => wp_logout_url(get_site_url(null, '/venue-portal')),
 			'active' => false

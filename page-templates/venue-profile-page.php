@@ -102,7 +102,7 @@ if (isset($_POST['venue_profile_form_submit'])) {
 ?>
 
 
-<?php venue_navbar($nav_links, $navbar_get);  ?>
+<?php venue_navbar($nav_links, true, $venue_name);  ?>
 <div class="container-fluid h-100" id="profile_container">
     <div class="row" id="profile-row">
         <div class="col-xl-4" id="profile_photo">

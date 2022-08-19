@@ -20,13 +20,15 @@ $url_path = parse_url(home_url( $wp->request ), PHP_URL_PATH);
 // die();
 $request_base = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $url_path;
 $query_var_str = check_query();
-$login_failed = strpos($query_var_str, "?login=failed") !== false ? true : false;
+$login_failed = (strpos($query_var_str, "login=failed") !== false) ? true : false;
+
 $query_var_str = str_replace('?login=failed', '', $query_var_str);
 parse_str($query_var_str, $query_var_array);
 if (isset($query_var_array['login']) && substr($query_var_array['login'], 0, 6) == 'failed') {
     unset($query_var_array['login']);
 }
 $redirect = add_query_arg( $query_var_array, $request_base );
+$user_msg =  ! empty( $_GET['password-reset'] ) ? 'Your password has been reset successfully.' : '';
 
 ?>
 
@@ -44,15 +46,20 @@ $redirect = add_query_arg( $query_var_array, $request_base );
         <div class="col-md-8 col-xl-9 bg-white shadow-lg mt-3 mb-3 mt-sm-3 login_div text-center">
           <i class="fas fa-user"></i>
           <?php
-                        login_venue_form($redirect);
-                        if ($login_failed) {
-                            ?>
-          <div class="login-error">
-            <h3>Invalid Login. Please try again.</h3>
-          </div>
-          <?php
-                        }
-                        ?>
+            if ($user_msg) {
+              ?>
+                <p><?php echo $user_msg ?></p>
+              <?php
+            }
+            login_venue_form($redirect);
+            if ($login_failed) {
+               ?>
+                <div class="login-error">
+                  <h3>Invalid Login. Please try again.</h3>
+                </div>
+                <?php
+               }
+              ?>
         </div>
       </div>
     </div>
@@ -81,6 +88,9 @@ function login_venue_form($redirect) {
     <input type="submit" name="wp-submit" id="wp-submit" class="btn button-primary py-2 px-5" value="Log In" />
   </div>
   <input type="hidden" name="redirect_to" value="<?php echo esc_url( $redirect ) ?>" />
+  <p class="woocommerce-LostPassword lost_password">
+				<a href="<?php echo get_site_url(null, '/venue-lost-password'); ?>"><?php esc_html_e( 'Lost your password?', 'woocommerce' ); ?></a>
+  </p>
 </form>
 <?php
 }
