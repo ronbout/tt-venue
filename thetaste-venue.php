@@ -111,7 +111,7 @@ add_action( 'wp_login_failed', 'taste_venue_login_fail' );  // hook failed login
 function taste_venue_login_fail( $username ) {
    $referer = $_SERVER['HTTP_REFERER'];  
    // if there's a valid referer, and it's not the default log-in screen
-   if ( !empty($referer) && !strstr($referer,'wp-login') && !strstr($referer,'wp-admin') ) {
+   if ( !empty($referer) && !strstr($referer,'wp-login') && !strstr($referer,'my-taste-account') && !strstr($referer,'wp-admin') ) {
 			$url_path = parse_url($referer, PHP_URL_PATH);
 			$url_host = parse_url($referer, PHP_URL_HOST);
 			$url_scheme = parse_url($referer, PHP_URL_SCHEME);
