@@ -136,7 +136,7 @@ add_filter( 'query_vars', 'taste_venue_query_vars' );
 /**
  * Dingle Banner Ad
  */
-
+/*
 function dingle_banner_ad() {
 	?>
 <div>
@@ -145,6 +145,6 @@ function dingle_banner_ad() {
   </a>
 </div>
 <?php
-}
-add_action('__before_main', 'dingle_banner_ad');
+}*/
+// add_action('__before_main', 'dingle_banner_ad');
 //add_action('__before_content', 'dingle_banner_ad');
