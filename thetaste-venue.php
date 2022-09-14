@@ -19,11 +19,11 @@ define('TASTE_PLUGIN_INCLUDES_URL', TASTE_PLUGIN_URL.'includes');
 define('TASTE_VENUE_INVOICE_URL', TASTE_PLUGIN_URL . "pdfs/invoice.php");
 
 /* some helpful CONSTANTS */
-define('TASTE_PAYMENT_STATUS_PAID', 1);
-define('TASTE_PAYMENT_STATUS_ADJ', 2);
-define('TASTE_PAYMENT_STATUS_PENDING', 3);
-define('TASTE_PAYMENT_STATUS_PROCESSING', 4);
-define('TASTE_DEFAULT_PAYMENT_STATUS', TASTE_PAYMENT_STATUS_PENDING);
+!defined('TASTE_PAYMENT_STATUS_PAID') && define('TASTE_PAYMENT_STATUS_PAID', 1);
+!defined('TASTE_PAYMENT_STATUS_ADJ') && define('TASTE_PAYMENT_STATUS_ADJ', 2);
+!defined('TASTE_PAYMENT_STATUS_PENDING') && define('TASTE_PAYMENT_STATUS_PENDING', 3);
+!defined('TASTE_PAYMENT_STATUS_PROCESSING') && define('TASTE_PAYMENT_STATUS_PROCESSING', 4);
+!defined('TASTE_DEFAULT_PAYMENT_STATUS') && define('TASTE_DEFAULT_PAYMENT_STATUS', TASTE_PAYMENT_STATUS_PENDING);
 
 // we use GROUP_CONCAT in a number of instances.  To ensure that the
 // size of that field is always large enough, change it at the session level.
@@ -33,7 +33,7 @@ $wpdb->query("SET SESSION group_concat_max_len = 30000;");
 
 $uploads_info = wp_get_upload_dir();
 $uploads_base_url = $uploads_info['baseurl'];
-define('TASTE_VENUE_UPLOADS_BASE_URL', $uploads_base_url);
+!defined('TASTE_VENUE_UPLOADS_BASE_URL') && define('TASTE_VENUE_UPLOADS_BASE_URL', $uploads_base_url);
 
 
 require_once TASTE_PLUGIN_INCLUDES.'/activation-deactivation.php';
