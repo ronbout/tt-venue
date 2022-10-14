@@ -144,10 +144,17 @@ const displayOrderPaymentInfo = (origNetPayableFlag = false) => {
     tasteVenue.paymentOrders.productList
   )) {
     // load vat, comm, and price
-    const vatRate = jQuery(`#product-table-row-${prodId}`).data("vatrate");
-    const commRate = jQuery(`#product-table-row-${prodId}`).data(
+    let vatRate = jQuery(`#product-table-row-${prodId}`).data("vatrate");
+    let commRate = jQuery(`#product-table-row-${prodId}`).data(
       "commissionrate"
     );
+    // have seen commission and vat entered with % sign
+    if ("string" === typeof vatRate) {
+      vatRate = vatRate.replace("%", "");
+    }
+    if ("string" === typeof commRate) {
+      commRate = commRate.replace("%", "");
+    }
     const price = jQuery(`#product-table-row-${prodId}`).data("price");
     // run loop to get prodQtyTotal
     let prodQtyTotal = 0;
@@ -186,9 +193,6 @@ const displayOrderPaymentInfo = (origNetPayableFlag = false) => {
 };
 
 const calc_net_payable = (price, qty, commRate, vatRate, prodId = 0) => {
-  if (!qty) {
-    return parseFloat(0);
-  }
   // due to floating point calc errors in js, convert all to whole numbers
   const priceBig = new Big(price);
   const revenueBig = qty ? priceBig.times(qty) : new Big(0);
