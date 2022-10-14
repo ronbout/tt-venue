@@ -186,6 +186,9 @@ const displayOrderPaymentInfo = (origNetPayableFlag = false) => {
 };
 
 const calc_net_payable = (price, qty, commRate, vatRate, prodId = 0) => {
+  if (!qty) {
+    return parseFloat(0);
+  }
   // due to floating point calc errors in js, convert all to whole numbers
   const priceBig = new Big(price);
   const revenueBig = qty ? priceBig.times(qty) : new Big(0);

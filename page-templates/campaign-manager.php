@@ -408,7 +408,7 @@ $nav_links = venue_navbar_standard_links($user_info['use_new_campaign'], $user_i
     </a>
   </footer>
   <script src='https://cdn.jsdelivr.net/npm/big.js@6.0.0/big.min.js'></script>
-  <script type="text/javascript" src="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js?v=4.11"></script>
+  <script type="text/javascript" src="<?php echo TASTE_PLUGIN_INCLUDES_URL ?>/js/thetaste-venue.js?v=4.12"></script>
 </body>
 
 </html>
