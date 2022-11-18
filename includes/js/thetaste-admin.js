@@ -183,6 +183,22 @@ const validateProduct = ($documentBody) => {
         enable_prod_save($publishBtn);
       }
     });
+
+    const $salePrice = jQuery("#_sale_price");
+    const origSalePrice = $salePrice.val();
+    $salePrice.data("orig", origSalePrice);
+
+    jQuery("#_sale_price").change(function () {
+      const $this = jQuery(this);
+      const curPrice = $this.val();
+      const origPrice = $this.data("orig");
+      if (origPrice !== curPrice && origPrice !== "") {
+        // add in a warning if the price is changed
+        alert(
+          "Caution! You CANNOT change the sales amount if any orders have been placed on this product. Only continue editing if this is a new product you are setting up.  If this is an old product and you are reactivating it, you must duplicate this product first, and then make changes to the new copy."
+        );
+      }
+    });
   }
 };
 
