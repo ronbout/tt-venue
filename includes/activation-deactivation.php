@@ -32,7 +32,7 @@ function taste_add_venue_table() {
 			paid_member TINYINT ZEROFILL NOT NULL DEFAULT 0, 
 			member_renewal_date DATE,
 			membership_cost DECIMAL(10,2),
-			use_new_campaign TINYINT NOT NULL DEFAULT 0,
+			use_new_campaign TINYINT NOT NULL DEFAULT 1,
 			historical_cutoff_date DATE NULL DEFAULT NULL,
 			creditor_id BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 			PRIMARY KEY (venue_id),
