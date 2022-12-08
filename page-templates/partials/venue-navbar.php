@@ -80,13 +80,9 @@ function venue_navbar_standard_links($use_new_campaign, $venue_voucher_page, $ad
 		$admin_select_get = "?$admin_select_get";
 	}
 
-	if ($use_new_campaign) {
-		$voucher_page_title = 'Campaign Manager';
-		$voucher_page = '/campaign-manager';
-	} else {
-		$voucher_page_title = 'Manage Vouchers';
-		$voucher_page = $venue_voucher_page;
-	}
+	$voucher_page_title = 'Campaign Manager';
+	$voucher_page = '/campaign-manager';
+
 	$links = array(
 		array(
 			'profile_dropdown' => false,
